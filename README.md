@@ -29,16 +29,11 @@ plugins {
 
 ### Additional setup for IntelliJ IDEA
 
-1. Add `id 'idea'` into `build.gradle` inside `plugins { ... }`:
-```
-plugins {
-    // Apply the java-library plugin to add support for Java Library
-    id 'java-library'
-    id 'idea'
-}
-```
-2. `$ gradlew idea`
-3. Open the project with File - Open Project
+1. Open the project with File - Open Project
+2. Press button 'Add configuration...' and open 'Application' in templates list
+3. Add 'ru.windcorp.optica.client.OpticaClientMain' in Main class text field
+4. Choose 'Optica.main' in 'Use classpath of module' drop-down list
+5. Click 'Create configuration' and press Apply
 
 ## Libraries
 
