@@ -17,8 +17,9 @@
  *******************************************************************************/
 package ru.windcorp.optica.client.world;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import ru.windcorp.optica.client.graphics.world.WorldRenderer;
 import ru.windcorp.optica.common.world.ChunkData;
@@ -28,13 +29,13 @@ public class WorldRender {
 	
 	private final WorldData data;
 	
-	private final Collection<ChunkRender> chunks = new ArrayList<>();
+	private final Map<ChunkData, ChunkRender> chunks = new HashMap<>();
 	
 	public WorldRender(WorldData data) {
 		this.data = data;
 		
 		for (ChunkData chunkData : data.getChunks()) {
-			chunks.add(new ChunkRender(this, chunkData));
+			chunks.put(chunkData, new ChunkRender(this, chunkData));
 		}
 	}
 	
@@ -42,10 +43,22 @@ public class WorldRender {
 		return data;
 	}
 	
+	public ChunkRender getChunk(ChunkData chunkData) {
+		return chunks.get(chunkData);
+	}
+	
+	public ChunkRender getChunk(int x, int y, int z) {
+		return chunks.get(getData().getChunk(x, y, z));
+	}
+	
+	public Collection<ChunkRender> getChunks() {
+		return chunks.values();
+	}
+	
 	public void render(WorldRenderer renderer) {
 		renderer.pushWorldTransform().rotateX(-Math.PI / 2);
 		
-		for (ChunkRender chunk : chunks) {
+		for (ChunkRender chunk : getChunks()) {
 			chunk.render(renderer);
 		}
 	}

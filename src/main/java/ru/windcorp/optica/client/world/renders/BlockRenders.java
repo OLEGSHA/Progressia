@@ -40,14 +40,14 @@ public class BlockRenders {
 	private BlockRenders() {}
 	
 	static {
-		register(new BlockRenderOpaqueCube("Grass", "Test", grassTop, dirtT, grassSide, grassSide, grassSide, grassSide));
-		register(new BlockRenderOpaqueCube("Dirt", "Test", dirtT, dirtT, dirtT, dirtT, dirtT, dirtT));
-		register(new BlockRenderOpaqueCube("Stone", "Test", stoneT, stoneT, stoneT, stoneT, stoneT, stoneT));
+		register(new BlockRenderOpaqueCube("Test", "Grass", grassTop, dirtT, grassSide, grassSide, grassSide, grassSide));
+		register(new BlockRenderOpaqueCube("Test", "Dirt", dirtT, dirtT, dirtT, dirtT, dirtT, dirtT));
+		register(new BlockRenderOpaqueCube("Test", "Stone", stoneT, stoneT, stoneT, stoneT, stoneT, stoneT));
 
-		register(new BlockRenderOpaqueCube("Compass", "Test", qtex("compass"), qtex("compass"), qtex("side_north"), qtex("side_south"), qtex("side_east"), qtex("side_west")));
+		register(new BlockRenderOpaqueCube("Test", "Compass", qtex("compass"), qtex("compass"), qtex("side_north"), qtex("side_south"), qtex("side_east"), qtex("side_west")));
 		
-		register(new BlockRenderNone("Air", "Test"));
-		register(new BlockRenderTransparentCube("Glass", "Test", glassT, glassT, glassT, glassT, glassT, glassT));
+		register(new BlockRenderNone("Test", "Air"));
+		register(new BlockRenderTransparentCube("Test", "Glass", glassT, glassT, glassT, glassT, glassT, glassT));
 	}
 	
 	public static BlockRender get(String name) {

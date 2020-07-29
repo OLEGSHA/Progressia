@@ -40,6 +40,7 @@ public class ChunkRender {
 	private final WorldRender world;
 	private final ChunkData data;
 
+	private boolean needsUpdate;
 	private Model model = null;
 	
 	public ChunkRender(WorldRender world, ChunkData data) {
@@ -55,6 +56,14 @@ public class ChunkRender {
 		return data;
 	}
 	
+	public void markForUpdate() {
+		this.needsUpdate = true;
+	}
+	
+	public boolean needsUpdate() {
+		return needsUpdate;
+	}
+	
 	public BlockRender getBlock(int xInChunk, int yInChunk, int zInChunk) {
 		return BlockRenders.get(
 				getData().getBlock(xInChunk, yInChunk, zInChunk).getId()
@@ -62,7 +71,7 @@ public class ChunkRender {
 	}
 	
 	public void render(WorldRenderer renderer) {
-		if (model == null) {
+		if (model == null || needsUpdate()) {
 			buildModel();
 		}
 		
@@ -122,6 +131,7 @@ public class ChunkRender {
 		}
 		
 		model = new StaticModel(builder);
+		needsUpdate = false;
 	}
 
 	private boolean tryToForwardToOptimizers(

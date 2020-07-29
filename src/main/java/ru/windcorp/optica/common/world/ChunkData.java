@@ -19,6 +19,7 @@ package ru.windcorp.optica.common.world;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.optica.common.block.BlockData;
+import ru.windcorp.optica.common.block.BlockDataRegistry;
 
 public class ChunkData {
 	
@@ -32,12 +33,10 @@ public class ChunkData {
 	                                                    [BLOCKS_PER_CHUNK]
 	                                                    [BLOCKS_PER_CHUNK];
 	
-	private final BlockData grass = new BlockData("Grass", "Test");
-	private final BlockData dirt = new BlockData("Dirt", "Test");
-	private final BlockData stone = new BlockData("Stone", "Test");
-	private final BlockData air = new BlockData("Air", "Test");
-//	private final BlockData glass = new BlockData("Glass", "Test");
-//	private final BlockData compass = new BlockData("Compass", "Test");
+	private final BlockData grass = BlockDataRegistry.get("Test:Grass");
+	private final BlockData dirt = BlockDataRegistry.get("Test:Dirt");
+	private final BlockData stone = BlockDataRegistry.get("Test:Stone");
+	private final BlockData air = BlockDataRegistry.get("Test:Air");
 	
 	public ChunkData(int x, int y, int z) {
 		this.x = x;
@@ -45,6 +44,10 @@ public class ChunkData {
 		this.z = z;
 		
 		tmp_generate();
+	}
+	
+	public BlockData[][][] tmp_getBlocks() {
+		return blocks;
 	}
 	
 	private void tmp_generate() {

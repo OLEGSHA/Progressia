@@ -29,6 +29,8 @@ import ru.windcorp.optica.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.optica.client.graphics.input.CursorMoveEvent;
 import ru.windcorp.optica.client.graphics.input.KeyEvent;
 import ru.windcorp.optica.client.world.WorldRender;
+import ru.windcorp.optica.common.block.BlockData;
+import ru.windcorp.optica.common.block.BlockDataRegistry;
 import ru.windcorp.optica.common.world.WorldData;
 
 public class LayerWorld extends Layer {
@@ -128,6 +130,19 @@ public class LayerWorld extends Layer {
 			}
 			
 			flag = !flag;
+			break;
+			
+		case GLFW.GLFW_KEY_G:
+			if (!event.isPress()) return;
+			
+			BlockData[][][] data = world.getData().getChunk(0, 0, 0).tmp_getBlocks();
+			if (data[0][0][0].getId().equals("Test:Stone")) {
+				data[0][0][0] = BlockDataRegistry.get("Test:Glass");
+			} else {
+				data[0][0][0] = BlockDataRegistry.get("Test:Stone");
+			}
+			world.getChunk(0, 0, 0).markForUpdate();
+			
 			break;
 		}
 	}
