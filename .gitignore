@@ -1,0 +1,17 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+# Ignore Eclipse IDE files
+bin
+.settings
+.classpath
+.project
+
+# Ignore Windows Thumb.db files
+**/Thumbs.db
+
+# Ignore MacOS
+**/.DS_Store
