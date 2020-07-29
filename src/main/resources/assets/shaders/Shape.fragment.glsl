@@ -43,7 +43,7 @@ void applyShading() {
 	float angleCos = dot(normal, light);
 	float lightness = (angleCos + 1.5) / 2;
 
-	linearMultiply(gl_FragColor, vec4(lightness.xxx, 1.0));
+	linearMultiply(gl_FragColor, vec4(lightness, lightness, lightness, 1.0));
 }
 
 void applyAlpha() {
