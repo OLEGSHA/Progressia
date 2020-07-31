@@ -18,38 +18,20 @@
 package ru.windcorp.optica.client.graphics.world;
 
 import glm.mat._4.Mat4;
+import ru.windcorp.optica.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.optica.common.util.StashingStack;
 
-public class WorldRenderer {
-	
-	private static final int TRANSFORM_STACK_SIZE = 64;
-	
-	private final StashingStack<Mat4> worldTransformStack = new StashingStack<>(
-			TRANSFORM_STACK_SIZE, Mat4::new
-	);
+public class WorldRenderHelper extends ShapeRenderHelper {
 	
 	private final StashingStack<Mat4> viewTransformStack = new StashingStack<>(
 			TRANSFORM_STACK_SIZE, Mat4::new
 	);
 	
-	private final Mat4 finalTransform = new Mat4();
-	
 	{
-		reset();
+		viewTransformStack.push().identity();
 	}
 	
-	public Mat4 pushWorldTransform() {
-		Mat4 previous = worldTransformStack.getHead();
-		return worldTransformStack.push().set(previous);
-	}
-	
-	public void popWorldTransform() {
-		worldTransformStack.removeHead();
-	}
-	
-	public Mat4 getWorldTransform() {
-		return worldTransformStack.getHead();
-	}
+	private final Mat4 finalTransform = new Mat4();
 	
 	public Mat4 pushViewTransform() {
 		Mat4 previous = viewTransformStack.getHead();
@@ -64,13 +46,14 @@ public class WorldRenderer {
 		return viewTransformStack.getHead();
 	}
 	
+	@Override
 	public Mat4 getFinalTransform() {
 		return finalTransform.set(getViewTransform()).mul(getWorldTransform());
 	}
 	
+	@Override
 	public void reset() {
-		worldTransformStack.removeAll();
-		worldTransformStack.push().identity();
+		super.reset();
 		viewTransformStack.removeAll();
 		viewTransformStack.push().identity();
 	}

@@ -18,7 +18,7 @@
 package ru.windcorp.optica.client.world.renders;
 
 import ru.windcorp.optica.client.graphics.model.WorldRenderable;
-import ru.windcorp.optica.client.graphics.world.WorldRenderer;
+import ru.windcorp.optica.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.optica.common.util.Namespaced;
 
 public abstract class BlockRender extends Namespaced {
@@ -41,7 +41,7 @@ public abstract class BlockRender extends Namespaced {
 		this.optimizer = optimizer;
 	}
 
-	public void render(WorldRenderer renderer) {
+	public void render(ShapeRenderHelper renderer) {
 		throw new UnsupportedOperationException(
 				"BlockRender.render() not implemented"
 		);

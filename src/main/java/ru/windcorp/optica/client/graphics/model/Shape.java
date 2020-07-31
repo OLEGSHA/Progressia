@@ -24,7 +24,6 @@ import org.lwjgl.BufferUtils;
 
 import ru.windcorp.optica.client.graphics.backend.Usage;
 import ru.windcorp.optica.client.graphics.backend.VertexBufferObject;
-import ru.windcorp.optica.client.graphics.world.WorldRenderer;
 
 public class Shape implements WorldRenderable {
 	
@@ -48,18 +47,14 @@ public class Shape implements WorldRenderable {
 		this.usage = usage;
 		
 		configureFaces();
+		program.preprocess(this);
 		
 		assembleBuffers();
-	}
-
-	public Shape(Usage usage, Face... faces) {
-		this(usage, ShapeRenderProgram.getDefault(), faces);
 	}
 
 	private void configureFaces() {
 		for (Face face : faces) {
 			face.setShape(this);
-			face.computeNormals();
 		}
 	}
 
@@ -153,12 +148,12 @@ public class Shape implements WorldRenderable {
 	}
 	
 	@Override
-	public void render(WorldRenderer renderer) {
+	public void render(ShapeRenderHelper helper) {
 		if (!initialized) initialize();
 		if (needsAssembly) assembleBuffers();
 		if (needsVBOUpdate) updateVBO();
 		
-		program.render(renderer, this);
+		program.render(helper, this);
 	}
 
 	private void initialize() {

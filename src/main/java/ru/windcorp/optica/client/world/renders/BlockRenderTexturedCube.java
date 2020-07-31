@@ -24,6 +24,7 @@ import java.util.EnumMap;
 import ru.windcorp.optica.client.graphics.model.Shapes;
 import ru.windcorp.optica.client.graphics.model.WorldRenderable;
 import ru.windcorp.optica.client.graphics.texture.Texture;
+import ru.windcorp.optica.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.optica.common.block.BlockFace;
 
 public abstract class BlockRenderTexturedCube extends BlockRender {
@@ -54,6 +55,7 @@ public abstract class BlockRenderTexturedCube extends BlockRender {
 	@Override
 	public WorldRenderable createRenderable() {
 		return new Shapes.PppBuilder(
+				WorldRenderProgram.getDefault(),
 				getTexture(TOP), getTexture(BOTTOM),
 				getTexture(NORTH), getTexture(SOUTH),
 				getTexture(EAST), getTexture(WEST)

@@ -2,7 +2,6 @@
 
 varying vec3 varyingColorMultiplier;
 varying vec2 varyingTextureCoords;
-varying vec3 varyingNormals;
 
 uniform sampler2D textureSlot;
 uniform vec2 textureStart;
@@ -34,16 +33,6 @@ void linearMultiply(inout vec4 vector, vec4 scalars) {
 
 void applyColorMultiplier() {
 	linearMultiply(gl_FragColor, vec4(varyingColorMultiplier, 1.0));
-}
-
-void applyShading() {
-	vec3 light = normalize(vec3(0.5, 1.0, 0.2));
-	vec3 normal = varyingNormals;
-
-	float angleCos = dot(normal, light);
-	float lightness = (angleCos + 1.5) / 2;
-
-	linearMultiply(gl_FragColor, vec4(lightness, lightness, lightness, 1.0));
 }
 
 void applyAlpha() {

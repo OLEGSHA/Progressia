@@ -21,7 +21,6 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.util.Objects;
 
-import glm.vec._3.Vec3;
 import ru.windcorp.optica.client.graphics.texture.Texture;
 
 public class Face {
@@ -62,39 +61,6 @@ public class Face {
 		
 		checkVertices();
 		checkIndices();
-	}
-	
-	void computeNormals() {
-		Vec3 a = new Vec3();
-		Vec3 b = new Vec3();
-		Vec3 c = new Vec3();
-		Vec3 normal = new Vec3();
-		
-		for (int i = 0; i < getIndexCount(); i += 3) {
-			int indexA = getIndex(i + 0);
-			int indexB = getIndex(i + 1);
-			int indexC = getIndex(i + 2);
-			
-			loadVertexPosition(indexA, a);
-			loadVertexPosition(indexB, b);
-			loadVertexPosition(indexC, c);
-			
-			computeOneNormal(a, b, c, normal);
-			
-			saveVertexNormal(indexA, normal);
-			saveVertexNormal(indexB, normal);
-			saveVertexNormal(indexC, normal);
-		}
-	}
-	
-	private void computeOneNormal(
-			Vec3 a, Vec3 b, Vec3 c,
-			Vec3 normal
-	) {
-		b.sub(a);
-		c.sub(a);
-		b.cross(c, normal);
-		normal.normalize();
 	}
 
 	private void checkVertices() {
@@ -143,6 +109,12 @@ public class Face {
 		}
 	}
 	
+	public void markForVertexUpdate() {
+		if (shape != null) checkVertices();
+		markShapeForReassembly();
+		verticesUpdated = true;
+	}
+	
 	boolean needsVerticesUpdate() {
 		return verticesUpdated;
 	}
@@ -180,37 +152,9 @@ public class Face {
 		return vertices;
 	}
 	
-	private void loadVertexPosition(int index, Vec3 result) {
-		int offset = vertices.position() + index * getBytesPerVertex();
-		
-		result.set(
-				vertices.getFloat(offset + 0 * Float.BYTES),
-				vertices.getFloat(offset + 1 * Float.BYTES),
-				vertices.getFloat(offset + 2 * Float.BYTES)
-		);
-	}
-	
-	private void saveVertexNormal(int index, Vec3 normal) {
-		int offset = vertices.position() + index * getBytesPerVertex() + (
-				3 * Float.BYTES +
-				3 * Float.BYTES +
-				2 * Float.BYTES
-		);
-		
-		vertices.putFloat(offset + 0 * Float.BYTES, normal.x);
-		vertices.putFloat(offset + 1 * Float.BYTES, normal.y);
-		vertices.putFloat(offset + 2 * Float.BYTES, normal.z);
-		
-		verticesUpdated = true;
-	}
-	
 	public Face setVertices(ByteBuffer vertices) {
 		this.vertices = Objects.requireNonNull(vertices, "vertices");
-		markShapeForReassembly();
-		this.verticesUpdated = true;
-		
-		if (shape != null) checkVertices();
-		
+		markForVertexUpdate();
 		return this;
 	}
 

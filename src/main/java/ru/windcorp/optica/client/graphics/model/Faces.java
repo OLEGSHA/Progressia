@@ -30,13 +30,14 @@ public class Faces {
 	private Faces() {}
 	
 	public static Face createRectangle(
+			ShapeRenderProgram program,
 			Texture texture,
 			Vec3 colorMultiplier,
 			Vec3 origin,
 			Vec3 width,
 			Vec3 height
 	) {
-		VertexBuilder builder = new VertexBuilder();
+		VertexBuilder builder = program.getVertexBuilder();
 		
 		Vec3 pos = new Vec3();
 		Vec2 texCoords = new Vec2();
@@ -70,6 +71,7 @@ public class Faces {
 	}
 	
 	public static Face createBlockFace(
+			ShapeRenderProgram program,
 			Texture texture,
 			Vec3 colorMultiplier,
 			Vec3 blockCenter,
@@ -78,6 +80,7 @@ public class Faces {
 		switch (face) {
 		case TOP:
 			return createRectangle(
+					program,
 					texture, colorMultiplier,
 					blockCenter.add(-0.5f, +0.5f, +0.5f),
 					new Vec3( 0, -1,  0),
@@ -85,6 +88,7 @@ public class Faces {
 			);
 		case BOTTOM:
 			return createRectangle(
+					program,
 					texture, colorMultiplier,
 					blockCenter.add(-0.5f, -0.5f, -0.5f),
 					new Vec3( 0, +1,  0),
@@ -92,6 +96,7 @@ public class Faces {
 			);
 		case NORTH:
 			return createRectangle(
+					program,
 					texture, colorMultiplier,
 					blockCenter.add(+0.5f, -0.5f, -0.5f),
 					new Vec3( 0, +1,  0),
@@ -99,6 +104,7 @@ public class Faces {
 			);
 		case SOUTH:
 			return createRectangle(
+					program,
 					texture, colorMultiplier,
 					blockCenter.add(-0.5f, +0.5f, -0.5f),
 					new Vec3( 0, -1,  0),
@@ -106,6 +112,7 @@ public class Faces {
 			);
 		case EAST:
 			return createRectangle(
+					program,
 					texture, colorMultiplier,
 					blockCenter.add(-0.5f, -0.5f, -0.5f),
 					new Vec3(+1,  0,  0),
@@ -113,6 +120,7 @@ public class Faces {
 			);
 		case WEST:
 			return createRectangle(
+					program,
 					texture, colorMultiplier,
 					blockCenter.add(+0.5f, +0.5f, -0.5f),
 					new Vec3(-1,  0,  0),

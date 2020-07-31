@@ -28,6 +28,7 @@ import ru.windcorp.optica.client.graphics.model.Face;
 import ru.windcorp.optica.client.graphics.model.Faces;
 import ru.windcorp.optica.client.graphics.model.Shape;
 import ru.windcorp.optica.client.graphics.texture.Texture;
+import ru.windcorp.optica.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.optica.client.world.ChunkRender;
 import ru.windcorp.optica.client.world.renders.BlockRender;
 import ru.windcorp.optica.common.block.BlockFace;
@@ -167,6 +168,7 @@ public class BlockRenderOpaqueCubeOptimizer extends BlockRenderOptimizer {
 		
 		return new Shape(
 				Usage.STATIC,
+				WorldRenderProgram.getDefault(),
 				shapeFaces.toArray(new Face[shapeFaces.size()])
 		);
 	}
@@ -177,6 +179,7 @@ public class BlockRenderOpaqueCubeOptimizer extends BlockRenderOptimizer {
 		Texture texture = blockRender.getTexture(face);
 		
 		return Faces.createBlockFace(
+				WorldRenderProgram.getDefault(),
 				texture,
 				COLOR_MULTIPLIER,
 				blockCenter.set(x, y, z),

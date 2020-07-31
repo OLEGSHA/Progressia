@@ -75,8 +75,6 @@ class Pixels {
 				data              // Data buffer
 		);
 		
-		glBindTexture(GL_TEXTURE_2D, 0);
-		
 		return handle;
 	}
 

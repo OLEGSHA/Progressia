@@ -42,18 +42,18 @@ public class Camera {
 	
 	public Camera() {}
 
-	public void apply(WorldRenderer renderer) {
-		Mat4 previous = renderer.getViewTransform();
+	public void apply(WorldRenderHelper helper) {
+		Mat4 previous = helper.getViewTransform();
 		Glm.perspective(
 				computeFovY(),
 				GraphicsInterface.getAspectRatio(),
 				0.01f, 10000.0f,
-				renderer.pushViewTransform()
+				helper.pushViewTransform()
 		).mul(previous);
 		
-		renderer.pushViewTransform().rotateX(pitch).rotateY(yaw);
+		helper.pushViewTransform().rotateX(pitch).rotateY(yaw);
 		
-		renderer.pushViewTransform().translate(position.negate());
+		helper.pushViewTransform().translate(position.negate());
 		position.negate();
 	}
 	

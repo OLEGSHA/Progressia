@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import ru.windcorp.optica.client.graphics.world.WorldRenderer;
+import ru.windcorp.optica.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.optica.common.world.ChunkData;
 import ru.windcorp.optica.common.world.WorldData;
 
@@ -55,7 +55,7 @@ public class WorldRender {
 		return chunks.values();
 	}
 	
-	public void render(WorldRenderer renderer) {
+	public void render(ShapeRenderHelper renderer) {
 		renderer.pushWorldTransform().rotateX(-Math.PI / 2);
 		
 		for (ChunkRender chunk : getChunks()) {

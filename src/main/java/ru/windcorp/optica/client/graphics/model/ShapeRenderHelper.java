@@ -15,28 +15,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.optica.client;
+package ru.windcorp.optica.client.graphics.model;
 
-import ru.windcorp.optica.Proxy;
-import ru.windcorp.optica.client.graphics.GUI;
-import ru.windcorp.optica.client.graphics.backend.GraphicsBackend;
-import ru.windcorp.optica.client.graphics.backend.RenderTaskQueue;
-import ru.windcorp.optica.client.graphics.world.LayerWorld;
-import ru.windcorp.optica.client.graphics.world.WorldRenderProgram;
+import glm.mat._4.Mat4;
+import ru.windcorp.optica.common.util.StashingStack;
 
-public class ClientProxy implements Proxy {
-
-	@Override
-	public void initialize() {
-		GraphicsBackend.initialize();
-		try {
-			RenderTaskQueue.waitAndInvoke(WorldRenderProgram::init);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		GUI.addBottomLayer(new LayerWorld());
+public class ShapeRenderHelper {
+	
+	protected static final int TRANSFORM_STACK_SIZE = 64;
+	
+	private final StashingStack<Mat4> transformStack = new StashingStack<>(
+			TRANSFORM_STACK_SIZE, Mat4::new
+	);
+	
+	{
+		transformStack.push().identity();
+	}
+	
+	public Mat4 pushWorldTransform() {
+		Mat4 previous = transformStack.getHead();
+		return transformStack.push().set(previous);
+	}
+	
+	public void popWorldTransform() {
+		transformStack.removeHead();
+	}
+	
+	public Mat4 getWorldTransform() {
+		return transformStack.getHead();
+	}
+	
+	public Mat4 getFinalTransform() {
+		return getWorldTransform();
+	}
+	
+	public void reset() {
+		transformStack.removeAll();
+		transformStack.push().identity();
 	}
 
 }

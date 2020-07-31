@@ -18,7 +18,6 @@
 package ru.windcorp.optica.client.graphics.model;
 
 import glm.mat._4.Mat4;
-import ru.windcorp.optica.client.graphics.world.WorldRenderer;
 
 public abstract class Model implements WorldRenderable {
 	
@@ -31,16 +30,16 @@ public abstract class Model implements WorldRenderable {
 	protected abstract Mat4 getTransform(int partIndex);
 	
 	@Override
-	public void render(WorldRenderer renderer) {
+	public void render(ShapeRenderHelper helper) {
 		for (int i = 0; i < parts.length; ++i) {
 			WorldRenderable part = parts[i];
 			Mat4 transform = getTransform(i);
 			
 			try {
-				renderer.pushWorldTransform().mul(transform);
-				part.render(renderer);
+				helper.pushWorldTransform().mul(transform);
+				part.render(helper);
 			} finally {	
-				renderer.popWorldTransform();
+				helper.popWorldTransform();
 			}
 		}
 	}

@@ -18,7 +18,6 @@
 package ru.windcorp.optica.client.graphics.model;
 
 import glm.mat._4.Mat4;
-import ru.windcorp.optica.client.graphics.world.WorldRenderer;
 
 public class EmptyModel extends Model {
 	
@@ -33,7 +32,7 @@ public class EmptyModel extends Model {
 	}
 	
 	@Override
-	public void render(WorldRenderer renderer) {
+	public void render(ShapeRenderHelper helper) {
 		// Do nothing
 	}
 	

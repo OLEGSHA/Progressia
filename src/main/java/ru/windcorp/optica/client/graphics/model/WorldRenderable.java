@@ -17,10 +17,8 @@
  *******************************************************************************/
 package ru.windcorp.optica.client.graphics.model;
 
-import ru.windcorp.optica.client.graphics.world.WorldRenderer;
-
 public interface WorldRenderable {
 	
-	void render(WorldRenderer renderer);
+	void render(ShapeRenderHelper renderer);
 
 }

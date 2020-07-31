@@ -32,33 +32,16 @@ import ru.windcorp.optica.client.graphics.backend.VertexBufferObject;
 import ru.windcorp.optica.client.graphics.backend.VertexBufferObject.BindTarget;
 import ru.windcorp.optica.client.graphics.backend.shaders.CombinedShader;
 import ru.windcorp.optica.client.graphics.backend.shaders.Program;
-import ru.windcorp.optica.client.graphics.backend.shaders.attributes.AttributeVertexArray;
-import ru.windcorp.optica.client.graphics.backend.shaders.uniforms.Uniform1Int;
-import ru.windcorp.optica.client.graphics.backend.shaders.uniforms.Uniform2Float;
-import ru.windcorp.optica.client.graphics.backend.shaders.uniforms.Uniform4Matrix;
+import ru.windcorp.optica.client.graphics.backend.shaders.attributes.*;
+import ru.windcorp.optica.client.graphics.backend.shaders.uniforms.*;
 import ru.windcorp.optica.client.graphics.texture.Sprite;
-import ru.windcorp.optica.client.graphics.world.WorldRenderer;
 
 public class ShapeRenderProgram extends Program {
-	
-	private static ShapeRenderProgram def = null;
-	
-	public static void init() {
-		def = new ShapeRenderProgram(
-				new String[] {"WorldDefault.vertex.glsl"},
-				new String[] {"WorldDefault.fragment.glsl"}
-		);
-	}
-	
-	public static ShapeRenderProgram getDefault() {
-		return def;
-	}
 	
 	private static final int DEFAULT_BYTES_PER_VERTEX =
 			3 * Float.BYTES + // Position
 			3 * Float.BYTES + // Color multiplier
-			2 * Float.BYTES + // Texture coordinates
-			3 * Float.BYTES;  // Normals
+			2 * Float.BYTES;  // Texture coordinates
 	
 	private static final String SHAPE_VERTEX_SHADER_RESOURCE =
 			"Shape.vertex.glsl";
@@ -67,24 +50,20 @@ public class ShapeRenderProgram extends Program {
 	
 	private static final String
 			FINAL_TRANSFORM_UNIFORM_NAME   = "finalTransform",
-			WORLD_TRANSFORM_UNIFORM_NAME   = "worldTransform",
 			POSITIONS_ATTRIBUTE_NAME       = "inputPositions",
 			COLOR_MULTIPLER_ATTRIBUTE_NAME = "inputColorMultiplier",
 			TEXTURE_COORDS_ATTRIBUTE_NAME  = "inputTextureCoords",
 			TEXTURE_SLOT_UNIFORM_NAME      = "textureSlot",
 			TEXTURE_START_UNIFORM_NAME     = "textureStart",
-			TEXTURE_SIZE_UNIFORM_NAME      = "textureSize",
-			NORMALS_ATTRIBUTE_NAME         = "inputNormals";
+			TEXTURE_SIZE_UNIFORM_NAME      = "textureSize";
 	
 	private final Uniform4Matrix finalTransformUniform;
-	private final Uniform4Matrix worldTransformUniform;
 	private final AttributeVertexArray positionsAttribute;
 	private final AttributeVertexArray colorsAttribute;
 	private final AttributeVertexArray textureCoordsAttribute;
 	private final Uniform1Int textureSlotUniform;
 	private final Uniform2Float textureStartUniform;
 	private final Uniform2Float textureSizeUniform;
-	private final AttributeVertexArray normalsAttribute;
 
 	public ShapeRenderProgram(
 			String[] vertexShaderResources,
@@ -100,9 +79,6 @@ public class ShapeRenderProgram extends Program {
 		);
 		
 		this.finalTransformUniform = getUniform(FINAL_TRANSFORM_UNIFORM_NAME)
-				.as4Matrix();
-		
-		this.worldTransformUniform = getUniform(WORLD_TRANSFORM_UNIFORM_NAME)
 				.as4Matrix();
 		
 		this.positionsAttribute =
@@ -122,9 +98,6 @@ public class ShapeRenderProgram extends Program {
 		
 		this.textureSizeUniform = getUniform(TEXTURE_SIZE_UNIFORM_NAME)
 				.as2Float();
-		
-		this.normalsAttribute = getAttribute(NORMALS_ATTRIBUTE_NAME)
-				.asVertexArray();
 	}
 
 	private static String[] attachVertexShader(String[] others) {
@@ -136,36 +109,39 @@ public class ShapeRenderProgram extends Program {
 	}
 	
 	public void render(
-			WorldRenderer renderer,
+			ShapeRenderHelper helper,
 			Shape shape
 	) {
 		use();
-		configure(renderer);
+		configure(helper);
 		
 		bindVertices(shape.getVerticesVbo());
 		bindIndices(shape.getIndicesVbo());
 		
 		try {
-			positionsAttribute.enable();
-			colorsAttribute.enable();
-			textureCoordsAttribute.enable();
-			normalsAttribute.enable();
-			
+			enableAttributes();
 			for (Face face : shape.getFaces()) {
 				renderFace(face);
 			}
-			
 		} finally {
-			positionsAttribute.disable();
-			colorsAttribute.disable();
-			textureCoordsAttribute.disable();
-			normalsAttribute.disable();
+			disableAttributes();
 		}
 	}
 	
-	protected void configure(WorldRenderer renderer) {
-		finalTransformUniform.set(renderer.getFinalTransform());
-		worldTransformUniform.set(renderer.getWorldTransform());
+	protected void enableAttributes() {
+		positionsAttribute.enable();
+		colorsAttribute.enable();
+		textureCoordsAttribute.enable();
+	}
+
+	protected void disableAttributes() {
+		positionsAttribute.disable();
+		colorsAttribute.disable();
+		textureCoordsAttribute.disable();
+	}
+
+	protected void configure(ShapeRenderHelper helper) {
+		finalTransformUniform.set(helper.getFinalTransform());
 	}
 
 	protected int bindVertices(VertexBufferObject vertices) {
@@ -189,12 +165,6 @@ public class ShapeRenderProgram extends Program {
 				offset
 		);
 		offset += 2 * Float.BYTES;
-		
-		normalsAttribute.set(
-				3, GL11.GL_FLOAT, false, vertexStride, vertices,
-				offset
-		);
-		offset += 3 * Float.BYTES;
 		
 		return offset;
 	}
@@ -224,7 +194,31 @@ public class ShapeRenderProgram extends Program {
 		return DEFAULT_BYTES_PER_VERTEX;
 	}
 	
-	public static class VertexBuilder {
+	public void preprocess(Shape shape) {
+		// To be overridden
+	}
+	
+	public VertexBuilder getVertexBuilder() {
+		return new SRPVertexBuilder();
+	}
+	
+	public static interface VertexBuilder {
+		VertexBuilder addVertex(
+				float x, float y, float z,
+				float r, float g, float b,
+				float tx, float ty
+		);
+		
+		VertexBuilder addVertex(
+				Vec3 position,
+				Vec3 colorMultiplier,
+				Vec2 textureCoords
+		);
+		
+		ByteBuffer assemble();
+	}
+	
+	public static class SRPVertexBuilder implements VertexBuilder {
 		
 		private static class Vertex {
 			final Vec3 position;
@@ -282,10 +276,7 @@ public class ShapeRenderProgram extends Program {
 					.putFloat(v.colorMultiplier.y)
 					.putFloat(v.colorMultiplier.z)
 					.putFloat(v.textureCoords.x)
-					.putFloat(v.textureCoords.y)
-					.putFloat(Float.NaN)
-					.putFloat(Float.NaN)
-					.putFloat(Float.NaN);
+					.putFloat(v.textureCoords.y);
 			}
 			
 			result.flip();

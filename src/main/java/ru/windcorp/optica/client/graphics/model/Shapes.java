@@ -24,6 +24,8 @@ import ru.windcorp.optica.client.graphics.texture.Texture;
 public class Shapes {
 	
 	public static Shape createParallelepiped( // Try saying that 10 times fast
+			ShapeRenderProgram program,
+			
 			Vec3 origin,
 			
 			Vec3 width,
@@ -44,6 +46,7 @@ public class Shapes {
 		Vec3 faceWidth = new Vec3();
 		
 		Face top = Faces.createRectangle(
+				program,
 				topTexture, colorMultiplier,
 				faceOrigin.set(origin).add(height).add(width),
 				faceWidth.set(width).negate(),
@@ -51,6 +54,7 @@ public class Shapes {
 		);
 		
 		Face bottom = Faces.createRectangle(
+				program,
 				bottomTexture, colorMultiplier,
 				origin,
 				width,
@@ -58,6 +62,7 @@ public class Shapes {
 		);
 		
 		Face north = Faces.createRectangle(
+				program,
 				northTexture, colorMultiplier,
 				faceOrigin.set(origin).add(depth),
 				width,
@@ -65,6 +70,7 @@ public class Shapes {
 		);
 		
 		Face south = Faces.createRectangle(
+				program,
 				southTexture, colorMultiplier,
 				faceOrigin.set(origin).add(width),
 				faceWidth.set(width).negate(),
@@ -72,6 +78,7 @@ public class Shapes {
 		);
 		
 		Face east = Faces.createRectangle(
+				program,
 				eastTexture, colorMultiplier,
 				origin,
 				depth,
@@ -79,6 +86,7 @@ public class Shapes {
 		);
 		
 		Face west = Faces.createRectangle(
+				program,
 				westTexture, colorMultiplier,
 				faceOrigin.set(origin).add(width).add(depth),
 				faceWidth.set(depth).negate(),
@@ -87,6 +95,7 @@ public class Shapes {
 		
 		Shape result = new Shape(
 				Usage.STATIC,
+				program,
 				top, bottom, north, south, east, west
 		);
 		
@@ -94,6 +103,8 @@ public class Shapes {
 	}
 	
 	public static class PppBuilder {
+		
+		private final ShapeRenderProgram program;
 		
 		private final Vec3 origin = new Vec3(-0.5f, -0.5f, -0.5f);
 
@@ -111,6 +122,7 @@ public class Shapes {
 		private final Texture westTexture;
 		
 		public PppBuilder(
+				ShapeRenderProgram program,
 				Texture top,
 				Texture bottom,
 				Texture north,
@@ -118,6 +130,7 @@ public class Shapes {
 				Texture east,
 				Texture west
 		) {
+			this.program = program;
 			this.topTexture = top;
 			this.bottomTexture = bottom;
 			this.northTexture = north;
@@ -126,8 +139,8 @@ public class Shapes {
 			this.westTexture = west;
 		}
 		
-		public PppBuilder(Texture texture) {
-			this(texture, texture, texture, texture, texture, texture);
+		public PppBuilder(ShapeRenderProgram program, Texture texture) {
+			this(program, texture, texture, texture, texture, texture, texture);
 		}
 		
 		public PppBuilder setOrigin(Vec3 origin) {
@@ -201,6 +214,7 @@ public class Shapes {
 		
 		public Shape create() {
 			return createParallelepiped(
+					program,
 					origin,
 					width, height, depth,
 					colorMultiplier,

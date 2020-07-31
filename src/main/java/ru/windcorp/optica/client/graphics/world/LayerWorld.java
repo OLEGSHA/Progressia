@@ -50,7 +50,10 @@ public class LayerWorld extends Layer {
 	private int movementY = 0;
 	private int movementZ = 0;
 	
-	private final WorldRenderer renderer = new WorldRenderer();
+	private static final boolean I_WANT_TO_THROW_UP = false;
+	private float shakeParam = 0;
+	
+	private final WorldRenderHelper helper = new WorldRenderHelper();
 	
 	private final WorldRender world = new WorldRender(new WorldData());
 
@@ -66,13 +69,14 @@ public class LayerWorld extends Layer {
 	
 	@Override
 	protected void doRender() {
-		camera.apply(renderer);
+		camera.apply(helper);
 		renderWorld();
-		renderer.reset();
+		helper.reset();
 		
 		angMat.set().rotateY(-camera.getYaw());
 
 		tmp.set(movementX, 0, movementZ);
+		if (movementX != 0 && movementZ != 0) tmp.normalize();
 		angMat.mul_(tmp); // bug in jglm
 		tmp.y = movementY;
 		tmp.mul(0.1f);
@@ -82,10 +86,23 @@ public class LayerWorld extends Layer {
 		tmp.set(velocity);
 		tmp.mul((float) (GraphicsInterface.getFrameLength() * 60));
 		camera.move(tmp);
+		
+		if (I_WANT_TO_THROW_UP) {
+			shakeParam += tmp.set(tmp.x, 0, tmp.z).length() * 1.5f;
+			float vel = tmp.set(velocity).set(tmp.x, 0, tmp.z).length() * 0.7f;
+			
+			helper.pushViewTransform().translate(
+					(float) Math.sin(shakeParam) * vel,
+					(float) Math.sin(2 * shakeParam) * vel,
+					0.25f
+			).rotateZ(
+					(float) Math.sin(shakeParam) * vel * 0.15f
+			);
+		}
 	}
 
 	private void renderWorld() {
-		world.render(renderer);
+		world.render(helper);
 	}
 	
 	public Camera getCamera() {

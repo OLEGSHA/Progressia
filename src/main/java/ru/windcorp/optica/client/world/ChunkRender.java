@@ -26,7 +26,7 @@ import ru.windcorp.optica.client.graphics.model.Shape;
 import ru.windcorp.optica.client.graphics.model.StaticModel;
 import ru.windcorp.optica.client.graphics.model.StaticModel.Builder;
 import ru.windcorp.optica.client.graphics.model.WorldRenderable;
-import ru.windcorp.optica.client.graphics.world.WorldRenderer;
+import ru.windcorp.optica.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.optica.client.world.renders.BlockRender;
 import ru.windcorp.optica.client.world.renders.BlockRenderNone;
 import ru.windcorp.optica.client.world.renders.BlockRenders;
@@ -70,7 +70,7 @@ public class ChunkRender {
 		);
 	}
 	
-	public void render(WorldRenderer renderer) {
+	public void render(ShapeRenderHelper renderer) {
 		if (model == null || needsUpdate()) {
 			buildModel();
 		}
