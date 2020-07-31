@@ -29,24 +29,30 @@ class Pixels {
 	private final int bufferWidth;
 	private final int bufferHeight;
 	
-	private final boolean filtered;
+	private final TextureSettings settings;
+
+	private final int width;
+	private final int height;
 	
 	public Pixels(
 			ByteBuffer data,
 			int bufferWidth, int bufferHeight,
-			boolean filtered
+			int width, int height,
+			TextureSettings settings
 	) {
 		this.data = data;
+		this.width = width;
+		this.height = height;
 		this.bufferWidth = bufferWidth;
 		this.bufferHeight = bufferHeight;
-		this.filtered = filtered;
+		this.settings = settings;
 	}
 
 	public int load() {
 		int handle = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, handle);
 		
-		if (filtered) {
+		if (settings.isFiltered()) {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		} else {
@@ -72,6 +78,30 @@ class Pixels {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		
 		return handle;
+	}
+
+	public ByteBuffer getData() {
+		return data;
+	}
+
+	public int getBufferWidth() {
+		return bufferWidth;
+	}
+
+	public int getBufferHeight() {
+		return bufferHeight;
+	}
+	
+	public int getContentWidth() {
+		return width;
+	}
+	
+	public int getContentHeight() {
+		return height;
+	}
+	
+	public TextureSettings getSettings() {
+		return settings;
 	}
 
 }

@@ -28,43 +28,28 @@ public class TexturePrimitive implements OpenGLDeletable {
 	private static final int NOT_LOADED = -1;
 	
 	private int handle = NOT_LOADED;
-	private Pixels pixelsToLoad;
+	private Pixels pixels;
+
+	public TexturePrimitive(Pixels pixels) {
+		this.pixels = pixels;
+	}
 	
-	private final int width;
-	private final int height;
-	private final int bufferWidth;
-	private final int bufferHeight;
-
-	protected TexturePrimitive(
-			Pixels pixels,
-			int width, int height,
-			int bufferWidth, int bufferHeight
-	) {
-		this.pixelsToLoad = pixels;
-		this.width = width;
-		this.height = height;
-		this.bufferWidth = bufferWidth;
-		this.bufferHeight = bufferHeight;
-		
-		OpenGLObjectTracker.register(this);
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
 	public int getBufferWidth() {
-		return bufferWidth;
+		return pixels.getBufferWidth();
 	}
 
 	public int getBufferHeight() {
-		return bufferHeight;
+		return pixels.getBufferHeight();
 	}
-	
+
+	public int getWidth() {
+		return pixels.getContentWidth();
+	}
+
+	public int getHeight() {
+		return pixels.getContentHeight();
+	}
+
 	public boolean isLoaded() {
 		return handle != NOT_LOADED;
 	}
@@ -83,13 +68,12 @@ public class TexturePrimitive implements OpenGLDeletable {
 	protected void load() {
 		if (isLoaded()) return;
 		
-		handle = pixelsToLoad.load();
+		handle = pixels.load();
+		OpenGLObjectTracker.register(this);
 		
 		if (handle < 0) {
 			throw new RuntimeException("oops");
 		}
-		
-		pixelsToLoad = null;
 	}
 
 	@Override

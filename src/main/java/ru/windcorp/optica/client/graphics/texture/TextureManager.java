@@ -17,40 +17,66 @@
  *******************************************************************************/
 package ru.windcorp.optica.client.graphics.texture;
 
-import java.awt.Graphics;
-import java.awt.color.ColorSpace;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Hashtable;
-import javax.imageio.ImageIO;
+import java.util.HashMap;
+import java.util.Map;
 
 import ru.windcorp.optica.client.graphics.backend.RenderTaskQueue;
 import ru.windcorp.optica.common.resource.Resource;
 import ru.windcorp.optica.common.resource.ResourceManager;
+import ru.windcorp.optica.common.util.ByteBufferInputStream;
 
 public class TextureManager {
 	
-	private static final ColorModel COLOR_MODEL = new ComponentColorModel(
-			ColorSpace.getInstance(ColorSpace.CS_sRGB), // Use RGB
-			new int[] {8, 8, 8, 8},                     // Use every bit
-			true,                                       // Has alpha
-			false,                                      // Not premultiplied
-			ComponentColorModel.TRANSLUCENT,            // Can have any alpha
-			DataBuffer.TYPE_BYTE                        // Alpha is one byte
-	);
-	
-	private static final Hashtable<?, ?> CANVAS_PROPERTIES = new Hashtable<>();
-	private static final java.awt.Color CANVAS_BACKGROUND =
-			new java.awt.Color(0, 0, 0, 0);
-	
 	private static final String TEXTURE_ASSETS_PREFIX = "assets/textures/";
+	
+	private static final Map<String, Pixels> LOADED_PIXELS =
+			new HashMap<>();
+	
+	private static final Map<String, TexturePrimitive> LOADED_PRIMITIVES =
+			new HashMap<>();
+	
+	private static Pixels getCachedPixels(String name) {
+		return LOADED_PIXELS.get(name);
+	}
+	
+	private static Pixels getCachedPixels(Resource resource) {
+		return getCachedPixels(resource.getName());
+	}
+	
+	private static Pixels cachePixels(Pixels pixels, String name) {
+		LOADED_PIXELS.put(name, pixels);
+		return pixels;
+	}
+	
+	private static Pixels cachePixels(Pixels pixels, Resource resource) {
+		return cachePixels(pixels, resource.getName());
+	}
+	
+	private static TexturePrimitive getCachedPrimitive(String name) {
+		return LOADED_PRIMITIVES.get(name);
+	}
+	
+	private static TexturePrimitive getCachedPrimitive(Resource resource) {
+		return getCachedPrimitive(resource.getName());
+	}
+	
+	private static TexturePrimitive cachePrimitive(
+			TexturePrimitive primitive,
+			String name
+	) {
+		LOADED_PRIMITIVES.put(name, primitive);
+		return primitive;
+	}
+	
+	private static TexturePrimitive cachePrimitive(
+			TexturePrimitive primitive,
+			Resource resource
+	) {
+		return cachePrimitive(primitive, resource.getName());
+	}
 	
 	private static Resource getResource(String textureName) {
 		return ResourceManager.getResource(
@@ -58,87 +84,135 @@ public class TextureManager {
 		);
 	}
 	
-	public static TexturePrimitive load(String textureName, boolean filtered) {
-		TexturePrimitive result = loadToByteBuffer(textureName, filtered);
-		RenderTaskQueue.invokeLater(result::load);
-		return result;
-	}
-	
-	public static TexturePrimitive loadToByteBuffer(
-			String textureName, boolean filter
+	public static Pixels createOpenGLBuffer(
+			InputStream stream,
+			TextureSettings settings
 	) {
-		Resource resource = getResource(textureName);
-		
-		BufferedImage source = readImage(resource);
-		
-		int bufferWidth = toPowerOf2(source.getWidth()),
-				bufferHeight = toPowerOf2(source.getHeight());
-		
-		WritableRaster raster = Raster.createInterleavedRaster(
-				DataBuffer.TYPE_BYTE, // Storage model
-				bufferWidth,          // Buffer width
-				bufferHeight,         // Buffer height
-				4,                    // RGBA
-				null                  // Location (here (0; 0))
-		);
-		
-		BufferedImage canvas = new BufferedImage(
-				COLOR_MODEL,      // Color model
-				raster,           // Backing raster
-				false,            // Raster is not premultipied
-				CANVAS_PROPERTIES // Properties
-		);
-		
-		Graphics g = canvas.createGraphics();
-		g.setColor(CANVAS_BACKGROUND);
-		g.fillRect(0, 0, source.getWidth(), source.getHeight());
-		g.drawImage(
-				source,
-				0, 0, source.getWidth(), source.getHeight(),
-				0, source.getHeight(), source.getWidth(), 0, // Flip the image
-				null
-		);
-		g.dispose();
-		
-		byte[] data = (
-				(DataBufferByte) canvas.getRaster().getDataBuffer()
-		).getData();
-		
-		ByteBuffer buffer = ByteBuffer.allocateDirect(data.length);
-		buffer.order(ByteOrder.nativeOrder());
-		buffer.put(data);
-		buffer.flip();
-		
-		Pixels pixels = new Pixels(buffer, bufferWidth, bufferHeight, filter);
-		
-		TexturePrimitive result = new TexturePrimitive(
-				pixels,
-				source.getWidth(),
-				source.getHeight(),
-				bufferWidth,
-				bufferHeight
-		);
-		
-		return result;
-	}
-	
-	private static BufferedImage readImage(Resource resource) {
 		try {
-			return ImageIO.read(resource.getInputStream());
-		} catch (Exception e) {
-			throw new RuntimeException("too bad. refresh project u stupid. must be " + resource.getName(), e);
+			return PngLoader.loadPngImage(stream, settings);
+		} catch (IOException e) {
+			throw new RuntimeException("u stupid. refresh ur project");
 		}
 	}
 	
-	private static int toPowerOf2(int i) {
-		
-		// TODO optimize
-		
-		int result = 1;
-		do {
-			result *= 2;
-		} while (result < i);
+	public static Pixels createOpenGLBuffer(
+			Resource resource,
+			TextureSettings settings
+	) {
+		Pixels cache = getCachedPixels(resource);
+		if (cache != null) return cache;
+		return cachePixels(
+				createOpenGLBuffer(resource.getInputStream(), settings),
+				resource
+		);
+	}
+	
+	public static Pixels createOpenGLBuffer(
+			String textureName,
+			TextureSettings settings
+	) {
+		Pixels cache = getCachedPixels(textureName);
+		if (cache != null) return cache;
+		return cachePixels(
+				createOpenGLBuffer(getResource(textureName), settings),
+				textureName
+		);
+	}
+	
+	public static Pixels createOpenGLBuffer(
+			ByteBuffer bytes,
+			TextureSettings settings
+	) {
+		bytes.mark();
+		try {
+			return createOpenGLBuffer(
+					new ByteBufferInputStream(bytes), settings
+			);
+		} finally {
+			bytes.reset();
+		}
+	}
+	
+	public static TexturePrimitive createTexturePrimitive(
+			InputStream stream,
+			TextureSettings settings
+	) {
+		Pixels pixels = createOpenGLBuffer(stream, settings);
+		TexturePrimitive result = new TexturePrimitive(pixels);
 		return result;
+	}
+	
+	public static TexturePrimitive createTexturePrimitive(
+			Resource resource,
+			TextureSettings settings
+	) {
+		TexturePrimitive primitive = getCachedPrimitive(resource);
+		if (primitive != null) return primitive;
+		return cachePrimitive(
+				createTexturePrimitive(resource.getInputStream(), settings),
+				resource
+		);
+	}
+	
+	public static TexturePrimitive createTexturePrimitive(
+			String textureName,
+			TextureSettings settings
+	) {
+		TexturePrimitive primitive = getCachedPrimitive(textureName);
+		if (primitive != null) return primitive;
+		return cachePrimitive(
+				createTexturePrimitive(getResource(textureName), settings),
+				textureName
+		);
+	}
+	
+	public static TexturePrimitive createTexturePrimitive(
+			ByteBuffer bytes,
+			TextureSettings settings
+	) {
+		bytes.mark();
+		try {
+			return createTexturePrimitive(
+					new ByteBufferInputStream(bytes), settings
+			);
+		} finally {
+			bytes.reset();
+		}
+	}
+	
+	public static TexturePrimitive load(
+			InputStream stream,
+			TextureSettings settings
+	) {
+		TexturePrimitive result = createTexturePrimitive(stream, settings);
+		if (!result.isLoaded()) RenderTaskQueue.invokeLater(result::load);
+		return result;
+	}
+
+	public static TexturePrimitive load(
+			Resource resource,
+			TextureSettings settings
+	) {
+		return load(resource.getInputStream(), settings);
+	}
+
+	public static TexturePrimitive load(
+			String textureName,
+			TextureSettings settings
+	) {
+		return load(getResource(textureName), settings);
+	}
+	
+	public static TexturePrimitive load(
+			ByteBuffer bytes,
+			TextureSettings settings
+	) {
+		bytes.mark();
+		try {
+			return load(new ByteBufferInputStream(bytes), settings);
+		} finally {
+			bytes.reset();
+		}
 	}
 
 }

@@ -24,18 +24,22 @@ import ru.windcorp.optica.client.graphics.texture.SimpleTexture;
 import ru.windcorp.optica.client.graphics.texture.Sprite;
 import ru.windcorp.optica.client.graphics.texture.Texture;
 import ru.windcorp.optica.client.graphics.texture.TextureManager;
+import ru.windcorp.optica.client.graphics.texture.TextureSettings;
 import ru.windcorp.optica.client.world.renders.bro.BlockRenderOpaqueCube;
 
 public class BlockRenders {
+	
+	private static final Map<String, BlockRender> BLOCK_RENDERS =
+			new HashMap<>();
+	
+	private static final TextureSettings TEXTURE_SETTINGS =
+			new TextureSettings(false);
 	
 	private static Texture grassTop = qtex("grass_top");
 	private static Texture grassSide = qtex("grass_side");
 	private static Texture dirtT = qtex("grass_bottom");
 	private static Texture stoneT = qtex("stone");
 	private static Texture glassT = qtex("glass_clear");
-	
-	private static final Map<String, BlockRender> BLOCK_RENDERS =
-			new HashMap<>();
 
 	private BlockRenders() {}
 	
@@ -59,7 +63,9 @@ public class BlockRenders {
 	}
 	
 	private static Texture qtex(String name) {
-		return new SimpleTexture(new Sprite(TextureManager.load(name, false)));
+		return new SimpleTexture(new Sprite(
+				TextureManager.load(name, TEXTURE_SETTINGS)
+		));
 	}
 
 }
