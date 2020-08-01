@@ -16,8 +16,6 @@ import ru.windcorp.optica.client.graphics.texture.Texture;
 
 public class RenderTarget {
 	
-	private static final int MAX_DEPTH = 1 << 16;
-	
 	private final List<AssembledFlatLayer.Clip> assembled = new ArrayList<>();
 	
 	private final Deque<Mask> maskStack = new LinkedList<>();
@@ -126,30 +124,30 @@ public class RenderTarget {
 	}
 	
 	public void drawTexture(
-			float x, float y, float width, float height,
+			int x, int y, int width, int height,
 			int color, Texture texture
 	) {
-		float depth = this.depth-- / (float) MAX_DEPTH;
+		float depth = this.depth--;
 		
 		addFaceToCurrentClip(Faces.createRectangle(
 				FlatRenderProgram.getDefault(),
 				texture,
 				createVectorFromRGBInt(color),
 				new Vec3(x, y + height, depth), // Flip
-				new Vec3(width, 0, depth),
-				new Vec3(0, -height, depth)
+				new Vec3(width, 0, 0),
+				new Vec3(0, -height, 0)
 		));
 	}
 	
 	public void drawTexture(
-			float x, float y, float width, float height,
+			int x, int y, int width, int height,
 			Texture texture
 	) {
 		drawTexture(x, y, width, height, Colors.WHITE, texture);
 	}
 	
 	public void fill(
-			float x, float y, float width, float height,
+			int x, int y, int width, int height,
 			int color
 	) {
 		drawTexture(x, y, width, height, color, null);

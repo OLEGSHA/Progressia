@@ -5,6 +5,8 @@ import ru.windcorp.optica.client.graphics.model.ShapeRenderHelper;
 
 public class FlatRenderHelper extends ShapeRenderHelper {
 	
+	private static final float MAX_DEPTH = 1 << 16;
+	
 	private final Mask mask = new Mask();
 	
 	{
@@ -58,8 +60,9 @@ public class FlatRenderHelper extends ShapeRenderHelper {
 	private void setupScreenTransform() {
 		float width = GraphicsInterface.getFramebufferWidth();
 		float height = GraphicsInterface.getFramebufferHeight();
-		
-		getTransform().translate(-1, +1, 0).scale(2 / width, -2 / height, 1);
+
+		getTransform().translate(-1, +1, 0)
+		              .scale(2 / width, -2 / height, 1 / MAX_DEPTH);
 	}
 
 }

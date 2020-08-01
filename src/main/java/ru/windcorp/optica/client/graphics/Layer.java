@@ -46,11 +46,11 @@ public abstract class Layer {
 
 	protected abstract void doRender();
 	
-	protected float getWidth() {
+	protected int getWidth() {
 		return GraphicsInterface.getFramebufferWidth();
 	}
 	
-	protected float getHeight() {
+	protected int getHeight() {
 		return GraphicsInterface.getFramebufferHeight();
 	}
 
