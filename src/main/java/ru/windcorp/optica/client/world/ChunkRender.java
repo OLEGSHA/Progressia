@@ -75,7 +75,7 @@ public class ChunkRender {
 			buildModel();
 		}
 		
-		renderer.pushWorldTransform().translate(
+		renderer.pushTransform().translate(
 				data.getX() * ChunkData.BLOCKS_PER_CHUNK,
 				data.getY() * ChunkData.BLOCKS_PER_CHUNK,
 				data.getZ() * ChunkData.BLOCKS_PER_CHUNK
@@ -83,7 +83,7 @@ public class ChunkRender {
 		
 		model.render(renderer);
 		
-		renderer.popWorldTransform();
+		renderer.popTransform();
 	}
 
 	private void buildModel() {

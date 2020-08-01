@@ -17,6 +17,8 @@
  *******************************************************************************/
 package ru.windcorp.optica.client.graphics;
 
+import ru.windcorp.optica.client.graphics.backend.GraphicsInterface;
+
 public abstract class Layer {
 	
 	private final String name;
@@ -43,5 +45,13 @@ public abstract class Layer {
 	protected abstract void initialize();
 
 	protected abstract void doRender();
+	
+	protected float getWidth() {
+		return GraphicsInterface.getFramebufferWidth();
+	}
+	
+	protected float getHeight() {
+		return GraphicsInterface.getFramebufferHeight();
+	}
 
 }

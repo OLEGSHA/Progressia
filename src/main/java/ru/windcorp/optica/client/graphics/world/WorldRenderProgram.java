@@ -96,7 +96,7 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 	@Override
 	protected void configure(ShapeRenderHelper helper) {
 		super.configure(helper);
-		worldTransformUniform.set(helper.getWorldTransform());
+		worldTransformUniform.set(helper.getTransform());
 	}
 
 	@Override

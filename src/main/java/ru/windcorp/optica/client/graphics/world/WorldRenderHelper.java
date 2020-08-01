@@ -48,7 +48,7 @@ public class WorldRenderHelper extends ShapeRenderHelper {
 	
 	@Override
 	public Mat4 getFinalTransform() {
-		return finalTransform.set(getViewTransform()).mul(getWorldTransform());
+		return finalTransform.set(getViewTransform()).mul(getTransform());
 	}
 	
 	@Override

@@ -56,7 +56,7 @@ public class WorldRender {
 	}
 	
 	public void render(ShapeRenderHelper renderer) {
-		renderer.pushWorldTransform().rotateX(-Math.PI / 2);
+		renderer.pushTransform().rotateX(-Math.PI / 2);
 		
 		for (ChunkRender chunk : getChunks()) {
 			chunk.render(renderer);

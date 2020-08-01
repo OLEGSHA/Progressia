@@ -35,6 +35,7 @@ import ru.windcorp.optica.client.graphics.backend.shaders.Program;
 import ru.windcorp.optica.client.graphics.backend.shaders.attributes.*;
 import ru.windcorp.optica.client.graphics.backend.shaders.uniforms.*;
 import ru.windcorp.optica.client.graphics.texture.Sprite;
+import ru.windcorp.optica.client.graphics.texture.Texture;
 
 public class ShapeRenderProgram extends Program {
 	
@@ -53,6 +54,7 @@ public class ShapeRenderProgram extends Program {
 			POSITIONS_ATTRIBUTE_NAME       = "inputPositions",
 			COLOR_MULTIPLER_ATTRIBUTE_NAME = "inputColorMultiplier",
 			TEXTURE_COORDS_ATTRIBUTE_NAME  = "inputTextureCoords",
+			USE_TEXTURE_UNIFORM_NAME       = "useTexture",
 			TEXTURE_SLOT_UNIFORM_NAME      = "textureSlot",
 			TEXTURE_START_UNIFORM_NAME     = "textureStart",
 			TEXTURE_SIZE_UNIFORM_NAME      = "textureSize";
@@ -61,6 +63,7 @@ public class ShapeRenderProgram extends Program {
 	private final AttributeVertexArray positionsAttribute;
 	private final AttributeVertexArray colorsAttribute;
 	private final AttributeVertexArray textureCoordsAttribute;
+	private final Uniform1Int useTextureUniform;
 	private final Uniform1Int textureSlotUniform;
 	private final Uniform2Float textureStartUniform;
 	private final Uniform2Float textureSizeUniform;
@@ -89,6 +92,9 @@ public class ShapeRenderProgram extends Program {
 		
 		this.textureCoordsAttribute =
 				getAttribute(TEXTURE_COORDS_ATTRIBUTE_NAME).asVertexArray();
+		
+		this.useTextureUniform = getUniform(USE_TEXTURE_UNIFORM_NAME)
+				.as1Int();
 		
 		this.textureSlotUniform = getUniform(TEXTURE_SLOT_UNIFORM_NAME)
 				.as1Int();
@@ -174,13 +180,20 @@ public class ShapeRenderProgram extends Program {
 	}
 
 	protected void renderFace(Face face) {
-		Sprite sprite = face.getTexture().getSprite();
+		Texture texture = face.getTexture();
 		
-		sprite.getPrimitive().bind(0);
-		textureSlotUniform.set(0);
-		
-		textureStartUniform.set(sprite.getStart());
-		textureSizeUniform.set(sprite.getSize());
+		if (texture != null) {
+			Sprite sprite = texture.getSprite();
+			
+			sprite.getPrimitive().bind(0);
+			textureSlotUniform.set(0);
+			useTextureUniform.set(1);
+			
+			textureStartUniform.set(sprite.getStart());
+			textureSizeUniform.set(sprite.getSize());
+		} else {
+			useTextureUniform.set(0);
+		}
 		
 		GL11.glDrawElements(
 				GL11.GL_TRIANGLES,

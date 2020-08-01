@@ -237,7 +237,7 @@ public class Face {
 	}
 	
 	public void setTexture(Texture texture) {
-		this.texture = Objects.requireNonNull(texture, "texture");
+		this.texture = texture;
 	}
 
 }

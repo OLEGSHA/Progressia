@@ -36,10 +36,10 @@ public abstract class Model implements WorldRenderable {
 			Mat4 transform = getTransform(i);
 			
 			try {
-				helper.pushWorldTransform().mul(transform);
+				helper.pushTransform().mul(transform);
 				part.render(helper);
 			} finally {	
-				helper.popWorldTransform();
+				helper.popTransform();
 			}
 		}
 	}

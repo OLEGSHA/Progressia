@@ -7,14 +7,20 @@ uniform sampler2D textureSlot;
 uniform vec2 textureStart;
 uniform vec2 textureSize;
 
+uniform bool useTexture;
+
 void applyTexture() {
-	gl_FragColor = texture2D(
-			textureSlot,
-			vec2(
-				varyingTextureCoords[0] * textureSize[0] + textureStart[0],
-				varyingTextureCoords[1] * textureSize[1] + textureStart[1]
-			)
-	);
+	if (!useTexture) {
+		gl_FragColor = vec4(1, 1, 1, 1);
+	} else {
+		gl_FragColor = texture2D(
+				textureSlot,
+				vec2(
+					varyingTextureCoords[0] * textureSize[0] + textureStart[0],
+					varyingTextureCoords[1] * textureSize[1] + textureStart[1]
+				)
+		);
+	}
 }
 
 void multiply(inout vec4 vector, float scalar) {

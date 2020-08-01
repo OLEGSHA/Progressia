@@ -21,6 +21,8 @@ import ru.windcorp.optica.Proxy;
 import ru.windcorp.optica.client.graphics.GUI;
 import ru.windcorp.optica.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.optica.client.graphics.backend.RenderTaskQueue;
+import ru.windcorp.optica.client.graphics.flat.FlatRenderProgram;
+import ru.windcorp.optica.client.graphics.flat.LayerTestUI;
 import ru.windcorp.optica.client.graphics.world.LayerWorld;
 import ru.windcorp.optica.client.graphics.world.WorldRenderProgram;
 
@@ -30,6 +32,7 @@ public class ClientProxy implements Proxy {
 	public void initialize() {
 		GraphicsBackend.initialize();
 		try {
+			RenderTaskQueue.waitAndInvoke(FlatRenderProgram::init);
 			RenderTaskQueue.waitAndInvoke(WorldRenderProgram::init);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -37,6 +40,7 @@ public class ClientProxy implements Proxy {
 		}
 		
 		GUI.addBottomLayer(new LayerWorld());
+		GUI.addTopLayer(new LayerTestUI());
 	}
 
 }

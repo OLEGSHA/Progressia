@@ -24,7 +24,6 @@ import glm.vec._2.Vec2;
 public class Sprite {
 	
 	private static final Vec2 ORIGIN = new Vec2(0, 0);
-	private static final Vec2 FULL_PRIMITIVE = new Vec2(1, 1);
 	
 	private final TexturePrimitive primitive;
 	
@@ -38,7 +37,10 @@ public class Sprite {
 	}
 	
 	public Sprite(TexturePrimitive primitive) {
-		this(primitive, ORIGIN, FULL_PRIMITIVE);
+		this(primitive, ORIGIN, new Vec2(
+				primitive.getWidth() / (float) primitive.getBufferWidth(),
+				primitive.getHeight() / (float) primitive.getBufferHeight()
+		));
 	}
 	
 	public TexturePrimitive getPrimitive() {

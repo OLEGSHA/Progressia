@@ -32,21 +32,21 @@ public class ShapeRenderHelper {
 		transformStack.push().identity();
 	}
 	
-	public Mat4 pushWorldTransform() {
+	public Mat4 pushTransform() {
 		Mat4 previous = transformStack.getHead();
 		return transformStack.push().set(previous);
 	}
 	
-	public void popWorldTransform() {
+	public void popTransform() {
 		transformStack.removeHead();
 	}
 	
-	public Mat4 getWorldTransform() {
+	public Mat4 getTransform() {
 		return transformStack.getHead();
 	}
 	
 	public Mat4 getFinalTransform() {
-		return getWorldTransform();
+		return getTransform();
 	}
 	
 	public void reset() {
