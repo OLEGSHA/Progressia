@@ -27,7 +27,6 @@ public class KeyEvent extends InputEvent {
 	protected int mods;
 
 	protected KeyEvent(int key, int scancode, int action, int mods) {
-		this();
 		this.key = key;
 		this.scancode = scancode;
 		this.action = action;

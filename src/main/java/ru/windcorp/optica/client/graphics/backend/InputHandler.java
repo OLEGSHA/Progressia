@@ -25,6 +25,31 @@ import ru.windcorp.optica.client.graphics.input.*;
 public class InputHandler {
 	
 	private static final EventBus INPUT_EVENT_BUS = new EventBus("Input");
+
+	// ScrollEvent Start
+
+	private static class ModifiableWheelScrollEvent extends WheelScrollEvent {
+
+		public void initialize(double xoffset, double yoffset) {
+			this.xoffset = xoffset;
+			this.yoffset = yoffset;
+		}
+
+	}
+
+	private static final ModifiableWheelScrollEvent THE_SCROLL_EVENT = new ModifiableWheelScrollEvent();
+
+	static void handleMouseWheel(
+			long window,
+			double xoffset,
+			double yoffset
+	) {
+		if (GraphicsBackend.getWindowHandle() != window) return;
+		THE_SCROLL_EVENT.initialize(xoffset, yoffset);
+		dispatch(THE_SCROLL_EVENT);
+	}
+
+	// KeyEvent Start
 	
 	private static class ModifiableKeyEvent extends KeyEvent {
 		
@@ -36,7 +61,7 @@ public class InputHandler {
 		}
 		
 	}
-	
+
 	private static final ModifiableKeyEvent THE_KEY_EVENT = new ModifiableKeyEvent();
 	
 	static void handleKeyInput(
@@ -50,6 +75,8 @@ public class InputHandler {
 		THE_KEY_EVENT.initialize(key, scancode, action, mods);
 		dispatch(THE_KEY_EVENT);
 	}
+
+	// CursorEvent Start
 	
 	private static class ModifiableCursorMoveEvent extends CursorMoveEvent {
 		

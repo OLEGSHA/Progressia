@@ -86,12 +86,14 @@ class LWJGLInitializer {
 
 	private static void setupWindowCallbacks() {
 		long handle = GraphicsBackend.getWindowHandle();
-		
+
 		glfwSetFramebufferSizeCallback(handle,
 				GraphicsBackend::onFramebufferResized);
 		
 		glfwSetKeyCallback(handle, InputHandler::handleKeyInput);
 		glfwSetCursorPosCallback(handle, InputHandler::handleMouseMoveInput);
+
+		glfwSetScrollCallback(handle, InputHandler::handleMouseWheel);
 	}
 
 }

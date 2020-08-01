@@ -39,12 +39,14 @@ public class LayerTestUI extends AssembledFlatLayer {
 	}
 	
 	private boolean flag = false;
-	
+
+	private static int width = 512 + 256;
+	private static final int height = 64;
+	private static final int border = 5;
+
 	@Override
 	protected void assemble(RenderTarget target) {
-		final int width = 512 + 256;
-		final int height = 64;
-		final int border = 5;
+
 		
 		final int boxColor = flag ? 0xEE8888 : 0xEEEE88;
 		final int borderColor = flag ? 0xAA4444 : 0xAAAA44;
