@@ -66,8 +66,8 @@ class PngLoader {
 		
 		return new Pixels(
 				extractBytes(raster),
-				width, height,
 				bufferWidth, bufferHeight,
+				width, height,
 				settings
 		);
 	}
