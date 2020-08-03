@@ -20,25 +20,49 @@ package ru.windcorp.optica.client.graphics.flat;
 import java.nio.FloatBuffer;
 
 import glm.mat._4.Mat4;
-import ru.windcorp.optica.client.graphics.backend.GraphicsInterface;
-import ru.windcorp.optica.client.graphics.model.ShapeRenderHelper;
 
-public abstract class FlatRenderHelper extends ShapeRenderHelper {
+public class DefaultFlatRenderHelper extends FlatRenderHelper {
 	
-	protected static final float MAX_DEPTH = 1 << 16;
+	private final TransformedMask transformer = new TransformedMask();
 	
-	protected final Mat4 finalTransform = new Mat4();
+	protected final MaskStack maskStack = new MaskStack();
 	
-	protected abstract FloatBuffer getMasks();
+	protected final boolean[] hasMask = new boolean[TRANSFORM_STACK_SIZE];
+	
+	public void pushMask(Mask mask, Mat4 transform) {
+		pushMask(transformer.set(mask, transform), transform);
+	}
+	
+	public void pushMask(TransformedMask mask, Mat4 transform) {
+		hasMask[transformStack.getSize()] = true;
+		pushTransform().mul(transform);
+		maskStack.pushMask(mask);
+	}
 	
 	@Override
-	public Mat4 getFinalTransform() {
-		float width = GraphicsInterface.getFramebufferWidth();
-		float height = GraphicsInterface.getFramebufferHeight();
-		
-		return finalTransform.identity().translate(-1, +1, 0)
-	              .scale(2 / width, -2 / height, 1 / MAX_DEPTH)
-	              .mul(getTransform());
+	public Mat4 pushTransform() {
+		hasMask[transformStack.getSize()] = false;
+		return super.pushTransform();
+	}
+	
+	@Override
+	public void popTransform() {
+		super.popTransform();
+
+		if (hasMask[transformStack.getSize()]) {
+			maskStack.popMask();
+		}
+	}
+
+	@Override
+	public void reset() {
+		super.reset();
+		maskStack.clear();
+	}
+	
+	@Override
+	protected FloatBuffer getMasks() {
+		return maskStack.getBuffer();
 	}
 
 }

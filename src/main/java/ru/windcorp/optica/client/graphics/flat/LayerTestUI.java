@@ -21,14 +21,17 @@ import org.lwjgl.glfw.GLFW;
 
 import com.google.common.eventbus.Subscribe;
 
+import glm.mat._4.Mat4;
 import ru.windcorp.optica.client.graphics.Colors;
 import ru.windcorp.optica.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.optica.client.graphics.input.KeyEvent;
+import ru.windcorp.optica.client.graphics.model.LambdaModel;
 import ru.windcorp.optica.client.graphics.texture.SimpleTexture;
 import ru.windcorp.optica.client.graphics.texture.Sprite;
 import ru.windcorp.optica.client.graphics.texture.Texture;
 import ru.windcorp.optica.client.graphics.texture.TextureManager;
 import ru.windcorp.optica.client.graphics.texture.TextureSettings;
+import ru.windcorp.optica.client.graphics.world.LayerWorld;
 
 public class LayerTestUI extends AssembledFlatLayer {
 
@@ -40,37 +43,46 @@ public class LayerTestUI extends AssembledFlatLayer {
 	
 	private boolean flag = false;
 
-	private static int width = 512 + 256;
-	private static final int height = 64;
-	private static final int border = 5;
+	private static final int WIDTH = 512 + 256;
+	private static final int HEIGHT = 80;
+	private static final int BORDER = 5;
 
 	@Override
 	protected void assemble(RenderTarget target) {
-
-		
 		final int boxColor = flag ? 0xEE8888 : 0xEEEE88;
 		final int borderColor = flag ? 0xAA4444 : 0xAAAA44;
 		final int boxShadowColor = flag ? 0x440000 : 0x444400;
 		
-		int x = (getWidth() - width) / 2;
-		int y = getHeight() - height;
-		
-		y -= 2*border;
+		int x = (getWidth() - WIDTH) / 2;
+		int y = getHeight() - HEIGHT - 2*BORDER;
 
-		target.fill(x + border, y + border, width, height, boxShadowColor);
-		target.fill(x - 1, y - 1, width + 2, height + 2, boxShadowColor);
-		target.fill(x, y, width, height, borderColor);
-		target.fill(x + border, y + border, width - 2*border, height - 2*border, boxColor);
+		target.fill(x + BORDER, y + BORDER, WIDTH, HEIGHT, boxShadowColor);
+		target.fill(x - 1, y - 1, WIDTH + 2, HEIGHT + 2, boxShadowColor);
+		target.fill(x, y, WIDTH, HEIGHT, borderColor);
+		target.fill(x + BORDER, y + BORDER, WIDTH - 2*BORDER, HEIGHT - 2*BORDER, boxColor);
 		
 		final int texShadow = 2;
-		final int texSize = height - 4*border;
+		final int texSize = HEIGHT - 4*BORDER;
 		
-		target.fill(x + 2*border + texShadow, y + 2*border + texShadow, texSize, texSize, Colors.BLACK);
-		target.drawTexture(x + 2*border, y + 2*border, texSize, texSize, qtex("compass"));
+		target.pushTransform(new Mat4().identity().translate(x + 2*BORDER, y + 2*BORDER, 0));
+		
+		final Texture compassBg = qtex("compass_icon");
+		final Texture compassFg = qtex("compass_icon_arrow");
+		
+		target.drawTexture(texShadow, texShadow, texSize, texSize, Colors.BLACK, compassBg);
+		target.drawTexture(0, 0, texSize, texSize, compassBg);
+		
+		target.addCustomRenderer(new LambdaModel(LambdaModel.lambdaBuilder()
+				.addDynamicPart(
+						target.createRectagle(0, 0, texSize, texSize, 0xFFFFFF, compassFg),
+						mat -> mat.translate(texSize/2, texSize/2, 0).rotateZ(-LayerWorld.tmp_the_camera.getYaw()).translate(-texSize/2, -texSize/2, 0)
+				)
+		));
+		target.popTransform();
 		
 		drawCross(target);
 	}
-	
+
 	private void drawCross(RenderTarget target) {
 		int cx = getWidth() / 2;
 		int cy = getHeight() / 2;

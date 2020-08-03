@@ -209,6 +209,26 @@ public class StashingStack<T> implements Iterable<T> {
 	}
 	
 	/**
+	 * Returns the specified element from the stack. Indexing starts from the
+	 * bottom of the stack. If the index is out of bounds, an
+	 * {@link IndexOutOfBoundsException} is thrown.
+	 * @param index index of the element to retrieve,
+	 * <tt>[0;&nbsp;{@link #getSize()})</tt>
+	 * @return the requested element
+	 * @throws IndexOutOfBoundsException if the index is negative or greater
+	 * than head
+	 */
+	public T get(int index) {
+		if (index > head) {
+			throw new IndexOutOfBoundsException(
+					"Requested index " + index + " > head " + head
+			);
+		}
+		
+		return (T) contents[index];
+	}
+	
+	/**
 	 * Removes all elements from the stack.
 	 */
 	public void removeAll() {

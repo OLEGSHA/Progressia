@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
+import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import ru.windcorp.optica.client.graphics.Colors;
 import ru.windcorp.optica.client.graphics.backend.Usage;
@@ -33,10 +35,53 @@ import ru.windcorp.optica.client.graphics.texture.Texture;
 
 public class RenderTarget {
 	
-	private final List<AssembledFlatLayer.Clip> assembled = new ArrayList<>();
+	private static final Mat4 IDENTITY = new Mat4().identity();
 	
-	private final Deque<Mask> maskStack = new LinkedList<>();
+	public static class Clip {
+		
+		private final MaskStack masks = new MaskStack();
+		private final Mat4 transform;
+		private final WorldRenderable renderable;
 	
+		public Clip(
+				Iterable<TransformedMask> masks,
+				Mat4 transform,
+				WorldRenderable renderable
+		) {
+			for (TransformedMask mask : masks) {
+				this.masks.pushMask(mask);
+			}
+			
+			this.transform = transform == null ? IDENTITY : transform;
+			this.renderable = Objects.requireNonNull(renderable, "renderable");
+		}
+		
+		public Mat4 getTransform() {
+			return transform;
+		}
+	
+		public WorldRenderable getRenderable() {
+			return renderable;
+		}
+		
+		public void render(AssembledFlatRenderHelper helper) {
+			helper.setMasks(masks.getBuffer());
+			helper.pushTransform().mul(getTransform());
+			
+			try {
+				getRenderable().render(helper);
+			} finally {
+				helper.popTransform();
+				helper.setMasks(null);
+			}
+		}
+		
+	}
+
+	private final List<Clip> assembled = new ArrayList<>();
+	
+	private final Deque<TransformedMask> maskStack = new LinkedList<>();
+	private final Deque<Mat4> transformStack = new LinkedList<>();
 	private final List<Face> currentClipFaces = new ArrayList<>();
 	
 	private int depth = 0;
@@ -45,20 +90,55 @@ public class RenderTarget {
 		reset();
 	}
 	
-	public void pushMaskStartEnd(int startX, int startY, int endX, int endY) {
-		assembleCurrentClipFromFaces();
-		maskStack.push(intersect(getMask(), startX, startY, endX, endY));
+	protected void assembleCurrentClipFromFaces() {
+		if (!currentClipFaces.isEmpty()) {
+			Face[] faces = currentClipFaces.toArray(
+					new Face[currentClipFaces.size()]
+			);
+			currentClipFaces.clear();
+			
+			Shape shape = new Shape(
+					Usage.STATIC, FlatRenderProgram.getDefault(), faces
+			);
+			
+			assembled.add(new Clip(
+					maskStack, getTransform(), shape
+			));
+		}
 	}
 	
-	private Mask intersect(
-			Mask current,
-			int startX, int startY, int endX, int endY
-	) {
-		return new Mask(
-				Math.max(startX, current.getStartX()),
-				Math.max(startY, current.getStartY()),
-				Math.min(endX, current.getEndX()),
-				Math.min(endY, current.getEndY())
+	public Clip[] assemble() {
+		assembleCurrentClipFromFaces();
+		
+		Clip[] result = assembled.toArray(
+				new Clip[assembled.size()]
+		);
+		
+		reset();
+		
+		return result;
+	}
+	
+	private void reset() {
+		maskStack.clear();
+		transformStack.clear();
+		currentClipFaces.clear();
+		assembled.clear();
+		
+		transformStack.add(new Mat4().identity());
+		depth = 0;
+	}
+	
+	public void pushMaskStartEnd(int startX, int startY, int endX, int endY) {
+		assembleCurrentClipFromFaces();
+		
+		pushTransform(new Mat4().identity().translate(startX, startY, 0));
+		
+		maskStack.push(
+				new TransformedMask(
+						new Mask(startX, startY, endX, endY),
+						getTransform()
+				)
 		);
 	}
 	
@@ -76,64 +156,32 @@ public class RenderTarget {
 	public void popMask() {
 		assembleCurrentClipFromFaces();
 		maskStack.pop();
+		popTransform();
 	}
 
-	public Mask getMask() {
+	public TransformedMask getMask() {
 		return maskStack.getFirst();
 	}
 	
-	protected void assembleCurrentClipFromFaces() {
-		if (!currentClipFaces.isEmpty()) {
-			
-			Mask mask = getMask();
-			if (mask.isEmpty()) {
-				currentClipFaces.clear();
-				return;
-			}
-			
-			Face[] faces = currentClipFaces.toArray(
-					new Face[currentClipFaces.size()]
-			);
-			currentClipFaces.clear();
-			
-			Shape shape = new Shape(
-					Usage.STATIC, FlatRenderProgram.getDefault(), faces
-			);
-			
-			assembled.add(new AssembledFlatLayer.Clip(mask, shape));
-		}
-	}
-	
-	public AssembledFlatLayer.Clip[] assemble() {
+	public void pushTransform(Mat4 transform) {
 		assembleCurrentClipFromFaces();
-		
-		AssembledFlatLayer.Clip[] result = assembled.toArray(
-				new AssembledFlatLayer.Clip[assembled.size()]
-		);
-		
-		reset();
-		
-		return result;
+		transformStack.push(getTransform().mul(transform, transform));
 	}
 	
-	private void reset() {
-		maskStack.clear();
-		currentClipFaces.clear();
-		assembled.clear();
-		
-		maskStack.add(new Mask(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE));
-		depth = 0;
+	public void popTransform() {
+		assembleCurrentClipFromFaces();
+		transformStack.pop();
+	}
+
+	public Mat4 getTransform() {
+		return transformStack.getFirst();
 	}
 
 	public void addCustomRenderer(WorldRenderable renderable) {
 		assembleCurrentClipFromFaces();
-		
-		Mask mask = getMask();
-		if (mask.isEmpty()) {
-			return;
-		}
-		
-		assembled.add(new AssembledFlatLayer.Clip(mask, renderable));
+		assembled.add(new Clip(
+				maskStack, getTransform(), renderable
+		));
 	}
 	
 	protected void addFaceToCurrentClip(Face face) {
@@ -144,16 +192,9 @@ public class RenderTarget {
 			int x, int y, int width, int height,
 			int color, Texture texture
 	) {
-		float depth = this.depth--;
-		
-		addFaceToCurrentClip(Faces.createRectangle(
-				FlatRenderProgram.getDefault(),
-				texture,
-				createVectorFromRGBInt(color),
-				new Vec3(x, y + height, depth), // Flip
-				new Vec3(width, 0, 0),
-				new Vec3(0, -height, 0)
-		));
+		addFaceToCurrentClip(
+				createRectagleFace(x, y, width, height, color, texture)
+		);
 	}
 	
 	public void drawTexture(
@@ -168,6 +209,38 @@ public class RenderTarget {
 			int color
 	) {
 		drawTexture(x, y, width, height, color, null);
+	}
+	
+	public void fill(int color) {
+		fill(
+				Integer.MIN_VALUE / 2, Integer.MIN_VALUE / 2,
+				Integer.MAX_VALUE, Integer.MAX_VALUE,
+				color
+		);
+	}
+	
+	public Face createRectagleFace(
+			int x, int y, int width, int height, int color, Texture texture
+	) {
+		float depth = this.depth--;
+		
+		return Faces.createRectangle(
+				FlatRenderProgram.getDefault(),
+				texture,
+				createVectorFromRGBInt(color),
+				new Vec3(x, y + height, depth), // Flip
+				new Vec3(width, 0, 0),
+				new Vec3(0, -height, 0)
+		);
+	}
+	
+	public Shape createRectagle(
+			int x, int y, int width, int height, int color, Texture texture
+	) {
+		return new Shape(
+				Usage.STATIC, FlatRenderProgram.getDefault(),
+				createRectagleFace(x, y, width, height, color, texture)
+		);
 	}
 	
 	private static Vec3 createVectorFromRGBInt(int rgb) {

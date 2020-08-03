@@ -35,6 +35,8 @@ import ru.windcorp.optica.common.world.WorldData;
 
 public class LayerWorld extends Layer {
 	
+	public static Camera tmp_the_camera;
+	
 	private final Camera camera = new Camera(
 			new Vec3(8, 8, 8),
 			0, 0,
@@ -59,6 +61,7 @@ public class LayerWorld extends Layer {
 
 	public LayerWorld() {
 		super("World");
+		tmp_the_camera = camera;
 	}
 	
 	@Override

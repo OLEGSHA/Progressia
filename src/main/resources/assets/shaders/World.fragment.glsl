@@ -1,4 +1,4 @@
-#version 120
+#version 140
 
 varying vec3 varyingNormals;
 

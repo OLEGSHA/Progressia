@@ -19,10 +19,12 @@ package ru.windcorp.optica.client.graphics.flat;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import java.nio.FloatBuffer;
+
 import com.google.common.collect.ObjectArrays;
 
-import ru.windcorp.optica.client.graphics.backend.shaders.uniforms.Uniform2Int;
-import ru.windcorp.optica.client.graphics.model.Face;
+import ru.windcorp.optica.client.graphics.backend.shaders.uniforms.Uniform1Int;
+import ru.windcorp.optica.client.graphics.backend.shaders.uniforms.Uniform2Float;
 import ru.windcorp.optica.client.graphics.model.Shape;
 import ru.windcorp.optica.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.optica.client.graphics.model.ShapeRenderProgram;
@@ -42,17 +44,19 @@ public class FlatRenderProgram extends ShapeRenderProgram {
 		return def;
 	}
 	
+	public static final int MASK_STACK_SIZE = 16; // As in Flat.fragment.glsl
+	
 	private static final String FLAT_VERTEX_SHADER_RESOURCE =
 			"Flat.vertex.glsl";
 	private static final String FLAT_FRAGMENT_SHADER_RESOURCE =
 			"Flat.fragment.glsl";
 	
 	private static final String
-			MASK_START_UNIFORM_NAME = "maskStart",
-			MASK_END_UNIFORM_NAME   = "maskEnd";
+			MASK_COUNT_UNIFORM_NAME = "maskCount",
+			MASKS_UNIFORM_NAME      = "masks";
 	
-	private final Uniform2Int maskStartUniform;
-	private final Uniform2Int maskEndUniform;
+	private final Uniform1Int maskCountUniform;
+	private final Uniform2Float masksUniform;
 
 	public FlatRenderProgram(
 			String[] vertexShaderResources,
@@ -63,8 +67,8 @@ public class FlatRenderProgram extends ShapeRenderProgram {
 				attachFragmentShader(fragmentShaderResources)
 		);
 		
-		this.maskStartUniform = getUniform(MASK_START_UNIFORM_NAME).as2Int();
-		this.maskEndUniform = getUniform(MASK_END_UNIFORM_NAME).as2Int();
+		this.maskCountUniform = getUniform(MASK_COUNT_UNIFORM_NAME).as1Int();
+		this.masksUniform = getUniform(MASKS_UNIFORM_NAME).as2Float();
 	}
 	
 	private static String[] attachVertexShader(String[] others) {
@@ -77,15 +81,8 @@ public class FlatRenderProgram extends ShapeRenderProgram {
 	
 	@Override
 	public void render(ShapeRenderHelper helper, Shape shape) {
-		if (((FlatRenderHelper) helper).isRenderable()) {
-			super.render(helper, shape);
-		}
-	}
-	
-	@Override
-	protected void renderFace(Face face) {
 		glDisable(GL_CULL_FACE);
-		super.renderFace(face);
+		super.render(helper, shape);
 		glEnable(GL_CULL_FACE);
 	}
 	
@@ -94,8 +91,29 @@ public class FlatRenderProgram extends ShapeRenderProgram {
 		super.configure(argHelper);
 		FlatRenderHelper helper = ((FlatRenderHelper) argHelper);
 		
-		maskStartUniform.set(helper.getStartX(), helper.getStartY());
-		maskEndUniform.set(helper.getEndX(), helper.getEndY());
+		configureMasks(helper.getMasks());
+	}
+
+	private void configureMasks(FloatBuffer masks) {
+		int pos = masks.position();
+		int limit = masks.limit();
+		int size = pos / TransformedMask.SIZE_IN_FLOATS;
+		
+		maskCountUniform.set(size);
+		
+		masks.flip();
+		masksUniform.set(masks);
+		
+//		for (int i = 0; i < pos; ++i) {
+//			if (i % TransformedMask.SIZE_IN_FLOATS == 0) {
+//				System.out.print(" | ");
+//			}
+//			System.out.print(masks.get(i) + "; ");
+//		}
+//		System.out.println();
+		
+		masks.limit(limit);
+		masks.position(pos);
 	}
 
 }

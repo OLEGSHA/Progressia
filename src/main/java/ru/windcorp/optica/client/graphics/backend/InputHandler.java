@@ -26,18 +26,19 @@ public class InputHandler {
 	
 	private static final EventBus INPUT_EVENT_BUS = new EventBus("Input");
 
-	// ScrollEvent Start
+	// ScrollEvent
 
 	private static class ModifiableWheelScrollEvent extends WheelScrollEvent {
 
 		public void initialize(double xoffset, double yoffset) {
-			this.xoffset = xoffset;
-			this.yoffset = yoffset;
+			this.xOffset = xoffset;
+			this.yOffset = yoffset;
 		}
 
 	}
 
-	private static final ModifiableWheelScrollEvent THE_SCROLL_EVENT = new ModifiableWheelScrollEvent();
+	private static final ModifiableWheelScrollEvent THE_SCROLL_EVENT =
+			new ModifiableWheelScrollEvent();
 
 	static void handleMouseWheel(
 			long window,
@@ -49,7 +50,7 @@ public class InputHandler {
 		dispatch(THE_SCROLL_EVENT);
 	}
 
-	// KeyEvent Start
+	// KeyEvent
 	
 	private static class ModifiableKeyEvent extends KeyEvent {
 		
@@ -62,7 +63,8 @@ public class InputHandler {
 		
 	}
 
-	private static final ModifiableKeyEvent THE_KEY_EVENT = new ModifiableKeyEvent();
+	private static final ModifiableKeyEvent THE_KEY_EVENT =
+			new ModifiableKeyEvent();
 	
 	static void handleKeyInput(
 			long window,
@@ -76,7 +78,7 @@ public class InputHandler {
 		dispatch(THE_KEY_EVENT);
 	}
 
-	// CursorEvent Start
+	// CursorMoveEvent
 	
 	private static class ModifiableCursorMoveEvent extends CursorMoveEvent {
 		
@@ -110,6 +112,8 @@ public class InputHandler {
 		
 		CURSOR_POSITION.set(x, y);
 	}
+	
+	// Misc
 	
 	public static double getCursorX() {
 		return CURSOR_POSITION.x;

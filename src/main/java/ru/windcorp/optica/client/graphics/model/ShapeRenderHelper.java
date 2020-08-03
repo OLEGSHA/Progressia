@@ -24,7 +24,7 @@ public class ShapeRenderHelper {
 	
 	protected static final int TRANSFORM_STACK_SIZE = 64;
 	
-	private final StashingStack<Mat4> transformStack = new StashingStack<>(
+	protected final StashingStack<Mat4> transformStack = new StashingStack<>(
 			TRANSFORM_STACK_SIZE, Mat4::new
 	);
 	

@@ -65,6 +65,14 @@ public class Mask {
 		this.endY = endY;
 	}
 	
+	public int getWidth() {
+		return getEndX() - getStartX();
+	}
+	
+	public int getHeight() {
+		return getEndY() - getStartY();
+	}
+	
 	public void set(int startX, int startY, int endX, int endY) {
 		this.startX = startX;
 		this.startY = startY;
@@ -72,8 +80,14 @@ public class Mask {
 		this.endY = endY;
 	}
 	
-	public boolean isEmpty() {
-		return startX >= endX || startY >= endY;
+	public void set(Mask copyFrom) {
+		set(copyFrom.startX, copyFrom.startY, copyFrom.endX, copyFrom.endY);
+	}
+	
+	@Override
+	public String toString() {
+		return "(" + getStartX() + "; " + getStartY() +
+				") -> (" + getEndX() + "; " + getEndY() + ")";
 	}
 
 }

@@ -15,24 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.optica.client.graphics;
+package ru.windcorp.optica.client.graphics.flat;
 
-public class Colors {
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
+
+public class MaskStack {
 	
-	public static final int
-			WHITE         = 0xFFFFFF,
-			BLACK         = 0x000000,
-			
-			GRAY_4        = 0x444444,
-			GRAY          = 0x888888,
-			GRAY_A        = 0xAAAAAA,
-			
-			DEBUG_RED     = 0xFF0000,
-			DEBUG_GREEN   = 0x00FF00,
-			DEBUG_BLUE    = 0x0000FF,
-			
-			DEBUG_CYAN    = 0x00FFFF,
-			DEBUG_MAGENTA = 0xFF00FF,
-			DEBUG_YELLOW  = 0xFFFF00;
+	private final FloatBuffer buffer = BufferUtils.createFloatBuffer(
+			FlatRenderProgram.MASK_STACK_SIZE * TransformedMask.SIZE_IN_FLOATS
+	);
+	
+	public void pushMask(TransformedMask mask) {
+		mask.writeToBuffer(buffer);
+	}
+	
+	public void popMask() {
+		buffer.position(buffer.position() - TransformedMask.SIZE_IN_FLOATS);
+	}
+	
+	public void clear() {
+		buffer.clear();
+	}
+	
+	FloatBuffer getBuffer() {
+		return buffer;
+	}
 
 }
