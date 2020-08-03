@@ -22,6 +22,10 @@ import ru.windcorp.optica.client.graphics.backend.GraphicsInterface;
 
 public abstract class CursorEvent extends InputEvent {
 	
+	public CursorEvent(double time) {
+		super(time);
+	}
+
 	public double getCursorX() {
 		return GraphicsInterface.getCursorX();
 	}

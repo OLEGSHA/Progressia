@@ -33,8 +33,8 @@ public abstract class FlatRenderHelper extends ShapeRenderHelper {
 	
 	@Override
 	public Mat4 getFinalTransform() {
-		float width = GraphicsInterface.getFramebufferWidth();
-		float height = GraphicsInterface.getFramebufferHeight();
+		float width = GraphicsInterface.getFrameWidth();
+		float height = GraphicsInterface.getFrameHeight();
 		
 		return finalTransform.identity().translate(-1, +1, 0)
 	              .scale(2 / width, -2 / height, 1 / MAX_DEPTH)

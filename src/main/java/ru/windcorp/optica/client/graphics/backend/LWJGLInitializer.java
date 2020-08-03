@@ -23,6 +23,8 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 import org.lwjgl.opengl.GL;
 
+import ru.windcorp.optica.client.graphics.GUI;
+
 class LWJGLInitializer {
 	
 	private LWJGLInitializer() {}
@@ -88,12 +90,14 @@ class LWJGLInitializer {
 		long handle = GraphicsBackend.getWindowHandle();
 
 		glfwSetFramebufferSizeCallback(handle,
-				GraphicsBackend::onFramebufferResized);
+				GraphicsBackend::onFrameResized);
 		
 		glfwSetKeyCallback(handle, InputHandler::handleKeyInput);
 		glfwSetCursorPosCallback(handle, InputHandler::handleMouseMoveInput);
 
-		glfwSetScrollCallback(handle, InputHandler::handleMouseWheel);
+		glfwSetScrollCallback(handle, InputHandler::handleWheelScroll);
+		
+		GraphicsInterface.subscribeToInputEvents(GUI.getEventSubscriber());
 	}
 
 }

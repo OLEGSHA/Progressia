@@ -18,6 +18,7 @@
 package ru.windcorp.optica.client.graphics.backend;
 
 import glm.vec._2.d.Vec2d;
+import glm.vec._2.i.Vec2i;
 
 public class GraphicsInterface {
 	
@@ -31,16 +32,20 @@ public class GraphicsInterface {
 		return Thread.currentThread() == getRenderThread();
 	}
 	
-	public static int getFramebufferWidth() {
-		return GraphicsBackend.getFramebufferWidth();
+	public static int getFrameWidth() {
+		return GraphicsBackend.getFrameWidth();
 	}
 	
-	public static int getFramebufferHeight() {
-		return GraphicsBackend.getFramebufferHeight();
+	public static int getFrameHeight() {
+		return GraphicsBackend.getFrameHeight();
+	}
+	
+	public static Vec2i getFrameSize() {
+		return GraphicsBackend.getFrameSize();
 	}
 	
 	public static float getAspectRatio() {
-		return ((float) getFramebufferWidth()) / getFramebufferHeight();
+		return ((float) getFrameWidth()) / getFrameHeight();
 	}
 	
 	public static double getTime() {

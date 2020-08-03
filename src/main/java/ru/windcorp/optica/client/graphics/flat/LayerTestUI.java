@@ -133,7 +133,7 @@ public class LayerTestUI extends AssembledFlatLayer {
 		}
 		
 		flag = event.isPress();
-		markForReassembly();
+		invalidate();
 	}
 	
 	/*

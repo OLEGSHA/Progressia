@@ -18,6 +18,9 @@
 package ru.windcorp.optica.client.graphics.backend;
 
 import static org.lwjgl.opengl.GL11.*;
+
+import glm.vec._2.i.Vec2i;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class GraphicsBackend {
@@ -26,8 +29,7 @@ public class GraphicsBackend {
 	
 	private static long windowHandle;
 	
-	private static int framebufferWidth;
-	private static int framebufferHeight;
+	private static final Vec2i FRAME_SIZE = new Vec2i();
 	
 	private static double frameLength = 1.0 / 60; // TODO do something about it
 	private static int framesRendered = 0;
@@ -56,21 +58,25 @@ public class GraphicsBackend {
 		return windowHandle;
 	}
 	
-	public static int getFramebufferWidth() {
-		return framebufferWidth;
+	public static int getFrameWidth() {
+		return FRAME_SIZE.x;
 	}
 
-	public static int getFramebufferHeight() {
-		return framebufferHeight;
+	public static int getFrameHeight() {
+		return FRAME_SIZE.y;
+	}
+	
+	public static Vec2i getFrameSize() {
+		return FRAME_SIZE;
 	}
 
-	static void onFramebufferResized(long window, int newWidth, int newHeight) {
+	static void onFrameResized(long window, int newWidth, int newHeight) {
 		if (window != windowHandle) return;
 		
-		framebufferWidth = newWidth;
-		framebufferHeight = newHeight;
+		InputHandler.handleFrameResize(newWidth, newHeight);
+		FRAME_SIZE.set(newWidth, newHeight);
 		
-		glViewport(0, 0, framebufferWidth, framebufferHeight);
+		glViewport(0, 0, newWidth, newHeight);
 	}
 
 	static void startFrame() {

@@ -26,7 +26,6 @@ public abstract class AssembledFlatLayer extends Layer {
 	
 	private final RenderTarget target = new RenderTarget();
 	
-	private boolean needsReassembly = true;
 	private RenderTarget.Clip[] clips = null;
 	
 	public AssembledFlatLayer(String name) {
@@ -39,24 +38,16 @@ public abstract class AssembledFlatLayer extends Layer {
 		
 	}
 	
-	public void markForReassembly() {
-		needsReassembly = true;
-	}
-	
-	private void doReassemble() {
+	@Override
+	protected void doValidate() {
 		assemble(target);
 		clips = target.assemble();
-		needsReassembly = false;
 	}
 	
 	protected abstract void assemble(RenderTarget target);
 	
 	@Override
 	protected void doRender() {
-		if (needsReassembly) {
-			doReassemble();
-		}
-		
 		for (RenderTarget.Clip clip : clips) {
 			clip.render(helper);
 		}

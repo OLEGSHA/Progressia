@@ -26,35 +26,16 @@ public class InputHandler {
 	
 	private static final EventBus INPUT_EVENT_BUS = new EventBus("Input");
 
-	// ScrollEvent
-
-	private static class ModifiableWheelScrollEvent extends WheelScrollEvent {
-
-		public void initialize(double xoffset, double yoffset) {
-			this.xOffset = xoffset;
-			this.yOffset = yoffset;
-		}
-
-	}
-
-	private static final ModifiableWheelScrollEvent THE_SCROLL_EVENT =
-			new ModifiableWheelScrollEvent();
-
-	static void handleMouseWheel(
-			long window,
-			double xoffset,
-			double yoffset
-	) {
-		if (GraphicsBackend.getWindowHandle() != window) return;
-		THE_SCROLL_EVENT.initialize(xoffset, yoffset);
-		dispatch(THE_SCROLL_EVENT);
-	}
-
 	// KeyEvent
 	
 	private static class ModifiableKeyEvent extends KeyEvent {
 		
+		protected ModifiableKeyEvent() {
+			super(0, 0, 0, 0, Double.NaN);
+		}
+
 		public void initialize(int key, int scancode, int action, int mods) {
+			this.setTime(GraphicsInterface.getTime());
 			this.key = key;
 			this.scancode = scancode;
 			this.action = action;
@@ -82,15 +63,18 @@ public class InputHandler {
 	
 	private static class ModifiableCursorMoveEvent extends CursorMoveEvent {
 		
+		protected ModifiableCursorMoveEvent() {
+			super(0, 0, Double.NaN);
+		}
+
 		public void initialize(double x, double y) {
-			Vec2d newPos = getNewPosition();
-			newPos.x = x;
-			newPos.y = y;
+			this.setTime(GraphicsInterface.getTime());
+			getNewPosition().set(x, y);
 		}
 		
 	}
 	
-	private static final Vec2d CURSOR_POSITION = new Vec2d().set(
+	private static final Vec2d CURSOR_POSITION = new Vec2d(
 			Double.NaN, Double.NaN
 	);
 	
@@ -113,8 +97,6 @@ public class InputHandler {
 		CURSOR_POSITION.set(x, y);
 	}
 	
-	// Misc
-	
 	public static double getCursorX() {
 		return CURSOR_POSITION.x;
 	}
@@ -126,6 +108,65 @@ public class InputHandler {
 	public static Vec2d getCursorPosition() {
 		return CURSOR_POSITION;
 	}
+
+	// ScrollEvent
+
+	private static class ModifiableWheelScrollEvent extends WheelScrollEvent {
+		
+		public ModifiableWheelScrollEvent() {
+			super(0, 0, Double.NaN);
+		}
+
+		public void initialize(double xOffset, double yOffset) {
+			this.setTime(GraphicsInterface.getTime());
+			this.getOffset().set(xOffset, yOffset);
+		}
+
+	}
+
+	private static final ModifiableWheelScrollEvent THE_WHEEL_SCROLL_EVENT =
+			new ModifiableWheelScrollEvent();
+
+	static void handleWheelScroll(
+			long window,
+			double xoffset,
+			double yoffset
+	) {
+		if (GraphicsBackend.getWindowHandle() != window) return;
+		THE_WHEEL_SCROLL_EVENT.initialize(xoffset, yoffset);
+		dispatch(THE_WHEEL_SCROLL_EVENT);
+	}
+	
+	// FrameResizeEvent
+	
+	private static class ModifiableFrameResizeEvent extends FrameResizeEvent {
+		
+		public ModifiableFrameResizeEvent() {
+			super(0, 0, Double.NaN);
+		}
+		
+		public void initialize(int width, int height) {
+			this.setTime(GraphicsInterface.getTime());
+			this.getNewSize().set(width, height);
+		}
+		
+	}
+	
+	private static final ModifiableFrameResizeEvent THE_FRAME_RESIZE_EVENT =
+			new ModifiableFrameResizeEvent();
+	
+	/*
+	 * NB: this is NOT a GLFW callback, the raw callback is in GraphicsBackend
+	 */
+	static void handleFrameResize(
+			int width,
+			int height
+	) {
+		THE_FRAME_RESIZE_EVENT.initialize(width, height);
+		dispatch(THE_FRAME_RESIZE_EVENT);
+	}
+	
+	// Misc
 	
 	private static void dispatch(InputEvent event) {
 		INPUT_EVENT_BUS.post(event);

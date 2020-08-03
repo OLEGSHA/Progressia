@@ -17,12 +17,20 @@
  *******************************************************************************/
 package ru.windcorp.optica.client.graphics.input;
 
-import ru.windcorp.optica.client.graphics.backend.GraphicsInterface;
-
 public abstract class InputEvent {
 	
+	private double time;
+	
+	public InputEvent(double time) {
+		this.time = time;
+	}
+	
+	protected void setTime(double time) {
+		this.time = time;
+	}
+	
 	public double getTime() {
-		return GraphicsInterface.getTime();
+		return time;
 	}
 	
 	public abstract InputEvent snapshot();

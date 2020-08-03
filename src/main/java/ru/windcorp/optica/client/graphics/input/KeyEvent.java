@@ -26,14 +26,15 @@ public class KeyEvent extends InputEvent {
 	protected int action;
 	protected int mods;
 
-	protected KeyEvent(int key, int scancode, int action, int mods) {
+	protected KeyEvent(
+			int key, int scancode, int action, int mods, double time
+	) {
+		super(time);
 		this.key = key;
 		this.scancode = scancode;
 		this.action = action;
 		this.mods = mods;
 	}
-	
-	protected KeyEvent() {}
 
 	public int getKey() {
 		return key;
@@ -64,32 +65,8 @@ public class KeyEvent extends InputEvent {
 	}
 	
 	@Override
-	public InputEvent snapshot() {
-		return new StaticKeyEvent(key, scancode, action, mods, getTime());
-	}
-	
-	private class StaticKeyEvent extends KeyEvent {
-		
-		private final double time;
-
-		public StaticKeyEvent(
-				int key, int scancode, int action, int mods,
-				double time
-		) {
-			super(key, scancode, action, mods);
-			this.time = time;
-		}
-		
-		@Override
-		public double getTime() {
-			return time;
-		}
-
-		@Override
-		public InputEvent snapshot() {
-			return this;
-		}
-
+	public KeyEvent snapshot() {
+		return new KeyEvent(key, scancode, action, mods, getTime());
 	}
 
 }

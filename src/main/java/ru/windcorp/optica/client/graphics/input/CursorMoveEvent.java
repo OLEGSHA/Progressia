@@ -24,12 +24,13 @@ public class CursorMoveEvent extends CursorEvent {
 	
 	private final Vec2d newPosition = new Vec2d();
 
-	protected CursorMoveEvent(double newX, double newY) {
+	protected CursorMoveEvent(double newX, double newY, double time) {
+		super(time);
 		newPosition.set(newX, newY);
 	}
 	
-	protected CursorMoveEvent(Vec2d newPos) {
-		newPosition.set(newPos.x, newPos.y);
+	protected CursorMoveEvent(Vec2d newPos, double time) {
+		this(newPos.x, newPos.y, time);
 	}
 	
 	@Override
@@ -83,8 +84,6 @@ public class CursorMoveEvent extends CursorEvent {
 		return result.set(getChangeX(), getChangeY());
 	}
 	
-	protected CursorMoveEvent() {}
-	
 	@Override
 	public CursorMoveEvent snapshot() {
 		return new StaticMouseMoveEvent(
@@ -96,7 +95,6 @@ public class CursorMoveEvent extends CursorEvent {
 	
 	private class StaticMouseMoveEvent extends CursorMoveEvent {
 		
-		private final double time;
 		private final Vec2d previousPosition = new Vec2d();
 
 		public StaticMouseMoveEvent(
@@ -104,24 +102,13 @@ public class CursorMoveEvent extends CursorEvent {
 				Vec2d newPosition,
 				double time
 		) {
-			super(newPosition);
+			super(newPosition, time);
 			this.previousPosition.set(previousPosition.x, previousPosition.y);
-			this.time = time;
 		}
 		
 		@Override
 		public Vec2d getPreviousPosition() {
 			return previousPosition;
-		}
-		
-		@Override
-		public double getTime() {
-			return time;
-		}
-
-		@Override
-		public CursorMoveEvent snapshot() {
-			return this;
 		}
 
 	}

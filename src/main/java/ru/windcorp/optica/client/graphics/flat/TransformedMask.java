@@ -106,7 +106,7 @@ public class TransformedMask {
 	}
 
 	private void flipY() {
-		float height = GraphicsInterface.getFramebufferHeight();
+		float height = GraphicsInterface.getFrameHeight();
 		
 		startXstartY.y = height - startXstartY.y;
 		startXendY.y = height - startXendY.y;

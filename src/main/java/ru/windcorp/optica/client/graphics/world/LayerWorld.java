@@ -71,6 +71,11 @@ public class LayerWorld extends Layer {
 	}
 	
 	@Override
+	protected void doValidate() {
+		// Do nothing
+	}
+	
+	@Override
 	protected void doRender() {
 		camera.apply(helper);
 		renderWorld();

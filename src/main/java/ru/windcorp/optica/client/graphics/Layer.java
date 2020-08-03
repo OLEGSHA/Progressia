@@ -17,12 +17,17 @@
  *******************************************************************************/
 package ru.windcorp.optica.client.graphics;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import ru.windcorp.optica.client.graphics.backend.GraphicsInterface;
 
 public abstract class Layer {
 	
 	private final String name;
+	
 	private boolean hasInitialized = false;
+	
+	private final AtomicBoolean isValid = new AtomicBoolean(false);
 	
 	public Layer(String name) {
 		this.name = name;
@@ -33,7 +38,9 @@ public abstract class Layer {
 		return "Layer " + name;
 	}
 	
-	public void render() {
+	void render() {
+		validate();
+		
 		if (!hasInitialized) {
 			initialize();
 			hasInitialized = true;
@@ -42,16 +49,28 @@ public abstract class Layer {
 		doRender();
 	}
 	
+	void validate() {
+		if (isValid.compareAndSet(false, true)) {
+			doValidate();
+		}
+	}
+	
+	public void invalidate() {
+		isValid.set(false);
+	}
+	
 	protected abstract void initialize();
+	
+	protected abstract void doValidate();
 
 	protected abstract void doRender();
 	
 	protected int getWidth() {
-		return GraphicsInterface.getFramebufferWidth();
+		return GraphicsInterface.getFrameWidth();
 	}
 	
 	protected int getHeight() {
-		return GraphicsInterface.getFramebufferHeight();
+		return GraphicsInterface.getFrameHeight();
 	}
 
 }

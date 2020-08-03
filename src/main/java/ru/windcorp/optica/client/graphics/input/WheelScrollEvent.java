@@ -17,75 +17,59 @@
  *******************************************************************************/
 package ru.windcorp.optica.client.graphics.input;
 
+import glm.vec._2.d.Vec2d;
+
 public class WheelScrollEvent extends WheelEvent {
+	
+	private final Vec2d offset = new Vec2d();
 
-    protected double xOffset;
-    protected double yOffset;
-
-    protected WheelScrollEvent(double xOffset, double yOffset) {
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
+    protected WheelScrollEvent(double xOffset, double yOffset, double time) {
+    	super(time);
+        this.offset.set(xOffset, yOffset);
+    }
+    
+    protected WheelScrollEvent(Vec2d offset, double time) {
+    	this(offset.x, offset.y, time);
     }
 
-    protected WheelScrollEvent() {}
-
     public boolean isUp() {
-    	return yOffset > 0;
+    	return getY() > 0;
     }
 
     public boolean isDown() {
-    	return yOffset < 0;
+    	return getY() < 0;
     }
 
     public boolean isRight() {
-    	return xOffset > 0;
+    	return getX() > 0;
     }
 
     public boolean isLeft() {
-    	return xOffset < 0;
+    	return getX() < 0;
     }
 
     public boolean hasVerticalMovement() {
-    	return yOffset != 0;
+    	return getY() != 0;
     }
 
     public boolean hasHorizontalMovement() {
-    	return xOffset != 0;
+    	return getX() != 0;
     }
 
     public double getX() {
-    	return xOffset;
+    	return getOffset().x;
     }
 
     public double getY() {
-    	return yOffset;
+    	return getOffset().y;
     }
+    
+    public Vec2d getOffset() {
+		return offset;
+	}
 
     @Override
     public WheelEvent snapshot() {
-        return new StaticWheelScrollEvent(xOffset, yOffset, getTime());
-    }
-
-    private class StaticWheelScrollEvent extends WheelScrollEvent {
-
-        private final double time;
-
-        public StaticWheelScrollEvent(
-        		double xOffset, double yOffset, double time
-        ) {
-            super(xOffset, yOffset);
-            this.time = time;
-        }
-
-        @Override
-        public double getTime() {
-        	return time;
-        }
-
-        @Override
-        public WheelEvent snapshot() {
-            return this;
-        }
-
+        return new WheelScrollEvent(getOffset(), getTime());
     }
 }

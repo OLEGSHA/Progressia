@@ -19,7 +19,11 @@ package ru.windcorp.optica.client.graphics.input;
 
 public abstract class WheelEvent extends InputEvent {
 
-    @Override
+    public WheelEvent(double time) {
+		super(time);
+	}
+
+	@Override
     public abstract WheelEvent snapshot();
     
 }

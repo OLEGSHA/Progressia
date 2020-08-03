@@ -20,6 +20,10 @@ package ru.windcorp.optica.client.graphics;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.eventbus.Subscribe;
+
+import ru.windcorp.optica.client.graphics.input.FrameResizeEvent;
+
 public class GUI {
 	
 	private static final List<Layer> LAYERS = new ArrayList<>();
@@ -42,6 +46,21 @@ public class GUI {
 		for (int i = LAYERS.size() - 1; i >= 0; --i) {
 			LAYERS.get(i).render();
 		}
+	}
+
+	public static void invalidateEverything() {
+		LAYERS.forEach(Layer::invalidate);
+	}
+	
+	public static Object getEventSubscriber() {
+		return new Object() {
+			
+			@Subscribe
+			public void onFrameResized(FrameResizeEvent event) {
+				GUI.invalidateEverything();
+			}
+			
+		};
 	}
 
 }
