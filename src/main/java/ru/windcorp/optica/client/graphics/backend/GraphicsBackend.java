@@ -106,4 +106,8 @@ public class GraphicsBackend {
 		return framesRendered;
 	}
 
+	public static void startNextLayer() {
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+
 }

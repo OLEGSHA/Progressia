@@ -15,30 +15,47 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.optica.client.graphics.input;
+package ru.windcorp.optica.client.graphics.input.bus;
 
-import glm.vec._2.d.Vec2d;
-import ru.windcorp.optica.client.graphics.backend.InputTracker;
+import ru.windcorp.optica.client.graphics.input.InputEvent;
 
-public abstract class CursorEvent extends InputEvent {
+public class Input {
 	
-	public CursorEvent(double time) {
-		super(time);
-	}
-
-	public double getCursorX() {
-		return InputTracker.getCursorX();
-	}
-
-	public double getCursorY() {
-		return InputTracker.getCursorY();
+	public static enum Target {
+		FOCUSED, HOVERED, ALL
 	}
 	
-	public Vec2d getCursorPosition() {
-		return InputTracker.getCursorPosition();
+	private InputEvent event;
+	
+	private boolean isConsumed;
+	
+	private Target target;
+
+	protected void initialize(InputEvent event, Target target) {
+		this.event = event;
+		this.target = target;
+
+		this.isConsumed = false;
 	}
 
-	@Override
-	public abstract CursorEvent snapshot();
+	public InputEvent getEvent() {
+		return event;
+	}
+
+	public boolean isConsumed() {
+		return isConsumed;
+	}
+	
+	public void setConsumed(boolean isConsumed) {
+		this.isConsumed = isConsumed;
+	}
+	
+	public void consume() {
+		setConsumed(true);
+	}
+
+	public Target getTarget() {
+		return target;
+	}
 
 }

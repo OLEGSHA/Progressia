@@ -19,15 +19,15 @@ package ru.windcorp.optica.client.graphics.world;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.google.common.eventbus.Subscribe;
-
 import glm.mat._3.Mat3;
 import glm.vec._3.Vec3;
 import ru.windcorp.optica.client.graphics.Layer;
 import ru.windcorp.optica.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.optica.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.optica.client.graphics.input.CursorMoveEvent;
+import ru.windcorp.optica.client.graphics.input.InputEvent;
 import ru.windcorp.optica.client.graphics.input.KeyEvent;
+import ru.windcorp.optica.client.graphics.input.bus.Input;
 import ru.windcorp.optica.client.world.WorldRender;
 import ru.windcorp.optica.common.block.BlockData;
 import ru.windcorp.optica.common.block.BlockDataRegistry;
@@ -67,7 +67,7 @@ public class LayerWorld extends Layer {
 	@Override
 	protected void initialize() {
 		// TODO Auto-generated method stub
-		GraphicsInterface.subscribeToInputEvents(this);
+		
 	}
 	
 	@Override
@@ -113,14 +113,28 @@ public class LayerWorld extends Layer {
 		world.render(helper);
 	}
 	
+	@Override
+	protected void handleInput(Input input) {
+		if (input.isConsumed()) return;
+		
+		InputEvent event = input.getEvent();
+		
+		if (event instanceof KeyEvent) {
+			onKeyEvent((KeyEvent) event);
+			input.consume();
+		} else if (event instanceof CursorMoveEvent) {
+			onMouseMoved((CursorMoveEvent) event);
+			input.consume();
+		}
+	}
+	
 	public Camera getCamera() {
 		return camera;
 	}
 	
 	private boolean flag = true;
 	
-	@Subscribe
-	public void onKeyEvent(KeyEvent event) {
+	private void onKeyEvent(KeyEvent event) {
 		if (event.isRepeat()) return;
 		
 		int multiplier = event.isPress() ? 1 : -1;
@@ -172,8 +186,7 @@ public class LayerWorld extends Layer {
 		}
 	}
 	
-	@Subscribe
-	public void onMouseMoved(CursorMoveEvent event) {
+	private void onMouseMoved(CursorMoveEvent event) {
 		if (!flag) return;
 		
 		final float yawScale = 0.002f;

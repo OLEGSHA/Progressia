@@ -17,9 +17,10 @@
  *******************************************************************************/
 package ru.windcorp.optica.client.graphics.backend;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.google.common.eventbus.EventBus;
 
-import glm.vec._2.d.Vec2d;
 import ru.windcorp.optica.client.graphics.input.*;
 
 public class InputHandler {
@@ -57,6 +58,24 @@ public class InputHandler {
 		if (GraphicsBackend.getWindowHandle() != window) return;
 		THE_KEY_EVENT.initialize(key, scancode, action, mods);
 		dispatch(THE_KEY_EVENT);
+
+		switch (action) {
+		case GLFW.GLFW_PRESS:
+			InputTracker.setKeyState(key, true);
+			break;
+		case GLFW.GLFW_RELEASE:
+			InputTracker.setKeyState(key, false);
+			break;
+		}
+	}
+	
+	static void handleMouseButtonInput(
+			long window,
+			int key,
+			int action,
+			int mods
+	) {
+		handleKeyInput(window, key, Integer.MAX_VALUE - key, action, mods);
 	}
 
 	// CursorMoveEvent
@@ -74,10 +93,6 @@ public class InputHandler {
 		
 	}
 	
-	private static final Vec2d CURSOR_POSITION = new Vec2d(
-			Double.NaN, Double.NaN
-	);
-	
 	private static final ModifiableCursorMoveEvent THE_CURSOR_MOVE_EVENT =
 			new ModifiableCursorMoveEvent();
 	
@@ -87,26 +102,12 @@ public class InputHandler {
 	) {
 		if (GraphicsBackend.getWindowHandle() != window) return;
 		
-		if (Double.isNaN(CURSOR_POSITION.x)) {
-			CURSOR_POSITION.set(x, y);
-		}
+		InputTracker.initializeCursorPosition(x, y);
 		
 		THE_CURSOR_MOVE_EVENT.initialize(x, y);
 		dispatch(THE_CURSOR_MOVE_EVENT);
 		
-		CURSOR_POSITION.set(x, y);
-	}
-	
-	public static double getCursorX() {
-		return CURSOR_POSITION.x;
-	}
-	
-	public static double getCursorY() {
-		return CURSOR_POSITION.y;
-	}
-	
-	public static Vec2d getCursorPosition() {
-		return CURSOR_POSITION;
+		InputTracker.getCursorPosition().set(x, y);
 	}
 
 	// ScrollEvent

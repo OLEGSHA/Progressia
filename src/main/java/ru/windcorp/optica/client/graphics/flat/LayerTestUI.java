@@ -25,6 +25,7 @@ import glm.mat._4.Mat4;
 import ru.windcorp.optica.client.graphics.Colors;
 import ru.windcorp.optica.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.optica.client.graphics.input.KeyEvent;
+import ru.windcorp.optica.client.graphics.input.bus.Input;
 import ru.windcorp.optica.client.graphics.model.LambdaModel;
 import ru.windcorp.optica.client.graphics.texture.SimpleTexture;
 import ru.windcorp.optica.client.graphics.texture.Sprite;
@@ -124,6 +125,12 @@ public class LayerTestUI extends AssembledFlatLayer {
 				2*length + thickness - 2*borderSize,
 				fillColor
 		);
+	}
+	
+	@Override
+	protected void handleInput(Input input) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Subscribe

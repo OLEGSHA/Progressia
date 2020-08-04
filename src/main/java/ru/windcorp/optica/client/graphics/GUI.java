@@ -22,11 +22,25 @@ import java.util.List;
 
 import com.google.common.eventbus.Subscribe;
 
+import ru.windcorp.optica.client.graphics.input.CursorEvent;
 import ru.windcorp.optica.client.graphics.input.FrameResizeEvent;
+import ru.windcorp.optica.client.graphics.input.InputEvent;
+import ru.windcorp.optica.client.graphics.input.KeyEvent;
+import ru.windcorp.optica.client.graphics.input.WheelEvent;
+import ru.windcorp.optica.client.graphics.input.bus.Input;
 
 public class GUI {
 	
 	private static final List<Layer> LAYERS = new ArrayList<>();
+	
+	private static class ModifiableInput extends Input {
+		@Override
+		public void initialize(InputEvent event, Target target) {
+			super.initialize(event, target);
+		}
+	}
+	
+	private static final ModifiableInput THE_INPUT = new ModifiableInput();
 	
 	private GUI() {}
 	
@@ -51,6 +65,29 @@ public class GUI {
 	public static void invalidateEverything() {
 		LAYERS.forEach(Layer::invalidate);
 	}
+
+	private static void dispatchInputEvent(InputEvent event) {
+		Input.Target target;
+		
+		if (event instanceof KeyEvent) {
+			if (((KeyEvent) event).isMouse()) {
+				target = Input.Target.HOVERED;
+			} else {
+				target = Input.Target.FOCUSED;
+			}
+		} else if (event instanceof CursorEvent) {
+			target = Input.Target.HOVERED;
+		} else if (event instanceof WheelEvent) {
+			target = Input.Target.HOVERED;
+		} else if (event instanceof FrameResizeEvent) {
+			return;
+		} else {
+			target = Input.Target.ALL;
+		}
+		
+		THE_INPUT.initialize(event, target);
+		LAYERS.forEach(l -> l.handleInput(THE_INPUT));
+	}
 	
 	public static Object getEventSubscriber() {
 		return new Object() {
@@ -58,6 +95,11 @@ public class GUI {
 			@Subscribe
 			public void onFrameResized(FrameResizeEvent event) {
 				GUI.invalidateEverything();
+			}
+			
+			@Subscribe
+			public void onInput(InputEvent event) {
+				dispatchInputEvent(event);
 			}
 			
 		};

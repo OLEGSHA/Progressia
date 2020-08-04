@@ -59,9 +59,41 @@ public class KeyEvent extends InputEvent {
 	public boolean isRepeat() {
 		return action == GLFW.GLFW_REPEAT;
 	}
+	
+	public boolean isLeftMouseButton() {
+		return key == GLFW.GLFW_MOUSE_BUTTON_LEFT;
+	}
+	
+	public boolean isRightMouseButton() {
+		return key == GLFW.GLFW_MOUSE_BUTTON_RIGHT;
+	}
+	
+	public boolean isMiddleMouseButton() {
+		return key == GLFW.GLFW_MOUSE_BUTTON_MIDDLE;
+	}
+	
+	public boolean isMouse() {
+		return Keys.isMouse(getKey());
+	}
 
 	public int getMods() {
 		return mods;
+	}
+	
+	public boolean hasShift() {
+		return (getMods() & GLFW.GLFW_MOD_SHIFT) != 0;
+	}
+	
+	public boolean hasControl() {
+		return (getMods() & GLFW.GLFW_MOD_CONTROL) != 0;
+	}
+	
+	public boolean hasAlt() {
+		return (getMods() & GLFW.GLFW_MOD_ALT) != 0;
+	}
+	
+	public boolean hasSuper() {
+		return (getMods() & GLFW.GLFW_MOD_SUPER) != 0;
 	}
 	
 	@Override

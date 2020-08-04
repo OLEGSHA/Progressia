@@ -15,30 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.optica.client.graphics.input;
+package ru.windcorp.optica.client.graphics.gui.event;
 
-import glm.vec._2.d.Vec2d;
-import ru.windcorp.optica.client.graphics.backend.InputTracker;
+import ru.windcorp.optica.client.graphics.gui.Component;
 
-public abstract class CursorEvent extends InputEvent {
+public class HoverEvent extends ComponentEvent {
 	
-	public CursorEvent(double time) {
-		super(time);
-	}
+	private final boolean newState;
 
-	public double getCursorX() {
-		return InputTracker.getCursorX();
-	}
-
-	public double getCursorY() {
-		return InputTracker.getCursorY();
+	public HoverEvent(Component component, boolean newState) {
+		super(component);
+		this.newState = newState;
 	}
 	
-	public Vec2d getCursorPosition() {
-		return InputTracker.getCursorPosition();
+	public boolean isNowHovered() {
+		return newState;
 	}
-
-	@Override
-	public abstract CursorEvent snapshot();
+	
+	public boolean wasHovered() {
+		return !isNowHovered();
+	}
 
 }

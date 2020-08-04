@@ -17,7 +17,6 @@
  *******************************************************************************/
 package ru.windcorp.optica.client.graphics.backend;
 
-import glm.vec._2.d.Vec2d;
 import glm.vec._2.i.Vec2i;
 
 public class GraphicsInterface {
@@ -64,16 +63,8 @@ public class GraphicsInterface {
 		InputHandler.register(listener);
 	}
 	
-	public static double getCursorX() {
-		return InputHandler.getCursorX();
-	}
-	
-	public static double getCursorY() {
-		return InputHandler.getCursorY();
-	}
-	
-	public static Vec2d getCursorPosition() {
-		return InputHandler.getCursorPosition();
+	public static void startNextLayer() {
+		GraphicsBackend.startNextLayer();
 	}
 
 }

@@ -15,30 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.optica.client.graphics.input;
+package ru.windcorp.optica.client.graphics.gui;
 
-import glm.vec._2.d.Vec2d;
-import ru.windcorp.optica.client.graphics.backend.InputTracker;
+public class Size {
 
-public abstract class CursorEvent extends InputEvent {
-	
-	public CursorEvent(double time) {
-		super(time);
+	public int width, height;
+
+	public Size(int width, int height) {
+		this.width = width;
+		this.height = height;
 	}
-
-	public double getCursorX() {
-		return InputTracker.getCursorX();
-	}
-
-	public double getCursorY() {
-		return InputTracker.getCursorY();
-	}
-	
-	public Vec2d getCursorPosition() {
-		return InputTracker.getCursorPosition();
-	}
-
-	@Override
-	public abstract CursorEvent snapshot();
 
 }

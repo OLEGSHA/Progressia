@@ -93,6 +93,9 @@ class LWJGLInitializer {
 				GraphicsBackend::onFrameResized);
 		
 		glfwSetKeyCallback(handle, InputHandler::handleKeyInput);
+		glfwSetMouseButtonCallback(handle,
+				InputHandler::handleMouseButtonInput);
+		
 		glfwSetCursorPosCallback(handle, InputHandler::handleMouseMoveInput);
 
 		glfwSetScrollCallback(handle, InputHandler::handleWheelScroll);

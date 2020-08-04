@@ -20,6 +20,7 @@ package ru.windcorp.optica.client.graphics;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ru.windcorp.optica.client.graphics.backend.GraphicsInterface;
+import ru.windcorp.optica.client.graphics.input.bus.Input;
 
 public abstract class Layer {
 	
@@ -39,6 +40,8 @@ public abstract class Layer {
 	}
 	
 	void render() {
+		GraphicsInterface.startNextLayer();
+		
 		validate();
 		
 		if (!hasInitialized) {
@@ -64,6 +67,8 @@ public abstract class Layer {
 	protected abstract void doValidate();
 
 	protected abstract void doRender();
+	
+	protected abstract void handleInput(Input input);
 	
 	protected int getWidth() {
 		return GraphicsInterface.getFrameWidth();

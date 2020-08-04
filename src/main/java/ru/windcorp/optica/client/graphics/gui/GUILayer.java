@@ -15,30 +15,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.optica.client.graphics.input;
+package ru.windcorp.optica.client.graphics.gui;
 
-import glm.vec._2.d.Vec2d;
-import ru.windcorp.optica.client.graphics.backend.InputTracker;
+import ru.windcorp.optica.client.graphics.flat.AssembledFlatLayer;
+import ru.windcorp.optica.client.graphics.flat.RenderTarget;
+import ru.windcorp.optica.client.graphics.input.bus.Input;
 
-public abstract class CursorEvent extends InputEvent {
+public abstract class GUILayer extends AssembledFlatLayer {
 	
-	public CursorEvent(double time) {
-		super(time);
-	}
+	private final Component root = new Component("Root") {
+		protected void handleReassemblyRequest() {
+			GUILayer.this.invalidate();
+		}
+	};
 
-	public double getCursorX() {
-		return InputTracker.getCursorX();
-	}
-
-	public double getCursorY() {
-		return InputTracker.getCursorY();
+	public GUILayer(String name, Layout layout) {
+		super(name);
+		getRoot().setLayout(layout);
 	}
 	
-	public Vec2d getCursorPosition() {
-		return InputTracker.getCursorPosition();
+	public Component getRoot() {
+		return root;
 	}
 
 	@Override
-	public abstract CursorEvent snapshot();
+	protected void assemble(RenderTarget target) {
+		getRoot().setBounds(0, 0, getWidth(), getHeight());
+		getRoot().invalidate();
+		getRoot().assemble(target);
+	}
+
+	@Override
+	protected void handleInput(Input input) {
+		getRoot().dispatchInput(input);
+	}
 
 }
