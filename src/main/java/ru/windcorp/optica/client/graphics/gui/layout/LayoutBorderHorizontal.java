@@ -19,9 +19,9 @@ package ru.windcorp.optica.client.graphics.gui.layout;
 
 import static java.lang.Math.max;
 
+import glm.vec._2.i.Vec2i;
 import ru.windcorp.optica.client.graphics.gui.Component;
 import ru.windcorp.optica.client.graphics.gui.Layout;
-import ru.windcorp.optica.client.graphics.gui.Size;
 
 public class LayoutBorderHorizontal implements Layout {
 	
@@ -43,25 +43,25 @@ public class LayoutBorderHorizontal implements Layout {
 	public void layout(Component c) {
 		int left = 0, right = 0;
 		
-		Size childSize;
+		Vec2i childSize;
 		
 		synchronized (c.getChildren()) { 
 			for (Component child : c.getChildren()) {
 				if (child.getLayoutHint() == LEFT) {
 					childSize = child.getPreferredSize();
-					left = childSize.width + margin;
+					left = childSize.x + margin;
 					child.setBounds(
 							c.getX(),
 							c.getY(),
-							childSize.width,
+							childSize.x,
 							c.getHeight());
 				} else if (child.getLayoutHint() == RIGHT) {
 					childSize = child.getPreferredSize();
-					right = childSize.width + margin;
+					right = childSize.x + margin;
 					child.setBounds(
-							c.getX() + c.getWidth() - childSize.width,
+							c.getX() + c.getWidth() - childSize.x,
 							c.getY(),
-							childSize.width,
+							childSize.x,
 							c.getHeight());
 				}
 			}
@@ -80,11 +80,11 @@ public class LayoutBorderHorizontal implements Layout {
 	}
 
 	@Override
-	public Size calculatePreferredSize(Component c) {
-		Size result = new Size(0, 0);
+	public Vec2i calculatePreferredSize(Component c) {
+		Vec2i result = new Vec2i(0, 0);
 		int left = 0, right = 0;
 		
-		Size childSize;
+		Vec2i childSize;
 		
 		synchronized (c.getChildren()) { 
 			for (Component child : c.getChildren()) {
@@ -92,22 +92,22 @@ public class LayoutBorderHorizontal implements Layout {
 				if (child.getLayoutHint() instanceof String) {
 					
 					if (child.getLayoutHint() == LEFT) {
-						left = max(left, childSize.width + margin);
-						result.height = max(result.height, childSize.height);
+						left = max(left, childSize.x + margin);
+						result.y = max(result.y, childSize.y);
 						continue;
 					} else if (child.getLayoutHint() == RIGHT) {
-						right = max(right, childSize.width + margin);
-						result.height = max(result.height, childSize.height);
+						right = max(right, childSize.x + margin);
+						result.y = max(result.y, childSize.y);
 						continue;
 					}
 					
 				}
 
-				result.width = max(result.width, childSize.width);
-				result.height = max(result.height, childSize.height);
+				result.x = max(result.x, childSize.x);
+				result.y = max(result.y, childSize.y);
 			}
 		}
-		result.width += left + right;
+		result.x += left + right;
 		
 		return result;
 	}

@@ -19,9 +19,9 @@ package ru.windcorp.optica.client.graphics.gui.layout;
 
 import static java.lang.Math.max;
 
+import glm.vec._2.i.Vec2i;
 import ru.windcorp.optica.client.graphics.gui.Component;
 import ru.windcorp.optica.client.graphics.gui.Layout;
-import ru.windcorp.optica.client.graphics.gui.Size;
 
 public class LayoutVertical implements Layout {
 	
@@ -50,7 +50,7 @@ public class LayoutVertical implements Layout {
 		synchronized (c.getChildren()) {
 			for (Component child : c.getChildren()) {
 				
-				height = child.getPreferredSize().height;
+				height = child.getPreferredSize().y;
 				child.setBounds(x, y, c.getWidth() - 2 * margin, height);
 				y += gap + height;
 				
@@ -59,25 +59,25 @@ public class LayoutVertical implements Layout {
 	}
 
 	@Override
-	public Size calculatePreferredSize(Component c) {
-		Size size = new Size(0, 0);
-		Size childPreferredSize;
+	public Vec2i calculatePreferredSize(Component c) {
+		Vec2i size = new Vec2i(0, 0);
+		Vec2i childPreferredSize;
 		
 		synchronized (c.getChildren()) {
 			for (int i = 0; i < c.getChildren().size(); ++i) {
 				childPreferredSize = c.getChild(i).getPreferredSize();
 				
 				if (i > 0) {
-					size.height += gap;
+					size.y += gap;
 				}
 				
-				size.width = max(size.width, childPreferredSize.width);
-				size.height += childPreferredSize.height;
+				size.x = max(size.x, childPreferredSize.x);
+				size.y += childPreferredSize.y;
 			}
 		}
 		
-		size.width += 2 * margin;
-		size.height += 2 * margin;
+		size.x += 2 * margin;
+		size.y += 2 * margin;
 		
 		return size;
 	}

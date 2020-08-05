@@ -20,9 +20,9 @@ package ru.windcorp.optica.client.graphics.gui.layout;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+import glm.vec._2.i.Vec2i;
 import ru.windcorp.optica.client.graphics.gui.Component;
 import ru.windcorp.optica.client.graphics.gui.Layout;
-import ru.windcorp.optica.client.graphics.gui.Size;
 
 public class LayoutAlign implements Layout {
 
@@ -47,19 +47,19 @@ public class LayoutAlign implements Layout {
 	public void layout(Component c) {
 		c.getChildren().forEach(child -> {
 			
-			Size size = child.getPreferredSize();
+			Vec2i size = child.getPreferredSize();
 			
 			int cWidth = c.getWidth() - 2 * margin;
 			int cHeight = c.getHeight() - 2 * margin;
 			
-			size.width = min(size.width, cWidth);
-			size.height = min(size.height, cHeight);
+			size.x = min(size.x, cWidth);
+			size.y = min(size.y, cHeight);
 			
 			child.setBounds(
 					c.getX() +
-						(int) ((cWidth - size.width) * alignX) + margin,
+						(int) ((cWidth - size.x) * alignX) + margin,
 					c.getY() +
-						(int) ((cHeight - size.height) * alignY) + margin,
+						(int) ((cHeight - size.y) * alignY) + margin,
 					size
 			);
 			
@@ -67,18 +67,18 @@ public class LayoutAlign implements Layout {
 	}
 
 	@Override
-	public Size calculatePreferredSize(Component c) {
-		Size result = new Size(0, 0);
+	public Vec2i calculatePreferredSize(Component c) {
+		Vec2i result = new Vec2i(0, 0);
 		
 		c.getChildren().stream()
 			.map(child -> child.getPreferredSize())
 			.forEach(size -> {
-				result.width = max(size.width, result.width);
-				result.height = max(size.height, result.height);
+				result.x = max(size.x, result.x);
+				result.y = max(size.y, result.y);
 			});
 		
-		result.width += 2 * margin;
-		result.height += 2 * margin;
+		result.x += 2 * margin;
+		result.y += 2 * margin;
 		
 		return result;
 	}

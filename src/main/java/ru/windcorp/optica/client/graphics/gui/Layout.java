@@ -17,10 +17,12 @@
  *******************************************************************************/
 package ru.windcorp.optica.client.graphics.gui;
 
+import glm.vec._2.i.Vec2i;
+
 public interface Layout {
 	
 	public void layout(Component c);
 	
-	public Size calculatePreferredSize(Component c);
+	public Vec2i calculatePreferredSize(Component c);
 
 }

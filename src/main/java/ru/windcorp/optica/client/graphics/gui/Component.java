@@ -25,6 +25,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.google.common.eventbus.EventBus;
 
+import glm.vec._2.i.Vec2i;
 import ru.windcorp.optica.client.graphics.backend.InputTracker;
 import ru.windcorp.optica.client.graphics.flat.RenderTarget;
 import ru.windcorp.optica.client.graphics.gui.event.ChildAddedEvent;
@@ -54,7 +55,7 @@ public class Component extends Named {
 	
 	private boolean valid = false;
 	
-	private Size preferredSize = null;
+	private Vec2i preferredSize = null;
 	
 	private Object layoutHint = null;
 	private Layout layout = null;
@@ -185,8 +186,8 @@ public class Component extends Named {
 		return this;
 	}
 	
-	public Component setSize(Size size) {
-		return setSize(size.width, size.height);
+	public Component setSize(Vec2i size) {
+		return setSize(size.x, size.y);
 	}
 	
 	public synchronized Component setBounds(int x, int y, int width, int height) {
@@ -195,8 +196,8 @@ public class Component extends Named {
 		return this;
 	}
 	
-	public Component setBounds(int x, int y, Size size) {
-		return setBounds(x, y, size.width, size.height);
+	public Component setBounds(int x, int y, Vec2i size) {
+		return setBounds(x, y, size.x, size.y);
 	}
 	
 	public boolean isValid() {
@@ -235,7 +236,7 @@ public class Component extends Named {
 		}
 	}
 	
-	public synchronized Size getPreferredSize() {
+	public synchronized Vec2i getPreferredSize() {
 		if (preferredSize != null) {
 			return preferredSize;
 		}
@@ -248,16 +249,16 @@ public class Component extends Named {
 			}
 		}
 		
-		return new Size(0, 0);
+		return new Vec2i(0, 0);
 	}
 	
-	public synchronized Component setPreferredSize(Size preferredSize) {
+	public synchronized Component setPreferredSize(Vec2i preferredSize) {
 		this.preferredSize = preferredSize;
 		return this;
 	}
 	
 	public Component setPreferredSize(int width, int height) {
-		return setPreferredSize(new Size(width, height));
+		return setPreferredSize(new Vec2i(width, height));
 	}
 	
 	public Layout getLayout() {

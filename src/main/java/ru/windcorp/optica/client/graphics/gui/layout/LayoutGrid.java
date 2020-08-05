@@ -19,9 +19,9 @@ package ru.windcorp.optica.client.graphics.gui.layout;
 
 import java.util.Arrays;
 
+import glm.vec._2.i.Vec2i;
 import ru.windcorp.optica.client.graphics.gui.Component;
 import ru.windcorp.optica.client.graphics.gui.Layout;
-import ru.windcorp.optica.client.graphics.gui.Size;
 
 public class LayoutGrid implements Layout {
 	
@@ -30,10 +30,10 @@ public class LayoutGrid implements Layout {
 		int[] rows = new int[10];
 		boolean isSummed = false;
 		
-		void add(int column, int row, Size size) {
+		void add(int column, int row, Vec2i size) {
 			if (isSummed) throw new IllegalStateException("Already summed");
-			columns = update(columns, column, size.width);
-			rows = update(rows, row, size.height);
+			columns = update(columns, column, size.x);
+			rows = update(rows, row, size.y);
 		}
 
 		private int[] update(int[] array, int index, int value) {
@@ -48,19 +48,19 @@ public class LayoutGrid implements Layout {
 			return array;
 		}
 		
-		Size getBounds() {
+		Vec2i getBounds() {
 			if (isSummed) throw new IllegalStateException("Already summed");
-			Size result = new Size(2*margin - gap, 2*margin - gap);
+			Vec2i result = new Vec2i(2*margin - gap, 2*margin - gap);
 			
 			for (int i = 0; i < columns.length; ++i) {
 				if (columns[i] != 0) {
-					result.width += columns[i] + gap;
+					result.x += columns[i] + gap;
 				}
 			}
 			
 			for (int i = 0; i < rows.length; ++i) {
 				if (rows[i] != 0) {
-					result.height += rows[i] + gap;
+					result.y += rows[i] + gap;
 				}
 			}
 			
@@ -138,7 +138,7 @@ public class LayoutGrid implements Layout {
 	}
 
 	@Override
-	public Size calculatePreferredSize(Component c) {
+	public Vec2i calculatePreferredSize(Component c) {
 		synchronized (c.getChildren()) {
 			return calculateGrid(c).getBounds();
 		}

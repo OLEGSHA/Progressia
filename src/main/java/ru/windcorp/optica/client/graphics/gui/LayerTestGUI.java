@@ -19,6 +19,7 @@ package ru.windcorp.optica.client.graphics.gui;
 
 import com.google.common.eventbus.Subscribe;
 
+import glm.vec._2.i.Vec2i;
 import ru.windcorp.optica.client.graphics.Colors;
 import ru.windcorp.optica.client.graphics.flat.RenderTarget;
 import ru.windcorp.optica.client.graphics.gui.event.HoverEvent;
@@ -30,7 +31,7 @@ public class LayerTestGUI extends GUILayer {
 	private static class DebugComponent extends Component {
 		private final int color;
 		
-		public DebugComponent(String name, Size size, int color) {
+		public DebugComponent(String name, Vec2i size, int color) {
 			super(name);
 			this.color = color;
 			
@@ -68,7 +69,7 @@ public class LayerTestGUI extends GUILayer {
 	public LayerTestGUI() {
 		super("LayerTestGui", new LayoutAlign(1, 0.75, 5));
 		
-		getRoot().addChild(new DebugComponent("Alex", new Size(200, 100), 0x44FF44));
+		getRoot().addChild(new DebugComponent("Alex", new Vec2i(200, 100), 0x44FF44));
 	}
 
 }
