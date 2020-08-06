@@ -23,53 +23,49 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import ru.windcorp.optica.common.util.BinUtil;
+import ru.windcorp.optica.common.util.CoordinatePacker;
 
-public class BinUtilTest {
+public class CoordinatePacker3Test {
 	
 	@Test
 	public void cornerCases() {
-		test(1);
-		test(2);
-		test(3);
-		test(4);
-		test(7);
-		test(8);
-		test(9);
-		
-		test(1023);
-		test(1024);
-		test(1025);
-		
-		test((1 << 16) - 1);
-		test(1 << 16);
-		test((1 << 16) + 1);
+		check(0, 0, 0);
+		check(0, 0, 42);
+		check(0, 42, 0);
+		check(42, 0, 0);
+		check(1, 1, 1);
+		check(-1, -1, -1);
+		check(1 << 19, 1 << 19, 1 << 19);
+		check((1 << 20) - 1, (1 << 20) - 1, (1 << 20) - 1);
+		check(-(1 << 19), -(1 << 19), -(1 << 19));
 	}
 	
 	@Test
-	public void random() {
+	public void randomValues() {
 		Random random = new Random(0);
+		int bound = 1 << 20;
 		
-		for (int i = 0; i < 10000; ++i) {
-			test(random.nextInt((1 << 30) - 2) + 1);
+		for (int i = 0; i < 1000000; ++i) {
+			check(
+					random.nextInt(bound) * (random.nextBoolean() ? 1 : -1),
+					random.nextInt(bound) * (random.nextBoolean() ? 1 : -1),
+					random.nextInt(bound) * (random.nextBoolean() ? 1 : -1)
+			);
 		}
 	}
-	
-	void test(int x) {
-		assertEquals("Round, x = " + x, referenceRound(x), BinUtil.roundToGreaterPowerOf2(x));
-		assertEquals("Greater, x = " + x, referenceGreater(x), BinUtil.closestGreaterPowerOf2(x));
-	}
-	
-	int referenceGreater(int x) {
-		int p;
-		for (p = 1; p <= x; p *= 2);
-		return p;
-	}
-	
-	int referenceRound(int x) {
-		int p;
-		for (p = 1; p < x; p *= 2);
-		return p;
+
+	private void check(int a, int b, int c) {
+		
+		long packed = CoordinatePacker.pack3IntsIntoLong(a, b, c);
+		
+		int unpackedA = CoordinatePacker.unpack3IntsFromLong(packed, 0);
+		int unpackedB = CoordinatePacker.unpack3IntsFromLong(packed, 1);
+		int unpackedC = CoordinatePacker.unpack3IntsFromLong(packed, 2);
+		
+		assertEquals(a, unpackedA);
+		assertEquals(b, unpackedB);
+		assertEquals(c, unpackedC);
+		
 	}
 
 }

@@ -31,5 +31,9 @@ public class BinUtil {
 	public static int roundToGreaterPowerOf2(int x) {
 		return closestGreaterPowerOf2(x - 1);
 	}
+	
+	public static boolean isPowerOf2(int x) {
+		return (x > 0) && ((x & (x - 1)) == 0);
+	}
 
 }

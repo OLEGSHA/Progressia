@@ -23,49 +23,50 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import ru.windcorp.optica.common.util.CoordinatePacker;
+import ru.windcorp.optica.common.util.BinUtil;
 
-public class CoordinatePackerTest {
+public class BinUtilIsPowerOf2Test {
 	
 	@Test
 	public void cornerCases() {
-		check(0, 0, 0);
-		check(0, 0, 42);
-		check(0, 42, 0);
-		check(42, 0, 0);
-		check(1, 1, 1);
-		check(-1, -1, -1);
-		check(1 << 19, 1 << 19, 1 << 19);
-		check((1 << 20) - 1, (1 << 20) - 1, (1 << 20) - 1);
-		check(-(1 << 19), -(1 << 19), -(1 << 19));
+		test(-1);
+		test(0);
+		test(1);
+		
+		test(15);
+		test(16);
+		test(17);
+		
+		test(1 << 30);
+		test(Integer.MAX_VALUE);
+		test(Integer.MIN_VALUE);
 	}
 	
 	@Test
-	public void randomValues() {
+	public void random() {
 		Random random = new Random(0);
-		int bound = 1 << 20;
 		
-		for (int i = 0; i < 1000000; ++i) {
-			check(
-					random.nextInt(bound) * (random.nextBoolean() ? 1 : -1),
-					random.nextInt(bound) * (random.nextBoolean() ? 1 : -1),
-					random.nextInt(bound) * (random.nextBoolean() ? 1 : -1)
-			);
+		for (int x = 0; x < 10000; ++x) {
+			test(x);
+		}
+		
+		for (int i = 0; i < 10000; ++i) {
+			test(random.nextInt());
 		}
 	}
-
-	private void check(int a, int b, int c) {
+	
+	void test(int x) {
+		assertEquals("Round, x = " + x, referenceIsPowerOf2(x), BinUtil.isPowerOf2(x));
+	}
+	
+	boolean referenceIsPowerOf2(int x) {
+		for (int power = 1; power > 0; power *= 2) {
+			if (x == power) {
+				return true;
+			}
+		}
 		
-		long packed = CoordinatePacker.pack3IntsIntoLong(a, b, c);
-		
-		int unpackedA = CoordinatePacker.unpack3IntsFromLong(packed, 0);
-		int unpackedB = CoordinatePacker.unpack3IntsFromLong(packed, 1);
-		int unpackedC = CoordinatePacker.unpack3IntsFromLong(packed, 2);
-		
-		assertEquals(a, unpackedA);
-		assertEquals(b, unpackedB);
-		assertEquals(c, unpackedC);
-		
+		return false;
 	}
 
 }

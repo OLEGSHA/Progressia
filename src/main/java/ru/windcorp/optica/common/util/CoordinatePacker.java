@@ -22,6 +22,9 @@ public class CoordinatePacker {
 	private static final int BITS_3_INTS_INTO_LONG;
 	private static final long MASK_3_INTS_INTO_LONG;
 	
+	private static final int BITS_2_INTS_INTO_LONG;
+	private static final long MASK_2_INTS_INTO_LONG;
+	
 	static {
 		BITS_3_INTS_INTO_LONG = 64 / 3;
 		
@@ -37,7 +40,10 @@ public class CoordinatePacker {
 		 *                \_________/ - BITS_3_INTS_INTO_LONG ones - WIN
 		 */
 		
-		MASK_3_INTS_INTO_LONG = (1 << BITS_3_INTS_INTO_LONG) - 1;
+		MASK_3_INTS_INTO_LONG = (1l << BITS_3_INTS_INTO_LONG) - 1;
+		
+		BITS_2_INTS_INTO_LONG = 64 / 2;
+		MASK_2_INTS_INTO_LONG = (1l << BITS_2_INTS_INTO_LONG) - 1;
 	}
 	
 	public static long pack3IntsIntoLong(int a, int b, int c) {
@@ -62,6 +68,25 @@ public class CoordinatePacker {
 		if ((result & signMask) != 0) {
 			result |= ~MASK_3_INTS_INTO_LONG;
 		}
+		
+		return result;
+	}
+	
+	public static long pack2IntsIntoLong(int a, int b) {
+		return
+				((a & MASK_2_INTS_INTO_LONG) << (1 * BITS_2_INTS_INTO_LONG)) |
+				((b & MASK_2_INTS_INTO_LONG) << (0 * BITS_2_INTS_INTO_LONG));
+	}
+	
+	public static int unpack2IntsFromLong(long packed, int index) {
+		if (index < 0 || index >= 2) {
+			throw new IllegalArgumentException("Invalid index " + index);
+		}
+		
+		int result = (int) (
+				(packed >>> ((1 - index) * BITS_2_INTS_INTO_LONG))
+				& MASK_2_INTS_INTO_LONG
+		);
 		
 		return result;
 	}
