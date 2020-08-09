@@ -1,4 +1,4 @@
-#version 140
+#version 120
 
 varying vec3 varyingColorMultiplier;
 varying vec2 varyingTextureCoords;

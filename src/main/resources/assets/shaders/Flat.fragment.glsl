@@ -1,8 +1,19 @@
-#version 140
+#version 120
 
 uniform int maskCount;
 
 uniform vec2 masks[3 * 2 * 16];
+
+mat2 inverse(mat2 matrix) {
+	mat2 result = mat2(
+		+matrix[1][1], -matrix[1][0],
+		-matrix[0][1], +matrix[0][0]
+	);
+	
+	float det = matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1];
+	
+	return result / det;
+}
 
 bool isInMaskPrimitive(int primitive) {
 	vec2 origin = masks[3 * primitive + 0];

@@ -1,4 +1,4 @@
-#version 140
+#version 120
 
 attribute vec3 inputNormals;
 varying vec3 varyingNormals;

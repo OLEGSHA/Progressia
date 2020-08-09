@@ -44,7 +44,7 @@ public class CombinedShader extends Shader {
 	}
 	
 	private static String combine(String[] resources) {
-		StringBuilder accumulator = new StringBuilder("#version 140\n");
+		StringBuilder accumulator = new StringBuilder("#version 120\n");
 		
 		for (String resourceName : resources) {
 			Resource resource = getShaderResource(resourceName);
