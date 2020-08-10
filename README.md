@@ -1,4 +1,4 @@
-# Optica
+# Progressia
 A free, open source sandbox survival game currently in early development.
 
 ## Contributing
@@ -7,12 +7,12 @@ For now, contact @Javapony in Telegram for details. Contributing is completely a
 
 ## Building
 
-1. `$ git clone https://github.com/OLEGSHA/Optica.git`
+1. `$ git clone https://github.com/OLEGSHA/Progressia.git`
 2. `$ gradlew build`
 
 ### Additional setup for Eclipse IDE
 
-If you have Buildship plugin installed, use File - Import - Gradle - Existing Gradle Project. Main class is `ru.windcorp.optica.client.OpticaClientMain`.
+If you have Buildship plugin installed, use File - Import - Gradle - Existing Gradle Project. Main class is `ru.windcorp.progressia.client.ProgressiaClientMain`.
 
 Alternatively do the following:
 
@@ -31,8 +31,8 @@ plugins {
 
 1. Open the project with File - Open Project
 2. Press button 'Add configuration...' and open 'Application' in templates list
-3. Add 'ru.windcorp.optica.client.OpticaClientMain' in Main class text field
-4. Choose 'Optica.main' in 'Use classpath of module' drop-down list
+3. Add 'ru.windcorp.progressia.client.ProgressiaClientMain' in Main class text field
+4. Choose 'Progressia.main' in 'Use classpath of module' drop-down list
 5. Click 'Create configuration' and press Apply
 
 ## Libraries

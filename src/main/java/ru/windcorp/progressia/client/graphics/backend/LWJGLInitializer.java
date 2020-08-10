@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Optica
+ * Progressia
  * Copyright (C) 2020  Wind Corporation
  *
  * This program is free software: you can redistribute it and/or modify
@@ -56,7 +56,7 @@ class LWJGLInitializer {
 		glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
 		glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 		
-		long handle = glfwCreateWindow(900, 900, "OpticaTest", NULL, NULL);
+		long handle = glfwCreateWindow(900, 900, "ProgressiaTest", NULL, NULL);
 		
 		// TODO Check that handle != NULL
 
