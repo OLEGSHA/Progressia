@@ -20,38 +20,39 @@ package ru.windcorp.progressia.client.world.renders;
 import java.util.HashMap;
 import java.util.Map;
 
+import ru.windcorp.progressia.client.graphics.texture.Atlases;
+import ru.windcorp.progressia.client.graphics.texture.Atlases.AtlasGroup;
 import ru.windcorp.progressia.client.graphics.texture.SimpleTexture;
-import ru.windcorp.progressia.client.graphics.texture.Sprite;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.client.graphics.texture.TextureManager;
-import ru.windcorp.progressia.client.graphics.texture.TextureSettings;
 import ru.windcorp.progressia.client.world.renders.bro.BlockRenderOpaqueCube;
+import ru.windcorp.progressia.common.resource.ResourceManager;
 
 public class BlockRenders {
 	
 	private static final Map<String, BlockRender> BLOCK_RENDERS =
 			new HashMap<>();
 	
-	private static final TextureSettings TEXTURE_SETTINGS =
-			new TextureSettings(false);
+	private static final AtlasGroup BLOCKS_ATLAS_GROUP =
+			new AtlasGroup("Blocks", 1 << 6);
 	
-	private static Texture grassTop = qtex("grass_top");
-	private static Texture grassSide = qtex("grass_side");
-	private static Texture dirtT = qtex("grass_bottom");
-	private static Texture stoneT = qtex("stone");
-	private static Texture glassT = qtex("glass_clear");
+	private static Texture grassTop = getTexture("grass_top");
+	private static Texture grassSide = getTexture("grass_side");
+	private static Texture dirt = getTexture("grass_bottom");
+	private static Texture stone = getTexture("stone");
+	private static Texture glass = getTexture("glass_clear");
+	private static Texture compass = getTexture("compass");
 
 	private BlockRenders() {}
 	
-	static {
-		register(new BlockRenderOpaqueCube("Test", "Grass", grassTop, dirtT, grassSide, grassSide, grassSide, grassSide));
-		register(new BlockRenderOpaqueCube("Test", "Dirt", dirtT, dirtT, dirtT, dirtT, dirtT, dirtT));
-		register(new BlockRenderOpaqueCube("Test", "Stone", stoneT, stoneT, stoneT, stoneT, stoneT, stoneT));
+	public static void registerTest() {
+		register(new BlockRenderOpaqueCube("Test", "Grass", grassTop, dirt, grassSide, grassSide, grassSide, grassSide));
+		register(new BlockRenderOpaqueCube("Test", "Dirt", dirt, dirt, dirt, dirt, dirt, dirt));
+		register(new BlockRenderOpaqueCube("Test", "Stone", stone, stone, stone, stone, stone, stone));
 
-		register(new BlockRenderOpaqueCube("Test", "Compass", qtex("compass"), qtex("compass"), qtex("side_north"), qtex("side_south"), qtex("side_east"), qtex("side_west")));
+		register(new BlockRenderOpaqueCube("Test", "Compass", compass, compass, getTexture("side_north"), getTexture("side_south"), getTexture("side_east"), getTexture("side_west")));
 		
 		register(new BlockRenderNone("Test", "Air"));
-		register(new BlockRenderTransparentCube("Test", "Glass", glassT, glassT, glassT, glassT, glassT, glassT));
+		register(new BlockRenderTransparentCube("Test", "Glass", glass, glass, glass, glass, glass, glass));
 	}
 	
 	public static BlockRender get(String name) {
@@ -62,10 +63,13 @@ public class BlockRenders {
 		BLOCK_RENDERS.put(blockRender.getId(), blockRender);
 	}
 	
-	private static Texture qtex(String name) {
-		return new SimpleTexture(new Sprite(
-				TextureManager.load(name, TEXTURE_SETTINGS)
-		));
+	public static Texture getTexture(String name) {
+		return new SimpleTexture(
+				Atlases.getSprite(
+						ResourceManager.getTextureResource("blocks/" + name),
+						BLOCKS_ATLAS_GROUP
+				)
+		);
 	}
 
 }

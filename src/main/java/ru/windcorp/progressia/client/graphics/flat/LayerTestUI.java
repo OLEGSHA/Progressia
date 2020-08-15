@@ -27,11 +27,8 @@ import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.model.LambdaModel;
-import ru.windcorp.progressia.client.graphics.texture.SimpleTexture;
-import ru.windcorp.progressia.client.graphics.texture.Sprite;
+import ru.windcorp.progressia.client.graphics.texture.SimpleTextures;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.client.graphics.texture.TextureManager;
-import ru.windcorp.progressia.client.graphics.texture.TextureSettings;
 import ru.windcorp.progressia.client.graphics.world.LayerWorld;
 
 public class LayerTestUI extends AssembledFlatLayer {
@@ -67,8 +64,8 @@ public class LayerTestUI extends AssembledFlatLayer {
 		
 		target.pushTransform(new Mat4().identity().translate(x + 2*BORDER, y + 2*BORDER, 0));
 		
-		final Texture compassBg = qtex("compass_icon");
-		final Texture compassFg = qtex("compass_icon_arrow");
+		final Texture compassBg = SimpleTextures.get("compass_icon");
+		final Texture compassFg = SimpleTextures.get("compass_icon_arrow");
 		
 		target.drawTexture(texShadow, texShadow, texSize, texSize, Colors.BLACK, compassBg);
 		target.drawTexture(0, 0, texSize, texSize, compassBg);
@@ -141,19 +138,6 @@ public class LayerTestUI extends AssembledFlatLayer {
 		
 		flag = event.isPress();
 		invalidate();
-	}
-	
-	/*
-	 * TMP texture loader
-	 */
-	
-	private static final TextureSettings TEXTURE_SETTINGS =
-			new TextureSettings(false);
-	
-	private static Texture qtex(String name) {
-		return new SimpleTexture(new Sprite(
-				TextureManager.load(name, TEXTURE_SETTINGS)
-		));
 	}
 
 }

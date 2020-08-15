@@ -20,6 +20,8 @@ package ru.windcorp.progressia.client.graphics.texture;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 
+import java.util.Arrays;
+
 import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker;
 import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker.OpenGLDeletable;
 
@@ -27,11 +29,20 @@ public class TexturePrimitive implements OpenGLDeletable {
 	
 	private static final int NOT_LOADED = -1;
 	
+	private static int[] currentlyBound = new int[32];
+	static {
+		Arrays.fill(currentlyBound, NOT_LOADED);
+	}
+	
 	private int handle = NOT_LOADED;
-	private Pixels pixels;
+	private TextureData pixels;
 
-	public TexturePrimitive(Pixels pixels) {
+	public TexturePrimitive(TextureData pixels) {
 		this.pixels = pixels;
+	}
+	
+	public TextureData getData() {
+		return pixels;
 	}
 	
 	public int getBufferWidth() {
@@ -59,10 +70,16 @@ public class TexturePrimitive implements OpenGLDeletable {
 			load();
 		}
 		
+		if (currentlyBound[slot] == handle) {
+			return;
+		}
+		
 		int code = GL_TEXTURE0 + slot;
 		
 		glActiveTexture(code);
 		glBindTexture(GL_TEXTURE_2D, handle);
+		
+		currentlyBound[slot] = handle;
 	}
 
 	protected void load() {

@@ -25,22 +25,17 @@ import java.io.Reader;
 import com.google.common.io.CharStreams;
 
 import ru.windcorp.progressia.Progressia;
+import ru.windcorp.progressia.common.util.Named;
 
-public class Resource {
-	
-	private final String name;
+public class Resource extends Named {
 	
 	public Resource(String name) {
-		this.name = name;
-	}
-	
-	public String getName() {
-		return name;
+		super(name);
 	}
 	
 	public InputStream getInputStream() {
 		// TODO Do proper resource lookup
-		return Progressia.class.getClassLoader().getResourceAsStream(name);
+		return Progressia.class.getClassLoader().getResourceAsStream(getName());
 	}
 	
 	public Reader getReader() {

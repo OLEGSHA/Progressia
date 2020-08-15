@@ -22,7 +22,7 @@ import static org.lwjgl.opengl.GL12.*;
 
 import java.nio.ByteBuffer;
 
-class Pixels {
+class TextureData {
 	
 	private final ByteBuffer data;
 	
@@ -34,7 +34,7 @@ class Pixels {
 	private final int width;
 	private final int height;
 	
-	public Pixels(
+	public TextureData(
 			ByteBuffer data,
 			int bufferWidth, int bufferHeight,
 			int width, int height,

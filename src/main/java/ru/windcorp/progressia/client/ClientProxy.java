@@ -24,8 +24,10 @@ import ru.windcorp.progressia.client.graphics.backend.RenderTaskQueue;
 import ru.windcorp.progressia.client.graphics.flat.FlatRenderProgram;
 import ru.windcorp.progressia.client.graphics.flat.LayerTestUI;
 import ru.windcorp.progressia.client.graphics.gui.LayerTestGUI;
+import ru.windcorp.progressia.client.graphics.texture.Atlases;
 import ru.windcorp.progressia.client.graphics.world.LayerWorld;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
+import ru.windcorp.progressia.client.world.renders.BlockRenders;
 
 public class ClientProxy implements Proxy {
 
@@ -39,6 +41,9 @@ public class ClientProxy implements Proxy {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		BlockRenders.registerTest();
+		Atlases.loadAllAtlases();
 		
 		GUI.addBottomLayer(new LayerWorld());
 		GUI.addTopLayer(new LayerTestUI());

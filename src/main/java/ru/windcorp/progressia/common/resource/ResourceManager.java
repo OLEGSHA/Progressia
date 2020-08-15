@@ -22,5 +22,11 @@ public class ResourceManager {
 	public static Resource getResource(String name) {
 		return new Resource(name);
 	}
+	
+	public static Resource getTextureResource(String name) {
+		return getResource("assets/textures/" + name + ".png");
+	}
+	
+	private ResourceManager() {}
 
 }
