@@ -190,7 +190,7 @@ public class LayerWorld extends Layer {
 		if (!flag) return;
 		
 		final float yawScale = 0.002f;
-		final float pitchScale = yawScale;
+		final float pitchScale = -yawScale;
 		
 		camera.turn(
 				(float) (event.getChangeY() * pitchScale),

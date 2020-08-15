@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Progressia
+ * Optica
  * Copyright (C) 2020  Wind Corporation
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36,8 +36,8 @@ public abstract class FlatRenderHelper extends ShapeRenderHelper {
 		float width = GraphicsInterface.getFrameWidth();
 		float height = GraphicsInterface.getFrameHeight();
 		
-		return finalTransform.identity().translate(-1, +1, 0)
-	              .scale(2 / width, -2 / height, 1 / MAX_DEPTH)
+		return finalTransform.identity().translate(-1, -1, 0)
+	              .scale(2 / width, 2 / height, 1 / MAX_DEPTH)
 	              .mul(getTransform());
 	}
 

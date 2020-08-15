@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Progressia
+ * Optica
  * Copyright (C) 2020  Wind Corporation
  *
  * This program is free software: you can redistribute it and/or modify
@@ -52,9 +52,9 @@ public class LayerTestUI extends AssembledFlatLayer {
 		final int boxShadowColor = flag ? 0x440000 : 0x444400;
 		
 		int x = (getWidth() - WIDTH) / 2;
-		int y = getHeight() - HEIGHT - 2*BORDER;
+		int y = 2*BORDER;
 
-		target.fill(x + BORDER, y + BORDER, WIDTH, HEIGHT, boxShadowColor);
+		target.fill(x + BORDER, y - BORDER, WIDTH, HEIGHT, boxShadowColor);
 		target.fill(x - 1, y - 1, WIDTH + 2, HEIGHT + 2, boxShadowColor);
 		target.fill(x, y, WIDTH, HEIGHT, borderColor);
 		target.fill(x + BORDER, y + BORDER, WIDTH - 2*BORDER, HEIGHT - 2*BORDER, boxColor);
@@ -67,7 +67,7 @@ public class LayerTestUI extends AssembledFlatLayer {
 		final Texture compassBg = SimpleTextures.get("compass_icon");
 		final Texture compassFg = SimpleTextures.get("compass_icon_arrow");
 		
-		target.drawTexture(texShadow, texShadow, texSize, texSize, Colors.BLACK, compassBg);
+		target.drawTexture(texShadow, -texShadow, texSize, texSize, Colors.BLACK, compassBg);
 		target.drawTexture(0, 0, texSize, texSize, compassBg);
 		
 		target.addCustomRenderer(new LambdaModel(LambdaModel.lambdaBuilder()

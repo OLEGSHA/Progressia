@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Progressia
+ * Optica
  * Copyright (C) 2020  Wind Corporation
  *
  * This program is free software: you can redistribute it and/or modify
@@ -228,9 +228,9 @@ public class RenderTarget {
 				FlatRenderProgram.getDefault(),
 				texture,
 				createVectorFromRGBInt(color),
-				new Vec3(x, y + height, depth), // Flip
+				new Vec3(x, y, depth),
 				new Vec3(width, 0, 0),
-				new Vec3(0, -height, 0)
+				new Vec3(0, height, 0)
 		);
 	}
 	

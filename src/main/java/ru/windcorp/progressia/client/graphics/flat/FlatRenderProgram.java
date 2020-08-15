@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Progressia
+ * Optica
  * Copyright (C) 2020  Wind Corporation
  *
  * This program is free software: you can redistribute it and/or modify
@@ -103,14 +103,6 @@ public class FlatRenderProgram extends ShapeRenderProgram {
 		
 		masks.flip();
 		masksUniform.set(masks);
-		
-//		for (int i = 0; i < pos; ++i) {
-//			if (i % TransformedMask.SIZE_IN_FLOATS == 0) {
-//				System.out.print(" | ");
-//			}
-//			System.out.print(masks.get(i) + "; ");
-//		}
-//		System.out.println();
 		
 		masks.limit(limit);
 		masks.position(pos);

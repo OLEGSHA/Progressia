@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Progressia
+ * Optica
  * Copyright (C) 2020  Wind Corporation
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,6 @@ import java.nio.FloatBuffer;
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._4.Vec4;
-import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 
 public class TransformedMask {
 	
@@ -92,8 +91,6 @@ public class TransformedMask {
 		transform.mul(startXendY);
 		transform.mul(endXstartY);
 		transform.mul(endXendY);
-
-		flipY();
 	}
 
 	private void ensureTemporaryVariablesExist() {
@@ -103,15 +100,6 @@ public class TransformedMask {
 			endXstartY = new Vec4();
 			endXendY = new Vec4();
 		}
-	}
-
-	private void flipY() {
-		float height = GraphicsInterface.getFrameHeight();
-		
-		startXstartY.y = height - startXstartY.y;
-		startXendY.y = height - startXendY.y;
-		endXstartY.y = height - endXstartY.y;
-		endXendY.y = height - endXendY.y;
 	}
 
 	private void setFields() {

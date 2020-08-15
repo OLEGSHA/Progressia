@@ -101,6 +101,7 @@ public class InputHandler {
 			double x, double y
 	) {
 		if (GraphicsBackend.getWindowHandle() != window) return;
+		y = GraphicsInterface.getFrameHeight() - y; // Flip y axis
 		
 		InputTracker.initializeCursorPosition(x, y);
 		
