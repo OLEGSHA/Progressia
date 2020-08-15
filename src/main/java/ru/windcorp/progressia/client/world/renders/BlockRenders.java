@@ -33,7 +33,7 @@ public class BlockRenders {
 			new HashMap<>();
 	
 	private static final AtlasGroup BLOCKS_ATLAS_GROUP =
-			new AtlasGroup("Blocks", 1 << 6);
+			new AtlasGroup("Blocks", 1 << 12);
 	
 	private static Texture grassTop = getTexture("grass_top");
 	private static Texture grassSide = getTexture("grass_side");
