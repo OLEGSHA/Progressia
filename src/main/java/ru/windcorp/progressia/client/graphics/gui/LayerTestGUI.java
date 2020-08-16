@@ -22,8 +22,10 @@ import com.google.common.eventbus.Subscribe;
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
+import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.event.HoverEvent;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
+import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 
 public class LayerTestGUI extends GUILayer {
@@ -69,7 +71,16 @@ public class LayerTestGUI extends GUILayer {
 	public LayerTestGUI() {
 		super("LayerTestGui", new LayoutAlign(1, 0.75, 5));
 		
-		getRoot().addChild(new DebugComponent("Alex", new Vec2i(200, 100), 0x44FF44));
+		Panel panel = new Panel("Alex", new LayoutVertical(5));
+		
+		panel.addChild(new DebugComponent("Bravo", new Vec2i(200, 100), 0x44FF44));
+		
+		Component charlie = new DebugComponent("Charlie", null, 0x4444FF);
+		charlie.setLayout(new LayoutAlign());
+		charlie.addChild(new Label("Delta", new Font(), "BABCBABCBABC"));
+		panel.addChild(charlie);
+		
+		getRoot().addChild(panel);
 	}
 
 }

@@ -232,7 +232,7 @@ public class Component extends Named {
 			
 			valid = true;
 		} catch (Exception e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -245,7 +245,7 @@ public class Component extends Named {
 			try {
 				return getLayout().calculatePreferredSize(this);
 			} catch (Exception e) {
-				throw new RuntimeException();
+				throw new RuntimeException(e);
 			}
 		}
 		
@@ -517,7 +517,7 @@ public class Component extends Named {
 				break;
 			}
 		} catch (Exception e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -610,7 +610,7 @@ public class Component extends Named {
 		try {
 			assembleSelf(target);
 		} catch (Exception e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 		
 		assembleChildren(target);
@@ -618,7 +618,7 @@ public class Component extends Named {
 		try {
 			postAssembleSelf(target);
 		} catch (Exception e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 	

@@ -23,6 +23,8 @@ import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.RenderTaskQueue;
 import ru.windcorp.progressia.client.graphics.flat.FlatRenderProgram;
 import ru.windcorp.progressia.client.graphics.flat.LayerTestUI;
+import ru.windcorp.progressia.client.graphics.font.TestTypeface;
+import ru.windcorp.progressia.client.graphics.font.Typefaces;
 import ru.windcorp.progressia.client.graphics.gui.LayerTestGUI;
 import ru.windcorp.progressia.client.graphics.texture.Atlases;
 import ru.windcorp.progressia.client.graphics.world.LayerWorld;
@@ -37,6 +39,7 @@ public class ClientProxy implements Proxy {
 		try {
 			RenderTaskQueue.waitAndInvoke(FlatRenderProgram::init);
 			RenderTaskQueue.waitAndInvoke(WorldRenderProgram::init);
+			RenderTaskQueue.waitAndInvoke(() -> Typefaces.setDefault(new TestTypeface()));
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

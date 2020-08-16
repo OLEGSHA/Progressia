@@ -49,5 +49,11 @@ public abstract class GUILayer extends AssembledFlatLayer {
 	protected void handleInput(Input input) {
 		getRoot().dispatchInput(input);
 	}
+	
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		getRoot().invalidate();
+	}
 
 }

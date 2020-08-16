@@ -82,7 +82,7 @@ public class TexturePrimitive implements OpenGLDeletable {
 		currentlyBound[slot] = handle;
 	}
 
-	protected void load() {
+	public void load() {
 		if (isLoaded()) return;
 		
 		handle = pixels.load();
