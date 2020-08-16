@@ -54,5 +54,13 @@ public class Sprite {
 	public Vec2 getSize() {
 		return size;
 	}
+	
+	public int getWidth() {
+		return (int) (size.x * primitive.getBufferWidth());
+	}
+	
+	public int getHeight() {
+		return (int) (size.y * primitive.getBufferHeight());
+	}
 
 }

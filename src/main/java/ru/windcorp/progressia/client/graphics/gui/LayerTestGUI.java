@@ -75,9 +75,9 @@ public class LayerTestGUI extends GUILayer {
 		
 		panel.addChild(new DebugComponent("Bravo", new Vec2i(200, 100), 0x44FF44));
 		
-		Component charlie = new DebugComponent("Charlie", null, 0x4444FF);
+		Component charlie = new DebugComponent("Charlie", null, 0x222222);
 		charlie.setLayout(new LayoutAlign());
-		charlie.addChild(new Label("Delta", new Font(), "BABCBABCBABC"));
+		charlie.addChild(new Label("Delta", new Font().deriveItalic().deriveBold().withAlign(0.5f).withColor(0xCCBB44).deriveShadow().deriveUnderlined().deriveStrikethru(), "BABCB\nABCBABC"));
 		panel.addChild(charlie);
 		
 		getRoot().addChild(panel);
