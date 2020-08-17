@@ -27,7 +27,7 @@ public class Label extends Component {
 
 	public void update() {
 		currentText = contents.get();
-		currentSize = font.getSize(currentText, Integer.MAX_VALUE, null).mul(4);
+		currentSize = font.getSize(currentText, Integer.MAX_VALUE, null).mul(2);
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class Label extends Component {
 	protected void assembleSelf(RenderTarget target) {
 		target.pushTransform(
 				new Mat4().identity().translate(getX(), getY(), -1000)
-				.scale(4)
+				.scale(2)
 		);
 		
 		target.addCustomRenderer(font.assemble(currentText, Integer.MAX_VALUE));

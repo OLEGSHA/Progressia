@@ -2,6 +2,7 @@ package ru.windcorp.progressia.client.graphics.texture;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -23,16 +24,34 @@ public class TextureLoader {
 		int bufferWidth = BinUtil.roundToGreaterPowerOf2(width);
 		int bufferHeight = BinUtil.roundToGreaterPowerOf2(height);
 		
+		WritableRaster raster = TextureUtils.createRaster(
+				bufferWidth, bufferHeight
+		);
+		
+		BufferedImage canvas = TextureUtils.createCanvas(raster);
+
+		Graphics2D g = canvas.createGraphics();
+		
+		try {
+			g.setColor(TextureUtils.CANVAS_BACKGROUND);
+			g.fillRect(0, 0, bufferWidth, bufferHeight);
+			g.drawImage(
+					readResult,
+					0, 0, width, height,
+					0, height, width, 0, // Flip the image
+					null
+			);
+		} finally {
+			g.dispose();
+		}
+		
 		TextureDataEditor result = new TextureDataEditor(
 				bufferWidth, bufferHeight, width, height, settings
 		);
 		
-		Graphics2D g = result.graphics;
-		g.drawImage(
-				readResult,
-				0, 0, width, height,
-				0, height, width, 0, // Flip the image
-				null
+		result.draw(
+				TextureUtils.extractBytes(raster), bufferWidth,
+				0, 0, 0, 0, width, height
 		);
 		
 		return result;

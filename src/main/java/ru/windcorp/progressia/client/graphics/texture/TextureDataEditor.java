@@ -1,175 +1,159 @@
 package ru.windcorp.progressia.client.graphics.texture;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import static ru.windcorp.progressia.client.graphics.texture.TextureUtils.BYTES_PER_PIXEL;
 
-public class TextureDataEditor implements AutoCloseable {
+import java.nio.ByteBuffer;
+
+import org.lwjgl.BufferUtils;
+
+public class TextureDataEditor {
 	
-	protected final BufferedImage image;
-	protected Graphics2D graphics;
-	
-	private final int contentWidth;
-	private final int contentHeight;
-	private final TextureSettings settings;
-	
-	protected TextureDataEditor(
-			BufferedImage image,
-			int contentWidth, int contentHeight,
-			TextureSettings settings
-	) {
-		this.image = image;
-		this.contentWidth = contentWidth;
-		this.contentHeight = contentHeight;
-		this.settings = settings;
-		
-		startEditing();
-	}
+	protected final TextureData data;
 	
 	public TextureDataEditor(
 			int bufferWidth, int bufferHeight,
 			int contentWidth, int contentHeight,
 			TextureSettings settings
 	) {
-		this(
-				TextureUtils.createCanvas(
-						TextureUtils.createRaster(bufferWidth, bufferHeight)
-				),
+		this.data = new TextureData(
+				BufferUtils.createByteBuffer(bufferWidth * bufferHeight * 4),
+				bufferWidth, bufferHeight,
 				contentWidth, contentHeight,
 				settings
 		);
 	}
 	
-	public TextureDataEditor(TextureData buffer) {
-		this(
-			createImage(buffer),
-			buffer.getContentWidth(),
-			buffer.getContentHeight(),
-			buffer.getSettings()
-		);
-	}
-
-	private static BufferedImage createImage(TextureData buffer) {
-		return TextureUtils.createCanvas(
-				TextureUtils.createRaster(
-						buffer.getData(),
-						buffer.getBufferWidth(),
-						buffer.getBufferHeight()
-				)
-		);
-	}
-
-	public void startEditing() {
-		if (isEditable()) {
-			throw new IllegalStateException("This object is already editable");
-		}
-		
-		this.graphics = this.image.createGraphics();
-		
-		graphics.setColor(TextureUtils.CANVAS_BACKGROUND);
-		graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
-		
-		graphics.clipRect(0, 0, contentWidth, contentHeight);
+	public TextureDataEditor(TextureData data) {
+		this.data = data;
 	}
 	
-	public void finishEditing() {
-		checkEditability();
-		this.graphics.dispose();
-		this.graphics = null;
+	public TextureData getData() {
+		return data;
 	}
 	
-	@Override
-	public void close() {
-		if (isEditable()) {
-			finishEditing();
-		}
-	}
-	
-	public boolean isEditable() {
-		return this.graphics != null;
-	}
-	
-	protected void checkEditability() {
-		if (!isEditable()) {
-			throw new IllegalStateException("This object is not editable");
-		}
+	protected ByteBuffer getBuffer() {
+		return getData().getData();
 	}
 	
 	public TextureData createSnapshot() {
+		TextureData t = getData();
+		
+		ByteBuffer fromBuffer = getBuffer();
+		ByteBuffer toBuffer = BufferUtils.createByteBuffer(
+				fromBuffer.capacity()
+		);
+		
+		copy(fromBuffer, 0, fromBuffer.capacity(), toBuffer);
+		toBuffer.clear();
+		
 		return new TextureData(
-				TextureUtils.extractBytes(image.getRaster()),
-				image.getWidth(), image.getHeight(),
-				contentWidth, contentHeight,
-				settings
+				toBuffer,
+				t.getBufferWidth(), t.getBufferHeight(),
+				t.getContentWidth(), t.getContentHeight(),
+				t.getSettings()
 		);
 	}
 	
 	public TextureData createSnapshot(TextureData output) {
-		TextureUtils.extractBytes(image.getRaster(), output.getData());
+		ByteBuffer src = getBuffer();
+		ByteBuffer dst = output.getData();
+		
+		int position = dst.position();
+		int limit = dst.limit();
+		
+		try {
+			copy(src, 0, src.capacity(), output.getData());
+		} finally {
+			dst.limit(dst.capacity()).position(position).limit(limit);
+		}
+		
 		return output;
-	}
-	
-	public TextureData toStatic() {
-		close();
-		return createSnapshot();
-	}
-
-	public TextureData toStatic(TextureData data) {
-		close();
-		return createSnapshot(data);
 	}
 
 	public int getBufferWidth() {
-		return image.getWidth();
+		return getData().getBufferWidth();
 	}
 	
 	public int getBufferHeight() {
-		return image.getHeight();
+		return getData().getBufferHeight();
 	}
 	
 	public int getContentWidth() {
-		return contentWidth;
+		return getData().getContentWidth();
 	}
 	
 	public int getContentHeight() {
-		return contentHeight;
+		return getData().getContentHeight();
 	}
 	
 	public TextureSettings getSettings() {
-		return settings;
+		return getData().getSettings();
 	}
 	
 	public void draw(
-			BufferedImage source,
+			ByteBuffer src,
+			int srcWidth,
 			int srcX, int srcY,
 			int dstX, int dstY,
 			int width, int height
 	) {
-		checkEditability();
+		ByteBuffer dst = getBuffer();
 		
-		graphics.drawImage(
-				source,
-				dstX, dstY,
-				dstX + width, dstY + height,
-				srcX, srcY,
-				srcX + width, srcY + height,
-				null
+		int position = src.position();
+		int limit = src.limit();
+		
+		try {
+			
+			for (int line = 0; line < height; ++line) {
+				src.limit(src.capacity());
+				
+				position(dst, dstX, dstY + line, getBufferWidth());
+				position(src, srcX, srcY + line, srcWidth);
+				setLength(src, width);
+				
+				dst.put(src);
+
+				dst.clear();
+			}
+			
+		} finally {
+			src.limit(src.capacity()).position(position).limit(limit);
+		}
+	}
+	
+	public void draw(
+			TextureData source,
+			int srcX, int srcY,
+			int dstX, int dstY,
+			int width, int height
+	) {
+		draw(
+				source.getData(),
+				source.getBufferWidth(),
+				srcX, srcY, dstX, dstY, width, height
 		);
 	}
 	
 	public void draw(
-			BufferedImage source,
+			TextureData source,
 			int dstX, int dstY
 	) {
-		draw(source, 0, 0, dstX, dstY, source.getWidth(), source.getHeight());
+		draw(
+				source, 0, 0, dstX, dstY,
+				source.getContentWidth(), source.getContentHeight()
+		);
 	}
-	
+
 	public void draw(
 			TextureDataEditor source,
 			int srcX, int srcY,
 			int dstX, int dstY,
 			int width, int height
 	) {
-		draw(source.image, srcX, srcY, dstX, dstY, width, height);
+		draw(
+				source.getData(),
+				srcX, srcY, dstX, dstY, width, height
+		);
 	}
 	
 	public void draw(
@@ -180,6 +164,38 @@ public class TextureDataEditor implements AutoCloseable {
 				source, 0, 0, dstX, dstY,
 				source.getContentWidth(), source.getContentHeight()
 		);
+	}
+	
+	public void setPixel(int x, int y, int color) {
+		ByteBuffer dst = getBuffer();
+		
+		position(dst, x, y, getBufferWidth());
+		dst.putInt(color);
+		dst.clear();
+	}
+	
+	private static void position(ByteBuffer buffer, int x, int y, int width) {
+		buffer.position((y * width + x) * BYTES_PER_PIXEL);
+	}
+	
+	private static void setLength(ByteBuffer buffer, int length) {
+		buffer.limit(buffer.position() + length * BYTES_PER_PIXEL);
+	}
+	
+	private static void copy(
+			ByteBuffer src,
+			int srcStart, int srcEnd,
+			ByteBuffer dst
+	) {
+		int position = src.position();
+		int limit = src.limit();
+		
+		try {
+			src.limit(src.capacity()).position(srcStart).limit(srcEnd);
+			dst.put(src);
+		} finally {
+			src.limit(src.capacity()).position(position).limit(limit);
+		}
 	}
 
 }

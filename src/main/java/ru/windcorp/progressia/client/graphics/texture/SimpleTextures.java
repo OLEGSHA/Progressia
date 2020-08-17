@@ -22,16 +22,12 @@ public class SimpleTextures {
 	}
 	
 	private static Texture load(Resource resource) {
-		try (
-				TextureDataEditor data =
-						TextureLoader.loadPixels(resource, SETTINGS)
-		) {
+		try {
+			TextureDataEditor data =
+					TextureLoader.loadPixels(resource, SETTINGS);
+			
 			return new SimpleTexture(
-					new Sprite(
-							new TexturePrimitive(
-									data.toStatic()
-							)
-					)
+					new Sprite(new TexturePrimitive(data.getData()))
 			);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

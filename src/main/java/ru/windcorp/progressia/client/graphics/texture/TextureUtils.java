@@ -17,15 +17,17 @@ import org.lwjgl.BufferUtils;
 
 public class TextureUtils {
 	
+	public static final int BYTES_PER_PIXEL = 4; // ARGB
+	
 	public static final Color CANVAS_BACKGROUND = new Color(0, true);
 	
 	public static final ColorModel COLOR_MODEL = new ComponentColorModel(
 			ColorSpace.getInstance(ColorSpace.CS_sRGB), // Use RGB
-			new int[] {8, 8, 8, 8},                     // Use every bit
+			null,                                       // Use every bit
 			true,                                       // Has alpha
 			false,                                      // Not premultiplied
 			Transparency.TRANSLUCENT,                   // Can have any alpha
-			DataBuffer.TYPE_BYTE                        // Alpha is one byte
+			DataBuffer.TYPE_BYTE                        // Store bytewise
 	);
 	
 	private static final Hashtable<?, ?> BUFFERED_IMAGE_PROPERTIES =
@@ -39,7 +41,7 @@ public class TextureUtils {
 				DataBuffer.TYPE_BYTE, // Storage model
 				bufferWidth,          // Buffer width
 				bufferHeight,         // Buffer height
-				4,                    // RGBA
+				BYTES_PER_PIXEL,      // ARGB
 				null                  // Location (here (0; 0))
 		);
 	}
@@ -49,7 +51,7 @@ public class TextureUtils {
 			int bufferWidth,
 			int bufferHeight
 	) {
-		final int bands = 4; // RGBA
+		final int bands = BYTES_PER_PIXEL;
 		
 		byte[] bytes = new byte[bufferWidth * bufferHeight * bands];
 		

@@ -41,6 +41,10 @@ public abstract class SpriteTypeface extends Typeface {
 		return thickness;
 	}
 	
+	public int getInterlineBuffer() {
+		return getThickness();
+	}
+	
 	public float getItalicsSlant() {
 		return getThickness() / (float) getHeight();
 	}
@@ -87,7 +91,7 @@ public abstract class SpriteTypeface extends Typeface {
 						style, align, color
 				);
 				
-				y -= getHeight();
+				y -= getHeight() + getInterlineBuffer();
 				
 				currentWidth = Style.isBold(style) ? getThickness() : 0;
 				
@@ -285,7 +289,7 @@ public abstract class SpriteTypeface extends Typeface {
 			char c = chars.charAt(i);
 			
 			if (c == '\n' || currentWidth + getWidth(c) > maxWidth) {
-				height += getHeight();
+				height += getHeight() + getInterlineBuffer();
 				if (resultWidth < currentWidth) resultWidth = currentWidth;
 				currentWidth = Style.isBold(style) ? getThickness() : 0;
 			}

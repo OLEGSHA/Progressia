@@ -23,13 +23,14 @@ import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.RenderTaskQueue;
 import ru.windcorp.progressia.client.graphics.flat.FlatRenderProgram;
 import ru.windcorp.progressia.client.graphics.flat.LayerTestUI;
-import ru.windcorp.progressia.client.graphics.font.TestTypeface;
+import ru.windcorp.progressia.client.graphics.font.GNUUnifontLoader;
 import ru.windcorp.progressia.client.graphics.font.Typefaces;
 import ru.windcorp.progressia.client.graphics.gui.LayerTestGUI;
 import ru.windcorp.progressia.client.graphics.texture.Atlases;
 import ru.windcorp.progressia.client.graphics.world.LayerWorld;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.renders.BlockRenders;
+import ru.windcorp.progressia.common.resource.ResourceManager;
 
 public class ClientProxy implements Proxy {
 
@@ -39,7 +40,7 @@ public class ClientProxy implements Proxy {
 		try {
 			RenderTaskQueue.waitAndInvoke(FlatRenderProgram::init);
 			RenderTaskQueue.waitAndInvoke(WorldRenderProgram::init);
-			RenderTaskQueue.waitAndInvoke(() -> Typefaces.setDefault(new TestTypeface()));
+			RenderTaskQueue.waitAndInvoke(() -> Typefaces.setDefault(GNUUnifontLoader.load(ResourceManager.getResource("assets/unifont-13.0.03.hex.gz"))));
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

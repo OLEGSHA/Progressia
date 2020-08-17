@@ -60,10 +60,10 @@ public class Atlases {
 			int size = group.getAtlasSize();
 			
 			this.editor = new TextureDataEditor(size, size, size, size, SETTINGS);
-			this.primitive = new TexturePrimitive(editor.createSnapshot());
+			this.primitive = new TexturePrimitive(editor.getData());
 		}
 		
-		public Sprite addSprite(TextureDataEditor data) {
+		public Sprite addSprite(TextureData data) {
 			int width = data.getContentWidth();
 			int height = data.getContentHeight();
 			
@@ -109,7 +109,7 @@ public class Atlases {
 			return c / (float) getSize();
 		}
 
-		public boolean canAddSprite(TextureDataEditor data) {
+		public boolean canAddSprite(TextureData data) {
 			int width = data.getContentWidth();
 			int height = data.getContentHeight();
 			
@@ -137,11 +137,6 @@ public class Atlases {
 			return true;
 		}
 		
-		public void flush() {
-			editor.createSnapshot(primitive.getData());
-			editor.close();
-		}
-		
 		public AtlasGroup getGroup() {
 			return group;
 		}
@@ -167,20 +162,22 @@ public class Atlases {
 	}
 	
 	private static Sprite loadSprite(Resource resource, AtlasGroup group) {
-		try (
-				TextureDataEditor data =
-						TextureLoader.loadPixels(resource, SETTINGS)
-		) {
+		try {
+			TextureDataEditor data =
+					TextureLoader.loadPixels(resource, SETTINGS);
 			
-			Atlas atlas = getReadyAtlas(group, data);
-			return atlas.addSprite(data);
-			
+			return loadSprite(data.getData(), group);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	private static Atlas getReadyAtlas(AtlasGroup group, TextureDataEditor data) {
+	public static Sprite loadSprite(TextureData data, AtlasGroup group) {
+		Atlas atlas = getReadyAtlas(group, data);
+		return atlas.addSprite(data);
+	}
+	
+	private static Atlas getReadyAtlas(AtlasGroup group, TextureData data) {
 		List<Atlas> atlases = (List<Atlas>) ATLASES.get(group);
 		
 		if (
@@ -201,7 +198,6 @@ public class Atlases {
 
 	public static void loadAllAtlases() {
 		ATLASES.forEach((group, atlas) -> {
-			atlas.flush();
 			RenderTaskQueue.invokeLater(atlas.getPrimitive()::load);
 		});
 	}
