@@ -26,14 +26,15 @@ plugins {
 ```
 2. `$ gradlew eclipse`
 3. Import the project with File - Import - Existing Projects into Workspace
+4. On Windows, make sure the project has UTF-8 encoding with <RMB on project in project tree> - Properties - Resource - Text file encoding - Other - UTF-8
 
 ### Additional setup for IntelliJ IDEA
 
 1. Open the project with File - Open Project
 2. Press button 'Add configuration...' and open 'Application' in templates list
-3. Add 'ru.windcorp.progressia.client.ProgressiaClientMain' in Main class text field
-4. Choose 'Progressia.main' in 'Use classpath of module' drop-down list
-5. Click 'Create configuration' and press Apply
+3. Add `ru.windcorp.progressia.client.ProgressiaClientMain` in 'Main class' text field
+4. Choose `Progressia.main` in 'Use classpath of module' drop-down list
+5. Click 'Create configuration' and press 'Apply'
 
 ## Libraries
 
