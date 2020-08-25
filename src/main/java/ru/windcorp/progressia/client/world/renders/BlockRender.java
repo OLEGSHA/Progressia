@@ -19,36 +19,31 @@ package ru.windcorp.progressia.client.world.renders;
 
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.WorldRenderable;
+import ru.windcorp.progressia.client.world.renders.bro.BlockRenderOptimizer;
 import ru.windcorp.progressia.common.util.Namespaced;
 
 public abstract class BlockRender extends Namespaced {
 	
-	private String optimizer = null;
-	
 	public BlockRender(String namespace, String name) {
 		super(namespace, name);
-	}
-	
-	public String getOptimizer() {
-		return optimizer;
-	}
-	
-	public boolean isOptimized() {
-		return getOptimizer() != null;
-	}
-	
-	public void setOptimizer(String optimizer) {
-		this.optimizer = optimizer;
 	}
 
 	public void render(ShapeRenderHelper renderer) {
 		throw new UnsupportedOperationException(
-				"BlockRender.render() not implemented"
+				"BlockRender.render() not implemented in " + this
 		);
 	}
 	
 	public WorldRenderable createRenderable() {
 		return null;
+	}
+	
+	public boolean canBeOptimized(BlockRenderOptimizer optimizer) {
+		return true;
+	}
+	
+	public boolean needsOwnRenderable() {
+		return true;
 	}
 
 }

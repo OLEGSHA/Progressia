@@ -77,8 +77,7 @@ public class Faces {
 			Vec3 blockCenter,
 			BlockFace face
 	) {
-		switch (face) {
-		case TOP:
+		if (face == BlockFace.TOP) {
 			return createRectangle(
 					program,
 					texture, colorMultiplier,
@@ -86,7 +85,7 @@ public class Faces {
 					new Vec3( 0, -1,  0),
 					new Vec3(+1,  0,  0)
 			);
-		case BOTTOM:
+		} else if (face == BlockFace.BOTTOM) {
 			return createRectangle(
 					program,
 					texture, colorMultiplier,
@@ -94,7 +93,7 @@ public class Faces {
 					new Vec3( 0, +1,  0),
 					new Vec3(+1,  0,  0)
 			);
-		case NORTH:
+		} else if (face == BlockFace.NORTH) {
 			return createRectangle(
 					program,
 					texture, colorMultiplier,
@@ -102,7 +101,7 @@ public class Faces {
 					new Vec3( 0, +1,  0),
 					new Vec3( 0,  0, +1)
 			);
-		case SOUTH:
+		} else if (face == BlockFace.SOUTH) {
 			return createRectangle(
 					program,
 					texture, colorMultiplier,
@@ -110,7 +109,7 @@ public class Faces {
 					new Vec3( 0, -1,  0),
 					new Vec3( 0,  0, +1)
 			);
-		case EAST:
+		} else if (face == BlockFace.EAST) {
 			return createRectangle(
 					program,
 					texture, colorMultiplier,
@@ -118,7 +117,7 @@ public class Faces {
 					new Vec3(+1,  0,  0),
 					new Vec3( 0,  0, +1)
 			);
-		case WEST:
+		} else if (face == BlockFace.WEST) {
 			return createRectangle(
 					program,
 					texture, colorMultiplier,
@@ -126,7 +125,7 @@ public class Faces {
 					new Vec3(-1,  0,  0),
 					new Vec3( 0,  0, +1)
 			);
-		default:
+		} else {
 			throw new NullPointerException("face");
 		}
 	}

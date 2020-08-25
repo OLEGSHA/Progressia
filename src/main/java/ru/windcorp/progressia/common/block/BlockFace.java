@@ -17,8 +17,56 @@
  *******************************************************************************/
 package ru.windcorp.progressia.common.block;
 
-public enum BlockFace {
+import com.google.common.collect.ImmutableList;
+
+public final class BlockFace extends BlockRelation {
 	
-	TOP, BOTTOM, NORTH, SOUTH, EAST, WEST;
+	public static final BlockFace
+			TOP    = new BlockFace( 0,  0, +1, true),
+			BOTTOM = new BlockFace( 0,  0, -1, false),
+			NORTH  = new BlockFace(+1,  0,  0, true),
+			SOUTH  = new BlockFace(-1,  0,  0, false),
+			WEST   = new BlockFace( 0, +1,  0, true),
+			EAST   = new BlockFace( 0, -1,  0, false);
+	
+	private static final ImmutableList<BlockFace> ALL_VALUES =
+			ImmutableList.of(TOP, BOTTOM, NORTH, SOUTH, WEST, EAST);
+	
+	public static ImmutableList<BlockFace> getValues() {
+		return ALL_VALUES;
+	}
+	
+	static {
+		link(TOP, BOTTOM);
+		link(NORTH, SOUTH);
+		link(WEST, EAST);
+	}
+	
+	private static void link(BlockFace a, BlockFace b) {
+		a.counterFace = b;
+		b.counterFace = a;
+	}
+	
+	private BlockFace counterFace;
+	private final boolean isPrimary;
+
+	private BlockFace(int x, int y, int z, boolean isPrimary) {
+		super(x, y, z);
+		this.isPrimary = isPrimary;
+	}
+	
+	public boolean isPrimary() {
+		return isPrimary;
+	}
+	
+	public BlockFace getPrimary() {
+		if (isPrimary) return this;
+		else return counterFace;
+	}
+	
+	public BlockFace getSecondary() {
+		if (isPrimary) return counterFace;
+		else return this;
+	}
 
 }

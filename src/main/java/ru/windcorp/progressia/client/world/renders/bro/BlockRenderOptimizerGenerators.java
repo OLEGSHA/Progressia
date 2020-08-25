@@ -32,7 +32,7 @@ public class BlockRenderOptimizerGenerators {
 		register(new BlockRenderOptimizerGenerator("Default", "OpaqueCube") {
 			@Override
 			public BlockRenderOptimizer createOptimizer() {
-				return new BlockRenderOpaqueCubeOptimizer();
+				return new BlockRenderCubeOptimizer();
 			}
 		});
 	}

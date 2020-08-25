@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.client.world.renders.bro;
+package ru.windcorp.progressia.client.world.renders;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.client.world.renders.BlockRenderTexturedCube;
+import ru.windcorp.progressia.common.block.BlockFace;
 
 public class BlockRenderOpaqueCube extends BlockRenderTexturedCube {
 
@@ -34,7 +34,33 @@ public class BlockRenderOpaqueCube extends BlockRenderTexturedCube {
 				northTexture, southTexture,
 				eastTexture, westTexture
 		);
-		setOptimizer("Default:OpaqueCube");
+	}
+	
+	public BlockRenderOpaqueCube(
+			String namespace, String name,
+			Texture texture
+	) {
+		this(
+				namespace, name,
+				texture, texture,
+				texture, texture,
+				texture, texture
+		);
+	}
+	
+	@Override
+	public boolean isOpaque(BlockFace face) {
+		return true;
+	}
+	
+	@Override
+	public boolean isBlockOpaque() {
+		return true;
+	}
+	
+	@Override
+	public boolean needsOwnRenderable() {
+		return false;
 	}
 
 }

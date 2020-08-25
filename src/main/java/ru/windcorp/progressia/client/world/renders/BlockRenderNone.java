@@ -30,5 +30,10 @@ public class BlockRenderNone extends BlockRender {
 	public WorldRenderable createRenderable() {
 		return EmptyModel.getInstance();
 	}
+	
+	@Override
+	public boolean needsOwnRenderable() {
+		return false;
+	}
 
 }

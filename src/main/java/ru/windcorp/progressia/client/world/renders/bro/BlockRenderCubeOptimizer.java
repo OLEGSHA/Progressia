@@ -34,7 +34,13 @@ import ru.windcorp.progressia.client.world.renders.BlockRender;
 import ru.windcorp.progressia.common.block.BlockFace;
 import ru.windcorp.progressia.common.world.ChunkData;
 
-public class BlockRenderOpaqueCubeOptimizer extends BlockRenderOptimizer {
+public class BlockRenderCubeOptimizer extends BlockRenderOptimizer {
+	
+	public static interface OpaqueCube {
+		public Texture getTexture(BlockFace face);
+		public boolean isOpaque(BlockFace face);
+		public boolean isBlockOpaque();
+	}
 	
 	private static final int BLOCK_MASK = 1 << 7;
 	
@@ -59,6 +65,11 @@ public class BlockRenderOpaqueCubeOptimizer extends BlockRenderOptimizer {
 
 	@Override
 	public void processBlock(BlockRender block, int x, int y, int z) {
+		if (!(block instanceof OpaqueCube)) return;
+		OpaqueCube opaqueCube = (OpaqueCube) block;
+		
+		if (!opaqueCube.isBlockOpaque()) return; // FIXME
+		
 		addFace(x, y, z, BlockFace.TOP);
 		addFace(x, y, z, BlockFace.BOTTOM);
 		addFace(x, y, z, BlockFace.NORTH);
@@ -69,23 +80,18 @@ public class BlockRenderOpaqueCubeOptimizer extends BlockRenderOptimizer {
 	}
 	
 	protected void addFace(int x, int y, int z, BlockFace face) {
-		switch (face) {
-		case BOTTOM:
+		if (face == BlockFace.BOTTOM) {
 			z -= 1;
 			face = BlockFace.TOP;
-			break;
-		case SOUTH:
+		} else if (face == BlockFace.SOUTH) {
 			x -= 1;
 			face = BlockFace.NORTH;
-			break;
-		case EAST:
+		} else if (face == BlockFace.EAST) {
 			y -= 1;
 			face = BlockFace.WEST;
-			break;
-		default:
 		}
 		
-		data[x + 1][y + 1][z + 1] ^= 1 << face.ordinal();
+		data[x + 1][y + 1][z + 1] ^= 1 << getBit(face);
 	}
 	
 	protected void addBlock(int x, int y, int z) {
@@ -93,23 +99,18 @@ public class BlockRenderOpaqueCubeOptimizer extends BlockRenderOptimizer {
 	}
 	
 	protected boolean hasFace(int x, int y, int z, BlockFace face) {
-		switch (face) {
-		case BOTTOM:
+		if (face == BlockFace.BOTTOM) {
 			z -= 1;
 			face = BlockFace.TOP;
-			break;
-		case SOUTH:
+		} else if (face == BlockFace.SOUTH) {
 			x -= 1;
 			face = BlockFace.NORTH;
-			break;
-		case EAST:
+		} else if (face == BlockFace.EAST) {
 			y -= 1;
 			face = BlockFace.WEST;
-			break;
-		default:
 		}
 		
-		return (data[x + 1][y + 1][z + 1] & 1 << face.ordinal()) != 0;
+		return (data[x + 1][y + 1][z + 1] & 1 << getBit(face)) != 0;
 	}
 	
 	protected boolean hasBlock(int x, int y, int z) {
@@ -134,26 +135,21 @@ public class BlockRenderOpaqueCubeOptimizer extends BlockRenderOptimizer {
 						Face shapeFace = null;
 						
 						if (!hasBlock(x, y, z)) {
-							switch (face) {
-							case TOP:
+							if (face == BlockFace.TOP) {
 								shapeFace = createFace(
 										x, y, z + 1,
 										BlockFace.BOTTOM
 								);
-								break;
-							case NORTH:
+							} else if (face == BlockFace.NORTH) {
 								shapeFace = createFace(
 										x + 1, y, z,
 										BlockFace.SOUTH
 								);
-								break;
-							case WEST:
+							} else if (face == BlockFace.WEST) {
 								shapeFace = createFace(
 										x, y + 1, z,
 										BlockFace.EAST
 								);
-								break;
-							default:
 							}
 						} else {
 							shapeFace = createFace(x, y, z, face);
@@ -174,8 +170,8 @@ public class BlockRenderOpaqueCubeOptimizer extends BlockRenderOptimizer {
 	}
 
 	private Face createFace(int x, int y, int z, BlockFace face) {
-		BlockRenderOpaqueCube blockRender =
-				(BlockRenderOpaqueCube) chunk.getBlock(x, y, z);
+		OpaqueCube blockRender =
+				(OpaqueCube) chunk.getBlock(x, y, z);
 		Texture texture = blockRender.getTexture(face);
 		
 		return Faces.createBlockFace(
@@ -185,6 +181,17 @@ public class BlockRenderOpaqueCubeOptimizer extends BlockRenderOptimizer {
 				blockCenter.set(x, y, z),
 				face
 		);
+	}
+	
+	// TODO refactor
+	private static int getBit(BlockFace face) {
+		if (face == BlockFace.TOP) return 0;
+		if (face == BlockFace.BOTTOM) return 1;
+		if (face == BlockFace.NORTH) return 2;
+		if (face == BlockFace.SOUTH) return 3;
+		if (face == BlockFace.WEST) return 4;
+		if (face == BlockFace.EAST) return 5;
+		return -1;
 	}
 
 }

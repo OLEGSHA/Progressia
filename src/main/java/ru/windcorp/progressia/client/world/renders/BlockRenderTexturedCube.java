@@ -19,18 +19,21 @@ package ru.windcorp.progressia.client.world.renders;
 
 import static ru.windcorp.progressia.common.block.BlockFace.*;
 
-import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import ru.windcorp.progressia.client.graphics.model.Shapes;
 import ru.windcorp.progressia.client.graphics.model.WorldRenderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
+import ru.windcorp.progressia.client.world.renders.bro.BlockRenderCubeOptimizer.OpaqueCube;
 import ru.windcorp.progressia.common.block.BlockFace;
 
-public abstract class BlockRenderTexturedCube extends BlockRender {
+public abstract class BlockRenderTexturedCube
+extends BlockRender
+implements OpaqueCube {
 	
-	private final EnumMap<BlockFace, Texture> textures =
-			new EnumMap<>(BlockFace.class);
+	private final Map<BlockFace, Texture> textures = new HashMap<>();
 
 	public BlockRenderTexturedCube(
 			String namespace, String name,
@@ -48,6 +51,7 @@ public abstract class BlockRenderTexturedCube extends BlockRender {
 		textures.put(WEST,   westTexture);
 	}
 	
+	@Override
 	public Texture getTexture(BlockFace face) {
 		return textures.get(face);
 	}

@@ -24,7 +24,6 @@ import ru.windcorp.progressia.client.graphics.texture.Atlases;
 import ru.windcorp.progressia.client.graphics.texture.Atlases.AtlasGroup;
 import ru.windcorp.progressia.client.graphics.texture.SimpleTexture;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.client.world.renders.bro.BlockRenderOpaqueCube;
 import ru.windcorp.progressia.common.resource.ResourceManager;
 
 public class BlockRenders {

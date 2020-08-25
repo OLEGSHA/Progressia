@@ -17,8 +17,8 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client.world;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import glm.mat._4.Mat4;
 import ru.windcorp.progressia.client.graphics.model.Model;
@@ -87,16 +87,12 @@ public class ChunkRender {
 	}
 
 	private void buildModel() {
-		Map<String, BlockRenderOptimizer> optimizers = new HashMap<>();
+		Collection<BlockRenderOptimizer> optimizers =
+				BlockRenderOptimizerGenerators.getAll().stream()
+				.map(BlockRenderOptimizerGenerator::createOptimizer)
+				.collect(Collectors.toList());
 		
-		for (
-				BlockRenderOptimizerGenerator generator :
-				BlockRenderOptimizerGenerators.getAll()
-		) {
-			BlockRenderOptimizer optimizer = generator.createOptimizer();
-			optimizers.put(generator.getId(), optimizer);
-			optimizer.startRender(this);
-		}
+		optimizers.forEach(bro -> bro.startRender(this));
 		
 		StaticModel.Builder builder = StaticModel.builder();
 		
@@ -110,7 +106,9 @@ public class ChunkRender {
 						continue;
 					}
 					
-					if (tryToForwardToOptimizers(block, x, y, z, optimizers)) {
+					forwardToOptimizers(block, x, y, z, optimizers);
+					
+					if (!block.needsOwnRenderable()) {
 						continue;
 					}
 					
@@ -123,7 +121,7 @@ public class ChunkRender {
 			}
 		}
 		
-		for (BlockRenderOptimizer optimizer : optimizers.values()) {
+		for (BlockRenderOptimizer optimizer : optimizers) {
 			Shape result = optimizer.endRender();
 			if (result != null) {
 				builder.addPart(result);
@@ -134,22 +132,11 @@ public class ChunkRender {
 		needsUpdate = false;
 	}
 
-	private boolean tryToForwardToOptimizers(
+	private void forwardToOptimizers(
 			BlockRender block, int x, int y, int z,
-			Map<String, BlockRenderOptimizer> optimizers
+			Collection<BlockRenderOptimizer> optimizers
 	) {
-		if (!block.isOptimized()) {
-			return false;
-		}
-		BlockRenderOptimizer optimizer = optimizers.get(block.getOptimizer());
-		
-		if (optimizer == null) {
-			return false;
-		}
-		
-		optimizer.processBlock(block, x, y, z);
-		
-		return true;
+		optimizers.forEach(bro -> bro.processBlock(block, x, y, z));
 	}
 
 	private boolean tryToCreateRenderable(
