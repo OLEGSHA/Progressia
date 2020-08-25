@@ -15,18 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.client.world.renders.bro;
+package ru.windcorp.progressia.client.world.renders.cro;
 
-import ru.windcorp.progressia.client.graphics.model.Shape;
-import ru.windcorp.progressia.client.world.ChunkRender;
-import ru.windcorp.progressia.client.world.renders.BlockRender;
+import com.google.common.base.Supplier;
 
-public abstract class BlockRenderOptimizer {
+import ru.windcorp.progressia.common.util.Namespaced;
+
+public abstract class ChunkRenderOptimizerSupplier extends Namespaced {
+
+	public ChunkRenderOptimizerSupplier(String namespace, String name) {
+		super(namespace, name);
+	}
 	
-	public abstract void startRender(ChunkRender chunk);
+	public abstract ChunkRenderOptimizer createOptimizer();
 	
-	public abstract void processBlock(BlockRender block, int x, int y, int z);
-	
-	public abstract Shape endRender();
+	public static ChunkRenderOptimizerSupplier of(
+			String namespace, String name,
+			Supplier<ChunkRenderOptimizer> supplier
+	) {
+		return new ChunkRenderOptimizerSupplier(namespace, name) {
+			@Override
+			public ChunkRenderOptimizer createOptimizer() {
+				return supplier.get();
+			}
+		};
+	}
 
 }

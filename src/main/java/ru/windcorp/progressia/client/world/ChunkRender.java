@@ -30,9 +30,9 @@ import ru.windcorp.progressia.client.graphics.model.StaticModel.Builder;
 import ru.windcorp.progressia.client.world.renders.BlockRender;
 import ru.windcorp.progressia.client.world.renders.BlockRenderNone;
 import ru.windcorp.progressia.client.world.renders.BlockRenders;
-import ru.windcorp.progressia.client.world.renders.bro.BlockRenderOptimizer;
-import ru.windcorp.progressia.client.world.renders.bro.BlockRenderOptimizerGenerator;
-import ru.windcorp.progressia.client.world.renders.bro.BlockRenderOptimizerGenerators;
+import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizer;
+import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizerSupplier;
+import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizers;
 import ru.windcorp.progressia.common.world.ChunkData;
 
 public class ChunkRender {
@@ -87,9 +87,9 @@ public class ChunkRender {
 	}
 
 	private void buildModel() {
-		Collection<BlockRenderOptimizer> optimizers =
-				BlockRenderOptimizerGenerators.getAll().stream()
-				.map(BlockRenderOptimizerGenerator::createOptimizer)
+		Collection<ChunkRenderOptimizer> optimizers =
+				ChunkRenderOptimizers.getAllSuppliers().stream()
+				.map(ChunkRenderOptimizerSupplier::createOptimizer)
 				.collect(Collectors.toList());
 		
 		optimizers.forEach(bro -> bro.startRender(this));
@@ -121,7 +121,7 @@ public class ChunkRender {
 			}
 		}
 		
-		for (BlockRenderOptimizer optimizer : optimizers) {
+		for (ChunkRenderOptimizer optimizer : optimizers) {
 			Shape result = optimizer.endRender();
 			if (result != null) {
 				builder.addPart(result);
@@ -134,7 +134,7 @@ public class ChunkRender {
 
 	private void forwardToOptimizers(
 			BlockRender block, int x, int y, int z,
-			Collection<BlockRenderOptimizer> optimizers
+			Collection<ChunkRenderOptimizer> optimizers
 	) {
 		optimizers.forEach(bro -> bro.processBlock(block, x, y, z));
 	}

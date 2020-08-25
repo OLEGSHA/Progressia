@@ -19,7 +19,7 @@ package ru.windcorp.progressia.client.world.renders;
 
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.WorldRenderable;
-import ru.windcorp.progressia.client.world.renders.bro.BlockRenderOptimizer;
+import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizer;
 import ru.windcorp.progressia.common.util.Namespaced;
 
 public abstract class BlockRender extends Namespaced {
@@ -38,7 +38,7 @@ public abstract class BlockRender extends Namespaced {
 		return null;
 	}
 	
-	public boolean canBeOptimized(BlockRenderOptimizer optimizer) {
+	public boolean canBeOptimized(ChunkRenderOptimizer optimizer) {
 		return true;
 	}
 	

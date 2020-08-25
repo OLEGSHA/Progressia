@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.client.world.renders.bro;
+package ru.windcorp.progressia.client.world.renders.cro;
 
 import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
 
@@ -34,7 +34,7 @@ import ru.windcorp.progressia.client.world.renders.BlockRender;
 import ru.windcorp.progressia.common.block.BlockFace;
 import ru.windcorp.progressia.common.world.ChunkData;
 
-public class BlockRenderCubeOptimizer extends BlockRenderOptimizer {
+public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 	
 	public static interface OpaqueCube {
 		public Texture getTexture(BlockFace face);

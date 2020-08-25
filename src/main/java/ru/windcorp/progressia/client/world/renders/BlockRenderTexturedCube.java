@@ -26,7 +26,7 @@ import ru.windcorp.progressia.client.graphics.model.Shapes;
 import ru.windcorp.progressia.client.graphics.model.WorldRenderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
-import ru.windcorp.progressia.client.world.renders.bro.BlockRenderCubeOptimizer.OpaqueCube;
+import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizerCube.OpaqueCube;
 import ru.windcorp.progressia.common.block.BlockFace;
 
 public abstract class BlockRenderTexturedCube

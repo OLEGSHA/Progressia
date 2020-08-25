@@ -15,38 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.client.world.renders.bro;
+package ru.windcorp.progressia.client.world.renders.cro;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BlockRenderOptimizerGenerators {
+public class ChunkRenderOptimizers {
 	
-	private BlockRenderOptimizerGenerators() {}
+	private ChunkRenderOptimizers() {}
 	
-	private static final Map<String, BlockRenderOptimizerGenerator> GENERATORS =
+	private static final Map<String, ChunkRenderOptimizerSupplier> SUPPLIERS =
 			new HashMap<>();
 	
 	static {
-		register(new BlockRenderOptimizerGenerator("Default", "OpaqueCube") {
-			@Override
-			public BlockRenderOptimizer createOptimizer() {
-				return new BlockRenderCubeOptimizer();
-			}
-		});
+		register(ChunkRenderOptimizerSupplier.of(
+				"Default", "OpaqueCube",
+				ChunkRenderOptimizerCube::new
+		));
 	}
 	
-	public static BlockRenderOptimizerGenerator get(String id) {
-		return GENERATORS.get(id);
+	public static ChunkRenderOptimizerSupplier getSupplier(String id) {
+		return SUPPLIERS.get(id);
 	}
 	
-	public static void register(BlockRenderOptimizerGenerator generator) {
-		GENERATORS.put(generator.getId(), generator);
+	public static void register(ChunkRenderOptimizerSupplier supplier) {
+		SUPPLIERS.put(supplier.getId(), supplier);
 	}
 	
-	public static Collection<BlockRenderOptimizerGenerator> getAll() {
-		return GENERATORS.values();
+	public static Collection<ChunkRenderOptimizerSupplier> getAllSuppliers() {
+		return SUPPLIERS.values();
 	}
 	
 }
