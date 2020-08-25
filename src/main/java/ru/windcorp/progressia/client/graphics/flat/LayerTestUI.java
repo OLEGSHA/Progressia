@@ -73,7 +73,7 @@ public class LayerTestUI extends AssembledFlatLayer {
 		target.addCustomRenderer(new LambdaModel(LambdaModel.lambdaBuilder()
 				.addDynamicPart(
 						target.createRectagle(0, 0, texSize, texSize, 0xFFFFFF, compassFg),
-						mat -> mat.translate(texSize/2, texSize/2, 0).rotateZ(-LayerWorld.tmp_the_camera.getYaw()).translate(-texSize/2, -texSize/2, 0)
+						mat -> mat.translate(texSize/2, texSize/2, 0).rotateZ(LayerWorld.tmp_the_camera.getYaw()).translate(-texSize/2, -texSize/2, 0)
 				)
 		));
 		target.popTransform();

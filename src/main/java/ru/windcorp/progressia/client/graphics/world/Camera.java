@@ -43,20 +43,37 @@ public class Camera {
 	public Camera() {}
 
 	public void apply(WorldRenderHelper helper) {
+		applyPerspective(helper);
+		rotateCoordinateSystem(helper);
+		
+		applyDirection(helper);
+		applyPosition(helper);
+	}
+
+	private void applyPerspective(WorldRenderHelper helper) {
 		Mat4 previous = helper.getViewTransform();
+		
 		Glm.perspective(
 				computeFovY(),
 				GraphicsInterface.getAspectRatio(),
 				0.01f, 10000.0f,
 				helper.pushViewTransform()
 		).mul(previous);
-		
-		helper.pushViewTransform().rotateX(pitch).rotateY(yaw);
-		
+	}
+
+	private void rotateCoordinateSystem(WorldRenderHelper helper) {
+		helper.pushViewTransform().rotateX(-PI / 2).rotateZ(PI / 2);
+	}
+	
+	private void applyDirection(WorldRenderHelper helper) {
+		helper.pushViewTransform().rotateY(pitch).rotateZ(yaw);
+	}
+
+	private void applyPosition(WorldRenderHelper helper) {
 		helper.pushViewTransform().translate(position.negate());
 		position.negate();
 	}
-	
+
 	private float computeFovY() {
 		float widthOverHeight = GraphicsInterface.getAspectRatio();
 		

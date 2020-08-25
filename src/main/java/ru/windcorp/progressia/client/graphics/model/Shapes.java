@@ -50,7 +50,8 @@ public class Shapes {
 				topTexture, colorMultiplier,
 				faceOrigin.set(origin).add(height).add(width),
 				faceWidth.set(width).negate(),
-				depth
+				depth,
+				false
 		);
 		
 		Face bottom = Faces.createRectangle(
@@ -58,7 +59,8 @@ public class Shapes {
 				bottomTexture, colorMultiplier,
 				origin,
 				width,
-				depth
+				depth,
+				false
 		);
 		
 		Face north = Faces.createRectangle(
@@ -66,7 +68,8 @@ public class Shapes {
 				northTexture, colorMultiplier,
 				faceOrigin.set(origin).add(depth),
 				width,
-				height
+				height,
+				false
 		);
 		
 		Face south = Faces.createRectangle(
@@ -74,7 +77,8 @@ public class Shapes {
 				southTexture, colorMultiplier,
 				faceOrigin.set(origin).add(width),
 				faceWidth.set(width).negate(),
-				height
+				height,
+				false
 		);
 		
 		Face east = Faces.createRectangle(
@@ -82,7 +86,8 @@ public class Shapes {
 				eastTexture, colorMultiplier,
 				origin,
 				depth,
-				height
+				height,
+				false
 		);
 		
 		Face west = Faces.createRectangle(
@@ -90,7 +95,8 @@ public class Shapes {
 				westTexture, colorMultiplier,
 				faceOrigin.set(origin).add(width).add(depth),
 				faceWidth.set(depth).negate(),
-				height
+				height,
+				false
 		);
 		
 		Shape result = new Shape(

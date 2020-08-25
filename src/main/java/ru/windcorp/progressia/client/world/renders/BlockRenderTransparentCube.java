@@ -57,5 +57,10 @@ public class BlockRenderTransparentCube extends BlockRenderTexturedCube {
 	public boolean isBlockOpaque() {
 		return false;
 	}
+	
+	@Override
+	public boolean needsOwnRenderable() {
+		return false;
+	}
 
 }

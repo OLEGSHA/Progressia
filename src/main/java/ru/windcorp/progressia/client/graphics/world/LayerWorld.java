@@ -38,8 +38,8 @@ public class LayerWorld extends Layer {
 	public static Camera tmp_the_camera;
 	
 	private final Camera camera = new Camera(
-			new Vec3(8, 8, 8),
-			0, 0,
+			new Vec3(-6, -6, 20),
+			(float) Math.toRadians(-40), (float) Math.toRadians(-45),
 			(float) Math.toRadians(70)
 	);
 	
@@ -47,10 +47,10 @@ public class LayerWorld extends Layer {
 	private final Vec3 tmp = new Vec3();
 	
 	private final Mat3 angMat = new Mat3();
-	
-	private int movementX = 0;
-	private int movementY = 0;
-	private int movementZ = 0;
+
+	private int movementForward = 0;
+	private int movementRight = 0;
+	private int movementUp = 0;
 	
 	private static final boolean I_WANT_TO_THROW_UP = false;
 	private float shakeParam = 0;
@@ -81,12 +81,12 @@ public class LayerWorld extends Layer {
 		renderWorld();
 		helper.reset();
 		
-		angMat.set().rotateY(-camera.getYaw());
+		angMat.set().rotateZ(-camera.getYaw());
 
-		tmp.set(movementX, 0, movementZ);
-		if (movementX != 0 && movementZ != 0) tmp.normalize();
+		tmp.set(movementForward, -movementRight, 0);
+		if (movementForward != 0 && movementRight != 0) tmp.normalize();
 		angMat.mul_(tmp); // bug in jglm
-		tmp.y = movementY;
+		tmp.z = movementUp;
 		tmp.mul(0.1f);
 		tmp.sub(velocity);
 		tmp.mul(0.1f);
@@ -141,22 +141,22 @@ public class LayerWorld extends Layer {
 		
 		switch (event.getKey()) {
 		case GLFW.GLFW_KEY_W:
-			movementZ += -1 * multiplier;
+			movementForward += +1 * multiplier;
 			break;
 		case GLFW.GLFW_KEY_S:
-			movementZ += +1 * multiplier;
+			movementForward += -1 * multiplier;
 			break;
 		case GLFW.GLFW_KEY_A:
-			movementX += -1 * multiplier;
+			movementRight += -1 * multiplier;
 			break;
 		case GLFW.GLFW_KEY_D:
-			movementX += +1 * multiplier;
+			movementRight += +1 * multiplier;
 			break;
 		case GLFW.GLFW_KEY_SPACE:
-			movementY += +1 * multiplier;
+			movementUp += +1 * multiplier;
 			break;
 		case GLFW.GLFW_KEY_LEFT_SHIFT:
-			movementY += -1 * multiplier;
+			movementUp += -1 * multiplier;
 			break;
 			
 		case GLFW.GLFW_KEY_ESCAPE:
@@ -190,7 +190,7 @@ public class LayerWorld extends Layer {
 		if (!flag) return;
 		
 		final float yawScale = 0.002f;
-		final float pitchScale = -yawScale;
+		final float pitchScale = yawScale;
 		
 		camera.turn(
 				(float) (event.getChangeY() * pitchScale),

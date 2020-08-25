@@ -230,7 +230,8 @@ public class RenderTarget {
 				createVectorFromRGBInt(color),
 				new Vec3(x, y, depth),
 				new Vec3(width, 0, 0),
-				new Vec3(0, height, 0)
+				new Vec3(0, height, 0),
+				false
 		);
 	}
 	

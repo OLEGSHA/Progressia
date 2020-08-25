@@ -35,7 +35,8 @@ public class Faces {
 			Vec3 colorMultiplier,
 			Vec3 origin,
 			Vec3 width,
-			Vec3 height
+			Vec3 height,
+			boolean flip
 	) {
 		VertexBuilder builder = program.getVertexBuilder();
 		
@@ -60,13 +61,18 @@ public class Faces {
 				texCoords.set(1, 1)
 		);
 		
+		ShortBuffer buffer = flip ? ShortBuffer.wrap(new short[] {
+				0, 1, 3,
+				0, 3, 2
+		}) : ShortBuffer.wrap(new short[] {
+				3, 1, 0,
+				2, 3, 0
+		});
+		
 		return new Face(
 				texture,
 				builder.assemble(),
-				ShortBuffer.wrap(new short[] {
-						3, 1, 0,
-						2, 3, 0
-				})
+				buffer
 		);
 	}
 	
@@ -75,59 +81,20 @@ public class Faces {
 			Texture texture,
 			Vec3 colorMultiplier,
 			Vec3 blockCenter,
-			BlockFace face
+			BlockFace face,
+			boolean inner
 	) {
-		if (face == BlockFace.TOP) {
-			return createRectangle(
-					program,
-					texture, colorMultiplier,
-					blockCenter.add(-0.5f, +0.5f, +0.5f),
-					new Vec3( 0, -1,  0),
-					new Vec3(+1,  0,  0)
-			);
-		} else if (face == BlockFace.BOTTOM) {
-			return createRectangle(
-					program,
-					texture, colorMultiplier,
-					blockCenter.add(-0.5f, -0.5f, -0.5f),
-					new Vec3( 0, +1,  0),
-					new Vec3(+1,  0,  0)
-			);
-		} else if (face == BlockFace.NORTH) {
-			return createRectangle(
-					program,
-					texture, colorMultiplier,
-					blockCenter.add(+0.5f, -0.5f, -0.5f),
-					new Vec3( 0, +1,  0),
-					new Vec3( 0,  0, +1)
-			);
-		} else if (face == BlockFace.SOUTH) {
-			return createRectangle(
-					program,
-					texture, colorMultiplier,
-					blockCenter.add(-0.5f, +0.5f, -0.5f),
-					new Vec3( 0, -1,  0),
-					new Vec3( 0,  0, +1)
-			);
-		} else if (face == BlockFace.EAST) {
-			return createRectangle(
-					program,
-					texture, colorMultiplier,
-					blockCenter.add(-0.5f, -0.5f, -0.5f),
-					new Vec3(+1,  0,  0),
-					new Vec3( 0,  0, +1)
-			);
-		} else if (face == BlockFace.WEST) {
-			return createRectangle(
-					program,
-					texture, colorMultiplier,
-					blockCenter.add(+0.5f, +0.5f, -0.5f),
-					new Vec3(-1,  0,  0),
-					new Vec3( 0,  0, +1)
-			);
-		} else {
-			throw new NullPointerException("face");
-		}
+		BlockFaceVectors vectors = BlockFaceVectors.get(inner);
+		
+		Vec3 origin = new Vec3(blockCenter).add(vectors.getOrigin(face));
+		Vec3 width = vectors.getWidth(face);
+		Vec3 height = vectors.getHeight(face);
+		
+		return createRectangle(
+				program, texture, colorMultiplier,
+				origin, width, height,
+				inner
+		);
 	}
 
 }

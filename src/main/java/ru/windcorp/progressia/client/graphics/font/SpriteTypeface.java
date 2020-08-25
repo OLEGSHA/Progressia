@@ -142,7 +142,7 @@ public abstract class SpriteTypeface extends Typeface {
 		Face createFace() {
 			return Faces.createRectangle(
 					getProgram(),
-					texture, color, origin, width, height
+					texture, color, origin, width, height, false
 			);
 		}
 		

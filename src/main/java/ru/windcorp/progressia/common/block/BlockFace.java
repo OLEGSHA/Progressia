@@ -26,14 +26,25 @@ public final class BlockFace extends BlockRelation {
 			BOTTOM = new BlockFace( 0,  0, -1, false),
 			NORTH  = new BlockFace(+1,  0,  0, true),
 			SOUTH  = new BlockFace(-1,  0,  0, false),
-			WEST   = new BlockFace( 0, +1,  0, true),
-			EAST   = new BlockFace( 0, -1,  0, false);
+			WEST   = new BlockFace( 0, +1,  0, false),
+			EAST   = new BlockFace( 0, -1,  0, true);
 	
-	private static final ImmutableList<BlockFace> ALL_VALUES =
+	private static final ImmutableList<BlockFace> ALL_FACES =
 			ImmutableList.of(TOP, BOTTOM, NORTH, SOUTH, WEST, EAST);
 	
-	public static ImmutableList<BlockFace> getValues() {
-		return ALL_VALUES;
+	private static final ImmutableList<BlockFace> PRIMARY_FACES =
+			ImmutableList.of(TOP, NORTH, WEST);
+	
+	public static ImmutableList<BlockFace> getFaces() {
+		return ALL_FACES;
+	}
+	
+	public static ImmutableList<BlockFace> getPrimaryFaces() {
+		return PRIMARY_FACES;
+	}
+	
+	public static int count() {
+		return ALL_FACES.size();
 	}
 	
 	static {
