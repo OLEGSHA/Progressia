@@ -19,6 +19,8 @@ package ru.windcorp.progressia.common.block;
 
 import com.google.common.collect.ImmutableList;
 
+import glm.vec._3.i.Vec3i;
+
 public final class BlockFace extends BlockRelation {
 	
 	public static final BlockFace
@@ -35,16 +37,14 @@ public final class BlockFace extends BlockRelation {
 	private static final ImmutableList<BlockFace> PRIMARY_FACES =
 			ImmutableList.of(TOP, NORTH, WEST);
 	
+	public static final int BLOCK_FACE_COUNT = ALL_FACES.size();
+	
 	public static ImmutableList<BlockFace> getFaces() {
 		return ALL_FACES;
 	}
 	
 	public static ImmutableList<BlockFace> getPrimaryFaces() {
 		return PRIMARY_FACES;
-	}
-	
-	public static int count() {
-		return ALL_FACES.size();
 	}
 	
 	static {
@@ -58,11 +58,15 @@ public final class BlockFace extends BlockRelation {
 		b.counterFace = a;
 	}
 	
+	private static int nextId = 0;
+	
+	private final int id;
 	private BlockFace counterFace;
 	private final boolean isPrimary;
 
 	private BlockFace(int x, int y, int z, boolean isPrimary) {
 		super(x, y, z);
+		this.id = nextId++;
 		this.isPrimary = isPrimary;
 	}
 	
@@ -75,9 +79,42 @@ public final class BlockFace extends BlockRelation {
 		else return counterFace;
 	}
 	
+	public BlockFace getPrimaryAndMoveCursor(Vec3i cursor) {
+		if (isPrimary) return this;
+		
+		cursor.add(getVector());
+		return counterFace;
+	}
+	
 	public BlockFace getSecondary() {
 		if (isPrimary) return counterFace;
 		else return this;
+	}
+	
+	public BlockFace getSecondaryAndMoveCursor(Vec3i cursor) {
+		if (!isPrimary) return this;
+		
+		cursor.add(getVector());
+		return counterFace;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	@Override
+	public float getEuclideanDistance() {
+		return 1.0f;
+	}
+	
+	@Override
+	public int getChebyshevDistance() {
+		return 1;
+	}
+	
+	@Override
+	public int getManhattanDistance() {
+		return 1;
 	}
 
 }

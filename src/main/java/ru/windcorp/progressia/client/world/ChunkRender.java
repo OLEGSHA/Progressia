@@ -18,9 +18,11 @@
 package ru.windcorp.progressia.client.world;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import glm.mat._4.Mat4;
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.model.Model;
 import ru.windcorp.progressia.client.graphics.model.Shape;
@@ -31,9 +33,14 @@ import ru.windcorp.progressia.client.graphics.model.StaticModel.Builder;
 import ru.windcorp.progressia.client.world.renders.BlockRender;
 import ru.windcorp.progressia.client.world.renders.BlockRenderNone;
 import ru.windcorp.progressia.client.world.renders.BlockRenders;
+import ru.windcorp.progressia.client.world.renders.TileRender;
+import ru.windcorp.progressia.client.world.renders.TileRenders;
 import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizer;
 import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizerSupplier;
 import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizers;
+import ru.windcorp.progressia.common.block.BlockFace;
+import ru.windcorp.progressia.common.block.TileData;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 
 public class ChunkRender {
@@ -101,23 +108,8 @@ public class ChunkRender {
 				for (int z = 0; z < ChunkData.BLOCKS_PER_CHUNK; ++z) {
 					cursor.set(x, y, z);
 					
-					BlockRender block = getBlock(cursor);
-					
-					if (block instanceof BlockRenderNone) {
-						continue;
-					}
-					
-					forwardToOptimizers(block, x, y, z, optimizers);
-					
-					if (!block.needsOwnRenderable()) {
-						continue;
-					}
-					
-					if (tryToCreateRenderable(block, x, y, z, builder)) {
-						continue;
-					}
-					
-					addRenderAsRenderable(block, x, y, z, builder);
+					buildBlock(cursor, optimizers, builder);
+					buildBlockTiles(cursor, optimizers, builder);
 				}
 			}
 		}
@@ -133,14 +125,41 @@ public class ChunkRender {
 		needsUpdate = false;
 	}
 
-	private void forwardToOptimizers(
+	private void buildBlock(
+			Vec3i cursor,
+			Collection<ChunkRenderOptimizer> optimizers,
+			Builder builder
+	) {
+		BlockRender block = getBlock(cursor);
+		int x = cursor.x;
+		int y = cursor.y;
+		int z = cursor.z;
+		
+		if (block instanceof BlockRenderNone) {
+			return;
+		}
+		
+		forwardBlockToOptimizers(block, x, y, z, optimizers);
+		
+		if (!block.needsOwnRenderable()) {
+			return;
+		}
+		
+		if (tryToCreateBlockRenderable(block, x, y, z, builder)) {
+			return;
+		}
+		
+		addBlockRenderAsRenderable(block, x, y, z, builder);
+	}
+
+	private void forwardBlockToOptimizers(
 			BlockRender block, int x, int y, int z,
 			Collection<ChunkRenderOptimizer> optimizers
 	) {
 		optimizers.forEach(bro -> bro.processBlock(block, x, y, z));
 	}
 
-	private boolean tryToCreateRenderable(
+	private boolean tryToCreateBlockRenderable(
 			BlockRender block, int x, int y, int z,
 			Builder builder
 	) {
@@ -154,7 +173,7 @@ public class ChunkRender {
 		return true;
 	}
 
-	private void addRenderAsRenderable(
+	private void addBlockRenderAsRenderable(
 			BlockRender block, int x, int y, int z,
 			Builder builder
 	) {
@@ -162,6 +181,68 @@ public class ChunkRender {
 				block::render,
 				new Mat4().identity().translate(x, y, z)
 		);
+	}
+
+	private void buildBlockTiles(
+			Vec3i cursor,
+			Collection<ChunkRenderOptimizer> optimizers,
+			Builder builder
+	) {
+		for (BlockFace face : BlockFace.getFaces()) {
+			buildFaceTiles(cursor, face, optimizers, builder);
+		}
+	}
+
+	private void buildFaceTiles(
+			Vec3i cursor, BlockFace face,
+			Collection<ChunkRenderOptimizer> optimizers,
+			Builder builder
+	) {
+		List<TileData> tiles = getData().getTilesOrNull(cursor, face);
+		
+		if (tiles == null) {
+			return;
+		}
+		
+		for (int layer = 0; layer < tiles.size(); ++layer) {
+			
+			if (tiles.get(layer) == null) {
+				System.out.println(tiles.get(layer).getId());
+			}
+			
+			buildTile(
+					cursor, face,
+					TileRenders.get(tiles.get(layer).getId()),
+					layer,
+					optimizers, builder
+			);
+		}
+	}
+
+	private void buildTile(
+			Vec3i cursor, BlockFace face,
+			TileRender tile,
+			int layer,
+			Collection<ChunkRenderOptimizer> optimizers,
+			Builder builder
+	) {
+		// TODO implement
+		
+		Vec3 pos = Vectors.grab3().set(cursor.x, cursor.y, cursor.z);
+		
+		Vec3 offset = Vectors.grab3().set(
+				face.getVector().x, face.getVector().y, face.getVector().z
+		);
+		
+		pos.add(offset.mul(1f / 64));
+		
+		builder.addPart(
+				tile.createRenderable(face),
+				new Mat4().identity().translate(pos)
+		);
+		
+		Vectors.release(pos);
+		Vectors.release(offset);
 	}
 
 }

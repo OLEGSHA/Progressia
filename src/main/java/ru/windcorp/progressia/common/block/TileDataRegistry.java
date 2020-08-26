@@ -15,37 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.common.world;
+package ru.windcorp.progressia.common.block;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import glm.vec._3.i.Vec3i;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import ru.windcorp.progressia.common.util.CoordinatePacker;
-
-public class WorldData {
-
-	private final TLongObjectMap<ChunkData> chunks = new TLongObjectHashMap<>();
+public class TileDataRegistry {
 	
-	public WorldData() {
-		final int size = 1;
-		
-		for (int x = -(size / 2); x <= (size / 2); ++x) {
-			for (int y = -(size / 2); y <= (size / 2); ++y) {
-				chunks.put(CoordinatePacker.pack3IntsIntoLong(x, y, 0), new ChunkData(x, y, 0, this));
-			}
-		}
+	private static final Map<String, TileData> REGISTRY = new HashMap<>();
+	
+	static {
+		register(new TileData("Test", "Stones"));
 	}
 	
-	public ChunkData getChunk(Vec3i pos) {
-		long key = CoordinatePacker.pack3IntsIntoLong(pos.x, pos.y, pos.z);
-		return chunks.get(key);
+	public static TileData get(String name) {
+		return REGISTRY.get(name);
 	}
 	
-	public Collection<ChunkData> getChunks() {
-		return Collections.unmodifiableCollection(chunks.valueCollection());
+	public static void register(TileData tileData) {
+		REGISTRY.put(tileData.getId(), tileData);
 	}
-	
+
 }

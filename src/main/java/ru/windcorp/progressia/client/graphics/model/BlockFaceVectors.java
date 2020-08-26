@@ -11,13 +11,13 @@ class BlockFaceVectors {
 
 	private static BlockFaceVectors createInner(BlockFaceVectors outer) {
 		ImmutableMap.Builder<BlockFace, Vec3> originBuilder =
-				ImmutableMap.builderWithExpectedSize(count());
+				ImmutableMap.builder();
 		
 		ImmutableMap.Builder<BlockFace, Vec3> widthBuilder =
-				ImmutableMap.builderWithExpectedSize(count());
+				ImmutableMap.builder();
 		
 		ImmutableMap.Builder<BlockFace, Vec3> heightBuilder =
-				ImmutableMap.builderWithExpectedSize(count());
+				ImmutableMap.builder();
 		
 		for (BlockFace face : getFaces()) {
 			Vec3 width = outer.getWidth(face);
@@ -43,7 +43,7 @@ class BlockFaceVectors {
 
 	static {
 		OUTER = new BlockFaceVectors(
-				ImmutableMap.<BlockFace, Vec3>builderWithExpectedSize(count())
+				ImmutableMap.<BlockFace, Vec3>builder()
 				
 				.put(TOP,    new Vec3(-0.5f, +0.5f, +0.5f))
 				.put(BOTTOM, new Vec3(-0.5f, -0.5f, -0.5f))
@@ -54,7 +54,7 @@ class BlockFaceVectors {
 				
 				.build(),
 				
-				ImmutableMap.<BlockFace, Vec3>builderWithExpectedSize(count())
+				ImmutableMap.<BlockFace, Vec3>builder()
 				
 				.put(TOP,    new Vec3( 0, -1,  0))
 				.put(BOTTOM, new Vec3( 0, +1,  0))
@@ -65,7 +65,7 @@ class BlockFaceVectors {
 				
 				.build(),
 				
-				ImmutableMap.<BlockFace, Vec3>builderWithExpectedSize(count())
+				ImmutableMap.<BlockFace, Vec3>builder()
 				
 				.put(TOP,    new Vec3(+1,  0,  0))
 				.put(BOTTOM, new Vec3(+1,  0,  0))

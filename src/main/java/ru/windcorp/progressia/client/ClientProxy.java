@@ -30,6 +30,7 @@ import ru.windcorp.progressia.client.graphics.texture.Atlases;
 import ru.windcorp.progressia.client.graphics.world.LayerWorld;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.renders.BlockRenders;
+import ru.windcorp.progressia.client.world.renders.TileRenders;
 import ru.windcorp.progressia.common.resource.ResourceManager;
 
 public class ClientProxy implements Proxy {
@@ -47,6 +48,7 @@ public class ClientProxy implements Proxy {
 		}
 		
 		BlockRenders.registerTest();
+		TileRenders.registerTest();
 		Atlases.loadAllAtlases();
 		
 		GUI.addBottomLayer(new LayerWorld());
