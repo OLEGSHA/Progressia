@@ -21,6 +21,7 @@ import org.lwjgl.glfw.GLFW;
 
 import glm.mat._3.Mat3;
 import glm.vec._3.Vec3;
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.Layer;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
@@ -29,8 +30,9 @@ import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.world.WorldRender;
-import ru.windcorp.progressia.common.block.BlockData;
 import ru.windcorp.progressia.common.block.BlockDataRegistry;
+import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.WorldData;
 
 public class LayerWorld extends Layer {
@@ -44,16 +46,12 @@ public class LayerWorld extends Layer {
 	);
 	
 	private final Vec3 velocity = new Vec3();
-	private final Vec3 tmp = new Vec3();
 	
 	private final Mat3 angMat = new Mat3();
 
 	private int movementForward = 0;
 	private int movementRight = 0;
 	private int movementUp = 0;
-	
-	private static final boolean I_WANT_TO_THROW_UP = false;
-	private float shakeParam = 0;
 	
 	private final WorldRenderHelper helper = new WorldRenderHelper();
 	
@@ -82,31 +80,26 @@ public class LayerWorld extends Layer {
 		helper.reset();
 		
 		angMat.set().rotateZ(-camera.getYaw());
-
-		tmp.set(movementForward, -movementRight, 0);
-		if (movementForward != 0 && movementRight != 0) tmp.normalize();
-		angMat.mul_(tmp); // bug in jglm
-		tmp.z = movementUp;
-		tmp.mul(0.1f);
-		tmp.sub(velocity);
-		tmp.mul(0.1f);
-		velocity.add(tmp);
-		tmp.set(velocity);
-		tmp.mul((float) (GraphicsInterface.getFrameLength() * 60));
-		camera.move(tmp);
 		
-		if (I_WANT_TO_THROW_UP) {
-			shakeParam += tmp.set(tmp.x, 0, tmp.z).length() * 1.5f;
-			float vel = tmp.set(velocity).set(tmp.x, 0, tmp.z).length() * 0.7f;
-			
-			helper.pushViewTransform().translate(
-					(float) Math.sin(shakeParam) * vel,
-					(float) Math.sin(2 * shakeParam) * vel,
-					0.25f
-			).rotateZ(
-					(float) Math.sin(shakeParam) * vel * 0.15f
-			);
-		}
+		Vec3 movement = Vectors.grab3();
+		
+		movement.set(movementForward, -movementRight, 0);
+		if (movementForward != 0 && movementRight != 0) movement.normalize();
+		angMat.mul_(movement); // bug in jglm
+		movement.z = movementUp;
+		movement.mul(0.1f);
+		movement.sub(velocity);
+		movement.mul(0.1f);
+		velocity.add(movement);
+		
+		Vectors.release(movement);
+		
+		Vec3 velCopy = Vectors.grab3().set(velocity);
+		
+		velCopy.mul((float) (GraphicsInterface.getFrameLength() * 60));
+		camera.move(velCopy);
+		
+		Vectors.release(velCopy);
 	}
 
 	private void renderWorld() {
@@ -174,13 +167,19 @@ public class LayerWorld extends Layer {
 		case GLFW.GLFW_KEY_G:
 			if (!event.isPress()) return;
 			
-			BlockData[][][] data = world.getData().getChunk(0, 0, 0).tmp_getBlocks();
-			if (data[0][0][0].getId().equals("Test:Stone")) {
-				data[0][0][0] = BlockDataRegistry.get("Test:Glass");
+			Vec3i pos = Vectors.grab3i().set(0, 0, 0);
+			Vec3i chunkPos = Vectors.grab3i().set(0, 0, 0);
+			
+			ChunkData chunk = world.getData().getChunk(chunkPos);
+			if (chunk.getBlock(pos).getId().equals("Test:Stone")) {
+				chunk.setBlock(pos, BlockDataRegistry.get("Test:Glass"));
 			} else {
-				data[0][0][0] = BlockDataRegistry.get("Test:Stone");
+				chunk.setBlock(pos, BlockDataRegistry.get("Test:Stone"));
 			}
-			world.getChunk(0, 0, 0).markForUpdate();
+			world.getChunk(chunkPos).markForUpdate();
+			
+			Vectors.release(pos);
+			Vectors.release(chunkPos);
 			
 			break;
 		}

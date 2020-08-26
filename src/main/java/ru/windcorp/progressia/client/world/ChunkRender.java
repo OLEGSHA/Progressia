@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import glm.mat._4.Mat4;
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.model.Model;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
@@ -64,10 +65,8 @@ public class ChunkRender {
 		return needsUpdate;
 	}
 	
-	public BlockRender getBlock(int xInChunk, int yInChunk, int zInChunk) {
-		return BlockRenders.get(
-				getData().getBlock(xInChunk, yInChunk, zInChunk).getId()
-		);
+	public BlockRender getBlock(Vec3i posInChunk) {
+		return BlockRenders.get(getData().getBlock(posInChunk).getId());
 	}
 	
 	public void render(ShapeRenderHelper renderer) {
@@ -96,11 +95,13 @@ public class ChunkRender {
 		
 		StaticModel.Builder builder = StaticModel.builder();
 		
+		Vec3i cursor = new Vec3i();
 		for (int x = 0; x < ChunkData.BLOCKS_PER_CHUNK; ++x) {
 			for (int y = 0; y < ChunkData.BLOCKS_PER_CHUNK; ++y) {
 				for (int z = 0; z < ChunkData.BLOCKS_PER_CHUNK; ++z) {
+					cursor.set(x, y, z);
 					
-					BlockRender block = getBlock(x, y, z);
+					BlockRender block = getBlock(cursor);
 					
 					if (block instanceof BlockRenderNone) {
 						continue;

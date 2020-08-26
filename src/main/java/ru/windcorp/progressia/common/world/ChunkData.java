@@ -24,14 +24,13 @@ import ru.windcorp.progressia.common.block.BlockDataRegistry;
 public class ChunkData {
 	
 	public static final int BLOCKS_PER_CHUNK = 16;
+	public static final int TILES_PER_FACE = 8;
 	
-	private final int x;
-	private final int y;
-	private final int z;
+	private final Vec3i position = new Vec3i();
 	
-	private final BlockData[][][] blocks = new BlockData[BLOCKS_PER_CHUNK]
-	                                                    [BLOCKS_PER_CHUNK]
-	                                                    [BLOCKS_PER_CHUNK];
+	private final BlockData[] blocks = new BlockData[
+		BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK
+	];
 	
 	private final BlockData grass = BlockDataRegistry.get("Test:Grass");
 	private final BlockData dirt = BlockDataRegistry.get("Test:Dirt");
@@ -39,15 +38,9 @@ public class ChunkData {
 	private final BlockData air = BlockDataRegistry.get("Test:Air");
 	
 	public ChunkData(int x, int y, int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.position.set(x, y, z);
 		
 		tmp_generate();
-	}
-	
-	public BlockData[][][] tmp_getBlocks() {
-		return blocks;
 	}
 	
 	private void tmp_generate() {
@@ -59,15 +52,15 @@ public class ChunkData {
 				for (int z = 0; z < BLOCKS_PER_CHUNK; ++z) {
 					
 					pos.set(x, y, z);
-					
 					float f = aPoint.sub(pos, pos).length();
+					pos.set(x, y, z);
 					
 					if (f > 17) {
-						blocks[x][y][z] = stone;
+						setBlock(pos, stone);
 					} else if (f > 14) {
-						blocks[x][y][z] = dirt;
+						setBlock(pos, dirt);
 					} else {
-						blocks[x][y][z] = air;
+						setBlock(pos, air);
 					}
 					
 				}
@@ -76,42 +69,69 @@ public class ChunkData {
 		
 		for (int x = 0; x < BLOCKS_PER_CHUNK; ++x) {
 			for (int y = 0; y < BLOCKS_PER_CHUNK; ++y) {
-				int z;
-				for (z = BLOCKS_PER_CHUNK - 1; z >= 0 && blocks[x][y][z] == air; --z);
+				pos.set(x, y, 0);
 				
-				blocks[x][y][z] = grass;
+				for (pos.z = BLOCKS_PER_CHUNK - 1; pos.z >= 0 && getBlock(pos) == air; --pos.z);
+				
+				setBlock(pos, grass);
 			}
 		}
 	}
 
-	public BlockData getBlock(int xInChunk, int yInChunk, int zInChunk) {
-		if (!isInBounds(xInChunk, yInChunk, zInChunk)) {
+	public BlockData getBlock(Vec3i posInChunk) {
+		if (!isInBounds(posInChunk)) {
 			throw new IllegalArgumentException(
-					"Coordinates (" + x + "; " + y + "; " + z + ") "
+					"Coordinates " + str(posInChunk) + " "
 							+ "are not legal chunk coordinates"
 			);
 		}
 		
-		return blocks[xInChunk][yInChunk][zInChunk];
+		return blocks[getBlockIndex(posInChunk)];
+	}
+
+	public void setBlock(Vec3i posInChunk, BlockData block) {
+		if (!isInBounds(posInChunk)) {
+			throw new IllegalArgumentException(
+					"Coordinates " + str(posInChunk) + " "
+							+ "are not legal chunk coordinates"
+			);
+		}
+		
+		blocks[getBlockIndex(posInChunk)] = block;
 	}
 	
-	private boolean isInBounds(int xInChunk, int yInChunk, int zInChunk) {
+	private boolean isInBounds(Vec3i posInChunk) {
 		return
-				xInChunk >= 0 && xInChunk < BLOCKS_PER_CHUNK ||
-				yInChunk >= 0 && yInChunk < BLOCKS_PER_CHUNK ||
-				zInChunk >= 0 && zInChunk < BLOCKS_PER_CHUNK;
+				posInChunk.x >= 0 && posInChunk.x < BLOCKS_PER_CHUNK &&
+				posInChunk.y >= 0 && posInChunk.y < BLOCKS_PER_CHUNK &&
+				posInChunk.z >= 0 && posInChunk.z < BLOCKS_PER_CHUNK;
+	}
+	
+	private int getBlockIndex(Vec3i posInChunk) {
+		return
+				posInChunk.z * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK +
+				posInChunk.y * BLOCKS_PER_CHUNK +
+				posInChunk.x;
 	}
 	
 	public int getX() {
-		return x;
+		return position.x;
 	}
 	
 	public int getY() {
-		return y;
+		return position.y;
 	}
 	
 	public int getZ() {
-		return z;
+		return position.z;
+	}
+	
+	public Vec3i getPosition() {
+		return position;
+	}
+	
+	private static String str(Vec3i v) {
+		return "(" + v.x + "; " + v.y + "; " + v.z + ")";
 	}
 
 }

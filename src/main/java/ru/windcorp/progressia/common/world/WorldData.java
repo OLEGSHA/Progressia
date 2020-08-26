@@ -20,6 +20,7 @@ package ru.windcorp.progressia.common.world;
 import java.util.Collection;
 import java.util.Collections;
 
+import glm.vec._3.i.Vec3i;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
@@ -38,8 +39,8 @@ public class WorldData {
 		}
 	}
 	
-	public ChunkData getChunk(int x, int y, int z) {
-		long key = CoordinatePacker.pack3IntsIntoLong(x, y, z);
+	public ChunkData getChunk(Vec3i pos) {
+		long key = CoordinatePacker.pack3IntsIntoLong(pos.x, pos.y, pos.z);
 		return chunks.get(key);
 	}
 	

@@ -20,6 +20,7 @@ package ru.windcorp.progressia.client.graphics.model;
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
+import ru.windcorp.progressia.common.util.Vectors;
 
 public class Shapes {
 	
@@ -42,8 +43,8 @@ public class Shapes {
 			Texture westTexture
 	) {
 		
-		Vec3 faceOrigin = new Vec3();
-		Vec3 faceWidth = new Vec3();
+		Vec3 faceOrigin = Vectors.grab3();
+		Vec3 faceWidth = Vectors.grab3();
 		
 		Face top = Faces.createRectangle(
 				program,
@@ -104,6 +105,9 @@ public class Shapes {
 				program,
 				top, bottom, north, south, east, west
 		);
+		
+		Vectors.release(faceOrigin);
+		Vectors.release(faceWidth);
 		
 		return result;
 	}

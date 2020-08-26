@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.WorldData;
@@ -47,8 +48,8 @@ public class WorldRender {
 		return chunks.get(chunkData);
 	}
 	
-	public ChunkRender getChunk(int x, int y, int z) {
-		return chunks.get(getData().getChunk(x, y, z));
+	public ChunkRender getChunk(Vec3i pos) {
+		return chunks.get(getData().getChunk(pos));
 	}
 	
 	public Collection<ChunkRender> getChunks() {
