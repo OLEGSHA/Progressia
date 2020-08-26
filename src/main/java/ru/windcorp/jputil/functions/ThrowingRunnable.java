@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * JPUtil
+ * Copyright (C) 2019  Javapony/OLEGSHA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,49 +15,50 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.common.util;
+package ru.windcorp.jputil.functions;
 
 import java.util.function.Consumer;
 
-import com.google.common.base.Throwables;
-
 @FunctionalInterface
-public interface ThrowingRunnable<T extends Throwable> {
-	
-	void run() throws T;
-	
-	default Runnable withCatcher(
-			Consumer<T> catcher,
-			Class<T> throwableClass
-	) {
-		return () -> {
-			
-			try {
-				ThrowingRunnable.this.run();
-			} catch (Throwable t) {
-				if (t.getClass() == throwableClass) {
-					catcher.accept(throwableClass.cast(t));
-				}
-				
-				Throwables.throwIfUnchecked(t);
-				
-				// This should never happen
-				throw new AssertionError("This should not have been thrown", t);
-			}
-			
-		};
-	}
-	
-	default Runnable withCatcher(
-			Consumer<Throwable> catcher
-	) {
-		return () -> {
-			try {
-				ThrowingRunnable.this.run();
-			} catch (Throwable t) {
-				catcher.accept(t);
-			}
-		};
-	}
+public interface ThrowingRunnable<E extends Exception> {
 
+	void run() throws E;
+	
+	@SuppressWarnings("unchecked")
+	default Runnable withHandler(Consumer<? super E> handler) {
+		return () -> {
+			try {
+				run();
+			} catch (RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				handler.accept((E) e);
+			}
+		};
+	}
+	
+	public static <E extends Exception> ThrowingRunnable<E> concat(
+			ThrowingRunnable<? extends E> first,
+			ThrowingRunnable<? extends E> second
+	) {
+		return () -> {
+			first.run();
+			second.run();
+		};
+	}
+	
+	public static <E extends Exception> ThrowingRunnable<E> concat(Runnable first, ThrowingRunnable<E> second) {
+		return () -> {
+			first.run();
+			second.run();
+		};
+	}
+	
+	public static <E extends Exception> ThrowingRunnable<E> concat(ThrowingRunnable<E> first, Runnable second) {
+		return () -> {
+			first.run();
+			second.run();
+		};
+	}
+	
 }

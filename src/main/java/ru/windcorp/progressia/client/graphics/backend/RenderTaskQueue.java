@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import ru.windcorp.progressia.common.util.ThrowingRunnable;
+import ru.windcorp.jputil.functions.ThrowingRunnable;
 
 public class RenderTaskQueue {
 	
@@ -46,9 +46,9 @@ public class RenderTaskQueue {
 	private static final Object WAIT_AND_INVOKE_MONITOR = new Object();
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends Throwable> void waitAndInvoke(
-			ThrowingRunnable<T> task
-	 ) throws InterruptedException, T {
+	public static <E extends Exception> void waitAndInvoke(
+			ThrowingRunnable<E> task
+	 ) throws InterruptedException, E {
 		
 		if (GraphicsInterface.isRenderThread()) {
 			task.run();
@@ -91,7 +91,7 @@ public class RenderTaskQueue {
 				throw (Error) thrown;
 			}
 			
-			throw (T) thrown; // Guaranteed
+			throw (E) thrown; // Guaranteed
 		}
 	}
 	
