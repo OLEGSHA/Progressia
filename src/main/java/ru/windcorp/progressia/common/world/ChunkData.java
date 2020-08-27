@@ -59,12 +59,14 @@ public class ChunkData {
 	}
 	
 	private void tmp_generate() {
-		BlockData grass = BlockDataRegistry.get("Test:Grass");
 		BlockData dirt = BlockDataRegistry.get("Test:Dirt");
 		BlockData stone = BlockDataRegistry.get("Test:Stone");
 		BlockData air = BlockDataRegistry.get("Test:Air");
-		
+
+		TileData grass = TileDataRegistry.get("Test:Grass");
 		TileData stones = TileDataRegistry.get("Test:Stones");
+		TileData flowers = TileDataRegistry.get("Test:YellowFlowers");
+		TileData sand = TileDataRegistry.get("Test:Sand");
 	
 		Vec3i aPoint = new Vec3i(5, 0, BLOCKS_PER_CHUNK + BLOCKS_PER_CHUNK/2);
 		Vec3i pos = new Vec3i();
@@ -95,11 +97,25 @@ public class ChunkData {
 				
 				for (pos.z = BLOCKS_PER_CHUNK - 1; pos.z >= 0 && getBlock(pos) == air; --pos.z);
 				
-				setBlock(pos, grass);
+				getTiles(pos, BlockFace.TOP).add(grass);
+				for (BlockFace face : BlockFace.getFaces()) {
+					if (face.getVector().z != 0) continue;
+					getTiles(pos, face).add(grass);
+				}
 				
-				int hash = x*x * 13 ^ y*y * 37 ^ pos.z*pos.z * 129;
+				int hash = x*x * 19 ^ y*y * 41 ^ pos.z*pos.z * 147;
+				if (hash % 5 == 0) {
+					getTiles(pos, BlockFace.TOP).add(sand);
+				}
+				
+				hash = x*x * 13 ^ y*y * 37 ^ pos.z*pos.z * 129;
 				if (hash % 5 == 0) {
 					getTiles(pos, BlockFace.TOP).add(stones);
+				}
+				
+				hash = x*x * 17 ^ y*y * 39 ^ pos.z*pos.z * 131;
+				if (hash % 9 == 0) {
+					getTiles(pos, BlockFace.TOP).add(flowers);
 				}
 			}
 		}
@@ -218,8 +234,8 @@ public class ChunkData {
 		return
 				(blockInChunk.x == min && face == SOUTH ) ||
 				(blockInChunk.x == max && face == NORTH ) ||
-				(blockInChunk.y == min && face == WEST  ) ||
-				(blockInChunk.y == max && face == EAST  ) ||
+				(blockInChunk.y == min && face == EAST  ) ||
+				(blockInChunk.y == max && face == WEST  ) ||
 				(blockInChunk.z == min && face == BOTTOM) ||
 				(blockInChunk.z == max && face == TOP   );
 	}

@@ -34,9 +34,7 @@ public class BlockRenders {
 	private static final AtlasGroup BLOCKS_ATLAS_GROUP =
 			new AtlasGroup("Blocks", 1 << 12);
 	
-	private static Texture grassTop = getTexture("grass_top");
-	private static Texture grassSide = getTexture("grass_side");
-	private static Texture dirt = getTexture("grass_bottom");
+	private static Texture dirt = getTexture("dirt");
 	private static Texture stone = getTexture("stone");
 	private static Texture glass = getTexture("glass_clear");
 	private static Texture compass = getTexture("compass");
@@ -44,7 +42,6 @@ public class BlockRenders {
 	private BlockRenders() {}
 	
 	public static void registerTest() {
-		register(new BlockRenderOpaqueCube("Test", "Grass", grassTop, dirt, grassSide, grassSide, grassSide, grassSide));
 		register(new BlockRenderOpaqueCube("Test", "Dirt", dirt, dirt, dirt, dirt, dirt, dirt));
 		register(new BlockRenderOpaqueCube("Test", "Stone", stone, stone, stone, stone, stone, stone));
 

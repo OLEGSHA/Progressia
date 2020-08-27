@@ -37,7 +37,11 @@ public class TileRenders {
 	private TileRenders() {}
 	
 	public static void registerTest() {
+		register(new TileRenderGrass("Test", "Grass", getTexture("grass_top"), getTexture("grass_side")));
+		
 		register(new TileRenderSimple("Test", "Stones", getTexture("stones")));
+		register(new TileRenderSimple("Test", "YellowFlowers", getTexture("yellow_flowers")));
+		register(new TileRenderSimple("Test", "Sand", getTexture("sand")));
 	}
 	
 	public static TileRender get(String name) {

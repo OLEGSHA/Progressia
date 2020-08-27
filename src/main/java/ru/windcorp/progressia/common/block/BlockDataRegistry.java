@@ -25,7 +25,6 @@ public class BlockDataRegistry {
 	private static final Map<String, BlockData> REGISTRY = new HashMap<>();
 	
 	static {
-		register(new BlockData("Test", "Grass"));
 		register(new BlockData("Test", "Dirt"));
 		register(new BlockData("Test", "Stone"));
 		register(new BlockData("Test", "Air"));

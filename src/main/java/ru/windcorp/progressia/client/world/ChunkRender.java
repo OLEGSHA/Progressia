@@ -19,13 +19,13 @@ package ru.windcorp.progressia.client.world;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.model.Model;
-import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.StaticModel;
 import ru.windcorp.progressia.client.graphics.model.WorldRenderable;
@@ -114,12 +114,10 @@ public class ChunkRender {
 			}
 		}
 		
-		for (ChunkRenderOptimizer optimizer : optimizers) {
-			Shape result = optimizer.endRender();
-			if (result != null) {
-				builder.addPart(result);
-			}
-		}
+		optimizers.stream()
+				.map(ChunkRenderOptimizer::endRender)
+				.filter(Objects::nonNull)
+				.forEach(builder::addPart);
 		
 		model = new StaticModel(builder);
 		needsUpdate = false;
@@ -131,55 +129,41 @@ public class ChunkRender {
 			Builder builder
 	) {
 		BlockRender block = getBlock(cursor);
-		int x = cursor.x;
-		int y = cursor.y;
-		int z = cursor.z;
 		
 		if (block instanceof BlockRenderNone) {
 			return;
 		}
 		
-		forwardBlockToOptimizers(block, x, y, z, optimizers);
+		forwardBlockToOptimizers(block, cursor, optimizers);
 		
 		if (!block.needsOwnRenderable()) {
 			return;
 		}
 		
-		if (tryToCreateBlockRenderable(block, x, y, z, builder)) {
-			return;
-		}
-		
-		addBlockRenderAsRenderable(block, x, y, z, builder);
+		addBlockRenderable(block, cursor, builder);
 	}
 
 	private void forwardBlockToOptimizers(
-			BlockRender block, int x, int y, int z,
+			BlockRender block, Vec3i cursor,
 			Collection<ChunkRenderOptimizer> optimizers
 	) {
-		optimizers.forEach(bro -> bro.processBlock(block, x, y, z));
+		optimizers.forEach(cro -> cro.processBlock(block, cursor));
 	}
-
-	private boolean tryToCreateBlockRenderable(
-			BlockRender block, int x, int y, int z,
+	
+	private void addBlockRenderable(
+			BlockRender block,
+			Vec3i cursor,
 			Builder builder
 	) {
 		WorldRenderable renderable = block.createRenderable();
 		
 		if (renderable == null) {
-			return false;
+			renderable = block::render;
 		}
 		
-		builder.addPart(renderable, new Mat4().identity().translate(x, y, z));
-		return true;
-	}
-
-	private void addBlockRenderAsRenderable(
-			BlockRender block, int x, int y, int z,
-			Builder builder
-	) {
 		builder.addPart(
-				block::render,
-				new Mat4().identity().translate(x, y, z)
+				renderable,
+				new Mat4().identity().translate(cursor.x, cursor.y, cursor.z)
 		);
 	}
 
@@ -229,6 +213,13 @@ public class ChunkRender {
 		// TODO implement
 		
 		Vec3 pos = Vectors.grab3().set(cursor.x, cursor.y, cursor.z);
+		
+		optimizers.forEach(cro -> cro.processTile(tile, cursor, face));
+		
+		if (!tile.needsOwnRenderable()) {
+			Vectors.release(pos);
+			return;
+		}
 		
 		Vec3 offset = Vectors.grab3().set(
 				face.getVector().x, face.getVector().y, face.getVector().z

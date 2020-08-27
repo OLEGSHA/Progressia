@@ -17,15 +17,26 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client.world.renders.cro;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.world.ChunkRender;
 import ru.windcorp.progressia.client.world.renders.BlockRender;
+import ru.windcorp.progressia.client.world.renders.TileRender;
+import ru.windcorp.progressia.common.block.BlockFace;
 
 public abstract class ChunkRenderOptimizer {
 	
 	public abstract void startRender(ChunkRender chunk);
 	
-	public abstract void processBlock(BlockRender block, int x, int y, int z);
+	public abstract void processBlock(
+			BlockRender block,
+			Vec3i posInChunk
+	);
+	
+	public abstract void processTile(
+			TileRender tile,
+			Vec3i posInChunk, BlockFace face
+	);
 	
 	public abstract Shape endRender();
 

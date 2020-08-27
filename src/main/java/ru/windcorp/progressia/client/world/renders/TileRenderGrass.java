@@ -12,23 +12,28 @@ import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizerCube.
 import ru.windcorp.progressia.common.block.BlockFace;
 import ru.windcorp.progressia.common.util.Vectors;
 
-public class TileRenderSimple extends TileRender implements OpaqueTile {
+public class TileRenderGrass extends TileRender implements OpaqueTile {
 	
-	private final Texture texture;
+	private final Texture topTexture;
+	private final Texture sideTexture;
 	
-	public TileRenderSimple(String namespace, String name, Texture texture) {
+	public TileRenderGrass(
+			String namespace, String name,
+			Texture top, Texture side
+	) {
 		super(namespace, name);
-		this.texture = texture;
+		this.topTexture = top;
+		this.sideTexture = side;
 	}
 
 	@Override
 	public Texture getTexture(BlockFace face) {
-		return texture;
+		return (face == BlockFace.TOP) ? topTexture : sideTexture;
 	}
 	
 	@Override
 	public boolean isOpaque(BlockFace face) {
-		return false;
+		return face == BlockFace.TOP;
 	}
 	
 	@Override
