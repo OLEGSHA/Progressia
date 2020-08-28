@@ -29,8 +29,6 @@ import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.localization.Localizer;
 
-import java.net.http.WebSocket;
-
 public class LayerTestGUI extends GUILayer {
 	
 	private static class DebugComponent extends Component {
