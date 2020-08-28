@@ -27,6 +27,9 @@ import ru.windcorp.progressia.client.graphics.gui.event.HoverEvent;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
+import ru.windcorp.progressia.client.localization.Localizer;
+
+import java.net.http.WebSocket;
 
 public class LayerTestGUI extends GUILayer {
 	
@@ -77,13 +80,15 @@ public class LayerTestGUI extends GUILayer {
 		
 		Component charlie = new DebugComponent("Charlie", null, 0x222222);
 		charlie.setLayout(new LayoutVertical());
-		
+
+		//Debug
+		Localizer.getInstance().setLanguage("ru-RU");
 		// These two are swapped in code due to a bug in layouts, fixing ATM
 		charlie.addChild(
 				new Label(
 						"Epsilon",
 						new Font().withColor(0x4444BB).deriveItalic(),
-						"Hooray?.. \u269b"
+						Localizer.getInstance().getValue("Epsilon")+"\u269b"
 				)
 		);
 		charlie.addChild(
