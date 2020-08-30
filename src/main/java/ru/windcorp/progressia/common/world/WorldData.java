@@ -24,6 +24,7 @@ import glm.vec._3.i.Vec3i;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
+import ru.windcorp.progressia.common.util.Vectors;
 
 public class WorldData {
 
@@ -42,6 +43,14 @@ public class WorldData {
 	public ChunkData getChunk(Vec3i pos) {
 		long key = CoordinatePacker.pack3IntsIntoLong(pos.x, pos.y, pos.z);
 		return chunks.get(key);
+	}
+	
+	public ChunkData getChunkByBlock(Vec3i blockInWorld) {
+		Vec3i chunkPos = Vectors.grab3i();
+		Coordinates.convertInWorldToChunk(blockInWorld, chunkPos);
+		ChunkData result = getChunk(chunkPos);
+		Vectors.release(chunkPos);
+		return result;
 	}
 	
 	public Collection<ChunkData> getChunks() {

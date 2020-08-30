@@ -21,7 +21,8 @@ import org.lwjgl.glfw.GLFW;
 
 import glm.mat._3.Mat3;
 import glm.vec._3.Vec3;
-import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.client.Client;
+import ru.windcorp.progressia.client.comms.controls.InputBasedControls;
 import ru.windcorp.progressia.client.graphics.Layer;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
@@ -29,21 +30,9 @@ import ru.windcorp.progressia.client.graphics.input.CursorMoveEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
-import ru.windcorp.progressia.client.world.WorldRender;
-import ru.windcorp.progressia.common.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.WorldData;
 
 public class LayerWorld extends Layer {
-	
-	public static Camera tmp_the_camera;
-	
-	private final Camera camera = new Camera(
-			new Vec3(-6, -6, 20),
-			(float) Math.toRadians(-40), (float) Math.toRadians(-45),
-			(float) Math.toRadians(70)
-	);
 	
 	private final Vec3 velocity = new Vec3();
 	
@@ -55,11 +44,13 @@ public class LayerWorld extends Layer {
 	
 	private final WorldRenderHelper helper = new WorldRenderHelper();
 	
-	private final WorldRender world = new WorldRender(new WorldData());
+	private final Client client;
+	private final InputBasedControls inputBasedControls;
 
-	public LayerWorld() {
+	public LayerWorld(Client client) {
 		super("World");
-		tmp_the_camera = camera;
+		this.client = client;
+		this.inputBasedControls = new InputBasedControls(client);
 	}
 	
 	@Override
@@ -75,11 +66,11 @@ public class LayerWorld extends Layer {
 	
 	@Override
 	protected void doRender() {
-		camera.apply(helper);
+		client.getCamera().apply(helper);
 		renderWorld();
 		helper.reset();
 		
-		angMat.set().rotateZ(-camera.getYaw());
+		angMat.set().rotateZ(-client.getCamera().getYaw());
 		
 		Vec3 movement = Vectors.grab3();
 		
@@ -97,13 +88,17 @@ public class LayerWorld extends Layer {
 		Vec3 velCopy = Vectors.grab3().set(velocity);
 		
 		velCopy.mul((float) (GraphicsInterface.getFrameLength() * 60));
-		camera.move(velCopy);
+		client.getCamera().move(velCopy);
 		
 		Vectors.release(velCopy);
+		
+		if (GraphicsBackend.getFramesRendered() % 60 == 0) {
+			System.out.println(GraphicsInterface.getFPS());
+		}
 	}
 
 	private void renderWorld() {
-		world.render(helper);
+		this.client.getWorld().render(helper);
 	}
 	
 	@Override
@@ -113,22 +108,23 @@ public class LayerWorld extends Layer {
 		InputEvent event = input.getEvent();
 		
 		if (event instanceof KeyEvent) {
-			onKeyEvent((KeyEvent) event);
-			input.consume();
+			if (onKeyEvent((KeyEvent) event)) {
+				input.consume();
+			}
 		} else if (event instanceof CursorMoveEvent) {
 			onMouseMoved((CursorMoveEvent) event);
 			input.consume();
 		}
-	}
-	
-	public Camera getCamera() {
-		return camera;
+		
+		if (!input.isConsumed()) {
+			inputBasedControls.handleInput(input);
+		}
 	}
 	
 	private boolean flag = true;
 	
-	private void onKeyEvent(KeyEvent event) {
-		if (event.isRepeat()) return;
+	private boolean onKeyEvent(KeyEvent event) {
+		if (event.isRepeat()) return false;
 		
 		int multiplier = event.isPress() ? 1 : -1;
 		
@@ -153,7 +149,7 @@ public class LayerWorld extends Layer {
 			break;
 			
 		case GLFW.GLFW_KEY_ESCAPE:
-			if (!event.isPress()) return;
+			if (!event.isPress()) return false;
 			
 			if (flag) {
 				GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
@@ -164,25 +160,11 @@ public class LayerWorld extends Layer {
 			flag = !flag;
 			break;
 			
-		case GLFW.GLFW_KEY_G:
-			if (!event.isPress()) return;
-			
-			Vec3i pos = Vectors.grab3i().set(0, 0, 0);
-			Vec3i chunkPos = Vectors.grab3i().set(0, 0, 0);
-			
-			ChunkData chunk = world.getData().getChunk(chunkPos);
-			if (chunk.getBlock(pos).getId().equals("Test:Stone")) {
-				chunk.setBlock(pos, BlockDataRegistry.get("Test:Glass"));
-			} else {
-				chunk.setBlock(pos, BlockDataRegistry.get("Test:Stone"));
-			}
-			world.getChunk(chunkPos).markForUpdate();
-			
-			Vectors.release(pos);
-			Vectors.release(chunkPos);
-			
-			break;
+		default:
+			return false;
 		}
+		
+		return true;
 	}
 	
 	private void onMouseMoved(CursorMoveEvent event) {
@@ -191,7 +173,7 @@ public class LayerWorld extends Layer {
 		final float yawScale = 0.002f;
 		final float pitchScale = yawScale;
 		
-		camera.turn(
+		client.getCamera().turn(
 				(float) (event.getChangeY() * pitchScale),
 				(float) (event.getChangeX() * yawScale)
 		);

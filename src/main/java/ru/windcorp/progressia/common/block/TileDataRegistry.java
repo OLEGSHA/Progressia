@@ -24,13 +24,6 @@ public class TileDataRegistry {
 	
 	private static final Map<String, TileData> REGISTRY = new HashMap<>();
 	
-	static {
-		register(new TileData("Test", "Grass"));
-		register(new TileData("Test", "Stones"));
-		register(new TileData("Test", "YellowFlowers"));
-		register(new TileData("Test", "Sand"));
-	}
-	
 	public static TileData get(String name) {
 		return REGISTRY.get(name);
 	}

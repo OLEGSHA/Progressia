@@ -22,6 +22,7 @@ import org.lwjgl.glfw.GLFW;
 import com.google.common.eventbus.Subscribe;
 
 import glm.mat._4.Mat4;
+import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
@@ -29,7 +30,6 @@ import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.model.LambdaModel;
 import ru.windcorp.progressia.client.graphics.texture.SimpleTextures;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.client.graphics.world.LayerWorld;
 
 public class LayerTestUI extends AssembledFlatLayer {
 
@@ -73,7 +73,7 @@ public class LayerTestUI extends AssembledFlatLayer {
 		target.addCustomRenderer(new LambdaModel(LambdaModel.lambdaBuilder()
 				.addDynamicPart(
 						target.createRectagle(0, 0, texSize, texSize, 0xFFFFFF, compassFg),
-						mat -> mat.translate(texSize/2, texSize/2, 0).rotateZ(LayerWorld.tmp_the_camera.getYaw()).translate(-texSize/2, -texSize/2, 0)
+						mat -> mat.translate(texSize/2, texSize/2, 0).rotateZ(ClientState.getInstance().getCamera().getYaw()).translate(-texSize/2, -texSize/2, 0)
 				)
 		));
 		target.popTransform();

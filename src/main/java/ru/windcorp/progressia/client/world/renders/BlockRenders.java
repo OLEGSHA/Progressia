@@ -33,23 +33,8 @@ public class BlockRenders {
 	
 	private static final AtlasGroup BLOCKS_ATLAS_GROUP =
 			new AtlasGroup("Blocks", 1 << 12);
-	
-	private static Texture dirt = getTexture("dirt");
-	private static Texture stone = getTexture("stone");
-	private static Texture glass = getTexture("glass_clear");
-	private static Texture compass = getTexture("compass");
 
 	private BlockRenders() {}
-	
-	public static void registerTest() {
-		register(new BlockRenderOpaqueCube("Test", "Dirt", dirt, dirt, dirt, dirt, dirt, dirt));
-		register(new BlockRenderOpaqueCube("Test", "Stone", stone, stone, stone, stone, stone, stone));
-
-		register(new BlockRenderOpaqueCube("Test", "Compass", compass, compass, getTexture("side_north"), getTexture("side_south"), getTexture("side_east"), getTexture("side_west")));
-		
-		register(new BlockRenderNone("Test", "Air"));
-		register(new BlockRenderTransparentCube("Test", "Glass", glass, glass, glass, glass, glass, glass));
-	}
 	
 	public static BlockRender get(String name) {
 		return BLOCK_RENDERS.get(name);
@@ -59,7 +44,7 @@ public class BlockRenders {
 		BLOCK_RENDERS.put(blockRender.getId(), blockRender);
 	}
 	
-	public static Texture getTexture(String name) {
+	public static Texture getBlockTexture(String name) {
 		return new SimpleTexture(
 				Atlases.getSprite(
 						ResourceManager.getTextureResource("blocks/" + name),

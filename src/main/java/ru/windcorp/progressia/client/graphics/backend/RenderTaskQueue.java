@@ -17,91 +17,30 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client.graphics.backend;
 
-import java.util.Iterator;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-
 import ru.windcorp.jputil.functions.ThrowingRunnable;
+import ru.windcorp.progressia.common.util.TaskQueue;
 
 public class RenderTaskQueue {
 	
-	private static final Queue<Runnable> QUEUE = new ConcurrentLinkedQueue<>();
-	
-	private RenderTaskQueue() {}
-	
+	private static final TaskQueue HANDLER =
+			new TaskQueue(GraphicsInterface::isRenderThread);
+
 	public static void invokeLater(Runnable task) {
-		QUEUE.add(task);
+		HANDLER.invokeLater(task);
 	}
-	
+
 	public static void invokeNow(Runnable task) {
-		if (GraphicsInterface.isRenderThread()) {
-			task.run();
-		} else {
-			invokeLater(task);
-		}
+		HANDLER.invokeNow(task);
 	}
-	
-	private static final Object WAIT_AND_INVOKE_MONITOR = new Object();
-	
-	@SuppressWarnings("unchecked")
+
 	public static <E extends Exception> void waitAndInvoke(
 			ThrowingRunnable<E> task
-	 ) throws InterruptedException, E {
-		
-		if (GraphicsInterface.isRenderThread()) {
-			task.run();
-			return;
-		}
-		
-		final AtomicBoolean flag =
-				new AtomicBoolean(false);
-		final AtomicReference<Throwable> thrownContainer =
-				new AtomicReference<>(null);
-		
-		invokeLater(() -> {
-			
-			try {
-				task.run();
-			} catch (Throwable t) {
-				thrownContainer.set(t);
-			}
-			
-			flag.set(true);
-			
-			synchronized (WAIT_AND_INVOKE_MONITOR) {
-				WAIT_AND_INVOKE_MONITOR.notifyAll();
-			}
-		});
-		
-		while (!flag.get()) {
-			synchronized (WAIT_AND_INVOKE_MONITOR) {
-				WAIT_AND_INVOKE_MONITOR.wait();
-			}
-		}
-		
-		Throwable thrown = thrownContainer.get();
-		if (thrown != null) {
-			if (thrown instanceof RuntimeException) {
-				throw (RuntimeException) thrown;
-			}
-			
-			if (thrown instanceof Error) {
-				throw (Error) thrown;
-			}
-			
-			throw (E) thrown; // Guaranteed
-		}
+	) throws InterruptedException, E {
+		HANDLER.waitAndInvoke(task);
 	}
-	
+
 	public static void runTasks() {
-		Iterator<Runnable> tasks = QUEUE.iterator();
-		
-		while (tasks.hasNext()) {
-			tasks.next().run();
-			tasks.remove();
-		}
+		HANDLER.runTasks();
 	}
 
 }

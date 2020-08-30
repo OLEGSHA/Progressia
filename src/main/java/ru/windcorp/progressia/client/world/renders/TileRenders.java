@@ -36,14 +36,6 @@ public class TileRenders {
 
 	private TileRenders() {}
 	
-	public static void registerTest() {
-		register(new TileRenderGrass("Test", "Grass", getTexture("grass_top"), getTexture("grass_side")));
-		
-		register(new TileRenderSimple("Test", "Stones", getTexture("stones")));
-		register(new TileRenderSimple("Test", "YellowFlowers", getTexture("yellow_flowers")));
-		register(new TileRenderSimple("Test", "Sand", getTexture("sand")));
-	}
-	
 	public static TileRender get(String name) {
 		return TILE_RENDERS.get(name);
 	}
@@ -52,7 +44,7 @@ public class TileRenders {
 		TILE_RENDERS.put(tileRender.getId(), tileRender);
 	}
 	
-	public static Texture getTexture(String name) {
+	public static Texture getTileTexture(String name) {
 		return new SimpleTexture(
 				Atlases.getSprite(
 						ResourceManager.getTextureResource("tiles/" + name),

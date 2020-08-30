@@ -18,20 +18,15 @@
 package ru.windcorp.progressia.client;
 
 import ru.windcorp.progressia.Proxy;
-import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.RenderTaskQueue;
 import ru.windcorp.progressia.client.graphics.flat.FlatRenderProgram;
-import ru.windcorp.progressia.client.graphics.flat.LayerTestUI;
 import ru.windcorp.progressia.client.graphics.font.GNUUnifontLoader;
 import ru.windcorp.progressia.client.graphics.font.Typefaces;
-import ru.windcorp.progressia.client.graphics.gui.LayerTestGUI;
 import ru.windcorp.progressia.client.graphics.texture.Atlases;
-import ru.windcorp.progressia.client.graphics.world.LayerWorld;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
-import ru.windcorp.progressia.client.world.renders.BlockRenders;
-import ru.windcorp.progressia.client.world.renders.TileRenders;
 import ru.windcorp.progressia.common.resource.ResourceManager;
+import ru.windcorp.progressia.server.ServerState;
 
 public class ClientProxy implements Proxy {
 
@@ -47,13 +42,12 @@ public class ClientProxy implements Proxy {
 			e.printStackTrace();
 		}
 		
-		BlockRenders.registerTest();
-		TileRenders.registerTest();
+		TestContent.registerContent();
+		
 		Atlases.loadAllAtlases();
 		
-		GUI.addBottomLayer(new LayerWorld());
-		GUI.addTopLayer(new LayerTestUI());
-		GUI.addTopLayer(new LayerTestGUI());
+		ServerState.startServer();
+		ClientState.connectToLocalServer();
 	}
 
 }

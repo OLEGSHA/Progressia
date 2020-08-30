@@ -21,6 +21,7 @@ import static ru.windcorp.progressia.common.block.BlockFace.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 
@@ -31,11 +32,12 @@ import ru.windcorp.progressia.common.block.BlockFace;
 import ru.windcorp.progressia.common.block.TileData;
 import ru.windcorp.progressia.common.block.TileDataRegistry;
 import ru.windcorp.progressia.common.util.SizeLimitedList;
+import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 
 public class ChunkData {
 	
-	public static final int BLOCKS_PER_CHUNK = 16;
+	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
 	public static final int TILES_PER_FACE = 8;
 	
 	private final Vec3i position = new Vec3i();
@@ -238,6 +240,14 @@ public class ChunkData {
 				(blockInChunk.y == max && face == WEST  ) ||
 				(blockInChunk.z == min && face == BOTTOM) ||
 				(blockInChunk.z == max && face == TOP   );
+	}
+	
+	public void forEachBlock(Consumer<Vec3i> action) {
+		VectorUtil.forEachVectorInCuboid(
+				0, 0, 0,
+				BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK,
+				action
+		);
 	}
 
 	public int getX() {

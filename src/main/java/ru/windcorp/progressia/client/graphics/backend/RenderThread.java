@@ -43,6 +43,8 @@ class RenderThread extends Thread {
 			waitForFrame();
 			GraphicsBackend.endFrame();
 		}
+		
+		System.exit(0);
 	}
 
 	private void render() {
