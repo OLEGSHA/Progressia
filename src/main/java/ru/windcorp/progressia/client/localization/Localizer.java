@@ -4,12 +4,14 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 
 public class Localizer {
-	private static final Localizer INSTANCE = new Localizer("assets/languages/");
+	private static final Localizer INSTANCE = new Localizer("assets/languages/", "en-US");
 
 	private String language;
+	private String fallBackLanguage;
 	private final String langFolder;
 
 	private Map<String, String> data;
+	private Map<String, String> fallBackData;
 	private final Map<String, String> langList;
 
 	private final Collection<WeakReference<LocaleListener>> listeners =
@@ -21,14 +23,30 @@ public class Localizer {
 		this.langList = new Parser(langFolder + "lang_list.txt").parse();
 	}
 
+	public Localizer(String langFolder, String fallBackLanguage) {
+		this(langFolder);
+		this.setFallBackLanguage(fallBackLanguage);
+	}
+
+	public synchronized void setFallBackLanguage(String language) {
+		if (langList.containsKey(language)) {
+			this.fallBackLanguage = language;
+			fallBackData = new Parser(langFolder + this.fallBackLanguage + ".lang").parse();
+		}
+	}
+
 	public synchronized void setLanguage(String language) {
 		if (langList.containsKey(language)) {
 			this.language = language;
-			data = new Parser(langFolder + language + ".lang").parse();
+			data = new Parser(langFolder + this.language + ".lang").parse();
 			pokeListeners(language);
 		} else {
 			throw new RuntimeException("Language not found: " + language);
 		}
+	}
+
+	public synchronized String getFallBackLanguage() {
+		return fallBackLanguage;
 	}
 
 	public synchronized String getLanguage() {
@@ -36,7 +54,13 @@ public class Localizer {
 	}
 
 	public synchronized String getValue(String key) {
-		return data.getOrDefault(key, key);
+		if (data.containsKey(key)) {
+			return data.get(key);
+		} else if (fallBackData.containsKey(key)) {
+			return fallBackData.get(key);
+		} else {
+			return key;
+		}
 	}
 
 	private void pokeListeners(String newLanguage) {
