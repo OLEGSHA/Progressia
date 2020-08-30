@@ -18,8 +18,8 @@
 package ru.windcorp.progressia.client.graphics.gui;
 
 import com.google.common.eventbus.Subscribe;
-
 import glm.vec._2.i.Vec2i;
+import org.lwjgl.glfw.GLFW;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
@@ -28,6 +28,8 @@ import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.localization.Localizer;
+import ru.windcorp.progressia.client.localization.MutableString;
+import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 
 public class LayerTestGUI extends GUILayer {
 	
@@ -51,7 +53,9 @@ public class LayerTestGUI extends GUILayer {
 		}
 		
 		private boolean onClicked(KeyEvent event) {
-			if (event.isPress() && event.isLeftMouseButton()) {
+			if (!event.isMouse()) {
+				return false;
+			} else if (event.isPress() && event.isLeftMouseButton()) {
 				System.out.println("You pressed a Component!");
 			}
 			return true;
@@ -81,12 +85,14 @@ public class LayerTestGUI extends GUILayer {
 
 		//Debug
 		Localizer.getInstance().setLanguage("ru-RU");
+		MutableString epsilon = new MutableStringLocalized("Epsilon")
+				.addListener(() -> ((Label)charlie.getChild(0)).update()).format(34, "thirty-four");
 		// These two are swapped in code due to a bug in layouts, fixing ATM
 		charlie.addChild(
 				new Label(
 						"Epsilon",
 						new Font().withColor(0x4444BB).deriveItalic(),
-						Localizer.getInstance().getValue("Epsilon")+"\u269b"
+						() -> epsilon.get().concat("\u269b")
 				)
 		);
 		charlie.addChild(
@@ -97,7 +103,22 @@ public class LayerTestGUI extends GUILayer {
 				)
 		);
 		panel.addChild(charlie);
-		
+
+
+		charlie.addListener(KeyEvent.class, e -> {
+			if(e.isPress() && e.getKey() == GLFW.GLFW_KEY_L) {
+				Localizer localizer = Localizer.getInstance();
+				if (localizer.getLanguage().equals("ru-RU")) {
+					localizer.setLanguage("en-US");
+				} else {
+					localizer.setLanguage("ru-RU");
+				}
+				return true;
+			} return false;
+		});
+		charlie.setFocusable(true);
+		charlie.takeFocus();
+
 		getRoot().addChild(panel);
 	}
 

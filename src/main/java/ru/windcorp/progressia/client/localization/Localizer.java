@@ -64,6 +64,7 @@ public class Localizer {
 	}
 
 	private void pokeListeners(String newLanguage) {
+		//TODO extract as weak bus listener class
 		synchronized (listeners) {
 			Iterator<WeakReference<LocaleListener>> iterator = listeners.iterator();
 			while (iterator.hasNext()) {

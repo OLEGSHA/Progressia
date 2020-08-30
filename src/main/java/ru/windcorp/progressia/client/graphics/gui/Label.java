@@ -1,11 +1,11 @@
 package ru.windcorp.progressia.client.graphics.gui;
 
-import java.util.function.Supplier;
-
 import glm.mat._4.Mat4;
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
+
+import java.util.function.Supplier;
 
 public class Label extends Component {
 	
@@ -28,6 +28,7 @@ public class Label extends Component {
 	public void update() {
 		currentText = contents.get();
 		currentSize = font.getSize(currentText, Integer.MAX_VALUE, null).mul(2);
+		requestReassembly();
 	}
 	
 	@Override
