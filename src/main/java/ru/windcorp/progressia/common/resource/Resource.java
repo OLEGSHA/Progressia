@@ -21,7 +21,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.ByteBuffer;
 
+import org.lwjgl.BufferUtils;
+
+import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 
 import ru.windcorp.progressia.Progressia;
@@ -48,6 +52,27 @@ public class Resource extends Named {
 		} catch (IOException e) {
 			throw new RuntimeException(e); // TODO handle gracefully
 		}
+	}
+	
+	public ByteBuffer readAsBytes(ByteBuffer output) {
+		byte[] byteArray;
+		try (InputStream stream = getInputStream()) {
+			byteArray = ByteStreams.toByteArray(stream);
+		} catch (IOException e) {
+			throw new RuntimeException(e); // TODO handle gracefully
+		}
+		
+		if (output == null || output.remaining() < byteArray.length) {
+			output = BufferUtils.createByteBuffer(byteArray.length);
+		}
+		
+		output.put(byteArray);
+		
+		return output;
+	}
+	
+	public ByteBuffer readAsBytes() {
+		return readAsBytes(null);
 	}
 
 }
