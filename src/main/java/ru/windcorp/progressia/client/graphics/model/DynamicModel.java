@@ -33,7 +33,7 @@ public abstract class DynamicModel extends Model {
 	private final boolean[] dynamics;
 	
 	public DynamicModel(
-			WorldRenderable[] parts,
+			Renderable[] parts,
 			Mat4[] transforms,
 			boolean[] dynamic
 	) {
@@ -70,14 +70,14 @@ public abstract class DynamicModel extends Model {
 	
 	public static class Builder {
 		
-		private final List<WorldRenderable> parts = new ArrayList<>();
+		private final List<Renderable> parts = new ArrayList<>();
 		private final List<Mat4> transforms = new ArrayList<>();
 		private final List<Boolean> dynamics = new ArrayList<>();
 		
 		protected Builder() {}
 		
 		private Builder addPart(
-				WorldRenderable part,
+				Renderable part,
 				Mat4 transform,
 				boolean isDynamic
 		) {
@@ -89,26 +89,26 @@ public abstract class DynamicModel extends Model {
 		}
 		
 		public Builder addStaticPart(
-				WorldRenderable part,
+				Renderable part,
 				Mat4 transform
 		) {
 			return addPart(part, new Mat4(transform), false);
 		}
 		
 		public Builder addDynamicPart(
-				WorldRenderable part
+				Renderable part
 		) {
 			return addPart(part, new Mat4(), true);
 		}
 		
 		public Builder addStaticPart(
-				WorldRenderable part
+				Renderable part
 		) {
 			return addStaticPart(part, IDENTITY);
 		}
 		
-		private WorldRenderable[] getParts() {
-			return parts.toArray(new WorldRenderable[parts.size()]);
+		private Renderable[] getParts() {
+			return parts.toArray(new Renderable[parts.size()]);
 		}
 		
 		private Mat4[] getTransforms() {

@@ -32,7 +32,7 @@ public class GraphicsBackend {
 	private static final Vec2i FRAME_SIZE = new Vec2i();
 	
 	private static double frameLength = 1.0 / 60; // TODO do something about it
-	private static int framesRendered = 0;
+	private static long framesRendered = 0;
 	private static double frameStart = Double.NaN;
 	
 	private GraphicsBackend() {}
@@ -102,7 +102,7 @@ public class GraphicsBackend {
 		return frameLength;
 	}
 	
-	public static int getFramesRendered() {
+	public static long getFramesRendered() {
 		return framesRendered;
 	}
 

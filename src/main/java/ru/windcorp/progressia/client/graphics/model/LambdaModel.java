@@ -37,7 +37,7 @@ public class LambdaModel extends DynamicModel {
 	private final TransformGetter[] getters;
 	
 	public LambdaModel(
-			WorldRenderable[] parts,
+			Renderable[] parts,
 			Mat4[] transforms,
 			boolean[] dynamic,
 			TransformGetter[] getters
@@ -64,7 +64,7 @@ public class LambdaModel extends DynamicModel {
 	
 	public static class Builder {
 		
-		private final List<WorldRenderable> parts = new ArrayList<>();
+		private final List<Renderable> parts = new ArrayList<>();
 		private final List<Mat4> transforms = new ArrayList<>();
 		private final List<Boolean> dynamics = new ArrayList<>();
 		private final List<TransformGetter> getters = new ArrayList<>();
@@ -72,7 +72,7 @@ public class LambdaModel extends DynamicModel {
 		protected Builder() {}
 		
 		private Builder addPart(
-				WorldRenderable part,
+				Renderable part,
 				Mat4 transform,
 				TransformGetter getter
 		) {
@@ -85,27 +85,27 @@ public class LambdaModel extends DynamicModel {
 		}
 		
 		public Builder addStaticPart(
-				WorldRenderable part,
+				Renderable part,
 				Mat4 transform
 		) {
 			return addPart(part, new Mat4(transform), null);
 		}
 		
 		public Builder addDynamicPart(
-				WorldRenderable part,
+				Renderable part,
 				TransformGetter getter
 		) {
 			return addPart(part, new Mat4(), getter);
 		}
 		
 		public Builder addStaticPart(
-				WorldRenderable part
+				Renderable part
 		) {
 			return addStaticPart(part, IDENTITY);
 		}
 		
-		private WorldRenderable[] getParts() {
-			return parts.toArray(new WorldRenderable[parts.size()]);
+		private Renderable[] getParts() {
+			return parts.toArray(new Renderable[parts.size()]);
 		}
 		
 		private Mat4[] getTransforms() {

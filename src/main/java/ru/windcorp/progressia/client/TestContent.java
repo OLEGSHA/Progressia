@@ -1,14 +1,7 @@
 package ru.windcorp.progressia.client;
 
-import static ru.windcorp.progressia.client.world.renders.BlockRenders.register;
-import static ru.windcorp.progressia.client.world.renders.BlockRenders.getBlockTexture;
-import static ru.windcorp.progressia.client.world.renders.TileRenders.register;
-import static ru.windcorp.progressia.client.world.renders.TileRenders.getTileTexture;
-
-import static ru.windcorp.progressia.common.block.BlockDataRegistry.register;
-import static ru.windcorp.progressia.common.block.TileDataRegistry.register;
-
-import static ru.windcorp.progressia.server.block.BlockLogicRegistry.register;
+import static ru.windcorp.progressia.client.world.block.BlockRenderRegistry.getBlockTexture;
+import static ru.windcorp.progressia.client.world.tile.TileRenderRegistry.getTileTexture;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -16,17 +9,23 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.comms.controls.ControlTriggerOnKeyPress;
 import ru.windcorp.progressia.client.comms.controls.ControlTriggerRegistry;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
-import ru.windcorp.progressia.client.world.renders.*;
-import ru.windcorp.progressia.common.block.*;
+import ru.windcorp.progressia.client.world.block.*;
+import ru.windcorp.progressia.client.world.tile.TileRender;
+import ru.windcorp.progressia.client.world.tile.TileRenderGrass;
+import ru.windcorp.progressia.client.world.tile.TileRenderRegistry;
+import ru.windcorp.progressia.client.world.tile.TileRenderSimple;
 import ru.windcorp.progressia.common.comms.controls.ControlData;
 import ru.windcorp.progressia.common.comms.controls.ControlDataRegistry;
 import ru.windcorp.progressia.common.comms.controls.PacketControl;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.block.*;
+import ru.windcorp.progressia.common.world.tile.TileData;
+import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.block.*;
 import ru.windcorp.progressia.server.comms.Client;
 import ru.windcorp.progressia.server.comms.controls.ControlLogic;
 import ru.windcorp.progressia.server.comms.controls.ControlLogicRegistry;
+import ru.windcorp.progressia.server.world.block.*;
 
 public class TestContent {
 	
@@ -88,14 +87,38 @@ public class TestContent {
 				
 				BlockData block;
 				if (data.getBlock(z000).getId().equals("Test:Stone")) {
-					block = BlockDataRegistry.get("Test:Glass");
+					block = BlockDataRegistry.getInstance().get("Test:Glass");
 				} else {
-					block =  BlockDataRegistry.get("Test:Stone");
+					block =  BlockDataRegistry.getInstance().get("Test:Stone");
 				}
 				
 				server.getAdHocChanger().setBlock(z000, block);
 			}
 		});
 	}
+	
+	private static void register(BlockData x) {
+		BlockDataRegistry.getInstance().register(x);
+	}
+	
+	private static void register(TileData x) {
+		TileDataRegistry.getInstance().register(x);
+	}
+	
+	private static void register(BlockRender x) {
+		BlockRenderRegistry.getInstance().register(x);
+	}
+	
+	private static void register(TileRender x) {
+		TileRenderRegistry.getInstance().register(x);
+	}
+	
+	private static void register(BlockLogic x) {
+		BlockLogicRegistry.getInstance().register(x);
+	}
+	
+//	private static void register(TileRender x) {
+//		TileLogicRegistry.getInstance().register(x);
+//	}
 
 }

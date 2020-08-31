@@ -17,7 +17,7 @@
  *******************************************************************************/
 package ru.windcorp.progressia.common.world;
 
-import static ru.windcorp.progressia.common.block.BlockFace.*;
+import static ru.windcorp.progressia.common.world.block.BlockFace.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,14 +26,14 @@ import java.util.function.Consumer;
 import com.google.common.collect.Lists;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.block.BlockData;
-import ru.windcorp.progressia.common.block.BlockDataRegistry;
-import ru.windcorp.progressia.common.block.BlockFace;
-import ru.windcorp.progressia.common.block.TileData;
-import ru.windcorp.progressia.common.block.TileDataRegistry;
 import ru.windcorp.progressia.common.util.SizeLimitedList;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.block.BlockData;
+import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
+import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.tile.TileData;
+import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 
 public class ChunkData {
 	
@@ -61,14 +61,14 @@ public class ChunkData {
 	}
 	
 	private void tmp_generate() {
-		BlockData dirt = BlockDataRegistry.get("Test:Dirt");
-		BlockData stone = BlockDataRegistry.get("Test:Stone");
-		BlockData air = BlockDataRegistry.get("Test:Air");
+		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
+		BlockData stone = BlockDataRegistry.getInstance().get("Test:Stone");
+		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 
-		TileData grass = TileDataRegistry.get("Test:Grass");
-		TileData stones = TileDataRegistry.get("Test:Stones");
-		TileData flowers = TileDataRegistry.get("Test:YellowFlowers");
-		TileData sand = TileDataRegistry.get("Test:Sand");
+		TileData grass = TileDataRegistry.getInstance().get("Test:Grass");
+		TileData stones = TileDataRegistry.getInstance().get("Test:Stones");
+		TileData flowers = TileDataRegistry.getInstance().get("Test:YellowFlowers");
+		TileData sand = TileDataRegistry.getInstance().get("Test:Sand");
 	
 		Vec3i aPoint = new Vec3i(5, 0, BLOCKS_PER_CHUNK + BLOCKS_PER_CHUNK/2);
 		Vec3i pos = new Vec3i();

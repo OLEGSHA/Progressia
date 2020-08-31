@@ -11,7 +11,7 @@ import ru.windcorp.progressia.client.graphics.model.Face;
 import ru.windcorp.progressia.client.graphics.model.Faces;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
-import ru.windcorp.progressia.client.graphics.model.WorldRenderable;
+import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 
 public abstract class SpriteTypeface extends Typeface {
@@ -64,7 +64,7 @@ public abstract class SpriteTypeface extends Typeface {
 	public abstract ShapeRenderProgram getProgram();
 
 	@Override
-	public WorldRenderable assemble(
+	public Renderable assemble(
 			CharSequence chars, int style,
 			float align, int maxWidth,
 			int color

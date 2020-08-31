@@ -30,7 +30,7 @@ import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.model.Face;
 import ru.windcorp.progressia.client.graphics.model.Faces;
 import ru.windcorp.progressia.client.graphics.model.Shape;
-import ru.windcorp.progressia.client.graphics.model.WorldRenderable;
+import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 
 public class RenderTarget {
@@ -41,12 +41,12 @@ public class RenderTarget {
 		
 		private final MaskStack masks = new MaskStack();
 		private final Mat4 transform;
-		private final WorldRenderable renderable;
+		private final Renderable renderable;
 	
 		public Clip(
 				Iterable<TransformedMask> masks,
 				Mat4 transform,
-				WorldRenderable renderable
+				Renderable renderable
 		) {
 			for (TransformedMask mask : masks) {
 				this.masks.pushMask(mask);
@@ -60,7 +60,7 @@ public class RenderTarget {
 			return transform;
 		}
 	
-		public WorldRenderable getRenderable() {
+		public Renderable getRenderable() {
 			return renderable;
 		}
 		
@@ -177,7 +177,7 @@ public class RenderTarget {
 		return transformStack.getFirst();
 	}
 
-	public void addCustomRenderer(WorldRenderable renderable) {
+	public void addCustomRenderer(Renderable renderable) {
 		assembleCurrentClipFromFaces();
 		assembled.add(new Clip(
 				maskStack, getTransform(), renderable

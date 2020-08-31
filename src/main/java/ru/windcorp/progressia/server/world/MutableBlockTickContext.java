@@ -4,7 +4,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.block.BlockTickContext;
+import ru.windcorp.progressia.server.world.block.BlockTickContext;
 
 public class MutableBlockTickContext implements BlockTickContext {
 	

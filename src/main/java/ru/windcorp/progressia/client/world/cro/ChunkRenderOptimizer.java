@@ -15,30 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.client.graphics.model;
+package ru.windcorp.progressia.client.world.cro;
 
-import glm.mat._4.Mat4;
+import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.client.graphics.model.Shape;
+import ru.windcorp.progressia.client.world.ChunkRender;
+import ru.windcorp.progressia.client.world.block.BlockRender;
+import ru.windcorp.progressia.client.world.tile.TileRender;
+import ru.windcorp.progressia.common.world.block.BlockFace;
 
-public class EmptyModel extends Model {
+public abstract class ChunkRenderOptimizer {
 	
-	private static final EmptyModel INSTANCE = new EmptyModel();
+	public abstract void startRender(ChunkRender chunk);
 	
-	private EmptyModel() {
-		super(new Renderable[0]);
-	}
+	public abstract void processBlock(
+			BlockRender block,
+			Vec3i posInChunk
+	);
 	
-	public static EmptyModel getInstance() {
-		return INSTANCE;
-	}
+	public abstract void processTile(
+			TileRender tile,
+			Vec3i posInChunk, BlockFace face
+	);
 	
-	@Override
-	public void render(ShapeRenderHelper helper) {
-		// Do nothing
-	}
-	
-	@Override
-	protected Mat4 getTransform(int shapeIndex) {
-		throw new UnsupportedOperationException();
-	}
+	public abstract Shape endRender();
 
 }

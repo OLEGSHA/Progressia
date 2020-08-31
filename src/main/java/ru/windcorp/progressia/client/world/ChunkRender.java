@@ -28,20 +28,20 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.model.Model;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.StaticModel;
-import ru.windcorp.progressia.client.graphics.model.WorldRenderable;
+import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.StaticModel.Builder;
-import ru.windcorp.progressia.client.world.renders.BlockRender;
-import ru.windcorp.progressia.client.world.renders.BlockRenderNone;
-import ru.windcorp.progressia.client.world.renders.BlockRenders;
-import ru.windcorp.progressia.client.world.renders.TileRender;
-import ru.windcorp.progressia.client.world.renders.TileRenders;
-import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizer;
-import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizerSupplier;
-import ru.windcorp.progressia.client.world.renders.cro.ChunkRenderOptimizers;
-import ru.windcorp.progressia.common.block.BlockFace;
-import ru.windcorp.progressia.common.block.TileData;
+import ru.windcorp.progressia.client.world.block.BlockRender;
+import ru.windcorp.progressia.client.world.block.BlockRenderNone;
+import ru.windcorp.progressia.client.world.block.BlockRenderRegistry;
+import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizer;
+import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSupplier;
+import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizers;
+import ru.windcorp.progressia.client.world.tile.TileRender;
+import ru.windcorp.progressia.client.world.tile.TileRenderRegistry;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.tile.TileData;
 
 public class ChunkRender {
 
@@ -73,7 +73,9 @@ public class ChunkRender {
 	}
 	
 	public BlockRender getBlock(Vec3i posInChunk) {
-		return BlockRenders.get(getData().getBlock(posInChunk).getId());
+		return BlockRenderRegistry.getInstance().get(
+				getData().getBlock(posInChunk).getId()
+		);
 	}
 	
 	public void render(ShapeRenderHelper renderer) {
@@ -155,7 +157,7 @@ public class ChunkRender {
 			Vec3i cursor,
 			Builder builder
 	) {
-		WorldRenderable renderable = block.createRenderable();
+		Renderable renderable = block.createRenderable();
 		
 		if (renderable == null) {
 			renderable = block::render;
@@ -196,7 +198,9 @@ public class ChunkRender {
 			
 			buildTile(
 					cursor, face,
-					TileRenders.get(tiles.get(layer).getId()),
+					TileRenderRegistry.getInstance().get(
+							tiles.get(layer).getId()
+					),
 					layer,
 					optimizers, builder
 			);

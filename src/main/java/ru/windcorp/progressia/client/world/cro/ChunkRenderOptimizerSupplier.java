@@ -15,30 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.client.graphics.model;
+package ru.windcorp.progressia.client.world.cro;
 
-import glm.mat._4.Mat4;
+import com.google.common.base.Supplier;
 
-public class EmptyModel extends Model {
-	
-	private static final EmptyModel INSTANCE = new EmptyModel();
-	
-	private EmptyModel() {
-		super(new Renderable[0]);
+import ru.windcorp.progressia.common.util.Namespaced;
+
+public abstract class ChunkRenderOptimizerSupplier extends Namespaced {
+
+	public ChunkRenderOptimizerSupplier(String namespace, String name) {
+		super(namespace, name);
 	}
 	
-	public static EmptyModel getInstance() {
-		return INSTANCE;
-	}
+	public abstract ChunkRenderOptimizer createOptimizer();
 	
-	@Override
-	public void render(ShapeRenderHelper helper) {
-		// Do nothing
-	}
-	
-	@Override
-	protected Mat4 getTransform(int shapeIndex) {
-		throw new UnsupportedOperationException();
+	public static ChunkRenderOptimizerSupplier of(
+			String namespace, String name,
+			Supplier<ChunkRenderOptimizer> supplier
+	) {
+		return new ChunkRenderOptimizerSupplier(namespace, name) {
+			@Override
+			public ChunkRenderOptimizer createOptimizer() {
+				return supplier.get();
+			}
+		};
 	}
 
 }

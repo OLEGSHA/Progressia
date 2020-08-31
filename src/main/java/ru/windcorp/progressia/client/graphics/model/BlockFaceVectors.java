@@ -1,11 +1,11 @@
 package ru.windcorp.progressia.client.graphics.model;
 
-import static ru.windcorp.progressia.common.block.BlockFace.*;
+import static ru.windcorp.progressia.common.world.block.BlockFace.*;
 
 import com.google.common.collect.ImmutableMap;
 
 import glm.vec._3.Vec3;
-import ru.windcorp.progressia.common.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.BlockFace;
 
 class BlockFaceVectors {
 

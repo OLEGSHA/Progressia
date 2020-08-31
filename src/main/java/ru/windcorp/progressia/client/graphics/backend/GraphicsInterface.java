@@ -59,6 +59,10 @@ public class GraphicsInterface {
 		return 1 / GraphicsBackend.getFrameLength();
 	}
 	
+	public static long getFramesRendered() {
+		return GraphicsBackend.getFramesRendered();
+	}
+	
 	public static void subscribeToInputEvents(Object listener) {
 		InputHandler.register(listener);
 	}

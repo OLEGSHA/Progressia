@@ -19,11 +19,11 @@ package ru.windcorp.progressia.client.graphics.model;
 
 import glm.mat._4.Mat4;
 
-public abstract class Model implements WorldRenderable {
+public abstract class Model implements Renderable {
 	
-	private final WorldRenderable[] parts;
+	private final Renderable[] parts;
 	
-	public Model(WorldRenderable[] parts) {
+	public Model(Renderable[] parts) {
 		this.parts = parts;
 	}
 
@@ -32,7 +32,7 @@ public abstract class Model implements WorldRenderable {
 	@Override
 	public void render(ShapeRenderHelper helper) {
 		for (int i = 0; i < parts.length; ++i) {
-			WorldRenderable part = parts[i];
+			Renderable part = parts[i];
 			Mat4 transform = getTransform(i);
 			
 			try {

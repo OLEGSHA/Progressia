@@ -1,9 +1,9 @@
 package ru.windcorp.progressia.server.world;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.block.BlockData;
-import ru.windcorp.progressia.common.block.BlockFace;
-import ru.windcorp.progressia.common.block.TileData;
+import ru.windcorp.progressia.common.world.block.BlockData;
+import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.tile.TileData;
 
 public interface Changer {
 

@@ -15,30 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.client.graphics.model;
+package ru.windcorp.progressia.client.world.cro;
 
-import glm.mat._4.Mat4;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public class EmptyModel extends Model {
+public class ChunkRenderOptimizers {
 	
-	private static final EmptyModel INSTANCE = new EmptyModel();
+	private ChunkRenderOptimizers() {}
 	
-	private EmptyModel() {
-		super(new Renderable[0]);
+	private static final Map<String, ChunkRenderOptimizerSupplier> SUPPLIERS =
+			new HashMap<>();
+	
+	static {
+		register(ChunkRenderOptimizerSupplier.of(
+				"Default", "OpaqueCube",
+				ChunkRenderOptimizerCube::new
+		));
 	}
 	
-	public static EmptyModel getInstance() {
-		return INSTANCE;
+	public static ChunkRenderOptimizerSupplier getSupplier(String id) {
+		return SUPPLIERS.get(id);
 	}
 	
-	@Override
-	public void render(ShapeRenderHelper helper) {
-		// Do nothing
+	public static void register(ChunkRenderOptimizerSupplier supplier) {
+		SUPPLIERS.put(supplier.getId(), supplier);
 	}
 	
-	@Override
-	protected Mat4 getTransform(int shapeIndex) {
-		throw new UnsupportedOperationException();
+	public static Collection<ChunkRenderOptimizerSupplier> getAllSuppliers() {
+		return SUPPLIERS.values();
 	}
-
+	
 }

@@ -25,7 +25,7 @@ import org.lwjgl.BufferUtils;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.backend.VertexBufferObject;
 
-public class Shape implements WorldRenderable {
+public class Shape implements Renderable {
 	
 	private final ShapeRenderProgram program;
 	private final Face[] faces;

@@ -1,7 +1,7 @@
 package ru.windcorp.progressia.server.world;
 
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.block.Tickable;
+import ru.windcorp.progressia.server.world.block.Tickable;
 
 public class Ticker implements Runnable {
 	

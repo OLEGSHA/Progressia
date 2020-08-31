@@ -1,7 +1,7 @@
 package ru.windcorp.progressia.client.graphics.font;
 
 import glm.vec._2.i.Vec2i;
-import ru.windcorp.progressia.client.graphics.model.WorldRenderable;
+import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.util.Named;
 
@@ -46,7 +46,7 @@ public abstract class Typeface extends Named {
 		super(name);
 	}
 
-	public abstract WorldRenderable assemble(
+	public abstract Renderable assemble(
 			CharSequence chars, int style,
 			float align, int maxWidth,
 			int color

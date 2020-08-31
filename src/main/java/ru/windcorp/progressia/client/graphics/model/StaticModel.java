@@ -30,7 +30,7 @@ public class StaticModel extends Model {
 	private final Mat4[] transforms;
 
 	public StaticModel(
-			WorldRenderable[] parts,
+			Renderable[] parts,
 			Mat4[] transforms
 	) {
 		super(parts);
@@ -52,13 +52,13 @@ public class StaticModel extends Model {
 	
 	public static class Builder {
 		
-		private final List<WorldRenderable> parts = new ArrayList<>();
+		private final List<Renderable> parts = new ArrayList<>();
 		private final List<Mat4> transforms = new ArrayList<>();
 		
 		protected Builder() {}
 		
 		public Builder addPart(
-				WorldRenderable part,
+				Renderable part,
 				Mat4 transform
 		) {
 			parts.add(Objects.requireNonNull(part, "part"));
@@ -68,13 +68,13 @@ public class StaticModel extends Model {
 		}
 		
 		public Builder addPart(
-				WorldRenderable part
+				Renderable part
 		) {
 			return addPart(part, IDENTITY);
 		}
 		
-		private WorldRenderable[] getParts() {
-			return parts.toArray(new WorldRenderable[parts.size()]);
+		private Renderable[] getParts() {
+			return parts.toArray(new Renderable[parts.size()]);
 		}
 		
 		private Mat4[] getTransforms() {

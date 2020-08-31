@@ -15,30 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.client.graphics.model;
+package ru.windcorp.progressia.client.world.block;
 
-import glm.mat._4.Mat4;
+import ru.windcorp.progressia.client.graphics.model.EmptyModel;
+import ru.windcorp.progressia.client.graphics.model.Renderable;
 
-public class EmptyModel extends Model {
-	
-	private static final EmptyModel INSTANCE = new EmptyModel();
-	
-	private EmptyModel() {
-		super(new Renderable[0]);
-	}
-	
-	public static EmptyModel getInstance() {
-		return INSTANCE;
+public class BlockRenderNone extends BlockRender {
+
+	public BlockRenderNone(String namespace, String name) {
+		super(namespace, name);
 	}
 	
 	@Override
-	public void render(ShapeRenderHelper helper) {
-		// Do nothing
+	public Renderable createRenderable() {
+		return EmptyModel.getInstance();
 	}
 	
 	@Override
-	protected Mat4 getTransform(int shapeIndex) {
-		throw new UnsupportedOperationException();
+	public boolean needsOwnRenderable() {
+		return false;
 	}
 
 }

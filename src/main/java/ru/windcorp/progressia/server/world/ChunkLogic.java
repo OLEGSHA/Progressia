@@ -6,9 +6,9 @@ import java.util.function.BiConsumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.server.block.BlockLogic;
-import ru.windcorp.progressia.server.block.BlockLogicRegistry;
-import ru.windcorp.progressia.server.block.Tickable;
+import ru.windcorp.progressia.server.world.block.BlockLogic;
+import ru.windcorp.progressia.server.world.block.BlockLogicRegistry;
+import ru.windcorp.progressia.server.world.block.Tickable;
 
 public class ChunkLogic {
 	
@@ -63,7 +63,9 @@ public class ChunkLogic {
 	}
 	
 	public BlockLogic getBlock(Vec3i blockInChunk) {
-		return BlockLogicRegistry.get(getData().getBlock(blockInChunk).getId());
+		return BlockLogicRegistry.getInstance().get(
+				getData().getBlock(blockInChunk).getId()
+		);
 	}
 
 }

@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Objects;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.block.BlockData;
-import ru.windcorp.progressia.common.block.BlockFace;
-import ru.windcorp.progressia.common.block.TileData;
 import ru.windcorp.progressia.common.comms.packets.Packet;
 import ru.windcorp.progressia.common.comms.packets.PacketWorldChange;
 import ru.windcorp.progressia.common.util.LowOverheadCache;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.block.BlockData;
+import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.Server;
 
 public class ImplementedChangeTracker implements Changer {

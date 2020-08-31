@@ -15,30 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.client.graphics.model;
+package ru.windcorp.progressia.client.world.block;
 
-import glm.mat._4.Mat4;
+import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
+import ru.windcorp.progressia.client.graphics.model.Renderable;
+import ru.windcorp.progressia.common.util.Namespaced;
 
-public class EmptyModel extends Model {
+public abstract class BlockRender extends Namespaced {
 	
-	private static final EmptyModel INSTANCE = new EmptyModel();
-	
-	private EmptyModel() {
-		super(new Renderable[0]);
+	public BlockRender(String namespace, String name) {
+		super(namespace, name);
+	}
+
+	public void render(ShapeRenderHelper renderer) {
+		throw new UnsupportedOperationException(
+				"BlockRender.render() not implemented in " + this
+		);
 	}
 	
-	public static EmptyModel getInstance() {
-		return INSTANCE;
+	public Renderable createRenderable() {
+		return null;
 	}
 	
-	@Override
-	public void render(ShapeRenderHelper helper) {
-		// Do nothing
-	}
-	
-	@Override
-	protected Mat4 getTransform(int shapeIndex) {
-		throw new UnsupportedOperationException();
+	public boolean needsOwnRenderable() {
+		return true;
 	}
 
 }

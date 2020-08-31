@@ -15,30 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.client.graphics.model;
+package ru.windcorp.progressia.common.world.tile;
 
-import glm.mat._4.Mat4;
+import ru.windcorp.progressia.common.util.Namespaced;
 
-public class EmptyModel extends Model {
-	
-	private static final EmptyModel INSTANCE = new EmptyModel();
-	
-	private EmptyModel() {
-		super(new Renderable[0]);
-	}
-	
-	public static EmptyModel getInstance() {
-		return INSTANCE;
-	}
-	
-	@Override
-	public void render(ShapeRenderHelper helper) {
-		// Do nothing
-	}
-	
-	@Override
-	protected Mat4 getTransform(int shapeIndex) {
-		throw new UnsupportedOperationException();
+public class TileData extends Namespaced {
+
+	public TileData(String namespace, String name) {
+		super(namespace, name);
 	}
 
 }

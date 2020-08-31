@@ -17,28 +17,8 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client.graphics.model;
 
-import glm.mat._4.Mat4;
-
-public class EmptyModel extends Model {
+public interface Renderable {
 	
-	private static final EmptyModel INSTANCE = new EmptyModel();
-	
-	private EmptyModel() {
-		super(new Renderable[0]);
-	}
-	
-	public static EmptyModel getInstance() {
-		return INSTANCE;
-	}
-	
-	@Override
-	public void render(ShapeRenderHelper helper) {
-		// Do nothing
-	}
-	
-	@Override
-	protected Mat4 getTransform(int shapeIndex) {
-		throw new UnsupportedOperationException();
-	}
+	void render(ShapeRenderHelper renderer);
 
 }

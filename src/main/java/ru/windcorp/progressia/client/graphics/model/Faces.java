@@ -23,8 +23,8 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram.VertexBuilder;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.block.BlockFace;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class Faces {
 	

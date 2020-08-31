@@ -91,10 +91,6 @@ public class LayerWorld extends Layer {
 		client.getCamera().move(velCopy);
 		
 		Vectors.release(velCopy);
-		
-		if (GraphicsBackend.getFramesRendered() % 60 == 0) {
-			System.out.println(GraphicsInterface.getFPS());
-		}
 	}
 
 	private void renderWorld() {

@@ -2,7 +2,7 @@ package ru.windcorp.progressia.client.graphics.font;
 
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.Colors;
-import ru.windcorp.progressia.client.graphics.model.WorldRenderable;
+import ru.windcorp.progressia.client.graphics.model.Renderable;
 
 public class Font {
 	
@@ -43,7 +43,7 @@ public class Font {
 		return color;
 	}
 	
-	public WorldRenderable assemble(
+	public Renderable assemble(
 			CharSequence chars, int maxWidth
 	) {
 		return typeface.assemble(chars, style, align, maxWidth, color);
