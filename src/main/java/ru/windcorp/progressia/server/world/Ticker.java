@@ -1,7 +1,8 @@
 package ru.windcorp.progressia.server.world;
 
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.world.block.Tickable;
+import ru.windcorp.progressia.server.world.block.TickableBlock;
+import ru.windcorp.progressia.server.world.tile.TickableTile;
 
 public class Ticker implements Runnable {
 	
@@ -10,6 +11,9 @@ public class Ticker implements Runnable {
 	
 	private final MutableBlockTickContext blockTickContext =
 			new MutableBlockTickContext();
+	
+	private final MutableTileTickContext tileTickContext =
+			new MutableTileTickContext();
 	
 	private final Server server;
 
@@ -26,30 +30,41 @@ public class Ticker implements Runnable {
 	}
 
 	private void tickChunk(ChunkLogic chunk) {
-		MutableBlockTickContext context = this.blockTickContext;
+		MutableBlockTickContext blockContext = this.blockTickContext;
+		MutableTileTickContext tileContext = this.tileTickContext;
 		
-		context.setServer(server);
-		context.setChunk(chunk);
+		blockContext.setServer(server);
+		tileContext.setServer(server);
 		
-		tickRegularBlocks(chunk, context);
-		tickRandomBlocks(chunk, context);
+		tickRegularTickers(chunk, blockContext, tileContext);
+		tickRandomBlocks(chunk, blockContext, tileContext);
 		
 		flushChanges(chunk);
 	}
 
-	private void tickRegularBlocks(
+	private void tickRegularTickers(
 			ChunkLogic chunk,
-			MutableBlockTickContext context
+			MutableBlockTickContext blockContext,
+			MutableTileTickContext tileContext
 	) {
 		chunk.forEachTickingBlock((blockInChunk, block) -> {
-			context.setCoordsInChunk(blockInChunk);
-			((Tickable) block).tick(context, tracker);
+			blockContext.setCoordsInChunk(blockInChunk);
+			((TickableBlock) block).tick(blockContext, tracker);
+		});
+		
+		chunk.forEachTickingTile((locInChunk, tile) -> {
+			tileContext.setCoordsInChunk(locInChunk.pos);
+			tileContext.setFace(locInChunk.face);
+			tileContext.setLayer(locInChunk.layer);
+			
+			((TickableTile) tile).tick(tileContext, tracker);
 		});
 	}
 
 	private void tickRandomBlocks(
 			ChunkLogic chunk,
-			MutableBlockTickContext context
+			MutableBlockTickContext blockContext,
+			MutableTileTickContext tileContext
 	) {
 		// TODO implement
 	}

@@ -2,7 +2,7 @@ package ru.windcorp.progressia.server.world.block;
 
 import ru.windcorp.progressia.server.world.Changer;
 
-public interface Tickable {
+public interface TickableBlock {
 
 	void tick(BlockTickContext context, Changer changer);
 

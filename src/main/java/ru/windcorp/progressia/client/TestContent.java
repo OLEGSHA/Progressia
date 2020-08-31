@@ -26,6 +26,8 @@ import ru.windcorp.progressia.server.comms.Client;
 import ru.windcorp.progressia.server.comms.controls.ControlLogic;
 import ru.windcorp.progressia.server.comms.controls.ControlLogicRegistry;
 import ru.windcorp.progressia.server.world.block.*;
+import ru.windcorp.progressia.server.world.tile.TileLogic;
+import ru.windcorp.progressia.server.world.tile.TileLogicRegistry;
 
 public class TestContent {
 	
@@ -64,15 +66,19 @@ public class TestContent {
 	private static void registerTiles() {
 		register(new TileData("Test", "Grass"));
 		register(new TileRenderGrass("Test", "Grass", getTileTexture("grass_top"), getTileTexture("grass_side")));
+		register(new TileLogic("Test", "Grass"));
 		
 		register(new TileData("Test", "Stones"));
 		register(new TileRenderSimple("Test", "Stones", getTileTexture("stones")));
+		register(new TileLogic("Test", "Stones"));
 		
 		register(new TileData("Test", "YellowFlowers"));
 		register(new TileRenderSimple("Test", "YellowFlowers", getTileTexture("yellow_flowers")));
+		register(new TileLogic("Test", "YellowFlowers"));
 		
 		register(new TileData("Test", "Sand"));
 		register(new TileRenderSimple("Test", "Sand", getTileTexture("sand")));
+		register(new TileLogic("Test", "Sand"));
 	}
 
 	private static void regsiterControls() {
@@ -117,8 +123,8 @@ public class TestContent {
 		BlockLogicRegistry.getInstance().register(x);
 	}
 	
-//	private static void register(TileRender x) {
-//		TileLogicRegistry.getInstance().register(x);
-//	}
+	private static void register(TileLogic x) {
+		TileLogicRegistry.getInstance().register(x);
+	}
 
 }

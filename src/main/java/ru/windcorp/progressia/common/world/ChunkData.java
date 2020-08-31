@@ -21,11 +21,13 @@ import static ru.windcorp.progressia.common.world.block.BlockFace.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.client.world.tile.TileLocation;
 import ru.windcorp.progressia.common.util.SizeLimitedList;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
@@ -248,6 +250,34 @@ public class ChunkData {
 				BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK,
 				action
 		);
+	}
+	
+	/**
+	 * Iterates over all tiles in this chunk. Tiles are referenced using their
+	 * primary block (so that the face is
+	 * {@linkplain BlockFace#isPrimary() primary}).
+	 * 
+	 * @param action the action to perform. {@code TileLocation} refers to each
+	 * tile using its primary block
+	 */
+	public void forEachTile(BiConsumer<TileLocation, TileData> action) {
+		TileLocation loc = new TileLocation();
+		
+		forEachBlock(blockInChunk -> {
+			loc.pos.set(blockInChunk.x, blockInChunk.y, blockInChunk.z);
+			
+			for (BlockFace face : BlockFace.getPrimaryFaces()) {
+				List<TileData> list = getTilesOrNull(blockInChunk, face);
+				if (list == null) continue;
+				
+				loc.face = face;
+				
+				for (loc.layer = 0; loc.layer < list.size(); ++loc.layer) {
+					TileData tile = list.get(loc.layer);
+					action.accept(loc, tile);
+				}
+			}
+		});
 	}
 
 	public int getX() {
