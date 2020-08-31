@@ -18,10 +18,13 @@
 package ru.windcorp.progressia.client;
 
 import ru.windcorp.progressia.ProgressiaLauncher;
+import ru.windcorp.progressia.client.audio.backend.ALTest;
 
 public class ProgressiaClientMain {
 
 	public static void main(String[] args) {
+		ALTest al = new ALTest();
+		al.execute();
 		ProgressiaLauncher.launch(args, new ClientProxy());
 	}
 	
