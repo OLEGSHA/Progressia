@@ -66,7 +66,10 @@ public class Resource extends Named {
 			output = BufferUtils.createByteBuffer(byteArray.length);
 		}
 		
+		int position = output.position();
 		output.put(byteArray);
+		output.limit(output.position());
+		output.position(position);
 		
 		return output;
 	}
