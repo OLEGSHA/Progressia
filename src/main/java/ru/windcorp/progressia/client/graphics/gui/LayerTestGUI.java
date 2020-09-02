@@ -81,7 +81,7 @@ public class LayerTestGUI extends GUILayer {
 		panel.addChild(new DebugComponent("Bravo", new Vec2i(200, 100), 0x44FF44));
 		
 		Component charlie = new DebugComponent("Charlie", null, 0x222222);
-		charlie.setLayout(new LayoutVertical());
+		charlie.setLayout(new LayoutVertical(5));
 
 		//Debug
 		Localizer.getInstance().setLanguage("ru-RU");
@@ -90,16 +90,16 @@ public class LayerTestGUI extends GUILayer {
 		// These two are swapped in code due to a bug in layouts, fixing ATM
 		charlie.addChild(
 				new Label(
-						"Epsilon",
-						new Font().withColor(0x4444BB).deriveItalic(),
-						() -> epsilon.get().concat("\u269b")
+						"Delta",
+						new Font().withColor(0xCCBB44).deriveShadow().deriveBold(),
+						"Пре-альфа!"
 				)
 		);
 		charlie.addChild(
 				new Label(
-						"Delta",
-						new Font().withColor(0xCCBB44).deriveShadow().deriveBold(),
-						"Пре-альфа!"
+						"Epsilon",
+						new Font().withColor(0x4444BB).deriveItalic(),
+						() -> epsilon.get().concat("\u269b")
 				)
 		);
 		panel.addChild(charlie);
