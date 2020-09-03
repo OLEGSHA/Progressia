@@ -17,7 +17,11 @@ dependencies {
     
     implementation 'ru.windcorp.fork.io.github.java-graphics:glm:1.0.1'
 
-    testImplementation 'junit:junit:4.12'
+	// log4j
+	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
+	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3'
+
+	testImplementation 'junit:junit:4.12'
 }
 
 /*
@@ -71,3 +75,5 @@ dependencies {
 	runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
 	if (lwjglNatives == "natives-macos") runtimeOnly "org.lwjgl:lwjgl-vulkan::$lwjglNatives"
 }
+
+// LWJGL END
