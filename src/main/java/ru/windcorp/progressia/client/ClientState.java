@@ -1,5 +1,6 @@
 package ru.windcorp.progressia.client;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.comms.localhost.LocalServerCommsChannel;
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.flat.LayerTestUI;
@@ -26,6 +27,10 @@ public class ClientState {
 		Client client = new Client(world, new LocalServerCommsChannel(
 				ServerState.getInstance()
 		));
+		
+		client.setLocalPlayer(
+				world.getChunk(new Vec3i(0, 0, 0)).getEntities().get(0)
+		);
 		
 		setInstance(client);
 		

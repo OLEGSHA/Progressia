@@ -20,12 +20,14 @@ package ru.windcorp.progressia.common.world;
 import static ru.windcorp.progressia.common.world.block.BlockFace.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.world.tile.TileLocation;
 import ru.windcorp.progressia.common.util.SizeLimitedList;
@@ -34,6 +36,7 @@ import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 
@@ -54,6 +57,9 @@ public class ChunkData {
 		BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK *
 		BLOCK_FACE_COUNT
 	];
+	
+	private final List<EntityData> entities =
+			Collections.synchronizedList(new ArrayList<>());
 	
 	public ChunkData(int x, int y, int z, WorldData world) {
 		this.position.set(x, y, z);
@@ -123,6 +129,10 @@ public class ChunkData {
 				}
 			}
 		}
+		
+		EntityData javapony = new EntityData("Test", "Javapony");
+		javapony.setPosition(new Vec3(8, 12, 16.2f));
+		getEntities().add(javapony);
 	}
 
 	public BlockData getBlock(Vec3i posInChunk) {
@@ -216,6 +226,10 @@ public class ChunkData {
 				face.getId();
 	}
 	
+	public List<EntityData> getEntities() {
+		return entities;
+	}
+	
 	private static void checkLocalCoordinates(Vec3i posInChunk) {
 		if (!isInBounds(posInChunk)) {
 			throw new IllegalArgumentException(
@@ -278,6 +292,10 @@ public class ChunkData {
 				}
 			}
 		});
+	}
+	
+	public void forEachEntity(Consumer<EntityData> action) {
+		getEntities().forEach(action);
 	}
 
 	public int getX() {

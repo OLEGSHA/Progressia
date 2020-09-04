@@ -92,6 +92,12 @@ public class ChunkRender {
 		model.render(renderer);
 		
 		renderer.popTransform();
+		
+		getData().forEachEntity(entityData -> {
+				renderer.pushTransform().translate(entityData.getPosition());
+				getWorld().getEntityRenderable(entityData).render(renderer);
+				renderer.popTransform();
+		});
 	}
 
 	private void buildModel() {

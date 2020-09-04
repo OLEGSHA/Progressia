@@ -17,10 +17,13 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client.graphics.model;
 
+import java.util.Map;
+
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class Shapes {
 	
@@ -149,6 +152,21 @@ public class Shapes {
 			this.westTexture = west;
 		}
 		
+		public PppBuilder(
+				ShapeRenderProgram program,
+				Map<BlockFace, Texture> textureMap
+		) {
+			this(
+					program,
+					textureMap.get(BlockFace.TOP),
+					textureMap.get(BlockFace.BOTTOM),
+					textureMap.get(BlockFace.NORTH),
+					textureMap.get(BlockFace.SOUTH),
+					textureMap.get(BlockFace.EAST),
+					textureMap.get(BlockFace.WEST)
+			);
+		}
+		
 		public PppBuilder(ShapeRenderProgram program, Texture texture) {
 			this(program, texture, texture, texture, texture, texture, texture);
 		}
@@ -220,6 +238,10 @@ public class Shapes {
 		
 		public PppBuilder setSize(float x, float y, float z) {
 			return this.setWidth(x).setDepth(y).setHeight(z);
+		}
+		
+		public PppBuilder setSize(float size) {
+			return this.setSize(size, size, size);
 		}
 		
 		public Shape create() {

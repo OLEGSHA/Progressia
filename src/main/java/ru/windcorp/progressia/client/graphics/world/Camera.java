@@ -33,6 +33,8 @@ public class Camera {
 	
 	private float fieldOfView;
 	
+	public boolean tmp_mode = false;
+	
 	public Camera(Vec3 position, float pitch, float yaw, float fieldOfView) {
 		teleport(position);
 		setPitch(pitch);
@@ -45,6 +47,10 @@ public class Camera {
 	public void apply(WorldRenderHelper helper) {
 		applyPerspective(helper);
 		rotateCoordinateSystem(helper);
+		
+		// TODO debug
+		helper.pushViewTransform().translate(3.5f, 0, -0.5f);
+		if (tmp_mode) helper.pushViewTransform().rotateZ(PI);
 		
 		applyDirection(helper);
 		applyPosition(helper);

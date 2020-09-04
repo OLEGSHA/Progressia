@@ -66,7 +66,15 @@ public class LayerWorld extends Layer {
 	
 	@Override
 	protected void doRender() {
+		client.getLocalPlayer().setPosition(client.getCamera().getPosition());
+		client.getLocalPlayer().setVelocity(velocity);
+		client.getLocalPlayer().getDirection().set(
+				-client.getCamera().getYaw(),
+				-client.getCamera().getPitch()
+		);
+		
 		client.getCamera().apply(helper);
+		
 		renderWorld();
 		helper.reset();
 		
@@ -154,6 +162,12 @@ public class LayerWorld extends Layer {
 			}
 			
 			flag = !flag;
+			break;
+			
+		case GLFW.GLFW_KEY_F5:
+			if (!event.isPress()) return false;
+			
+			client.getCamera().tmp_mode = !client.getCamera().tmp_mode;
 			break;
 			
 		default:

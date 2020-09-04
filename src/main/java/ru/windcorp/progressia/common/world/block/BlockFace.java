@@ -18,6 +18,7 @@
 package ru.windcorp.progressia.common.world.block;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import glm.vec._3.i.Vec3i;
 
@@ -56,6 +57,21 @@ public final class BlockFace extends BlockRelation {
 	private static void link(BlockFace a, BlockFace b) {
 		a.counterFace = b;
 		b.counterFace = a;
+	}
+	
+	public static <E> ImmutableMap<BlockFace, E> mapToFaces(
+			E top, E bottom,
+			E north, E south,
+			E east, E west
+	) {
+		return ImmutableMap.<BlockFace, E>builderWithExpectedSize(6)
+				.put(TOP, top)
+				.put(BOTTOM, bottom)
+				.put(NORTH, north)
+				.put(SOUTH, south)
+				.put(EAST, east)
+				.put(WEST, west)
+				.build();
 	}
 	
 	private static int nextId = 0;

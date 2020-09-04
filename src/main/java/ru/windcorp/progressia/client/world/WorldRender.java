@@ -18,19 +18,26 @@
 package ru.windcorp.progressia.client.world;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
+import ru.windcorp.progressia.client.world.entity.EntityRenderRegistry;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class WorldRender {
 	
 	private final WorldData data;
 	
 	private final Map<ChunkData, ChunkRender> chunks = new HashMap<>();
+	private final Map<EntityData, Renderable> entityModels =
+			Collections.synchronizedMap(new WeakHashMap<>());
 	
 	public WorldRender(WorldData data) {
 		this.data = data;
@@ -60,6 +67,18 @@ public class WorldRender {
 		for (ChunkRender chunk : getChunks()) {
 			chunk.render(renderer);
 		}
+	}
+	
+	public Renderable getEntityRenderable(EntityData entity) {
+		return entityModels.computeIfAbsent(
+				entity,
+				WorldRender::createEntityRenderable
+		);
+	}
+	
+	private static Renderable createEntityRenderable(EntityData entity) {
+		return EntityRenderRegistry.getInstance().get(entity.getId())
+				.createRenderable(entity);
 	}
 
 }
