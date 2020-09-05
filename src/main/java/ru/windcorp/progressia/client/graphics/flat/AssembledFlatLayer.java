@@ -18,6 +18,7 @@
 package ru.windcorp.progressia.client.graphics.flat;
 
 import ru.windcorp.progressia.client.graphics.Layer;
+import ru.windcorp.progressia.client.graphics.backend.FaceCulling;
 
 public abstract class AssembledFlatLayer extends Layer {
 
@@ -48,11 +49,15 @@ public abstract class AssembledFlatLayer extends Layer {
 	
 	@Override
 	protected void doRender() {
+		FaceCulling.push(false);
+		
 		for (RenderTarget.Clip clip : clips) {
 			clip.render(helper);
 		}
 		
 		helper.reset();
+		
+		FaceCulling.pop();
 	}
 	
 }

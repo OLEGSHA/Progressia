@@ -17,8 +17,6 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client.graphics.flat;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import java.nio.FloatBuffer;
 
 import com.google.common.collect.ObjectArrays;
@@ -81,9 +79,7 @@ public class FlatRenderProgram extends ShapeRenderProgram {
 	
 	@Override
 	public void render(ShapeRenderHelper helper, Shape shape) {
-		glDisable(GL_CULL_FACE);
 		super.render(helper, shape);
-		glEnable(GL_CULL_FACE);
 	}
 	
 	@Override

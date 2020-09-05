@@ -99,6 +99,11 @@ public class QuadripedModel implements Renderable {
 	private float velocityCoeff = 0;
 	private float velocity = 0;
 	
+	/**
+	 * Controls how quickly velocityCoeff approaches 1
+	 */
+	private float velocityCutoff = 10;
+	
 	private float walkingFrequency = 0.15f;
 	private float walkingSwing = (float) toRadians(30);
 	
@@ -129,8 +134,8 @@ public class QuadripedModel implements Renderable {
 	
 	@Override
 	public void render(ShapeRenderHelper renderer) {
-		evaluateAngles();
 		accountForVelocity();
+		evaluateAngles();
 		
 		renderer.pushTransform().scale(scale).rotateZ(bodyYaw);
 		body.render(renderer, this);
@@ -171,13 +176,15 @@ public class QuadripedModel implements Renderable {
 	}
 
 	private void accountForVelocity() {
-		// TODO switch to world time
 		Vec3 horizontal = Vectors.grab3();
 		horizontal.set(entity.getVelocity());
 		horizontal.z = 0;
 		
-		velocity = (float) (horizontal.length());
-		velocityCoeff = -1 / (velocity * 1000 + 1) + 1;
+		velocity = horizontal.length();
+		
+		evaluateVelocityCoeff();
+		
+		// TODO switch to world time
 		walkingAnimationParameter += velocity * GraphicsInterface.getFrameLength() * 1000;
 		
 		bodyYaw += velocityCoeff * normalizeAngle(
@@ -186,6 +193,15 @@ public class QuadripedModel implements Renderable {
 		Vectors.release(horizontal);
 	}
 	
+	private void evaluateVelocityCoeff() {
+		if (velocity * velocityCutoff > 1) {
+			velocityCoeff = 1;
+		} else {
+			velocityCoeff = velocity * velocityCutoff;
+			velocityCoeff *= velocityCoeff;
+		}
+	}
+
 	private static float normalizeAngle(float x) {
 		final float half = (float) (PI);
 		final float full = (float) (2 * PI);

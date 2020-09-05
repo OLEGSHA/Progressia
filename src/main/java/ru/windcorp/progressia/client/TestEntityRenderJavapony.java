@@ -26,8 +26,10 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 	private final Renderable body;
 	private final Renderable head;
-	private final Renderable foreLeg;
-	private final Renderable hindLeg;
+	private final Renderable leftForeLeg;
+	private final Renderable leftHindLeg;
+	private final Renderable rightForeLeg;
+	private final Renderable rightHindLeg;
 
 	public TestEntityRenderJavapony() {
 		super("Test", "Javapony");
@@ -39,8 +41,10 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		this.body = createBody(texture);
 		this.head = createHead(texture);
-		this.foreLeg = createForeLeg(texture);
-		this.hindLeg = createHindLeg(texture);
+		this.leftForeLeg = createLeg(texture, 160, 0, true);
+		this.rightForeLeg = createLeg(texture, 160, 0, false);
+		this.leftHindLeg = createLeg(texture, 0, 0, true);
+		this.rightHindLeg = createLeg(texture, 0, 0, false);
 	}
 	
 	private static Renderable createBody(ComplexTexture texture) {
@@ -75,7 +79,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 						)
 				)
 					.setOrigin(0, -8, 8)
-					.setWidth(16).setDepth(16).setHeight(4, 0, 16)
+					.setWidth(16).setDepth(16).setHeight(2, 0, 16)
 					.create()
 		);
 		
@@ -243,7 +247,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		// Left ear
 		b.addPart(new PppBuilder(
 				program, texture.getCuboidTextures(48, 128-80, 8)
-		).setOrigin(-16 + 3, 16 - 8, 32).setSize(8).create());
+		).setOrigin(-16 + 3, +16, 32).setSize(8, -8, 8).flip().create());
 		
 		// Muzzle
 		b.addPart(new PppBuilder(
@@ -255,7 +259,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 					texture.get(32, 64, 0, 0),
 					texture.get(32, 64, 0, 0)
 				)
-		).setOrigin(16, -8, 0).setSize(16, 4, 8).create());
+		).setOrigin(16, -8, 0).setSize(4, 16, 8).create());
 		
 		// Nose
 		b.addPart(new PppBuilder(
@@ -267,23 +271,26 @@ public class TestEntityRenderJavapony extends EntityRender {
 					texture.get(32, 64, 0, 0),
 					texture.get(32, 64, 0, 0)
 				)
-		).setOrigin(16, -4, 8).setSize(8, 4, 4).create());
+		).setOrigin(16, -4, 8).setSize(4, 8, 4).create());
 		
 		return new StaticModel(b);
 	}
-
-	private static Renderable createForeLeg(ComplexTexture texture) {
-		return new PppBuilder(
+	
+	private static Renderable createLeg(
+			ComplexTexture texture,
+			int textureX, int textureY,
+			boolean isLeft
+	) {
+		PppBuilder b = new PppBuilder(
 				WorldRenderProgram.getDefault(),
-				texture.getCuboidTextures(160, 0, 16, 48, 16)
-		).setOrigin(-8, -8, -48).setSize(16, 16, 48).create();
-	}
-
-	private static Renderable createHindLeg(ComplexTexture texture) {
-		return new PppBuilder(
-				WorldRenderProgram.getDefault(),
-				texture.getCuboidTextures(0, 0, 16, 48, 16)
-		).setOrigin(-8, -8, -48).setSize(16, 16, 48).create();
+				texture.getCuboidTextures(textureX, textureY, 16, 48, 16)
+		)
+		.setOrigin(-8, isLeft ? +8 : -8, -48)
+		.setSize(16, isLeft ? -16 : +16, 48);
+		
+		if (isLeft) b.flip();
+		
+		return b.create();
 	}
 
 	private static Renderable createTail(ComplexTexture texture) {
@@ -312,12 +319,21 @@ public class TestEntityRenderJavapony extends EntityRender {
 				
 				new QuadripedModel.Body(body),
 				new QuadripedModel.Head(
-						head, new Vec3(16, 0, 20), 60, 45
+						head, new Vec3(12, 0, 20), 60, 45
 				),
-				new QuadripedModel.Leg(foreLeg, new Vec3(  6, +8.1f, -16), 0.0f),
-				new QuadripedModel.Leg(foreLeg, new Vec3(  6, -8.1f, -16), 2.5f),
-				new QuadripedModel.Leg(hindLeg, new Vec3(-36, +8.2f, -16), 2.5f),
-				new QuadripedModel.Leg(hindLeg, new Vec3(-36, -8.2f, -16), 0.0f),
+				new QuadripedModel.Leg(
+						leftForeLeg, new Vec3(  6, +8.1f, -16), 0.0f
+				),
+				new QuadripedModel.Leg(
+						rightForeLeg, new Vec3(  6, -8.1f, -16), 2.5f
+				),
+				new QuadripedModel.Leg(
+						leftHindLeg, new Vec3(-36, +8.2f, -16), 2.5f
+				),
+				new QuadripedModel.Leg(
+						rightHindLeg, new Vec3(-36, -8.2f, -16), 0.0f
+				),
+				
 				1 / 96f
 		);
 	}

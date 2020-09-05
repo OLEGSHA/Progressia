@@ -24,6 +24,7 @@ import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.comms.controls.InputBasedControls;
 import ru.windcorp.progressia.client.graphics.Layer;
+import ru.windcorp.progressia.client.graphics.backend.FaceCulling;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.input.CursorMoveEvent;
@@ -102,7 +103,9 @@ public class LayerWorld extends Layer {
 	}
 
 	private void renderWorld() {
+		FaceCulling.push(true);
 		this.client.getWorld().render(helper);
+		FaceCulling.pop();
 	}
 	
 	@Override

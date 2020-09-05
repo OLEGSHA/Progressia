@@ -43,7 +43,9 @@ public class Shapes {
 			Texture northTexture,
 			Texture southTexture,
 			Texture eastTexture,
-			Texture westTexture
+			Texture westTexture,
+			
+			boolean flip
 	) {
 		
 		Vec3 faceOrigin = Vectors.grab3();
@@ -55,7 +57,7 @@ public class Shapes {
 				faceOrigin.set(origin).add(height).add(width),
 				faceWidth.set(width).negate(),
 				depth,
-				false
+				flip
 		);
 		
 		Face bottom = Faces.createRectangle(
@@ -64,7 +66,7 @@ public class Shapes {
 				origin,
 				width,
 				depth,
-				false
+				flip
 		);
 		
 		Face north = Faces.createRectangle(
@@ -73,7 +75,7 @@ public class Shapes {
 				faceOrigin.set(origin).add(depth),
 				width,
 				height,
-				false
+				flip
 		);
 		
 		Face south = Faces.createRectangle(
@@ -82,7 +84,7 @@ public class Shapes {
 				faceOrigin.set(origin).add(width),
 				faceWidth.set(width).negate(),
 				height,
-				false
+				flip
 		);
 		
 		Face east = Faces.createRectangle(
@@ -91,7 +93,7 @@ public class Shapes {
 				origin,
 				depth,
 				height,
-				false
+				flip
 		);
 		
 		Face west = Faces.createRectangle(
@@ -100,7 +102,7 @@ public class Shapes {
 				faceOrigin.set(origin).add(width).add(depth),
 				faceWidth.set(depth).negate(),
 				height,
-				false
+				flip
 		);
 		
 		Shape result = new Shape(
@@ -133,6 +135,8 @@ public class Shapes {
 		private final Texture southTexture;
 		private final Texture eastTexture;
 		private final Texture westTexture;
+		
+		private boolean flip = false;
 		
 		public PppBuilder(
 				ShapeRenderProgram program,
@@ -237,11 +241,16 @@ public class Shapes {
 		}
 		
 		public PppBuilder setSize(float x, float y, float z) {
-			return this.setWidth(x).setDepth(y).setHeight(z);
+			return this.setDepth(x).setWidth(y).setHeight(z);
 		}
 		
 		public PppBuilder setSize(float size) {
 			return this.setSize(size, size, size);
+		}
+		
+		public PppBuilder flip() {
+			this.flip = true;
+			return this;
 		}
 		
 		public Shape create() {
@@ -255,7 +264,8 @@ public class Shapes {
 					northTexture,
 					southTexture,
 					eastTexture,
-					westTexture
+					westTexture,
+					flip
 			);
 		}
 		

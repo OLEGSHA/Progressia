@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.client.graphics.backend.FaceCulling;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.world.entity.EntityRenderRegistry;
@@ -67,8 +68,24 @@ public class WorldRender {
 		for (ChunkRender chunk : getChunks()) {
 			chunk.render(renderer);
 		}
+		
+		renderEntities(renderer);
 	}
 	
+	private void renderEntities(ShapeRenderHelper renderer) {
+		FaceCulling.push(false);
+		
+		for (ChunkRender chunk : getChunks()) {
+			chunk.getData().forEachEntity(entity -> {
+					renderer.pushTransform().translate(entity.getPosition());
+					getEntityRenderable(entity).render(renderer);
+					renderer.popTransform();
+			});
+		}
+		
+		FaceCulling.pop();
+	}
+
 	public Renderable getEntityRenderable(EntityData entity) {
 		return entityModels.computeIfAbsent(
 				entity,

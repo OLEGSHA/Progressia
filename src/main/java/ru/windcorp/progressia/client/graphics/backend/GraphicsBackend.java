@@ -35,6 +35,8 @@ public class GraphicsBackend {
 	private static long framesRendered = 0;
 	private static double frameStart = Double.NaN;
 	
+	private static boolean faceCullingEnabled = false;
+	
 	private GraphicsBackend() {}
 	
 	public static void initialize() {
@@ -108,6 +110,18 @@ public class GraphicsBackend {
 
 	public static void startNextLayer() {
 		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+	
+	public static void setFaceCulling(boolean useFaceCulling) {
+		if (useFaceCulling == faceCullingEnabled) return;
+		
+		if (useFaceCulling) {
+			glEnable(GL_CULL_FACE);
+		} else {
+			glDisable(GL_CULL_FACE);
+		}
+		
+		faceCullingEnabled = useFaceCulling;
 	}
 
 }
