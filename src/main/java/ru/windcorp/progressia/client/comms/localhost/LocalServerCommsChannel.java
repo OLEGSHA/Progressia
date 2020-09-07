@@ -6,10 +6,15 @@ import ru.windcorp.progressia.server.Server;
 
 public class LocalServerCommsChannel extends ServerCommsChannel {
 	
-	private final LocalClient localClient;
+	private LocalClient localClient;
+	private final Server server;
 	
 	public LocalServerCommsChannel(Server server) {
 		super(Role.GAME, Role.CHAT);
+		this.server = server;
+	}
+	
+	public void connect() {
 		setState(State.CONNECTED);
 		
 		this.localClient = new LocalClient(

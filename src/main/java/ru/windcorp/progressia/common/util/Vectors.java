@@ -25,6 +25,8 @@ import glm.vec._4.i.Vec4i;
  * do not store them.
  * <p>
  * This class is thread- and recursion-safe.
+ * 
+ * @see Matrices
  */
 public class Vectors {
 	

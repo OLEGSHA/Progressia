@@ -4,12 +4,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import glm.vec._3.i.Vec3i;
 import gnu.trove.TCollections;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import ru.windcorp.progressia.common.comms.CommsChannel.Role;
 import ru.windcorp.progressia.common.comms.CommsChannel.State;
 import ru.windcorp.progressia.common.comms.packets.Packet;
+import ru.windcorp.progressia.common.comms.packets.PacketSetLocalPlayer;
 import ru.windcorp.progressia.server.Server;
 
 public class ClientManager {
@@ -36,6 +38,11 @@ public class ClientManager {
 		clientsById.put(client.getId(), client);
 		
 		client.addListener(new DefaultServerCommsListener(this, client));
+		
+		client.sendPacket(new PacketSetLocalPlayer(
+				server.getWorld().getData().getChunk(new Vec3i(0, 0, 0))
+				.getEntities().get(0).getUUID()
+		));
 	}
 	
 	public void disconnectClient(Client client) {

@@ -1,17 +1,20 @@
 package ru.windcorp.progressia.client.world.entity;
 
 import static java.lang.Math.*;
+import static ru.windcorp.progressia.common.util.FloatMathUtils.*;
 
 import glm.Glm;
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
+import ru.windcorp.progressia.common.util.Matrices;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
-public class QuadripedModel implements Renderable {
+public class QuadripedModel extends EntityRenderable {
 	
 	private static abstract class BodyPart {
 		private final Renderable renderable;
@@ -20,7 +23,6 @@ public class QuadripedModel implements Renderable {
 		public BodyPart(Renderable renderable, Vec3 joint) {
 			this.renderable = renderable;
 			if (joint != null) {
-//				joint.negate(this.translation);
 				this.translation.set(joint);
 			}
 		}
@@ -37,6 +39,10 @@ public class QuadripedModel implements Renderable {
 		}
 
 		protected abstract void applyTransform(Mat4 mat, QuadripedModel model);
+		
+		public Vec3 getTranslation() {
+			return translation;
+		}
 	}
 	
 	public static class Body extends BodyPart {
@@ -54,18 +60,26 @@ public class QuadripedModel implements Renderable {
 		private final float maxYaw;
 		private final float maxPitch;
 		
+		private final Vec3 viewPoint;
+		
 		public Head(
 				Renderable renderable, Vec3 joint,
-				double maxYawDegrees, double maxPitchDegrees
+				double maxYawDegrees, double maxPitchDegrees,
+				Vec3 viewPoint
 		) {
 			super(renderable, joint);
 			this.maxYaw = (float) toRadians(maxYawDegrees);
 			this.maxPitch = (float) toRadians(maxPitchDegrees);
+			this.viewPoint = viewPoint;
 		}
 		
 		@Override
 		protected void applyTransform(Mat4 mat, QuadripedModel model) {
 			mat.rotateZ(model.headYaw).rotateY(model.headPitch);
+		}
+		
+		public Vec3 getViewPoint() {
+			return viewPoint;
 		}
 	}
 	
@@ -85,8 +99,6 @@ public class QuadripedModel implements Renderable {
 			mat.rotateY(sin(model.walkingFrequency * model.walkingAnimationParameter + animationOffset) * model.walkingSwing * model.velocityCoeff);
 		}
 	}
-	
-	private final EntityData entity;
 	
 	private final Body body;
 	private final Head head;
@@ -120,7 +132,7 @@ public class QuadripedModel implements Renderable {
 			
 			float scale
 	) {
-		this.entity = entity;
+		super(entity);
 		
 		this.body = body;
 		this.head = head;
@@ -134,23 +146,21 @@ public class QuadripedModel implements Renderable {
 	
 	@Override
 	public void render(ShapeRenderHelper renderer) {
-		accountForVelocity();
-		evaluateAngles();
-		
 		renderer.pushTransform().scale(scale).rotateZ(bodyYaw);
 		body.render(renderer, this);
-		
 		head.render(renderer, this);
-		
 		leftForeLeg.render(renderer, this);
 		rightForeLeg.render(renderer, this);
 		leftHindLeg.render(renderer, this);
 		rightHindLeg.render(renderer, this);
 		renderer.popTransform();
+		
+		accountForVelocity();
+		evaluateAngles();
 	}
 
 	private void evaluateAngles() {
-		float globalYaw = normalizeAngle(entity.getYaw());
+		float globalYaw = normalizeAngle(getData().getYaw());
 		
 		if (Float.isNaN(bodyYaw)) {
 			bodyYaw = globalYaw;
@@ -170,14 +180,14 @@ public class QuadripedModel implements Renderable {
 		bodyYaw = normalizeAngle(bodyYaw);
 		
 		headPitch = Glm.clamp(
-				entity.getPitch(),
+				getData().getPitch(),
 				-head.maxPitch, head.maxPitch
 		);
 	}
 
 	private void accountForVelocity() {
 		Vec3 horizontal = Vectors.grab3();
-		horizontal.set(entity.getVelocity());
+		horizontal.set(getData().getVelocity());
 		horizontal.z = 0;
 		
 		velocity = horizontal.length();
@@ -201,11 +211,26 @@ public class QuadripedModel implements Renderable {
 			velocityCoeff *= velocityCoeff;
 		}
 	}
-
-	private static float normalizeAngle(float x) {
-		final float half = (float) (PI);
-		final float full = (float) (2 * PI);
-		return ((x + half) % full + full) % full - half;
+	
+	@Override
+	public void getViewPoint(Vec3 output) {
+		Mat4 m = Matrices.grab4();
+		Vec4 v = Vectors.grab4();
+		
+		m.identity()
+		.scale(scale)
+		.rotateZ(bodyYaw)
+		.translate(head.getTranslation())
+		.rotateZ(headYaw)
+		.rotateY(headPitch);
+		
+		v.set(head.getViewPoint(), 1);
+		m.mul(v);
+		
+		output.set(v.x, v.y, v.z);
+		
+		Vectors.release(v);
+		Matrices.release(m);
 	}
 
 }

@@ -18,6 +18,7 @@ import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.entity.EntityRender;
 import ru.windcorp.progressia.client.world.entity.EntityRenderRegistry;
+import ru.windcorp.progressia.client.world.entity.EntityRenderable;
 import ru.windcorp.progressia.client.world.entity.QuadripedModel;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
@@ -313,13 +314,13 @@ public class TestEntityRenderJavapony extends EntityRender {
 	}
 
 	@Override
-	public Renderable createRenderable(EntityData entity) {
+	public EntityRenderable createRenderable(EntityData entity) {
 		return new QuadripedModel(
 				entity,
 				
 				new QuadripedModel.Body(body),
 				new QuadripedModel.Head(
-						head, new Vec3(12, 0, 20), 60, 45
+						head, new Vec3(12, 0, 20), 60, 45, new Vec3(16, 0, 20)
 				),
 				new QuadripedModel.Leg(
 						leftForeLeg, new Vec3(  6, +8.1f, -16), 0.0f

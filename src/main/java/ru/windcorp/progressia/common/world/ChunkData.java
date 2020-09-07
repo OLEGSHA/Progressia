@@ -22,11 +22,13 @@ import static ru.windcorp.progressia.common.world.block.BlockFace.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 
+import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.world.tile.TileLocation;
@@ -131,7 +133,11 @@ public class ChunkData {
 		}
 		
 		EntityData javapony = new EntityData("Test", "Javapony");
-		javapony.setPosition(new Vec3(8, 12, 16.2f));
+		javapony.setUUID(UUID.nameUUIDFromBytes(new byte[] {42}));
+		javapony.setPosition(new Vec3(-6, -6, 20));
+		javapony.setDirection(new Vec2(
+				(float) Math.toRadians(40), (float) Math.toRadians(45)
+		));
 		getEntities().add(javapony);
 	}
 

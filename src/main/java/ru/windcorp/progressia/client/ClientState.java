@@ -1,6 +1,5 @@
 package ru.windcorp.progressia.client;
 
-import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.comms.localhost.LocalServerCommsChannel;
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.flat.LayerTestUI;
@@ -24,13 +23,14 @@ public class ClientState {
 	public static void connectToLocalServer() {
 		
 		WorldData world = new WorldData();
-		Client client = new Client(world, new LocalServerCommsChannel(
-				ServerState.getInstance()
-		));
 		
-		client.setLocalPlayer(
-				world.getChunk(new Vec3i(0, 0, 0)).getEntities().get(0)
+		LocalServerCommsChannel channel = new LocalServerCommsChannel(
+				ServerState.getInstance()
 		);
+		
+		Client client = new Client(world, channel);
+		
+		channel.connect();
 		
 		setInstance(client);
 		

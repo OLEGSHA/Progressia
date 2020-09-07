@@ -1,6 +1,5 @@
 package ru.windcorp.progressia.client;
 
-import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.comms.DefaultClientCommsListener;
 import ru.windcorp.progressia.client.comms.ServerCommsChannel;
 import ru.windcorp.progressia.client.graphics.world.Camera;
@@ -13,11 +12,7 @@ public class Client {
 	private final WorldRender world;
 	private EntityData localPlayer;
 	
-	private final Camera camera = new Camera(
-			new Vec3(-6, -6, 20),
-			(float) Math.toRadians(-40), (float) Math.toRadians(-45),
-			(float) Math.toRadians(70)
-	);
+	private final Camera camera = new Camera((float) Math.toRadians(70));
 	
 	private final ServerCommsChannel comms;
 	
