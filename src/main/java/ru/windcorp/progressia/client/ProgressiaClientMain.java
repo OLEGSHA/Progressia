@@ -23,8 +23,7 @@ import ru.windcorp.progressia.client.audio.backend.ALTest;
 public class ProgressiaClientMain {
 
 	public static void main(String[] args) {
-		ALTest al = new ALTest();
-		al.execute();
+		ALTest.execute();
 		ProgressiaLauncher.launch(args, new ClientProxy());
 	}
 	

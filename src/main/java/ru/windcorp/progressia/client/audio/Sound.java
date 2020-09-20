@@ -13,10 +13,10 @@ public class Sound {
     //Characteristics
     private FloatBuffer position =
             (FloatBuffer) BufferUtils.createFloatBuffer(3)
-                    .put(new float[]{0.0f, 0.0f, 0.0f}).flip();
+                    .put(new float[]{0.0f, 0.0f, 0.0f}).rewind();
     private FloatBuffer velocity =
             (FloatBuffer) BufferUtils.createFloatBuffer(3)
-                    .put(new float[]{0.0f, 0.0f, 0.0f}).flip();
+                    .put(new float[]{0.0f, 0.0f, 0.0f}).rewind();
     private float pitch = 1.0f;
     private float gain = 1.0f;
 
@@ -91,6 +91,7 @@ public class Sound {
     public void setSource(int source) {
         this.source = source;
         alSourcei(this.source, AL_BUFFER, audio);
+        //alSourcei(this.source, AL_SOURCE_RELATIVE, AL_TRUE);
     }
 
     public int getSource() {

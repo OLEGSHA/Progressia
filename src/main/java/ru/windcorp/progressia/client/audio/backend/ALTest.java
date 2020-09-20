@@ -13,15 +13,15 @@ import static org.lwjgl.openal.ALC10.*;
 
 public class ALTest {
 	// Position of the listener
-	private FloatBuffer listenerPos = (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[]{0.0f, 0.0f, 0.0f}).flip();
+	private static FloatBuffer listenerPos = (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[]{0.0f, 0.0f, 0.0f}).flip();
 	// Velocity of the listener
-	private FloatBuffer listenerVel = (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[]{0.0f, 0.0f, 0.0f}).flip();
+	private static FloatBuffer listenerVel = (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[]{0.0f, 0.0f, 0.0f}).flip();
 
 	// Orientation of the listener. (first 3 elements are "at", second 3 are "up")
-	private FloatBuffer listenerOri =
+	private static FloatBuffer listenerOri =
 			(FloatBuffer) BufferUtils.createFloatBuffer(6).put(new float[]{0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f}).flip();
 
-	private void initializeAL() {
+	static private void initializeAL() {
 
 		String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
 		long device = alcOpenDevice(defaultDeviceName);
@@ -30,30 +30,38 @@ public class ALTest {
 		alcMakeContextCurrent(context);
 		ALCCapabilities deviceCaps = ALC.createCapabilities(device);
 		ALCapabilities alcaps = AL.createCapabilities(deviceCaps);
-
 	}
 
-	void loadALData() {
+	static void loadALData() {
+		alListenerfv(AL_POSITION,		listenerPos);
+		alListenerfv(AL_VELOCITY,		listenerVel);
+		alListenerfv(AL_ORIENTATION,	listenerOri);
 		Sound music = AudioReader.readAsMono("assets/sounds/sample_mono.ogg").genSound();
 		music.forcePlay();
+		checkALError();
 	}
 
-	void killALData() {
+	static void killALData() {
 		//alDeleteSources(source);
 		//alDeleteBuffers(buffer);
 	}
 
-	public void execute() {
+	public static void execute() {
 		initializeAL();
 		checkALError();
-		Listener.update();
+		checkALError();
+		checkALError();
 		loadALData();
 
 		checkALError();
 		checkALError();
 	}
 
-	public void checkALError() {
+	public static void update() {
+		Listener.update();
+	}
+
+	public static void checkALError() {
 		int i = alGetError();
 		if(alGetError() != AL_NO_ERROR) {
 			throw new RuntimeException(i+"");
