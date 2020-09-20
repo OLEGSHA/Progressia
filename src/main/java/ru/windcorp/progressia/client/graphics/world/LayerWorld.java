@@ -19,18 +19,23 @@ package ru.windcorp.progressia.client.graphics.world;
 
 import org.lwjgl.glfw.GLFW;
 
+import glm.Glm;
 import glm.mat._3.Mat3;
+import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.comms.controls.InputBasedControls;
 import ru.windcorp.progressia.client.graphics.Layer;
+import ru.windcorp.progressia.client.graphics.backend.FaceCulling;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.input.CursorMoveEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
+import ru.windcorp.progressia.common.util.FloatMathUtils;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class LayerWorld extends Layer {
 	
@@ -66,11 +71,20 @@ public class LayerWorld extends Layer {
 	
 	@Override
 	protected void doRender() {
-		client.getCamera().apply(helper);
-		renderWorld();
-		helper.reset();
+		if (client.getLocalPlayer() != null) {
+			tmp_handleControls();
+		}
 		
-		angMat.set().rotateZ(-client.getCamera().getYaw());
+		Camera camera = client.getCamera();
+		if (camera.hasAnchor()) {
+			renderWorld();
+		}
+	}
+
+	private void tmp_handleControls() {
+		EntityData player = client.getLocalPlayer();
+		
+		angMat.set().rotateZ(player.getYaw());
 		
 		Vec3 movement = Vectors.grab3();
 		
@@ -88,13 +102,21 @@ public class LayerWorld extends Layer {
 		Vec3 velCopy = Vectors.grab3().set(velocity);
 		
 		velCopy.mul((float) (GraphicsInterface.getFrameLength() * 60));
-		client.getCamera().move(velCopy);
+		
+		player.getPosition().add(velCopy);
+		player.getVelocity().set(velocity);
 		
 		Vectors.release(velCopy);
 	}
 
 	private void renderWorld() {
+		client.getCamera().apply(helper);
+		FaceCulling.push(true);
+		
 		this.client.getWorld().render(helper);
+		
+		FaceCulling.pop();
+		helper.reset();
 	}
 	
 	@Override
@@ -156,6 +178,14 @@ public class LayerWorld extends Layer {
 			flag = !flag;
 			break;
 			
+		case GLFW.GLFW_KEY_F5:
+			if (!event.isPress()) return false;
+			
+			if (client.getCamera().hasAnchor()) {
+				client.getCamera().selectNextMode();
+			}
+			break;
+			
 		default:
 			return false;
 		}
@@ -166,12 +196,26 @@ public class LayerWorld extends Layer {
 	private void onMouseMoved(CursorMoveEvent event) {
 		if (!flag) return;
 		
-		final float yawScale = 0.002f;
+		final float yawScale = -0.002f;
 		final float pitchScale = yawScale;
+
+		EntityData player = client.getLocalPlayer();
 		
-		client.getCamera().turn(
-				(float) (event.getChangeY() * pitchScale),
-				(float) (event.getChangeX() * yawScale)
+		if (player != null) {
+			normalizeAngles(player.getDirection().add(
+					(float) (event.getChangeX() * yawScale),
+					(float) (event.getChangeY() * pitchScale)
+			));
+		}
+	}
+
+	private void normalizeAngles(Vec2 dir) {
+		// Normalize yaw
+		dir.x = FloatMathUtils.normalizeAngle(dir.x);
+		
+		// Clamp pitch
+		dir.y = Glm.clamp(
+				dir.y, -FloatMathUtils.PI_F/2, +FloatMathUtils.PI_F/2
 		);
 	}
 

@@ -23,9 +23,14 @@ public class ClientState {
 	public static void connectToLocalServer() {
 		
 		WorldData world = new WorldData();
-		Client client = new Client(world, new LocalServerCommsChannel(
+		
+		LocalServerCommsChannel channel = new LocalServerCommsChannel(
 				ServerState.getInstance()
-		));
+		);
+		
+		Client client = new Client(world, channel);
+		
+		channel.connect();
 		
 		setInstance(client);
 		

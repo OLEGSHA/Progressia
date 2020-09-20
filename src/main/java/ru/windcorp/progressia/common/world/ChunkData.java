@@ -20,18 +20,25 @@ package ru.windcorp.progressia.common.world;
 import static ru.windcorp.progressia.common.world.block.BlockFace.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 
+import glm.vec._2.Vec2;
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.client.world.tile.TileLocation;
 import ru.windcorp.progressia.common.util.SizeLimitedList;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 
@@ -52,6 +59,9 @@ public class ChunkData {
 		BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK *
 		BLOCK_FACE_COUNT
 	];
+	
+	private final List<EntityData> entities =
+			Collections.synchronizedList(new ArrayList<>());
 	
 	public ChunkData(int x, int y, int z, WorldData world) {
 		this.position.set(x, y, z);
@@ -121,6 +131,14 @@ public class ChunkData {
 				}
 			}
 		}
+		
+		EntityData javapony = new EntityData("Test", "Javapony");
+		javapony.setUUID(UUID.nameUUIDFromBytes(new byte[] {42}));
+		javapony.setPosition(new Vec3(-6, -6, 20));
+		javapony.setDirection(new Vec2(
+				(float) Math.toRadians(40), (float) Math.toRadians(45)
+		));
+		getEntities().add(javapony);
 	}
 
 	public BlockData getBlock(Vec3i posInChunk) {
@@ -214,6 +232,10 @@ public class ChunkData {
 				face.getId();
 	}
 	
+	public List<EntityData> getEntities() {
+		return entities;
+	}
+	
 	private static void checkLocalCoordinates(Vec3i posInChunk) {
 		if (!isInBounds(posInChunk)) {
 			throw new IllegalArgumentException(
@@ -248,6 +270,38 @@ public class ChunkData {
 				BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK,
 				action
 		);
+	}
+	
+	/**
+	 * Iterates over all tiles in this chunk. Tiles are referenced using their
+	 * primary block (so that the face is
+	 * {@linkplain BlockFace#isPrimary() primary}).
+	 * 
+	 * @param action the action to perform. {@code TileLocation} refers to each
+	 * tile using its primary block
+	 */
+	public void forEachTile(BiConsumer<TileLocation, TileData> action) {
+		TileLocation loc = new TileLocation();
+		
+		forEachBlock(blockInChunk -> {
+			loc.pos.set(blockInChunk.x, blockInChunk.y, blockInChunk.z);
+			
+			for (BlockFace face : BlockFace.getPrimaryFaces()) {
+				List<TileData> list = getTilesOrNull(blockInChunk, face);
+				if (list == null) continue;
+				
+				loc.face = face;
+				
+				for (loc.layer = 0; loc.layer < list.size(); ++loc.layer) {
+					TileData tile = list.get(loc.layer);
+					action.accept(loc, tile);
+				}
+			}
+		});
+	}
+	
+	public void forEachEntity(Consumer<EntityData> action) {
+		getEntities().forEach(action);
 	}
 
 	public int getX() {

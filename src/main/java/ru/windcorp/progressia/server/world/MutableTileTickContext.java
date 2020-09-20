@@ -3,14 +3,18 @@ package ru.windcorp.progressia.server.world;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.server.world.block.BlockTickContext;
+import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.server.world.tile.TileTickContext;
 
-public class MutableBlockTickContext
+public class MutableTileTickContext
 extends MutableChunkTickContext
-implements BlockTickContext {
+implements TileTickContext {
 	
 	private final Vec3i blockInWorld = new Vec3i();
 	private final Vec3i blockInChunk = new Vec3i();
+	
+	private BlockFace face;
+	private int layer;
 	
 	@Override
 	public Vec3i getCoords() {
@@ -38,6 +42,24 @@ implements BlockTickContext {
 				getChunkData().getPosition(), getChunkCoords(),
 				getCoords()
 		);
+	}
+	
+	@Override
+	public BlockFace getFace() {
+		return face;
+	}
+	
+	public void setFace(BlockFace face) {
+		this.face = face;
+	}
+	
+	@Override
+	public int getLayer() {
+		return layer;
+	}
+	
+	public void setLayer(int layer) {
+		this.layer = layer;
 	}
 	
 }

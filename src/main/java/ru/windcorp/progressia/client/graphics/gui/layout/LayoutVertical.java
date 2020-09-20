@@ -43,16 +43,14 @@ public class LayoutVertical implements Layout {
 	@Override
 	public void layout(Component c) {
 		int x = c.getX() + margin,
-			y = c.getY() + margin;
-		
-		int height;
+			y = c.getY() + c.getHeight();
 		
 		synchronized (c.getChildren()) {
 			for (Component child : c.getChildren()) {
 				
-				height = child.getPreferredSize().y;
+				int height = child.getPreferredSize().y;
+				y -= gap + height;
 				child.setBounds(x, y, c.getWidth() - 2 * margin, height);
-				y += gap + height;
 				
 			}
 		}

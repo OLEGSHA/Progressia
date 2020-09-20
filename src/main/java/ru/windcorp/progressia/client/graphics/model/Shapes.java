@@ -17,10 +17,13 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client.graphics.model;
 
+import java.util.Map;
+
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class Shapes {
 	
@@ -40,7 +43,9 @@ public class Shapes {
 			Texture northTexture,
 			Texture southTexture,
 			Texture eastTexture,
-			Texture westTexture
+			Texture westTexture,
+			
+			boolean flip
 	) {
 		
 		Vec3 faceOrigin = Vectors.grab3();
@@ -52,7 +57,7 @@ public class Shapes {
 				faceOrigin.set(origin).add(height).add(width),
 				faceWidth.set(width).negate(),
 				depth,
-				false
+				flip
 		);
 		
 		Face bottom = Faces.createRectangle(
@@ -61,7 +66,7 @@ public class Shapes {
 				origin,
 				width,
 				depth,
-				false
+				flip
 		);
 		
 		Face north = Faces.createRectangle(
@@ -70,7 +75,7 @@ public class Shapes {
 				faceOrigin.set(origin).add(depth),
 				width,
 				height,
-				false
+				flip
 		);
 		
 		Face south = Faces.createRectangle(
@@ -79,7 +84,7 @@ public class Shapes {
 				faceOrigin.set(origin).add(width),
 				faceWidth.set(width).negate(),
 				height,
-				false
+				flip
 		);
 		
 		Face east = Faces.createRectangle(
@@ -88,7 +93,7 @@ public class Shapes {
 				origin,
 				depth,
 				height,
-				false
+				flip
 		);
 		
 		Face west = Faces.createRectangle(
@@ -97,7 +102,7 @@ public class Shapes {
 				faceOrigin.set(origin).add(width).add(depth),
 				faceWidth.set(depth).negate(),
 				height,
-				false
+				flip
 		);
 		
 		Shape result = new Shape(
@@ -131,6 +136,8 @@ public class Shapes {
 		private final Texture eastTexture;
 		private final Texture westTexture;
 		
+		private boolean flip = false;
+		
 		public PppBuilder(
 				ShapeRenderProgram program,
 				Texture top,
@@ -147,6 +154,21 @@ public class Shapes {
 			this.southTexture = south;
 			this.eastTexture = east;
 			this.westTexture = west;
+		}
+		
+		public PppBuilder(
+				ShapeRenderProgram program,
+				Map<BlockFace, Texture> textureMap
+		) {
+			this(
+					program,
+					textureMap.get(BlockFace.TOP),
+					textureMap.get(BlockFace.BOTTOM),
+					textureMap.get(BlockFace.NORTH),
+					textureMap.get(BlockFace.SOUTH),
+					textureMap.get(BlockFace.EAST),
+					textureMap.get(BlockFace.WEST)
+			);
 		}
 		
 		public PppBuilder(ShapeRenderProgram program, Texture texture) {
@@ -219,7 +241,16 @@ public class Shapes {
 		}
 		
 		public PppBuilder setSize(float x, float y, float z) {
-			return this.setWidth(x).setDepth(y).setHeight(z);
+			return this.setDepth(x).setWidth(y).setHeight(z);
+		}
+		
+		public PppBuilder setSize(float size) {
+			return this.setSize(size, size, size);
+		}
+		
+		public PppBuilder flip() {
+			this.flip = true;
+			return this;
 		}
 		
 		public Shape create() {
@@ -233,7 +264,8 @@ public class Shapes {
 					northTexture,
 					southTexture,
 					eastTexture,
-					westTexture
+					westTexture,
+					flip
 			);
 		}
 		

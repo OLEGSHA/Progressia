@@ -6,26 +6,22 @@ import static ru.windcorp.progressia.client.world.tile.TileRenderRegistry.getTil
 import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.client.comms.controls.ControlTriggerOnKeyPress;
-import ru.windcorp.progressia.client.comms.controls.ControlTriggerRegistry;
+import ru.windcorp.progressia.client.comms.controls.*;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
 import ru.windcorp.progressia.client.world.block.*;
-import ru.windcorp.progressia.client.world.tile.TileRender;
-import ru.windcorp.progressia.client.world.tile.TileRenderGrass;
-import ru.windcorp.progressia.client.world.tile.TileRenderRegistry;
-import ru.windcorp.progressia.client.world.tile.TileRenderSimple;
-import ru.windcorp.progressia.common.comms.controls.ControlData;
-import ru.windcorp.progressia.common.comms.controls.ControlDataRegistry;
-import ru.windcorp.progressia.common.comms.controls.PacketControl;
+import ru.windcorp.progressia.client.world.entity.*;
+import ru.windcorp.progressia.client.world.tile.*;
+import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.*;
-import ru.windcorp.progressia.common.world.tile.TileData;
-import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
+import ru.windcorp.progressia.common.world.entity.*;
+import ru.windcorp.progressia.common.world.tile.*;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.comms.Client;
-import ru.windcorp.progressia.server.comms.controls.ControlLogic;
-import ru.windcorp.progressia.server.comms.controls.ControlLogicRegistry;
+import ru.windcorp.progressia.server.comms.controls.*;
 import ru.windcorp.progressia.server.world.block.*;
+import ru.windcorp.progressia.server.world.entity.*;
+import ru.windcorp.progressia.server.world.tile.*;
 
 public class TestContent {
 	
@@ -37,6 +33,7 @@ public class TestContent {
 	private static void registerWorldContent() {
 		registerBlocks();
 		registerTiles();
+		registerEntities();
 	}
 
 	private static void registerBlocks() {
@@ -64,15 +61,25 @@ public class TestContent {
 	private static void registerTiles() {
 		register(new TileData("Test", "Grass"));
 		register(new TileRenderGrass("Test", "Grass", getTileTexture("grass_top"), getTileTexture("grass_side")));
+		register(new TileLogic("Test", "Grass"));
 		
 		register(new TileData("Test", "Stones"));
 		register(new TileRenderSimple("Test", "Stones", getTileTexture("stones")));
+		register(new TileLogic("Test", "Stones"));
 		
 		register(new TileData("Test", "YellowFlowers"));
 		register(new TileRenderSimple("Test", "YellowFlowers", getTileTexture("yellow_flowers")));
+		register(new TileLogic("Test", "YellowFlowers"));
 		
 		register(new TileData("Test", "Sand"));
 		register(new TileRenderSimple("Test", "Sand", getTileTexture("sand")));
+		register(new TileLogic("Test", "Sand"));
+	}
+
+	private static void registerEntities() {
+		register(new EntityData("Test", "Javapony"));
+		register(new TestEntityRenderJavapony());
+		register(new EntityLogic("Test", "Javapony"));
 	}
 
 	private static void regsiterControls() {
@@ -105,6 +112,10 @@ public class TestContent {
 		TileDataRegistry.getInstance().register(x);
 	}
 	
+	private static void register(EntityData x) {
+		EntityDataRegistry.getInstance().register(x);
+	}
+	
 	private static void register(BlockRender x) {
 		BlockRenderRegistry.getInstance().register(x);
 	}
@@ -113,12 +124,20 @@ public class TestContent {
 		TileRenderRegistry.getInstance().register(x);
 	}
 	
+	private static void register(EntityRender x) {
+		EntityRenderRegistry.getInstance().register(x);
+	}
+	
 	private static void register(BlockLogic x) {
 		BlockLogicRegistry.getInstance().register(x);
 	}
 	
-//	private static void register(TileRender x) {
-//		TileLogicRegistry.getInstance().register(x);
-//	}
+	private static void register(TileLogic x) {
+		TileLogicRegistry.getInstance().register(x);
+	}
+	
+	private static void register(EntityLogic x) {
+		EntityLogicRegistry.getInstance().register(x);
+	}
 
 }
