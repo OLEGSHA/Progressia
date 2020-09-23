@@ -37,7 +37,8 @@ public class ALTest {
 		alListenerfv(AL_VELOCITY,		listenerVel);
 		alListenerfv(AL_ORIENTATION,	listenerOri);
 		Sound music = AudioReader.readAsMono("assets/sounds/sample_mono.ogg").genSound();
-		music.forcePlay();
+
+		music.playOnce();
 		checkALError();
 	}
 
@@ -58,7 +59,7 @@ public class ALTest {
 	}
 
 	public static void update() {
-		Listener.update();
+		Listener.getInstance().update();
 	}
 
 	public static void checkALError() {

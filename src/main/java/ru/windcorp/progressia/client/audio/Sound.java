@@ -44,27 +44,23 @@ public class Sound {
         setGain(gain);
     }
 
-    public void forcePlay() {
+    public void playOnce() {
         alSourcePlay(source);
     }
 
-    public boolean playOnce() {
-        if(isEmpty()) {
-            alSourcePlay(source);
-            return true;
-        }
-        else return false;
-    }
-
-    public boolean playLoop() {
+    public void playLoop() {
             alSourcei(source, AL_LOOPING, AL_TRUE);
-            boolean isPlaying = playOnce();
+            playOnce();
             alSourcei(source, AL_LOOPING, AL_FALSE);
-            return isPlaying;
     }
 
     public void stop() {
         alSourceStop(source);
+    }
+
+    public void flush() {
+        alDeleteBuffers(audio);
+        alDeleteBuffers(source);
     }
 
     public void pause() {
@@ -74,10 +70,6 @@ public class Sound {
     public boolean isPlaying() {
         final int state = alGetSourcei(source, AL_PLAYING);
         return state == AL_TRUE;
-    }
-
-    public boolean isEmpty() {
-        return source == 0;
     }
 
     public int getAudio() {
