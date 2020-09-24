@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import glm.Glm;
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
+import ru.windcorp.progressia.client.audio.SoundManager;
 import ru.windcorp.progressia.client.audio.backend.ALTest;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.world.Camera.Anchor.Mode;
@@ -82,7 +83,7 @@ public class Camera {
 	public Camera() {}
 
 	public void apply(WorldRenderHelper helper) {
-		ALTest.update();
+		SoundManager.update();
 		applyPerspective(helper);
 		rotateCoordinateSystem(helper);
 		

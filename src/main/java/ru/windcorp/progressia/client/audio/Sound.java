@@ -4,7 +4,7 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
-import static org.lwjgl.openal.AL10.*;
+import static org.lwjgl.openal.AL11.*;
 
 public class Sound {
     //Buffers
@@ -58,18 +58,13 @@ public class Sound {
         alSourceStop(source);
     }
 
-    public void flush() {
-        alDeleteBuffers(audio);
-        alDeleteBuffers(source);
-    }
-
     public void pause() {
         alSourcePause(source);
     }
 
     public boolean isPlaying() {
-        final int state = alGetSourcei(source, AL_PLAYING);
-        return state == AL_TRUE;
+        final int state = alGetSourcei(source, AL_SOURCE_STATE);
+        return state == AL_PLAYING;
     }
 
     public int getAudio() {
@@ -83,7 +78,6 @@ public class Sound {
     public void setSource(int source) {
         this.source = source;
         alSourcei(this.source, AL_BUFFER, audio);
-        //alSourcei(this.source, AL_SOURCE_RELATIVE, AL_TRUE);
     }
 
     public int getSource() {
