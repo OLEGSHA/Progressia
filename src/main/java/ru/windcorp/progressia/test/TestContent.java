@@ -1,4 +1,4 @@
-package ru.windcorp.progressia.client;
+package ru.windcorp.progressia.test;
 
 import static ru.windcorp.progressia.client.world.block.BlockRenderRegistry.getBlockTexture;
 import static ru.windcorp.progressia.client.world.tile.TileRenderRegistry.getTileTexture;
@@ -12,6 +12,7 @@ import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.entity.*;
 import ru.windcorp.progressia.client.world.tile.*;
 import ru.windcorp.progressia.common.comms.controls.*;
+import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
@@ -77,9 +78,13 @@ public class TestContent {
 	}
 
 	private static void registerEntities() {
-		register(new EntityData("Test", "Javapony"));
+		registerEntityData("Test", "Javapony");
 		register(new TestEntityRenderJavapony());
 		register(new EntityLogic("Test", "Javapony"));
+		
+		register("Test", "Statie", TestEntityDataStatie::new);
+		register(new TestEntityRenderStatie());
+		register(new TestEntityLogicStatie());
 	}
 
 	private static void regsiterControls() {
@@ -112,8 +117,17 @@ public class TestContent {
 		TileDataRegistry.getInstance().register(x);
 	}
 	
-	private static void register(EntityData x) {
-		EntityDataRegistry.getInstance().register(x);
+	private static void register(
+			String namespace, String name,
+			Factory<EntityData> factory
+	) {
+		EntityDataRegistry.getInstance().register(namespace, name, factory);
+	}
+	
+	private static void registerEntityData(
+			String namespace, String name
+	) {
+		EntityDataRegistry.getInstance().register(namespace, name);
 	}
 	
 	private static void register(BlockRender x) {

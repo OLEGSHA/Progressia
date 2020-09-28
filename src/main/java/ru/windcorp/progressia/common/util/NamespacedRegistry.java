@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+
 import com.google.errorprone.annotations.DoNotCall;
 
 public class NamespacedRegistry<E extends Namespaced>
@@ -15,6 +17,7 @@ implements Map<String, E> {
 			Collections.synchronizedMap(new HashMap<>());
 	
 	public void register(E element) {
+		LogManager.getLogger(getClass()).debug("Registering " + element.getId());
 		backingMap.put(element.getId(), element);
 	}
 	

@@ -27,6 +27,7 @@ import ru.windcorp.progressia.client.graphics.texture.Atlases;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.common.resource.ResourceManager;
 import ru.windcorp.progressia.server.ServerState;
+import ru.windcorp.progressia.test.TestContent;
 
 public class ClientProxy implements Proxy {
 

@@ -17,6 +17,9 @@
  *******************************************************************************/
 package ru.windcorp.progressia.common.util;
 
+import glm.vec._2.i.Vec2i;
+import glm.vec._3.i.Vec3i;
+
 public class CoordinatePacker {
 	
 	private static final int BITS_3_INTS_INTO_LONG;
@@ -53,6 +56,10 @@ public class CoordinatePacker {
 				((c & MASK_3_INTS_INTO_LONG) << (0 * BITS_3_INTS_INTO_LONG));
 	}
 	
+	public static long pack3IntsIntoLong(Vec3i v) {
+		return pack3IntsIntoLong(v.x, v.y, v.z);
+	}
+	
 	public static int unpack3IntsFromLong(long packed, int index) {
 		if (index < 0 || index >= 3) {
 			throw new IllegalArgumentException("Invalid index " + index);
@@ -72,10 +79,24 @@ public class CoordinatePacker {
 		return result;
 	}
 	
+	public static Vec3i unpack3IntsFromLong(long packed, Vec3i output) {
+		output.set(
+				unpack3IntsFromLong(packed, 0),
+				unpack3IntsFromLong(packed, 1),
+				unpack3IntsFromLong(packed, 2)
+		);
+		
+		return output;
+	}
+	
 	public static long pack2IntsIntoLong(int a, int b) {
 		return
 				((a & MASK_2_INTS_INTO_LONG) << (1 * BITS_2_INTS_INTO_LONG)) |
 				((b & MASK_2_INTS_INTO_LONG) << (0 * BITS_2_INTS_INTO_LONG));
+	}
+	
+	public static long pack2IntsIntoLong(Vec2i v) {
+		return pack2IntsIntoLong(v.x, v.y);
 	}
 	
 	public static int unpack2IntsFromLong(long packed, int index) {
@@ -89,6 +110,15 @@ public class CoordinatePacker {
 		);
 		
 		return result;
+	}
+	
+	public static Vec2i unpack2IntsFromLong(long packed, Vec2i output) {
+		output.set(
+				unpack2IntsFromLong(packed, 0),
+				unpack2IntsFromLong(packed, 1)
+		);
+		
+		return output;
 	}
 
 }

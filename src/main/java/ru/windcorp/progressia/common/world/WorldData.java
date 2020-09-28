@@ -21,28 +21,59 @@ import java.util.Collection;
 import java.util.Collections;
 
 import glm.vec._3.i.Vec3i;
+import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class WorldData {
 
-	private final TLongObjectMap<ChunkData> chunks = new TLongObjectHashMap<>();
+	private final TLongObjectMap<ChunkData> chunksByPos =
+			new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), this);
+	
+	private final Collection<ChunkData> chunks =
+			Collections.unmodifiableCollection(chunksByPos.valueCollection());
+	
+	private final TLongObjectMap<EntityData> entitiesById =
+			new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), this);
+	
+	private final Collection<EntityData> entities =
+			Collections.unmodifiableCollection(entitiesById.valueCollection());
 	
 	public WorldData() {
 		final int size = 1;
 		
 		for (int x = -(size / 2); x <= (size / 2); ++x) {
 			for (int y = -(size / 2); y <= (size / 2); ++y) {
-				chunks.put(CoordinatePacker.pack3IntsIntoLong(x, y, 0), new ChunkData(x, y, 0, this));
+				addChunk(new ChunkData(x, y, 0, this));
 			}
 		}
 	}
 	
+	private synchronized void addChunk(ChunkData chunk) {
+		chunksByPos.put(getChunkKey(chunk), chunk);
+		
+		chunk.forEachEntity(entity ->
+			entitiesById.put(entity.getEntityId(), entity)
+		);
+	}
+	
+//	private synchronized void removeChunk(ChunkData chunk) {
+//		chunksByPos.remove(getChunkKey(chunk));
+//		
+//		chunk.forEachEntity(entity ->
+//			entitiesById.remove(entity.getEntityId())
+//		);
+//	}
+	
+	private static long getChunkKey(ChunkData chunk) {
+		return CoordinatePacker.pack3IntsIntoLong(chunk.getPosition());
+	}
+	
 	public ChunkData getChunk(Vec3i pos) {
-		long key = CoordinatePacker.pack3IntsIntoLong(pos.x, pos.y, pos.z);
-		return chunks.get(key);
+		return chunksByPos.get(CoordinatePacker.pack3IntsIntoLong(pos));
 	}
 	
 	public ChunkData getChunkByBlock(Vec3i blockInWorld) {
@@ -54,7 +85,15 @@ public class WorldData {
 	}
 	
 	public Collection<ChunkData> getChunks() {
-		return Collections.unmodifiableCollection(chunks.valueCollection());
+		return chunks;
+	}
+	
+	public EntityData getEntity(long entityId) {
+		return entitiesById.get(entityId);
+	}
+	
+	public Collection<EntityData> getEntities() {
+		return entities;
 	}
 	
 }
