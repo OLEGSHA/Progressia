@@ -3,6 +3,7 @@ package ru.windcorp.progressia.client.audio;
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.ClientState;
+import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.world.Camera;
 
 import static org.lwjgl.openal.AL10.*;
@@ -25,37 +26,41 @@ public class Listener {
 	private final Vec3 oriAt = new Vec3();
 	private final Vec3 oriUp = new Vec3();
 	
-	private boolean isClientConnected = false;
-	private Camera.Anchor anchor;
+	private boolean isInWorld = false;
 	
 	public void update() {
 		Client client = ClientState.getInstance();
-		if (client == null) {
-			if (isClientConnected) {
-				isClientConnected = false;
-				resetParams();
-				applyParams();
-			}
-		} else {
-			isClientConnected = true;
-			if (anchor == null) {
-				anchor = client.getCamera().getAnchor();
+		Camera camera = client == null ? null : client.getCamera();
+		
+		boolean wasInWorld = isInWorld;
+		isInWorld = client != null && camera.getAnchor() != null;
+		
+		if (isInWorld) {
+			
+			if (wasInWorld) {
+				velocity.set(camera.getLastAnchorPosition()).sub(position).div(
+					(float) GraphicsInterface.getFrameLength()
+				);
 			} else {
-				anchor.getCameraPosition(position);
-				float pitch = anchor.getCameraPitch();
-				float yaw = anchor.getCameraYaw();
-				oriAt.set(
-					(float) (Math.cos(pitch) * Math.cos(yaw)),
-					(float) (Math.cos(pitch) * Math.sin(yaw)),
-					(float) Math.sin(pitch)
-				);
-				oriUp.set(
-					(float) (Math.cos(pitch + Math.PI / 2) * Math.cos(yaw)),
-					(float) (Math.cos(pitch + Math.PI / 2) * Math.sin(yaw)),
-					(float) Math.sin(pitch + Math.PI / 2)
-				);
-				applyParams();
+				// If !wasInWorld, previous position is nonsence. Assume 0.
+				velocity.set(0);
 			}
+			
+			position.set(camera.getLastAnchorPosition());
+			
+			oriAt.set(camera.getLastAnchorLookingAt());
+			oriUp.set(camera.getLastAnchorUp());
+		} else if (wasInWorld) { // Do not reset if we weren't in world
+			resetParams();
+		}
+		
+		/*
+		 * Only apply if there is a chance that params changed.
+		 * This can only happen if we are in world now (isInWorld) or we just
+		 * left world (wasInWorld, then we need to reset).
+		 */
+		if (isInWorld || wasInWorld) {
+			applyParams();
 		}
 	}
 	
@@ -73,4 +78,5 @@ public class Listener {
 			oriAt.x, oriAt.y, oriAt.z, oriUp.x, oriUp.y, oriUp.z
 		});
 	}
+	
 }
