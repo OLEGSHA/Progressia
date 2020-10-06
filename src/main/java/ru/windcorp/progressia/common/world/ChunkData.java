@@ -22,7 +22,6 @@ import static ru.windcorp.progressia.common.world.block.BlockFace.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -39,6 +38,7 @@ import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 
@@ -132,13 +132,18 @@ public class ChunkData {
 			}
 		}
 		
-		EntityData javapony = new EntityData("Test", "Javapony");
-		javapony.setUUID(UUID.nameUUIDFromBytes(new byte[] {42}));
+		EntityData javapony = EntityDataRegistry.getInstance().create("Test:Javapony");
+		javapony.setEntityId(0x42);
 		javapony.setPosition(new Vec3(-6, -6, 20));
 		javapony.setDirection(new Vec2(
 				(float) Math.toRadians(40), (float) Math.toRadians(45)
 		));
 		getEntities().add(javapony);
+		
+		EntityData statie = EntityDataRegistry.getInstance().create("Test:Statie");
+		statie.setEntityId(0xDEADBEEF);
+		statie.setPosition(new Vec3(0, 15, 16));
+		getEntities().add(statie);
 	}
 
 	public BlockData getBlock(Vec3i posInChunk) {

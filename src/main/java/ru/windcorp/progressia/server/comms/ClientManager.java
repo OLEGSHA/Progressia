@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import glm.vec._3.i.Vec3i;
 import gnu.trove.TCollections;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -39,10 +38,7 @@ public class ClientManager {
 		
 		client.addListener(new DefaultServerCommsListener(this, client));
 		
-		client.sendPacket(new PacketSetLocalPlayer(
-				server.getWorld().getData().getChunk(new Vec3i(0, 0, 0))
-				.getEntities().get(0).getUUID()
-		));
+		client.sendPacket(new PacketSetLocalPlayer(0x42));
 	}
 	
 	public void disconnectClient(Client client) {

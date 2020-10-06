@@ -1,22 +1,22 @@
 package ru.windcorp.progressia.common.world.entity;
 
-import java.util.UUID;
-
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.state.StatefulObject;
 
-public class EntityData extends Namespaced {
+public class EntityData extends StatefulObject {
 	
 	private final Vec3 position = new Vec3();
 	private final Vec3 velocity = new Vec3();
 	
 	private final Vec2 direction = new Vec2();
 	
-	private UUID uuid;
+	private long entityId;
+	
+	private double age = 0;
 
 	public EntityData(String namespace, String name) {
-		super(namespace, name);
+		super(EntityDataRegistry.getInstance(), namespace, name);
 	}
 	
 	public Vec3 getPosition() {
@@ -51,12 +51,24 @@ public class EntityData extends Namespaced {
 		return getDirection().y;
 	}
 	
-	public UUID getUUID() {
-		return uuid;
+	public long getEntityId() {
+		return entityId;
 	}
 	
-	public void setUUID(UUID uuid) {
-		this.uuid = uuid;
+	public void setEntityId(long entityId) {
+		this.entityId = entityId;
+	}
+	
+	public double getAge() {
+		return age;
+	}
+	
+	public void setAge(double age) {
+		this.age = age;
+	}
+	
+	public void incrementAge(double increment) {
+		this.age += increment;
 	}
 
 }

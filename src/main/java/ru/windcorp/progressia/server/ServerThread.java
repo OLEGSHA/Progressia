@@ -4,6 +4,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.LogManager;
+
 import ru.windcorp.progressia.server.world.Ticker;
 
 public class ServerThread implements Runnable {
@@ -50,8 +52,12 @@ public class ServerThread implements Runnable {
 	
 	@Override
 	public void run() {
-		server.tick();
-		ticker.run();
+		try {
+			server.tick();
+			ticker.run();
+		} catch (Exception e) {
+			LogManager.getLogger(getClass()).error("Got an exception in server thread", e);
+		}
 	}
 	
 	public Server getServer() {

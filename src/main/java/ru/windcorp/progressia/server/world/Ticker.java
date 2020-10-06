@@ -2,6 +2,8 @@ package ru.windcorp.progressia.server.world;
 
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
+import ru.windcorp.progressia.server.world.entity.EntityLogic;
+import ru.windcorp.progressia.server.world.entity.EntityLogicRegistry;
 import ru.windcorp.progressia.server.world.tile.TickableTile;
 
 public class Ticker implements Runnable {
@@ -36,10 +38,30 @@ public class Ticker implements Runnable {
 		blockContext.setServer(server);
 		tileContext.setServer(server);
 		
+		blockContext.setChunk(chunk);
+		tileContext.setChunk(chunk);
+		
 		tickRegularTickers(chunk, blockContext, tileContext);
 		tickRandomBlocks(chunk, blockContext, tileContext);
 		
+		tickEntities(chunk, blockContext);
+		
 		flushChanges(chunk);
+	}
+
+	private void tickEntities(
+			ChunkLogic chunk,
+			MutableChunkTickContext tickContext
+	) {
+		// TODO this is ugly
+		
+		chunk.getData().getEntities().forEach(entity -> {
+			EntityLogic logic = EntityLogicRegistry.getInstance().get(
+					entity.getId()
+			);
+			
+			logic.tick(entity, tickContext, tracker);
+		});
 	}
 
 	private void tickRegularTickers(

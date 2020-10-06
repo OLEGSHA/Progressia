@@ -1,4 +1,4 @@
-package ru.windcorp.progressia.client;
+package ru.windcorp.progressia.test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -320,7 +320,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 				
 				new QuadripedModel.Body(body),
 				new QuadripedModel.Head(
-						head, new Vec3(12, 0, 20), 60, 45, new Vec3(16, 0, 20)
+						head, new Vec3(12, 0, 20), 120, 45, new Vec3(16, 0, 20)
 				),
 				new QuadripedModel.Leg(
 						leftForeLeg, new Vec3(  6, +8.1f, -16), 0.0f

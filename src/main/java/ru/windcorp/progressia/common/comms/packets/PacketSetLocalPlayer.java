@@ -1,18 +1,20 @@
 package ru.windcorp.progressia.common.comms.packets;
 
-import java.util.UUID;
-
 public class PacketSetLocalPlayer extends Packet {
 	
-	private final UUID localPlayerEntityUUID;
+	private long localPlayerEntityId;
 
-	public PacketSetLocalPlayer(UUID uuid) {
+	public PacketSetLocalPlayer(long entityId) {
 		super("Core", "SetLocalPlayer");
-		this.localPlayerEntityUUID = uuid;
+		this.localPlayerEntityId = entityId;
 	}
 	
-	public UUID getLocalPlayerEntityUUID() {
-		return localPlayerEntityUUID;
+	public long getLocalPlayerEntityId() {
+		return localPlayerEntityId;
+	}
+	
+	public void setLocalPlayerEntityId(long localPlayerEntityId) {
+		this.localPlayerEntityId = localPlayerEntityId;
 	}
 
 }
