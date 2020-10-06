@@ -1,6 +1,5 @@
 package ru.windcorp.progressia.client;
 
-import ru.windcorp.progressia.client.audio.backend.ALTest;
 import ru.windcorp.progressia.client.comms.DefaultClientCommsListener;
 import ru.windcorp.progressia.client.comms.ServerCommsChannel;
 import ru.windcorp.progressia.client.graphics.world.Camera;

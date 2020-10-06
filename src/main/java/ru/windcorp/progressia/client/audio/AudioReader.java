@@ -10,29 +10,39 @@ import static org.lwjgl.stb.STBVorbis.*;
 import static org.lwjgl.openal.AL10.*;
 
 public class AudioReader {
-    private AudioReader() {};
-
-    //TODO fix converting from mono-stereo
-
-    public static SoundType readAsMono(String AudioFile) {
-        IntBuffer channelBuffer = BufferUtils.createIntBuffer(1);
-        IntBuffer rateBuffer = BufferUtils.createIntBuffer(1);
-        Resource res = ResourceManager.getResource(AudioFile);
-        ShortBuffer rawMonoAudio = decodeVorbis(res, channelBuffer, rateBuffer);
-
-        return new SoundType(rawMonoAudio, AL_FORMAT_MONO16, rateBuffer.get(0));
-    }
-
-    public static SoundType readAsStereo(String AudioFile) {
-        IntBuffer channelsBuffer = BufferUtils.createIntBuffer(2);
-        IntBuffer rateBuffer = BufferUtils.createIntBuffer(1);
-        Resource res = ResourceManager.getResource(AudioFile);
-        ShortBuffer rawStereoAudio = decodeVorbis(res, channelsBuffer, rateBuffer);
-
-        return new SoundType(rawStereoAudio, AL_FORMAT_STEREO16, rateBuffer.get(0));
-    }
-
-    private static ShortBuffer decodeVorbis(Resource dataToDecode, IntBuffer channelsBuffer, IntBuffer rateBuffer) {
-        return stb_vorbis_decode_memory(dataToDecode.readAsBytes(), channelsBuffer, rateBuffer);
-    }
+	
+	private AudioReader() {};
+	
+	// TODO fix converting from mono-stereo
+	
+	private static SoundType readAsSpecified(String audioName, int format) {
+		IntBuffer channelBuffer = BufferUtils.createIntBuffer(1);
+		IntBuffer rateBuffer = BufferUtils.createIntBuffer(1);
+		
+		Resource res = ResourceManager.getResource(audioName);
+		
+		ShortBuffer rawAudio = decodeVorbis(res, channelBuffer, rateBuffer);
+		
+		return new SoundType(rawAudio, format, rateBuffer.get(0));
+	}
+	
+	public static SoundType readAsMono(String audioName) {
+		return readAsSpecified(audioName, AL_FORMAT_MONO16);
+	}
+	
+	public static SoundType readAsStereo(String audioName) {
+		return readAsSpecified(audioName, AL_FORMAT_STEREO16);
+	}
+	
+	private static ShortBuffer decodeVorbis(
+		Resource dataToDecode,
+		IntBuffer channelsBuffer,
+		IntBuffer rateBuffer
+	) {
+		return stb_vorbis_decode_memory(
+			dataToDecode.readAsBytes(),
+			channelsBuffer,
+			rateBuffer
+		);
+	}
 }
