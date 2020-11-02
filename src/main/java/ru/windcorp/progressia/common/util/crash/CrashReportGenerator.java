@@ -13,50 +13,47 @@ import java.util.Map;
 
 public class CrashReportGenerator {
 
-	private CrashReportGenerator() {
-	}
+	private CrashReportGenerator() {}
 
-	final static File latestLogFile = new File("crash-reports/latest.log");
+	private static final File LATEST_LOG_FILE = new File("crash-reports/latest.log");
 
-	private static Collection<ContextProvider> providers = new ArrayList<ContextProvider>();
-	private static Collection<Map<String, String>> providerResponse = new ArrayList<Map<String, String>>();
+	private static final Collection<ContextProvider> PROVIDERS = new ArrayList<>();
+	private static final Collection<Map<String, String>> PROVIDER_RESPONSES = new ArrayList<>();
 
-	private static Collection<Analyzer> analyzers = new ArrayList<Analyzer>();
-	private static Collection<String> analyzerResponse = new ArrayList<String>();
+	private static final Collection<Analyzer> ANALYZER = new ArrayList<>();
+	private static final Collection<String> ANALYZER_RESPONSES = new ArrayList<>();
 
-	private static final Logger logger = LogManager.getLogger("crash");
+	private static final Logger LOGGER = LogManager.getLogger("crash");
 
-	static public void makeCrashReport(Throwable throwable, String messageFormat, Object... args) {
+	public static void makeCrashReport(Throwable throwable, String messageFormat, Object... args) {
 
 		StringBuilder output = new StringBuilder();
 
-		for (ContextProvider currentProvider : providers) {
-			if (currentProvider != null) {
-				providerResponse.add(currentProvider.provideContext());
+		for (ContextProvider provider : PROVIDERS) {
+			if (provider != null) {
+				PROVIDER_RESPONSES.add(provider.provideContext());
 			}
 		}
 
-		if (throwable != null) {
-			for (Analyzer currentAnalyzer : analyzers) {
-				if (currentAnalyzer != null) {
-					analyzerResponse.add(currentAnalyzer.getPrompt(throwable, messageFormat, args));
-				}
+		for (Analyzer analyzer : ANALYZER) {
+			if (analyzer != null) {
+				ANALYZER_RESPONSES.add(analyzer.analyze(throwable, messageFormat, args));
 			}
 		}
 
-		for (Map<String, String> currentProviderResponse : providerResponse) {
-			if (currentProviderResponse != null && !currentProviderResponse.isEmpty()) {
+		for (Map<String, String> response : PROVIDER_RESPONSES) {
+			if (response != null && !response.isEmpty()) {
 				addSeparator(output);
-				for (Map.Entry<String, String> entry : currentProviderResponse.entrySet()) {
+				for (Map.Entry<String, String> entry : response.entrySet()) {
 					output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
 				}
 			}
 		}
 
-		for (String currentPrompt : analyzerResponse) {
-			if (currentPrompt != null && !currentPrompt.isEmpty()) {
+		for (String response : ANALYZER_RESPONSES) {
+			if (response != null && !response.isEmpty()) {
 				addSeparator(output);
-				output.append(currentPrompt).append("\n");
+				output.append(response).append("\n");
 			}
 		}
 
@@ -72,8 +69,8 @@ public class CrashReportGenerator {
 			sink.append("Null");
 		}
 
-		logger.info("\n" + output.toString());
-		logger.fatal("Stacktrace: \n" + sink.toString());
+		LOGGER.info(output.toString());
+		LOGGER.fatal("Stacktrace: \n" + sink.toString());
 
 		addSeparator(output);
 
@@ -86,10 +83,8 @@ public class CrashReportGenerator {
 			// PLAK
 		}
 
-
 		createFileForCrashReport(output);
 		createFileForLatestCrashReport(output);
-
 
 		System.exit(0);
 	}
@@ -111,7 +106,7 @@ public class CrashReportGenerator {
 	}
 
 	public static void createFileForLatestCrashReport(StringBuilder sb) {
-		try (FileOutputStream fos = new FileOutputStream(latestLogFile)) {
+		try (FileOutputStream fos = new FileOutputStream(LATEST_LOG_FILE)) {
 			byte[] buffer = sb.toString().getBytes();
 
 			fos.write(buffer, 0, buffer.length);
@@ -121,11 +116,11 @@ public class CrashReportGenerator {
 	}
 
 	public static void registerProvider(ContextProvider provider) {
-		providers.add(provider);
+		PROVIDERS.add(provider);
 	}
 
 	public static void registerAnalyzer(Analyzer analyzer) {
-		analyzers.add(analyzer);
+		ANALYZER.add(analyzer);
 	}
 
 	private static void addSeparator(StringBuilder sb) {

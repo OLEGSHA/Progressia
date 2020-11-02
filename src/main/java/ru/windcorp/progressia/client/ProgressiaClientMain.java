@@ -34,10 +34,11 @@ public class ProgressiaClientMain {
 		CrashReportGenerator.registerProvider(new OSContextProvider());
 		CrashReportGenerator.registerAnalyzer(new OutOfMemoryAnalyzer());
 		try {
+			@SuppressWarnings("unused")
 			long[] ssdss = new long[1 << 30];
 		} catch (Throwable t)
 		{
-			CrashReportGenerator.makeCrashReport(t, "");
+			CrashReportGenerator.makeCrashReport(t, "u %s stupid", "vry");
 		}
 
 		ProgressiaLauncher.launch(args, new ClientProxy());

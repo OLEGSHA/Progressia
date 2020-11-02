@@ -9,10 +9,10 @@ public class OSContextProvider implements ContextProvider {
 
 	@Override
 	public Map<String, String> provideContext() {
-		Map<String, String> theThings = new HashMap<>();
-		theThings.put("Name OS", System.getProperty("os.name"));
-		theThings.put("Version OS", System.getProperty("os.version"));
-		theThings.put("Architecture OS", System.getProperty("os.arch"));
-		return theThings;
+		Map<String, String> result = new HashMap<>();
+		result.put("Name OS", System.getProperty("os.name"));
+		result.put("Version OS", System.getProperty("os.version"));
+		result.put("Architecture OS", System.getProperty("os.arch"));
+		return result;
 	}
 }
