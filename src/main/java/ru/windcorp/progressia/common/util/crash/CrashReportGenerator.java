@@ -3,25 +3,28 @@ package ru.windcorp.progressia.common.util.crash;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 public class CrashReportGenerator {
 
-	private CrashReportGenerator() {}
+	private CrashReportGenerator() {
+	}
 
-	private static final File LATEST_LOG_FILE = new File("crash-reports/latest.log");
+	private static final Path CRASH_REPORTS_PATH = Paths.get("crash-reports");
 
 	private static final Collection<ContextProvider> PROVIDERS = new ArrayList<>();
-	private static final Collection<Map<String, String>> PROVIDER_RESPONSES = new ArrayList<>();
 
-	private static final Collection<Analyzer> ANALYZER = new ArrayList<>();
-	private static final Collection<String> ANALYZER_RESPONSES = new ArrayList<>();
+	private static final Collection<Analyzer> ANALYZERS = new ArrayList<>();
 
 	private static final Logger LOGGER = LogManager.getLogger("crash");
 
@@ -31,31 +34,55 @@ public class CrashReportGenerator {
 
 		for (ContextProvider provider : PROVIDERS) {
 			if (provider != null) {
-				PROVIDER_RESPONSES.add(provider.provideContext());
-			}
-		}
+				Map<String, String> buf = new HashMap<>();
 
-		for (Analyzer analyzer : ANALYZER) {
-			if (analyzer != null) {
-				ANALYZER_RESPONSES.add(analyzer.analyze(throwable, messageFormat, args));
-			}
-		}
+				try {
+					provider.provideContext(buf);
 
-		for (Map<String, String> response : PROVIDER_RESPONSES) {
-			if (response != null && !response.isEmpty()) {
-				addSeparator(output);
-				for (Map.Entry<String, String> entry : response.entrySet()) {
-					output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+					addSeparator(output);
+					output.append("Provider name: ").append(provider.getName()).append("\n");
+					for (Map.Entry<String, String> entry : buf.entrySet()) {
+						output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+					}
+				} catch (Throwable t) {
+					try {
+						addSeparator(output);
+						output.append(provider.getName()).append(" is broken").append("\n");
+					} catch (Throwable th) {
+						// You stupid
+					}
+					// Analyzer is broken
 				}
 			}
 		}
 
-		for (String response : ANALYZER_RESPONSES) {
-			if (response != null && !response.isEmpty()) {
-				addSeparator(output);
-				output.append(response).append("\n");
+		addSeparator(output);
+
+		boolean analyzerResponseExist = false;
+		for (Analyzer analyzer : ANALYZERS) {
+			if (analyzer != null) {
+
+				String answer;
+				try {
+					answer = analyzer.analyze(throwable, messageFormat, args);
+
+					if (answer != null && !answer.isEmpty()) {
+						analyzerResponseExist = true;
+						output.append(analyzer.getName()).append(": ").append(answer).append("\n");
+					}
+				} catch (Throwable t) {
+					try {
+						analyzerResponseExist = true;
+						output.append(analyzer.getName()).append(" is broken").append("\n");
+					} catch (Throwable th) {
+						// You stupid
+					}
+					// Analyzer is broken
+				}
 			}
 		}
+
+		if (analyzerResponseExist) addSeparator(output);
 
 		// Formatting to a human-readable string
 		StringWriter sink = new StringWriter();
@@ -69,13 +96,10 @@ public class CrashReportGenerator {
 			sink.append("Null");
 		}
 
-		LOGGER.info(output.toString());
-		LOGGER.fatal("Stacktrace: \n" + sink.toString());
-
-		addSeparator(output);
-
 		output.append("Stacktrace: \n");
 		output.append(sink.toString()).append("\n");
+
+		LOGGER.fatal("/n" + output.toString());
 
 		try {
 			System.err.println(output.toString());
@@ -83,33 +107,37 @@ public class CrashReportGenerator {
 			// PLAK
 		}
 
-		createFileForCrashReport(output);
-		createFileForLatestCrashReport(output);
+		generateCrashReportFiles(output.toString());
 
 		System.exit(0);
 	}
 
-	public static void createFileForCrashReport(StringBuilder sb) {
+	public static void generateCrashReportFiles(String output) {
 		Date date = new Date();
-
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
 
-		File logFile = new File("crash-reports/" + "crash-" + dateFormat.format(date) + ".log");
+		boolean pathExist = false;
+		if (!Files.exists(CRASH_REPORTS_PATH)) {
 
-		try (FileOutputStream fos = new FileOutputStream(logFile)) {
-			byte[] buffer = sb.toString().getBytes();
+			try {
+				Files.createDirectory(CRASH_REPORTS_PATH);
+				;
+				pathExist = true;
+			} catch (IOException e) {
+				// Crash Report not created
+			}
 
-			fos.write(buffer, 0, buffer.length);
-		} catch (IOException ex) {
-			// Crash Report not created
+		} else pathExist = true;
+
+		if (pathExist) {
+			createFileForCrashReport(output, CRASH_REPORTS_PATH.toString() + "/latest.log");
+			createFileForCrashReport(output, CRASH_REPORTS_PATH.toString() + "/crash-" + dateFormat.format(date) + ".log");
 		}
 	}
 
-	public static void createFileForLatestCrashReport(StringBuilder sb) {
-		try (FileOutputStream fos = new FileOutputStream(LATEST_LOG_FILE)) {
-			byte[] buffer = sb.toString().getBytes();
-
-			fos.write(buffer, 0, buffer.length);
+	public static void createFileForCrashReport(String buffer, String filename) {
+		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename), StandardCharsets.UTF_8)) {
+			writer.write(buffer);
 		} catch (IOException ex) {
 			// Crash Report not created
 		}
@@ -120,7 +148,7 @@ public class CrashReportGenerator {
 	}
 
 	public static void registerAnalyzer(Analyzer analyzer) {
-		ANALYZER.add(analyzer);
+		ANALYZERS.add(analyzer);
 	}
 
 	private static void addSeparator(StringBuilder sb) {

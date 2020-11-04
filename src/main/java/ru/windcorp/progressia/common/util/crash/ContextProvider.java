@@ -3,5 +3,7 @@ package ru.windcorp.progressia.common.util.crash;
 import java.util.Map;
 
 public interface ContextProvider {
-	Map<String, String> provideContext();
+	void provideContext(Map<String, String> output);
+	
+	String getName();
 }
