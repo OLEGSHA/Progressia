@@ -38,7 +38,7 @@ public class ProgressiaClientMain {
 			long[] ssdss = new long[1 << 30];
 		} catch (Throwable t)
 		{
-			CrashReportGenerator.makeCrashReport(t, "u %s stupid", "vry");
+			CrashReportGenerator.crash(t, "u %s stupid", "vry");
 		}
 
 		ProgressiaLauncher.launch(args, new ClientProxy());

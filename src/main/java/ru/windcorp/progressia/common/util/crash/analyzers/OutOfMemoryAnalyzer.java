@@ -6,12 +6,12 @@ public class OutOfMemoryAnalyzer implements Analyzer {
 	@Override
 	public String analyze(Throwable throwable, String messageFormat, Object... args) {
 		if (throwable instanceof OutOfMemoryError)
-			return "Try add memory for the JVM";
+			return "Try to add memory to the JVM";
 		return null;
 	}
 
 	@Override
 	public String getName() {
-		return this.getClass().getSimpleName();
+		return "Out Of Memory Analyzer";
 	}
 }
