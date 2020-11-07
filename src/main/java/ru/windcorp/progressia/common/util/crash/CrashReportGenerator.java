@@ -46,9 +46,11 @@ public class CrashReportGenerator {
 		if (appendAnalyzers(output, throwable, messageFormat, args)) {
 			addSeparator(output);
 		}
-		
+
+		appendMessageFormat(output, messageFormat, args);
+
 		appendStackTrace(output, throwable);
-		
+
 		export(output.toString());
 
 		System.exit(0);
@@ -62,16 +64,19 @@ public class CrashReportGenerator {
 				try {
 					provider.provideContext(buf);
 
-					addSeparator(output);
-					output.append("Provider name: ").append(provider.getName()).append("\n");
-					for (Map.Entry<String, String> entry : buf.entrySet()) {
-						output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+					if (!buf.isEmpty()) {
+						addSeparator(output);
+						output.append("Provider name: ").append(provider.getName()).append("\n");
+						for (Map.Entry<String, String> entry : buf.entrySet()) {
+							output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+						}
 					}
 				} catch (Throwable t) {
+					output.append("\n");
 					try {
-						addSeparator(output);
 						output.append(provider.getName()).append(" is broken").append("\n");
 					} catch (Throwable th) {
+						output.append(provider.getClass().getName()).append(" is broken").append("\n");
 						// You stupid
 					}
 					// Analyzer is broken
@@ -107,17 +112,24 @@ public class CrashReportGenerator {
 				}
 			}
 		}
-		
+
 		return analyzerResponsesExist;
+	}
+
+	private static void appendMessageFormat(StringBuilder output, String messageFormat, Object... arg) {
+		output.append("Provided description: ").append(String.format(messageFormat, arg)).append("\n");
+
+		addSeparator(output);
 	}
 
 	private static void appendStackTrace(StringBuilder output, Throwable throwable) {
 		output.append("Stacktrace: \n");
-		
+
 		if (throwable == null) {
 			output.append("no Throwable provided").append("\n");
+			return;
 		}
-		
+
 		// Formatting to a human-readable string
 		Writer sink = new StringBuilderWriter(output);
 		try {
@@ -127,16 +139,16 @@ public class CrashReportGenerator {
 		}
 		output.append("\n");
 	}
-	
+
 	private static void export(String report) {
 		try {
 			LOGGER.fatal("/n" + report);
 		} catch (Exception e) {
 			// PLAK
 		}
-		
+
 		System.err.println(report);
-		
+
 		generateCrashReportFiles(report);
 	}
 
@@ -144,21 +156,13 @@ public class CrashReportGenerator {
 		Date date = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
 
-		boolean pathExist = false;
-		if (!Files.exists(CRASH_REPORTS_PATH)) {
+		try {
+			if (!Files.exists(CRASH_REPORTS_PATH)) Files.createDirectory(CRASH_REPORTS_PATH);
 
-			try {
-				Files.createDirectory(CRASH_REPORTS_PATH);
-				pathExist = true;
-			} catch (IOException e) {
-				// Crash Report not created
-			}
-
-		} else pathExist = true;
-
-		if (pathExist) {
 			createFileForCrashReport(output, CRASH_REPORTS_PATH.toString() + "/latest.log");
 			createFileForCrashReport(output, CRASH_REPORTS_PATH.toString() + "/crash-" + dateFormat.format(date) + ".log");
+		} catch (Throwable t) {
+			// Crash Report not created
 		}
 	}
 
