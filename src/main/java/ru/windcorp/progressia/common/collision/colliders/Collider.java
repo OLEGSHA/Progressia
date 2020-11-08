@@ -11,6 +11,7 @@ import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.CollisionClock;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.collision.CollisionWall;
+import ru.windcorp.progressia.common.collision.CompoundCollisionModel;
 import ru.windcorp.progressia.common.util.LowOverheadCache;
 import ru.windcorp.progressia.common.util.Vectors;
 
@@ -88,7 +89,7 @@ public class Collider {
 		return result;
 	}
 	
-	private static Collision getCollision(
+	static Collision getCollision(
 			Collideable a,
 			Collideable b,
 			float tickLength,
@@ -96,11 +97,39 @@ public class Collider {
 	) {
 		CollisionModel aModel = a.getCollisionModel();
 		CollisionModel bModel = b.getCollisionModel();
-		
+		return getCollision(a, b, aModel, bModel, tickLength, workspace);
+	}
+	
+	static Collision getCollision(
+			Collideable aBody,
+			Collideable bBody,
+			CollisionModel aModel,
+			CollisionModel bModel,
+			float tickLength,
+			ColliderWorkspace workspace
+	) {
 		if (aModel instanceof AABB && bModel instanceof AABB) {
 			return AABBWithAABBCollider.computeModelCollision(
-					a, b,
+					aBody, bBody,
 					(AABB) aModel, (AABB) bModel,
+					tickLength,
+					workspace
+			);
+		}
+		
+		if (aModel instanceof CompoundCollisionModel) {
+			return AnythingWithCompoundCollider.computeModelCollision(
+					aBody, bBody,
+					(CompoundCollisionModel) aModel, bModel,
+					tickLength,
+					workspace
+			);
+		}
+		
+		if (bModel instanceof CompoundCollisionModel) {
+			return AnythingWithCompoundCollider.computeModelCollision(
+					bBody, aBody,
+					(CompoundCollisionModel) bModel, aModel,
 					tickLength,
 					workspace
 			);

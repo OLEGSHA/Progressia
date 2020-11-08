@@ -6,6 +6,8 @@ import ru.windcorp.progressia.client.graphics.model.Shapes;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.common.collision.AABB;
+import ru.windcorp.progressia.common.collision.CollisionModel;
+import ru.windcorp.progressia.common.collision.CompoundCollisionModel;
 
 public class AABBRenderer {
 	
@@ -15,6 +17,19 @@ public class AABBRenderer {
 		helper.pushTransform().translate(aabb.getOrigin()).scale(aabb.getSize());
 		CUBE.render(helper);
 		helper.popTransform();
+	}
+	
+	public static void renderAABBsInCompound(
+			CompoundCollisionModel model,
+			ShapeRenderHelper helper
+	) {
+		for (CollisionModel part : model.getModels()) {
+			if (part instanceof CompoundCollisionModel) {
+				renderAABBsInCompound((CompoundCollisionModel) part, helper);
+			} else if (part instanceof AABB) {
+				renderAABB((AABB) part, helper);
+			}
+		}
 	}
 
 }

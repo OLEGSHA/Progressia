@@ -40,6 +40,7 @@ import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.CollisionClock;
 import ru.windcorp.progressia.common.collision.CollisionModel;
+import ru.windcorp.progressia.common.collision.CompoundCollisionModel;
 import ru.windcorp.progressia.common.collision.colliders.Collider;
 import ru.windcorp.progressia.common.util.FloatMathUtils;
 import ru.windcorp.progressia.common.util.Vectors;
@@ -127,7 +128,7 @@ public class LayerWorld extends Layer {
 	private final Collider.ColliderWorkspace tmp_colliderWorkspace = new Collider.ColliderWorkspace();
 	private final List<Collideable> tmp_collideableList = new ArrayList<>();
 	
-	private static final boolean RENDER_AABBS = false;
+	private static final boolean RENDER_AABBS = true;
 	
 	private void tmp_doEveryFrame() {
 		try {
@@ -136,6 +137,8 @@ public class LayerWorld extends Layer {
 					CollisionModel model = data.getCollisionModel();
 					if (model instanceof AABB) {
 						AABBRenderer.renderAABB((AABB) model, helper);
+					} else if (model instanceof CompoundCollisionModel) {
+						AABBRenderer.renderAABBsInCompound((CompoundCollisionModel) model, helper);
 					}
 				}
 			}
