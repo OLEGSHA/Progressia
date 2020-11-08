@@ -84,26 +84,31 @@ public class LayerWorld extends Layer {
 	private void tmp_handleControls() {
 		EntityData player = client.getLocalPlayer();
 		
-		angMat.set().rotateZ(player.getYaw());
+		angMat.identity().rotateZ(player.getYaw());
 		
 		Vec3 movement = Vectors.grab3();
 		
+		// Horizontal and vertical max control speed
+		final float movementSpeed = 0.1f * 60.0f;
+		// (0; 1], 1 is instant change, 0 is no control authority
+		final float controlAuthority = 0.1f;
+		
 		movement.set(movementForward, -movementRight, 0);
 		if (movementForward != 0 && movementRight != 0) movement.normalize();
-		angMat.mul_(movement); // bug in jglm
+		angMat.mul_(movement); // bug in jglm, .mul() and mul_() are swapped
 		movement.z = movementUp;
-		movement.mul(0.1f);
+		movement.mul(movementSpeed);
 		movement.sub(velocity);
-		movement.mul(0.1f);
+		movement.mul(controlAuthority);
 		velocity.add(movement);
 		
 		Vectors.release(movement);
 		
 		Vec3 velCopy = Vectors.grab3().set(velocity);
 		
-		velCopy.mul((float) (GraphicsInterface.getFrameLength() * 60));
+		velCopy.mul((float) GraphicsInterface.getFrameLength());
 		
-		player.getPosition().add(velCopy);
+		player.move(velCopy);
 		player.getVelocity().set(velocity);
 		
 		Vectors.release(velCopy);
@@ -115,10 +120,16 @@ public class LayerWorld extends Layer {
 		
 		this.client.getWorld().render(helper);
 		
+		tmp_doEveryFrame();
+		
 		FaceCulling.pop();
 		helper.reset();
 	}
 	
+	private void tmp_doEveryFrame() {
+		// Stub for the future
+	}
+
 	@Override
 	protected void handleInput(Input input) {
 		if (input.isConsumed()) return;

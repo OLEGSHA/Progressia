@@ -116,7 +116,7 @@ public class QuadripedModel extends EntityRenderable {
 	 */
 	private float velocityCutoff = 10;
 	
-	private float walkingFrequency = 0.15f;
+	private float walkingFrequency = 0.15f / 60.0f;
 	private float walkingSwing = (float) toRadians(30);
 	
 	private float bodyYaw = Float.NaN;
