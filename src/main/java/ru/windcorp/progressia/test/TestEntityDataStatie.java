@@ -1,5 +1,6 @@
 package ru.windcorp.progressia.test;
 
+import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.state.IntStateField;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
@@ -10,6 +11,7 @@ public class TestEntityDataStatie extends EntityData {
 
 	public TestEntityDataStatie() {
 		super("Test", "Statie");
+		setCollisionModel(new AABB(0, 0, 0, 16f/24, 16f/24, 16f/24));
 		setSizeNow(16);
 	}
 	
@@ -19,6 +21,11 @@ public class TestEntityDataStatie extends EntityData {
 	
 	public void setSizeNow(int size) {
 		this.size.setNow(this, size);
+	}
+	
+	@Override
+	public float getCollisionMass() {
+		return 50f;
 	}
 
 }
