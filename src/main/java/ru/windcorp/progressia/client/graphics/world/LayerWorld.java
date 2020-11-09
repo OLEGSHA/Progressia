@@ -17,6 +17,9 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client.graphics.world;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lwjgl.glfw.GLFW;
 
 import glm.Glm;
@@ -33,13 +36,18 @@ import ru.windcorp.progressia.client.graphics.input.CursorMoveEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
+import ru.windcorp.progressia.common.collision.AABB;
+import ru.windcorp.progressia.common.collision.Collideable;
+import ru.windcorp.progressia.common.collision.CollisionClock;
+import ru.windcorp.progressia.common.collision.CollisionModel;
+import ru.windcorp.progressia.common.collision.CompoundCollisionModel;
+import ru.windcorp.progressia.common.collision.colliders.Collider;
 import ru.windcorp.progressia.common.util.FloatMathUtils;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.test.AABBRenderer;
 
 public class LayerWorld extends Layer {
-	
-	private final Vec3 velocity = new Vec3();
 	
 	private final Mat3 angMat = new Mat3();
 
@@ -84,29 +92,25 @@ public class LayerWorld extends Layer {
 	private void tmp_handleControls() {
 		EntityData player = client.getLocalPlayer();
 		
-		angMat.set().rotateZ(player.getYaw());
+		angMat.identity().rotateZ(player.getYaw());
 		
 		Vec3 movement = Vectors.grab3();
 		
+		// Horizontal and vertical max control speed
+		final float movementSpeed = 0.1f * 60.0f;
+		// (0; 1], 1 is instant change, 0 is no control authority
+		final float controlAuthority = 0.1f;
+		
 		movement.set(movementForward, -movementRight, 0);
 		if (movementForward != 0 && movementRight != 0) movement.normalize();
-		angMat.mul_(movement); // bug in jglm
+		angMat.mul_(movement); // bug in jglm, .mul() and mul_() are swapped
 		movement.z = movementUp;
-		movement.mul(0.1f);
-		movement.sub(velocity);
-		movement.mul(0.1f);
-		velocity.add(movement);
+		movement.mul(movementSpeed);
+		movement.sub(player.getVelocity());
+		movement.mul(controlAuthority);
+		player.getVelocity().add(movement);
 		
 		Vectors.release(movement);
-		
-		Vec3 velCopy = Vectors.grab3().set(velocity);
-		
-		velCopy.mul((float) (GraphicsInterface.getFrameLength() * 60));
-		
-		player.getPosition().add(velCopy);
-		player.getVelocity().set(velocity);
-		
-		Vectors.release(velCopy);
 	}
 
 	private void renderWorld() {
@@ -115,10 +119,61 @@ public class LayerWorld extends Layer {
 		
 		this.client.getWorld().render(helper);
 		
+		tmp_doEveryFrame();
+		
 		FaceCulling.pop();
 		helper.reset();
 	}
 	
+	private final Collider.ColliderWorkspace tmp_colliderWorkspace = new Collider.ColliderWorkspace();
+	private final List<Collideable> tmp_collideableList = new ArrayList<>();
+	
+	private static final boolean RENDER_AABBS = true;
+	
+	private void tmp_doEveryFrame() {
+		try {
+			if (RENDER_AABBS) {
+				for (EntityData data : this.client.getWorld().getData().getEntities()) {
+					CollisionModel model = data.getCollisionModel();
+					if (model instanceof AABB) {
+						AABBRenderer.renderAABB((AABB) model, helper);
+					} else if (model instanceof CompoundCollisionModel) {
+						AABBRenderer.renderAABBsInCompound((CompoundCollisionModel) model, helper);
+					}
+				}
+			}
+			
+			tmp_collideableList.clear();
+			tmp_collideableList.addAll(this.client.getWorld().getData().getEntities());
+			
+			Collider.performCollisions(
+					tmp_collideableList,
+					new CollisionClock() {
+						private float t = 0;
+						@Override
+						public float getTime() {
+							return t;
+						}
+						
+						@Override
+						public void advanceTime(float change) {
+							t += change;
+						}
+					},
+					(float) GraphicsInterface.getFrameLength(),
+					tmp_colliderWorkspace
+			);
+			
+			final float frictionCoeff = 1 - 1e-2f;
+			
+			for (EntityData data : this.client.getWorld().getData().getEntities()) {
+				data.getVelocity().mul(frictionCoeff);
+			}
+		} catch (Exception e) {
+			System.exit(31337);
+		}
+	}
+
 	@Override
 	protected void handleInput(Input input) {
 		if (input.isConsumed()) return;

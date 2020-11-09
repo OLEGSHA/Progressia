@@ -17,6 +17,8 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client.graphics;
 
+import glm.vec._3.Vec3;
+
 public class Colors {
 	
 	public static final int
@@ -34,5 +36,17 @@ public class Colors {
 			DEBUG_CYAN    = 0x00FFFF,
 			DEBUG_MAGENTA = 0xFF00FF,
 			DEBUG_YELLOW  = 0xFFFF00;
+	
+	public static Vec3 toVector(int rgb) {
+		return toVector(rgb, new Vec3());
+	}
+	
+	public static Vec3 toVector(int rgb, Vec3 output) {
+		output.x = ((rgb & 0xFF0000) >> 16) / 256f;
+		output.y = ((rgb & 0x00FF00) >> 8 ) / 256f;
+		output.z = ((rgb & 0x0000FF)      ) / 256f;
+		
+		return output;
+	}
 
 }
