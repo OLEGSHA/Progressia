@@ -3,6 +3,8 @@ package ru.windcorp.progressia.test;
 import static ru.windcorp.progressia.client.world.block.BlockRenderRegistry.getBlockTexture;
 import static ru.windcorp.progressia.client.world.tile.TileRenderRegistry.getTileTexture;
 
+import java.util.function.Consumer;
+
 import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.i.Vec3i;
@@ -11,6 +13,7 @@ import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
 import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.entity.*;
 import ru.windcorp.progressia.client.world.tile.*;
+import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -78,7 +81,7 @@ public class TestContent {
 	}
 
 	private static void registerEntities() {
-		registerEntityData("Test", "Javapony");
+		registerEntityData("Test", "Javapony", e -> e.setCollisionModel(new AABB(0, 0, -0.05f, 0.75f, 0.75f, 1.2f)));
 		register(new TestEntityRenderJavapony());
 		register(new EntityLogic("Test", "Javapony"));
 		
@@ -125,9 +128,17 @@ public class TestContent {
 	}
 	
 	private static void registerEntityData(
-			String namespace, String name
+			String namespace, String name,
+			Consumer<EntityData> transform
 	) {
-		EntityDataRegistry.getInstance().register(namespace, name);
+		EntityDataRegistry.getInstance().register(namespace, name, new Factory<EntityData>() {
+			@Override
+			public EntityData build() {
+				EntityData entity = new EntityData(namespace, name);
+				transform.accept(entity);
+				return entity;
+			}
+		});
 	}
 	
 	private static void register(BlockRender x) {

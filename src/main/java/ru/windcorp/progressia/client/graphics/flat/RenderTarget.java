@@ -227,7 +227,7 @@ public class RenderTarget {
 		return Faces.createRectangle(
 				FlatRenderProgram.getDefault(),
 				texture,
-				createVectorFromRGBInt(color),
+				Colors.toVector(color),
 				new Vec3(x, y, depth),
 				new Vec3(width, 0, 0),
 				new Vec3(0, height, 0),
@@ -242,14 +242,6 @@ public class RenderTarget {
 				Usage.STATIC, FlatRenderProgram.getDefault(),
 				createRectagleFace(x, y, width, height, color, texture)
 		);
-	}
-	
-	private static Vec3 createVectorFromRGBInt(int rgb) {
-		int r = (rgb & 0xFF0000) >> 16;
-		int g = (rgb & 0x00FF00) >> 8;
-		int b = (rgb & 0x0000FF);
-		
-		return new Vec3(r / 256f, g / 256f, b / 256f);
 	}
 	
 }
