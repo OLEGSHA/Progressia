@@ -57,30 +57,39 @@ public class CrashReportGenerator {
 	}
 
 	private static void appendContextProviders(StringBuilder output) {
-		for (ContextProvider provider : PROVIDERS) {
-			if (provider != null) {
+		
+		// Do a local copy to avoid deadlocks -OLEGSHA
+		ContextProvider[] localProvidersCopy =
+				PROVIDERS.toArray(new ContextProvider[PROVIDERS.size()]);
+		
+		for (ContextProvider provider : localProvidersCopy) {
+			if (provider == null) continue;
+			
+			addSeparator(output);
+
+			try {
 				Map<String, String> buf = new HashMap<>();
+				provider.provideContext(buf);
 
-				try {
-					provider.provideContext(buf);
-
-					if (!buf.isEmpty()) {
-						addSeparator(output);
-						output.append("Provider name: ").append(provider.getName()).append("\n");
-						for (Map.Entry<String, String> entry : buf.entrySet()) {
-							output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
-						}
+				if (!buf.isEmpty()) {
+					output.append("Provider name: ").append(provider.getName()).append("\n");
+					for (Map.Entry<String, String> entry : buf.entrySet()) {
+						output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
 					}
-				} catch (Throwable t) {
-					output.append("\n");
-					try {
-						output.append(provider.getName()).append(" is broken").append("\n");
-					} catch (Throwable th) {
-						output.append(provider.getClass().getName()).append(" is broken").append("\n");
-						// You stupid
-					}
-					// Analyzer is broken
 				}
+			} catch (Throwable t) {
+				output.append("\n");
+				
+				String providerName;
+				
+				try {
+					providerName = provider.getName();
+				} catch (Throwable t1) {
+					providerName = provider.getClass().getName();
+				}
+				
+				output.append(providerName).append(" is broken").append("\n");
+				// ContextProvider is broken
 			}
 		}
 	}
@@ -90,26 +99,37 @@ public class CrashReportGenerator {
 			Throwable throwable, String messageFormat, Object[] args
 	) {
 		boolean analyzerResponsesExist = false;
-		for (Analyzer analyzer : ANALYZERS) {
-			if (analyzer != null) {
+		
+		// Do a local copy to avoid deadlocks -OLEGSHA
+		Analyzer[] localAnalyzersCopy =
+				ANALYZERS.toArray(new Analyzer[ANALYZERS.size()]);
+		
+		for (Analyzer analyzer : localAnalyzersCopy) {
+			if (analyzer == null) continue;
 
-				String answer;
-				try {
-					answer = analyzer.analyze(throwable, messageFormat, args);
+			String answer;
+			try {
+				answer = analyzer.analyze(throwable, messageFormat, args);
 
-					if (answer != null && !answer.isEmpty()) {
-						analyzerResponsesExist = true;
-						output.append(analyzer.getName()).append(": ").append(answer).append("\n");
-					}
-				} catch (Throwable t) {
-					try {
-						analyzerResponsesExist = true;
-						output.append(analyzer.getName()).append(" is broken").append("\n");
-					} catch (Throwable th) {
-						// You stupid
-					}
-					// Analyzer is broken
+				if (answer != null && !answer.isEmpty()) {
+					analyzerResponsesExist = true;
+					output.append(analyzer.getName()).append(": ").append(answer).append("\n");
 				}
+			} catch (Throwable t) {
+				analyzerResponsesExist = true;
+				
+				output.append("\n");
+				
+				String analyzerName;
+				
+				try {
+					analyzerName = analyzer.getName();
+				} catch (Throwable t1) {
+					analyzerName = analyzer.getClass().getName();
+				}
+				
+				output.append(analyzerName).append(" is broken").append("\n");
+				// Analyzer is broken
 			}
 		}
 
@@ -117,7 +137,7 @@ public class CrashReportGenerator {
 	}
 
 	private static void appendMessageFormat(StringBuilder output, String messageFormat, Object... arg) {
-		output.append("Provided description: ").append(String.format(messageFormat, arg)).append("\n");
+		output.append("Provided description: \n").append(String.format(messageFormat, arg)).append("\n");
 
 		addSeparator(output);
 	}
