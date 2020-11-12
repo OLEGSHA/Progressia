@@ -30,6 +30,19 @@ import glm.vec._4.i.Vec4i;
  */
 public class Vectors {
 	
+	public static final Vec2  ZERO_2  = new Vec2 (0, 0);
+	public static final Vec2i ZERO_2i = new Vec2i(0, 0);
+	public static final Vec3  ZERO_3  = new Vec3 (0, 0, 0);
+	public static final Vec3i ZERO_3i = new Vec3i(0, 0, 0);
+	public static final Vec4  ZERO_4  = new Vec4 (0, 0, 0, 0);
+	public static final Vec4i ZERO_4i = new Vec4i(0, 0, 0, 0);
+	public static final Vec2  UNIT_2  = new Vec2 (1, 1);
+	public static final Vec2i UNIT_2i = new Vec2i(1, 1);
+	public static final Vec3  UNIT_3  = new Vec3 (1, 1, 1);
+	public static final Vec3i UNIT_3i = new Vec3i(1, 1, 1);
+	public static final Vec4  UNIT_4  = new Vec4 (1, 1, 1, 1);
+	public static final Vec4i UNIT_4i = new Vec4i(1, 1, 1, 1);
+	
 	private static final LowOverheadCache<Vec3i> VEC3IS =
 			new LowOverheadCache<>(Vec3i::new);
 	

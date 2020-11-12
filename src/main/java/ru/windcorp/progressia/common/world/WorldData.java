@@ -42,6 +42,8 @@ public class WorldData {
 	private final Collection<EntityData> entities =
 			Collections.unmodifiableCollection(entitiesById.valueCollection());
 	
+	private float time = 0;
+	
 	public WorldData() {
 		final int size = 1;
 		
@@ -95,5 +97,17 @@ public class WorldData {
 	public Collection<EntityData> getEntities() {
 		return entities;
 	}
+	
+	public float getTime() {
+		return time;
+	}
+	
+	public void advanceTime(float change) {
+		this.time += change;
+	}
+	
+//	public CollisionModel getCollisionModelOfBlock(Vec3i blockInWorld) {
+//		Vec3i 
+//	}
 	
 }

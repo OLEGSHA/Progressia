@@ -36,16 +36,12 @@ import ru.windcorp.progressia.client.graphics.input.CursorMoveEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
-import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.collision.Collideable;
-import ru.windcorp.progressia.common.collision.CollisionClock;
-import ru.windcorp.progressia.common.collision.CollisionModel;
-import ru.windcorp.progressia.common.collision.CompoundCollisionModel;
 import ru.windcorp.progressia.common.collision.colliders.Collider;
 import ru.windcorp.progressia.common.util.FloatMathUtils;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.test.AABBRenderer;
+import ru.windcorp.progressia.test.CollisionModelRenderer;
 
 public class LayerWorld extends Layer {
 	
@@ -128,50 +124,44 @@ public class LayerWorld extends Layer {
 	private final Collider.ColliderWorkspace tmp_colliderWorkspace = new Collider.ColliderWorkspace();
 	private final List<Collideable> tmp_collideableList = new ArrayList<>();
 	
-	private static final boolean RENDER_AABBS = true;
+	private static final boolean RENDER_COLLISION_MODELS = true;
 	
 	private void tmp_doEveryFrame() {
 		try {
-			if (RENDER_AABBS) {
-				for (EntityData data : this.client.getWorld().getData().getEntities()) {
-					CollisionModel model = data.getCollisionModel();
-					if (model instanceof AABB) {
-						AABBRenderer.renderAABB((AABB) model, helper);
-					} else if (model instanceof CompoundCollisionModel) {
-						AABBRenderer.renderAABBsInCompound((CompoundCollisionModel) model, helper);
-					}
-				}
-			}
-			
-			tmp_collideableList.clear();
-			tmp_collideableList.addAll(this.client.getWorld().getData().getEntities());
-			
-			Collider.performCollisions(
-					tmp_collideableList,
-					new CollisionClock() {
-						private float t = 0;
-						@Override
-						public float getTime() {
-							return t;
-						}
-						
-						@Override
-						public void advanceTime(float change) {
-							t += change;
-						}
-					},
-					(float) GraphicsInterface.getFrameLength(),
-					tmp_colliderWorkspace
-			);
-			
-			final float frictionCoeff = 1 - 1e-2f;
+			tmp_performCollisions();
 			
 			for (EntityData data : this.client.getWorld().getData().getEntities()) {
-				data.getVelocity().mul(frictionCoeff);
+				tmp_applyFriction(data);
+				tmp_renderCollisionModel(data);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.out.println("OLEGSHA is to blame. Tell him he vry stupiDD!!");
 			System.exit(31337);
 		}
+	}
+
+	private void tmp_renderCollisionModel(EntityData entity) {
+		if (RENDER_COLLISION_MODELS) {
+			CollisionModelRenderer.renderCollisionModel(entity.getCollisionModel(), helper);
+		}
+	}
+
+	private void tmp_performCollisions() {
+		tmp_collideableList.clear();
+		tmp_collideableList.addAll(this.client.getWorld().getData().getEntities());
+		
+		Collider.performCollisions(
+				tmp_collideableList,
+				this.client.getWorld().getData(),
+				(float) GraphicsInterface.getFrameLength(),
+				tmp_colliderWorkspace
+		);
+	}
+
+	private void tmp_applyFriction(EntityData entity) {
+		final float frictionCoeff = 1 - 1e-2f;
+		entity.getVelocity().mul(frictionCoeff);
 	}
 
 	@Override

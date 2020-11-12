@@ -2,6 +2,7 @@ package ru.windcorp.progressia.test;
 
 import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.collision.CompoundCollisionModel;
+import ru.windcorp.progressia.common.collision.TranslatedAABB;
 import ru.windcorp.progressia.common.state.IntStateField;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
@@ -14,7 +15,7 @@ public class TestEntityDataStatie extends EntityData {
 		super("Test", "Statie");
 		setCollisionModel(new CompoundCollisionModel(
 				new AABB(0, 0, 0,    1,    1,    1   ),
-				new AABB(0, 0, 0.7f, 0.6f, 0.6f, 0.6f)
+				new TranslatedAABB(new AABB(0, 0, 0.7f, 0.6f, 0.6f, 0.6f), 0, 0, 1)
 		));
 		setSizeNow(16);
 	}
