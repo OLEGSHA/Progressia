@@ -14,6 +14,7 @@ import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.entity.*;
 import ru.windcorp.progressia.client.world.tile.*;
 import ru.windcorp.progressia.common.collision.AABB;
+import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -41,7 +42,12 @@ public class TestContent {
 	}
 
 	private static void registerBlocks() {
-		register(new BlockData("Test", "Air"));
+		register(new BlockData("Test", "Air") {
+				@Override
+				public CollisionModel getCollisionModel() {
+					return null;
+				}
+		});
 		register(new BlockRenderNone("Test", "Air"));
 		register(new BlockLogic("Test", "Air"));
 

@@ -124,7 +124,7 @@ public class LayerWorld extends Layer {
 	private final Collider.ColliderWorkspace tmp_colliderWorkspace = new Collider.ColliderWorkspace();
 	private final List<Collideable> tmp_collideableList = new ArrayList<>();
 	
-	private static final boolean RENDER_COLLISION_MODELS = true;
+	private static final boolean RENDER_COLLISION_MODELS = false;
 	
 	private void tmp_doEveryFrame() {
 		try {
@@ -136,7 +136,7 @@ public class LayerWorld extends Layer {
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
-			System.out.println("OLEGSHA is to blame. Tell him he vry stupiDD!!");
+			System.err.println("OLEGSHA is to blame. Tell him he vry stupiDD!!");
 			System.exit(31337);
 		}
 	}

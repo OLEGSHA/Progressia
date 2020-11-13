@@ -42,6 +42,8 @@ public class AABB implements AABBoid {
 		
 	}
 	
+	public static final AABB UNIT_CUBE = new AABB(0, 0, 0, 1, 1, 1);
+	
 	private final Wall[] walls = new Wall[] {
 			new AABBWallImpl(-0.5f, -0.5f, +0.5f,   +1,  0,  0,    0, +1,  0), // Top
 			new AABBWallImpl(-0.5f, -0.5f, -0.5f,    0, +1,  0,   +1,  0,  0), // Bottom

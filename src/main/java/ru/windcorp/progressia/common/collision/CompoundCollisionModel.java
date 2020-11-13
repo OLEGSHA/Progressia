@@ -8,9 +8,9 @@ import glm.vec._3.Vec3;
 
 public class CompoundCollisionModel implements CollisionModel {
 	
-	private final Collection<CollisionModel> models;
+	private final Collection<? extends CollisionModel> models;
 
-	public CompoundCollisionModel(Collection<CollisionModel> models) {
+	public CompoundCollisionModel(Collection<? extends CollisionModel> models) {
 		this.models = models;
 	}
 	
@@ -18,7 +18,7 @@ public class CompoundCollisionModel implements CollisionModel {
 		this(ImmutableList.copyOf(models));
 	}
 	
-	public Collection<CollisionModel> getModels() {
+	public Collection<? extends CollisionModel> getModels() {
 		return models;
 	}
 

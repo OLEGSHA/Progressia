@@ -33,7 +33,7 @@ public class Collider {
 				return;
 			}
 			
-			Collision firstCollision = getFirstCollision(colls, tickLength, workspace);
+			Collision firstCollision = getFirstCollision(colls, tickLength, world, workspace);
 			
 			if (firstCollision == null) {
 				break;
@@ -52,39 +52,43 @@ public class Collider {
 	private static Collision getFirstCollision(
 			List<? extends Collideable> colls,
 			float tickLength,
+			WorldData world,
 			ColliderWorkspace workspace
 	) {
 		Collision result = null;
+		Collideable worldColl = workspace.worldCollisionHelper.getCollideable();
 		
 		// For every pair of colls
 		for (int i = 0; i < colls.size(); ++i) {
 			Collideable a = colls.get(i);
 			
+			tuneWorldCollisionHelper(a, tickLength, world, workspace);
+			
+			result = workspace.updateLatestCollision(
+					result,
+					getCollision(a, worldColl, tickLength, workspace)
+			);
+			
 			for (int j = i + 1; j < colls.size(); ++j) {
 				Collideable b = colls.get(j);
-				
 				Collision collision = getCollision(a, b, tickLength, workspace);
-				
-				// Update result
-				if (collision != null) {
-					Collision second;
-					
-					if (result == null || collision.time < result.time) {
-						second = result;
-						result = collision;
-					} else {
-						second = collision;
-					}
-					
-					// Release Collision that is no longer used
-					if (second != null) workspace.release(second);
-				}
+				result = workspace.updateLatestCollision(result, collision);
 			}
 		}
 		
 		return result;
 	}
 	
+	private static void tuneWorldCollisionHelper(
+			Collideable coll,
+			float tickLength,
+			WorldData world,
+			ColliderWorkspace workspace
+	) {
+		WorldCollisionHelper wch = workspace.worldCollisionHelper;
+		wch.tuneToCollideable(world, coll, tickLength);
+	}
+
 	static Collision getCollision(
 			Collideable a,
 			Collideable b,
@@ -104,7 +108,7 @@ public class Collider {
 			float tickLength,
 			ColliderWorkspace workspace
 	) {
-		if (aModel instanceof AABBoid && bModel instanceof AABBoid) { /*replace AABB with AABBoid where makes sense, also add TranslatedAABB support in TestAABBRenderer*/
+		if (aModel instanceof AABBoid && bModel instanceof AABBoid) {
 			return AABBoidCollider.computeModelCollision(
 					aBody, bBody,
 					(AABBoid) aModel, (AABBoid) bModel,
@@ -324,6 +328,8 @@ public class Collider {
 				new LowOverheadCache<>(Collision::new);
 		
 		AABB dummyAABB = new AABB(0, 0, 0, 1, 1, 1);
+		
+		WorldCollisionHelper worldCollisionHelper = new WorldCollisionHelper();
 
 		Collision grab() {
 			return collisionCache.grab();
@@ -331,6 +337,27 @@ public class Collider {
 
 		void release(Collision object) {
 			collisionCache.release(object);
+		}
+		
+		Collision updateLatestCollision(Collision a, Collision b) {
+			if (a == null) {
+				return b; // may be null
+			} else if (b == null) {
+				return a;
+			}
+			
+			Collision first, second;
+			
+			if (a.time > b.time) {
+				first = b;
+				second = a;
+			} else {
+				first = a;
+				second = b;
+			}
+			
+			release(second);
+			return first;
 		}
 		
 	}
