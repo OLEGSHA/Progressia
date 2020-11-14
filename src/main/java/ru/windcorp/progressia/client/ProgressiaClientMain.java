@@ -18,7 +18,7 @@
 package ru.windcorp.progressia.client;
 
 import ru.windcorp.progressia.ProgressiaLauncher;
-import ru.windcorp.progressia.client.audio.backend.ALTest;
+import ru.windcorp.progressia.client.audio.ALTest;
 
 public class ProgressiaClientMain {
 

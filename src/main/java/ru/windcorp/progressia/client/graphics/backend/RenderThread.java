@@ -20,7 +20,7 @@ package ru.windcorp.progressia.client.graphics.backend;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
-import ru.windcorp.progressia.client.audio.SoundManager;
+import ru.windcorp.progressia.client.audio.AudioManager;
 import ru.windcorp.progressia.client.graphics.GUI;
 
 class RenderThread extends Thread {
@@ -61,7 +61,7 @@ class RenderThread extends Thread {
 
 	private void doRender() {
 		GUI.render();
-		SoundManager.update();
+		AudioManager.update();
 	}
 
 	private void waitForFrame() {

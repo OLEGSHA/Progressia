@@ -1,4 +1,4 @@
-package ru.windcorp.progressia.client.audio;
+package ru.windcorp.progressia.client.audio.backend;
 
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.Client;
