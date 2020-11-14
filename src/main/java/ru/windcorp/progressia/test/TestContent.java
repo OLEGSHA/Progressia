@@ -98,7 +98,7 @@ public class TestContent {
 
 	private static void regsiterControls() {
 		ControlDataRegistry.getInstance().register(new ControlData("Test", "Switch000"));
-		ControlTriggerRegistry.getInstance().register(new ControlTriggerOnKeyPress("Test", "Switch000", new KeyMatcher(GLFW.GLFW_KEY_G, new int[0], 0)::matches));
+		ControlTriggerRegistry.getInstance().register(new ControlTriggerOnKeyPress("Test", "Switch000", new KeyMatcher(GLFW.GLFW_KEY_H, new int[0], 0)::matches));
 		ControlLogicRegistry.getInstance().register(new ControlLogic("Test", "Switch000") {
 			@Override
 			public void apply(Server server, PacketControl packet, Client client) {
