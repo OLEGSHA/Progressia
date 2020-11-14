@@ -24,27 +24,28 @@ import java.util.Arrays;
 
 import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker;
 import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker.OpenGLDeletable;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class TexturePrimitive implements OpenGLDeletable {
-	
+
 	private static final int NOT_LOADED = -1;
-	
+
 	private static int[] currentlyBound = new int[32];
 	static {
 		Arrays.fill(currentlyBound, NOT_LOADED);
 	}
-	
+
 	private int handle = NOT_LOADED;
 	private TextureData pixels;
 
 	public TexturePrimitive(TextureData pixels) {
 		this.pixels = pixels;
 	}
-	
+
 	public TextureData getData() {
 		return pixels;
 	}
-	
+
 	public int getBufferWidth() {
 		return pixels.getBufferWidth();
 	}
@@ -64,21 +65,21 @@ public class TexturePrimitive implements OpenGLDeletable {
 	public boolean isLoaded() {
 		return handle != NOT_LOADED;
 	}
-	
+
 	public void bind(int slot) {
 		if (!isLoaded()) {
 			load();
 		}
-		
+
 		if (currentlyBound[slot] == handle) {
 			return;
 		}
-		
+
 		int code = GL_TEXTURE0 + slot;
-		
+
 		glActiveTexture(code);
 		glBindTexture(GL_TEXTURE_2D, handle);
-		
+
 		currentlyBound[slot] = handle;
 	}
 
@@ -87,9 +88,9 @@ public class TexturePrimitive implements OpenGLDeletable {
 		
 		handle = pixels.load();
 		OpenGLObjectTracker.register(this);
-		
+
 		if (handle < 0) {
-			throw new RuntimeException("oops");
+			CrashReports.report(null, "Failed to create texture");
 		}
 	}
 

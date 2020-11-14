@@ -3,6 +3,7 @@ package ru.windcorp.progressia.client.localization;
 import ru.windcorp.jputil.chars.EscapeException;
 import ru.windcorp.jputil.chars.Escaper;
 import ru.windcorp.progressia.common.resource.ResourceManager;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -54,7 +55,7 @@ public class Parser {
 					if (c == '=') {
 						String key = ESCAPER.escape(stringBuilder.toString());
 						stringBuilder.setLength(0);
-						rawData.read(); //skip a char
+						rawData.read(); // skip a char
 						while (true) {
 							code = rawData.read();
 							if (code == -1) {
@@ -80,7 +81,8 @@ public class Parser {
 			}
 
 		} catch (IOException | EscapeException e) {
-			throw new RuntimeException(e);
+			CrashReports.report(e, "Problems with parsing");
+			return null;
 		}
 		return parsedData;
 	}

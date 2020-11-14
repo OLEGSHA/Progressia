@@ -31,108 +31,101 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class Keys {
-	
-	private static final TIntObjectMap<String> CODES_TO_NAMES =
-			new TIntObjectHashMap<>();
-	
-	private static final TObjectIntMap<String> NAMES_TO_CODES =
-			new TObjectIntHashMap<>();
-	
+
+	private static final TIntObjectMap<String> CODES_TO_NAMES = new TIntObjectHashMap<>();
+
+	private static final TObjectIntMap<String> NAMES_TO_CODES = new TObjectIntHashMap<>();
+
 	private static final TIntSet MOUSE_BUTTONS = new TIntHashSet();
-	
+
 	private static final String KEY_PREFIX = "GLFW_KEY_";
 	private static final String MOUSE_BUTTON_PREFIX = "GLFW_MOUSE_BUTTON_";
-	
-	private static final Set<String> IGNORE_FIELDS =
-			new HashSet<>(Arrays.asList(
-					"GLFW_KEY_UNKNOWN",
-					"GLFW_KEY_LAST",
-					"GLFW_MOUSE_BUTTON_LAST",
-					"GLFW_MOUSE_BUTTON_1", // Alias for LEFT
+
+	private static final Set<String> IGNORE_FIELDS = new HashSet<>(
+			Arrays.asList("GLFW_KEY_UNKNOWN", "GLFW_KEY_LAST", "GLFW_MOUSE_BUTTON_LAST", "GLFW_MOUSE_BUTTON_1", // Alias
+																												// for
+																												// LEFT
 					"GLFW_MOUSE_BUTTON_2", // Alias for RIGHT
-					"GLFW_MOUSE_BUTTON_3"  // Alias for MIDDLE
+					"GLFW_MOUSE_BUTTON_3" // Alias for MIDDLE
 			));
-	
+
 	static {
 		initializeDictionary();
 	}
 
 	private static void initializeDictionary() {
 		try {
-			
+
 			for (Field field : GLFW.class.getFields()) {
-				if (!Modifier.isStatic(field.getModifiers())) continue;
-				if (!Modifier.isFinal(field.getModifiers())) continue;
-				
+				if (!Modifier.isStatic(field.getModifiers()))
+					continue;
+				if (!Modifier.isFinal(field.getModifiers()))
+					continue;
+
 				String name = field.getName();
-				
-				if (
-						!name.startsWith(KEY_PREFIX) &&
-						!name.startsWith(MOUSE_BUTTON_PREFIX)
-				) continue;
-				
-				if (IGNORE_FIELDS.contains(name)) continue;
-				
+
+				if (!name.startsWith(KEY_PREFIX) && !name.startsWith(MOUSE_BUTTON_PREFIX))
+					continue;
+
+				if (IGNORE_FIELDS.contains(name))
+					continue;
+
 				addToDictionary(field);
 			}
-			
+
 		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
+			CrashReports.report(e, "Cannot access GLFW constants");
 		}
 	}
 
-	private static void addToDictionary(Field field)
-			throws IllegalAccessException {
-		
+	private static void addToDictionary(Field field) throws IllegalAccessException {
+
 		int value = field.getInt(null);
 		String name = field.getName();
-		
+
 		if (name.startsWith(KEY_PREFIX)) {
 			name = name.substring(KEY_PREFIX.length());
 		} else if (name.startsWith(MOUSE_BUTTON_PREFIX)) {
 			name = "MOUSE_" + name.substring(MOUSE_BUTTON_PREFIX.length());
 			MOUSE_BUTTONS.add(value);
 		}
-		
+
 		if (CODES_TO_NAMES.containsKey(value)) {
-			throw new RuntimeException(
-					"Duplicate keys: " + CODES_TO_NAMES.get(value) +
-					" and " + name + " both map to " + value +
-					"(0x" + Integer.toHexString(value) + ")"
-			);
+			CrashReports.report(null, "Duplicate keys: %s and %s both map to %d(0x%s)",
+					CODES_TO_NAMES.get(value), name, value, Integer.toHexString(value));
 		}
-		
+
 		CODES_TO_NAMES.put(value, name);
 		NAMES_TO_CODES.put(name, value);
 	}
-	
+
 	public static String getInternalName(int code) {
 		String result = CODES_TO_NAMES.get(code);
-		
+
 		if (result == null) {
 			return "UNKNOWN";
 		}
-		
+
 		return result;
 	}
-	
+
 	public static String getDisplayName(int code) {
 		String name = getInternalName(code);
-		
+
 		if (name.startsWith("KP_")) {
 			name = "KEYPAD_" + name.substring("KP_".length());
 		}
-		
-		name = Character.toTitleCase(name.charAt(0)) +
-				name.substring(1).toLowerCase();
-		
+
+		name = Character.toTitleCase(name.charAt(0)) + name.substring(1).toLowerCase();
+
 		name = name.replace('_', ' ');
-		
+
 		return name;
 	}
-	
+
 	public static int getCode(String internalName) {
 		if (NAMES_TO_CODES.containsKey(internalName)) {
 			return -1;
@@ -140,7 +133,7 @@ public class Keys {
 			return NAMES_TO_CODES.get(internalName);
 		}
 	}
-	
+
 	public static boolean isMouse(int code) {
 		return MOUSE_BUTTONS.contains(code);
 	}

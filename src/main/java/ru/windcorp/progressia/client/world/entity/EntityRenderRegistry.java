@@ -7,16 +7,17 @@ import ru.windcorp.progressia.client.graphics.texture.TexturePrimitive;
 import ru.windcorp.progressia.client.graphics.texture.TextureSettings;
 import ru.windcorp.progressia.common.resource.ResourceManager;
 import ru.windcorp.progressia.common.util.NamespacedRegistry;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class EntityRenderRegistry extends NamespacedRegistry<EntityRender> {
-	
+
 	private static final EntityRenderRegistry INSTANCE =
 			new EntityRenderRegistry();
 	
 	public static EntityRenderRegistry getInstance() {
 		return INSTANCE;
 	}
-	
+
 	public static TexturePrimitive getEntityTexture(String name) {
 		try {
 			return new TexturePrimitive(
@@ -28,7 +29,8 @@ public class EntityRenderRegistry extends NamespacedRegistry<EntityRender> {
 					).getData()
 			);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			CrashReports.report(e, "__DOC__ME__");
+			return null;
 		}
 	}
 
