@@ -19,10 +19,10 @@ public class ComplexTexture {
 		this.primitive = primitive;
 		
 		this.assumedWidth = abstractWidth
-				* primitive.getWidth() / (float) primitive.getBufferWidth();
+				/ (float) primitive.getWidth() * primitive.getBufferWidth();
 		
 		this.assumedHeight = abstractHeight
-				* primitive.getHeight() / (float) primitive.getBufferHeight();
+				/ (float) primitive.getHeight() * primitive.getBufferHeight();
 	}
 	
 	public Texture get(int x, int y, int width, int height) {

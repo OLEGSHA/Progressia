@@ -87,9 +87,14 @@ public class TestContent {
 	}
 
 	private static void registerEntities() {
-		registerEntityData("Test", "Javapony", e -> e.setCollisionModel(new AABB(0, 0, -0.05f, 0.75f, 0.75f, 1.2f)));
-		register(new TestEntityRenderJavapony());
-		register(new EntityLogic("Test", "Javapony"));
+//		registerEntityData("Test", "Javapony", e -> e.setCollisionModel(new AABB(0, 0, -0.05f, 0.75f, 0.75f, 1.2f)));
+//		register(new TestEntityRenderJavapony());
+//		register(new EntityLogic("Test", "Javapony"));
+		
+		float scale = 1.8f / 8;
+		registerEntityData("Test", "Player", e -> e.setCollisionModel(new AABB(0, 0, 4*scale, 0.75f, 0.75f, 1.8f)));
+		register(new TestEntityRenderHuman());
+		register(new EntityLogic("Test", "Player"));
 		
 		register("Test", "Statie", TestEntityDataStatie::new);
 		register(new TestEntityRenderStatie());

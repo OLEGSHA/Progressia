@@ -121,5 +121,14 @@ public class LambdaModel extends DynamicModel {
 		}
 		
 	}
+	
+	public static LambdaModel animate(Renderable model, TransformGetter transform) {
+		return new LambdaModel(
+				new Renderable[]      { model },
+				new Mat4[]            { new Mat4() },
+				new boolean[]         { true },
+				new TransformGetter[] { transform }
+		);
+	}
 
 }

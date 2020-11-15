@@ -39,7 +39,7 @@ public class TestPlayerControls {
 	private static final float FLYING_CONTROL_AUTHORITY = 0.05f;
 	
 	// Horizontal and vertical max control speed when walking
-	private static final float WALKING_SPEED = 5.0f * Units.METERS_PER_SECOND;
+	private static final float WALKING_SPEED = 4.0f * Units.METERS_PER_SECOND;
 	
 	// (0; 1], 1 is instant change, 0 is no control authority
 	private static final float WALKING_CONTROL_AUTHORITY = 0.1f;
