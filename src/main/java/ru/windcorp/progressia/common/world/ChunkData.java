@@ -80,7 +80,7 @@ public class ChunkData {
 		TileData flowers = TileDataRegistry.getInstance().get("Test:YellowFlowers");
 		TileData sand = TileDataRegistry.getInstance().get("Test:Sand");
 	
-		Vec3i aPoint = new Vec3i(5, 0, BLOCKS_PER_CHUNK + BLOCKS_PER_CHUNK/2);
+		Vec3i aPoint = new Vec3i(5, 0, BLOCKS_PER_CHUNK + BLOCKS_PER_CHUNK/2).sub(getPosition());
 		Vec3i pos = new Vec3i();
 		
 		for (int x = 0; x < BLOCKS_PER_CHUNK; ++x) {
@@ -132,18 +132,28 @@ public class ChunkData {
 			}
 		}
 		
-		EntityData javapony = EntityDataRegistry.getInstance().create("Test:Javapony");
-		javapony.setEntityId(0x42);
-		javapony.setPosition(new Vec3(-6, -6, 20));
-		javapony.setDirection(new Vec2(
-				(float) Math.toRadians(40), (float) Math.toRadians(45)
-		));
-		getEntities().add(javapony);
-		
-		EntityData statie = EntityDataRegistry.getInstance().create("Test:Statie");
-		statie.setEntityId(0xDEADBEEF);
-		statie.setPosition(new Vec3(0, 15, 16));
-		getEntities().add(statie);
+		if (!getPosition().any()) {
+//			EntityData javapony = EntityDataRegistry.getInstance().create("Test:Javapony");
+//			javapony.setEntityId(0x42);
+//			javapony.setPosition(new Vec3(-6, -6, 20));
+//			javapony.setDirection(new Vec2(
+//					(float) Math.toRadians(40), (float) Math.toRadians(45)
+//			));
+//			getEntities().add(javapony);
+			
+			EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
+			player.setEntityId(0x42);
+			player.setPosition(new Vec3(-6, -6, 20));
+			player.setDirection(new Vec2(
+					(float) Math.toRadians(40), (float) Math.toRadians(45)
+			));
+			getEntities().add(player);
+			
+			EntityData statie = EntityDataRegistry.getInstance().create("Test:Statie");
+			statie.setEntityId(0xDEADBEEF);
+			statie.setPosition(new Vec3(0, 15, 16));
+			getEntities().add(statie);
+		}
 	}
 
 	public BlockData getBlock(Vec3i posInChunk) {

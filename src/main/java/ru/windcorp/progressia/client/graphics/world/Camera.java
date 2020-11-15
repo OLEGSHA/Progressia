@@ -271,6 +271,10 @@ public class Camera {
 			currentModeIndex++;
 		}
 	}
+	
+	public int getCurrentModeIndex() {
+		return currentModeIndex;
+	}
 
 	public float getLastAnchorYaw() {
 		return lastAnchorYaw;

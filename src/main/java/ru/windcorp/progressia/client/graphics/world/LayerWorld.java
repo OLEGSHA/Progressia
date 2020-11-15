@@ -20,45 +20,27 @@ package ru.windcorp.progressia.client.graphics.world;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.glfw.GLFW;
-
-import glm.Glm;
-import glm.mat._3.Mat3;
-import glm.vec._2.Vec2;
-import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.Client;
+import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.comms.controls.InputBasedControls;
 import ru.windcorp.progressia.client.graphics.Layer;
 import ru.windcorp.progressia.client.graphics.backend.FaceCulling;
-import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
-import ru.windcorp.progressia.client.graphics.input.CursorMoveEvent;
-import ru.windcorp.progressia.client.graphics.input.InputEvent;
-import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
-import ru.windcorp.progressia.common.collision.AABB;
+import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.collision.Collideable;
-import ru.windcorp.progressia.common.collision.CollisionClock;
-import ru.windcorp.progressia.common.collision.CollisionModel;
-import ru.windcorp.progressia.common.collision.CompoundCollisionModel;
 import ru.windcorp.progressia.common.collision.colliders.Collider;
-import ru.windcorp.progressia.common.util.FloatMathUtils;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.test.AABBRenderer;
+import ru.windcorp.progressia.test.CollisionModelRenderer;
+import ru.windcorp.progressia.test.TestPlayerControls;
 
 public class LayerWorld extends Layer {
-	
-	private final Mat3 angMat = new Mat3();
-
-	private int movementForward = 0;
-	private int movementRight = 0;
-	private int movementUp = 0;
 	
 	private final WorldRenderHelper helper = new WorldRenderHelper();
 	
 	private final Client client;
 	private final InputBasedControls inputBasedControls;
+	private final TestPlayerControls tmp_testControls = TestPlayerControls.getInstance();
 
 	public LayerWorld(Client client) {
 		super("World");
@@ -79,38 +61,10 @@ public class LayerWorld extends Layer {
 	
 	@Override
 	protected void doRender() {
-		if (client.getLocalPlayer() != null) {
-			tmp_handleControls();
-		}
-		
 		Camera camera = client.getCamera();
 		if (camera.hasAnchor()) {
 			renderWorld();
 		}
-	}
-
-	private void tmp_handleControls() {
-		EntityData player = client.getLocalPlayer();
-		
-		angMat.identity().rotateZ(player.getYaw());
-		
-		Vec3 movement = Vectors.grab3();
-		
-		// Horizontal and vertical max control speed
-		final float movementSpeed = 0.1f * 60.0f;
-		// (0; 1], 1 is instant change, 0 is no control authority
-		final float controlAuthority = 0.1f;
-		
-		movement.set(movementForward, -movementRight, 0);
-		if (movementForward != 0 && movementRight != 0) movement.normalize();
-		angMat.mul_(movement); // bug in jglm, .mul() and mul_() are swapped
-		movement.z = movementUp;
-		movement.mul(movementSpeed);
-		movement.sub(player.getVelocity());
-		movement.mul(controlAuthority);
-		player.getVelocity().add(movement);
-		
-		Vectors.release(movement);
 	}
 
 	private void renderWorld() {
@@ -128,150 +82,75 @@ public class LayerWorld extends Layer {
 	private final Collider.ColliderWorkspace tmp_colliderWorkspace = new Collider.ColliderWorkspace();
 	private final List<Collideable> tmp_collideableList = new ArrayList<>();
 	
-	private static final boolean RENDER_AABBS = true;
+	private static final boolean RENDER_COLLISION_MODELS = false;
 	
 	private void tmp_doEveryFrame() {
+		float tickLength = (float) GraphicsInterface.getFrameLength();
+		
 		try {
-			if (RENDER_AABBS) {
-				for (EntityData data : this.client.getWorld().getData().getEntities()) {
-					CollisionModel model = data.getCollisionModel();
-					if (model instanceof AABB) {
-						AABBRenderer.renderAABB((AABB) model, helper);
-					} else if (model instanceof CompoundCollisionModel) {
-						AABBRenderer.renderAABBsInCompound((CompoundCollisionModel) model, helper);
-					}
-				}
-			}
+			tmp_performCollisions(tickLength);
 			
-			tmp_collideableList.clear();
-			tmp_collideableList.addAll(this.client.getWorld().getData().getEntities());
-			
-			Collider.performCollisions(
-					tmp_collideableList,
-					new CollisionClock() {
-						private float t = 0;
-						@Override
-						public float getTime() {
-							return t;
-						}
-						
-						@Override
-						public void advanceTime(float change) {
-							t += change;
-						}
-					},
-					(float) GraphicsInterface.getFrameLength(),
-					tmp_colliderWorkspace
-			);
-			
-			final float frictionCoeff = 1 - 1e-2f;
+			tmp_testControls.applyPlayerControls();
 			
 			for (EntityData data : this.client.getWorld().getData().getEntities()) {
-				data.getVelocity().mul(frictionCoeff);
+				tmp_applyFriction(data);
+				tmp_applyGravity(data, tickLength);
+				tmp_renderCollisionModel(data);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.err.println("OLEGSHA is to blame. Tell him he vry stupiDD!!");
 			System.exit(31337);
 		}
+	}
+
+	private void tmp_renderCollisionModel(EntityData entity) {
+		if (RENDER_COLLISION_MODELS) {
+			CollisionModelRenderer.renderCollisionModel(entity.getCollisionModel(), helper);
+		}
+	}
+
+	private void tmp_performCollisions(float tickLength) {
+		tmp_collideableList.clear();
+		tmp_collideableList.addAll(this.client.getWorld().getData().getEntities());
+		
+		Collider.performCollisions(
+				tmp_collideableList,
+				this.client.getWorld().getData(),
+				tickLength,
+				tmp_colliderWorkspace
+		);
+	}
+
+	private void tmp_applyFriction(EntityData entity) {
+		final float frictionCoeff = 1 - 1e-5f;
+		entity.getVelocity().mul(frictionCoeff);
+	}
+	
+	private void tmp_applyGravity(EntityData entity, float tickLength) {
+		if (ClientState.getInstance().getLocalPlayer() == entity && tmp_testControls.isFlying()) {
+			return;
+		}
+		
+		final float gravitationalAcceleration;
+		
+		if (tmp_testControls.useMinecraftGravity()) {
+			gravitationalAcceleration = 32f * Units.METERS_PER_SECOND_SQUARED; // plz dont sue me M$
+		} else {
+			gravitationalAcceleration = 9.81f * Units.METERS_PER_SECOND_SQUARED;
+		}
+		entity.getVelocity().add(0, 0, -gravitationalAcceleration * tickLength);
 	}
 
 	@Override
 	protected void handleInput(Input input) {
 		if (input.isConsumed()) return;
 		
-		InputEvent event = input.getEvent();
-		
-		if (event instanceof KeyEvent) {
-			if (onKeyEvent((KeyEvent) event)) {
-				input.consume();
-			}
-		} else if (event instanceof CursorMoveEvent) {
-			onMouseMoved((CursorMoveEvent) event);
-			input.consume();
-		}
+		tmp_testControls.handleInput(input);
 		
 		if (!input.isConsumed()) {
 			inputBasedControls.handleInput(input);
 		}
-	}
-	
-	private boolean flag = true;
-	
-	private boolean onKeyEvent(KeyEvent event) {
-		if (event.isRepeat()) return false;
-		
-		int multiplier = event.isPress() ? 1 : -1;
-		
-		switch (event.getKey()) {
-		case GLFW.GLFW_KEY_W:
-			movementForward += +1 * multiplier;
-			break;
-		case GLFW.GLFW_KEY_S:
-			movementForward += -1 * multiplier;
-			break;
-		case GLFW.GLFW_KEY_A:
-			movementRight += -1 * multiplier;
-			break;
-		case GLFW.GLFW_KEY_D:
-			movementRight += +1 * multiplier;
-			break;
-		case GLFW.GLFW_KEY_SPACE:
-			movementUp += +1 * multiplier;
-			break;
-		case GLFW.GLFW_KEY_LEFT_SHIFT:
-			movementUp += -1 * multiplier;
-			break;
-			
-		case GLFW.GLFW_KEY_ESCAPE:
-			if (!event.isPress()) return false;
-			
-			if (flag) {
-				GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
-			} else {
-				GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
-			}
-			
-			flag = !flag;
-			break;
-			
-		case GLFW.GLFW_KEY_F5:
-			if (!event.isPress()) return false;
-			
-			if (client.getCamera().hasAnchor()) {
-				client.getCamera().selectNextMode();
-			}
-			break;
-			
-		default:
-			return false;
-		}
-		
-		return true;
-	}
-	
-	private void onMouseMoved(CursorMoveEvent event) {
-		if (!flag) return;
-		
-		final float yawScale = -0.002f;
-		final float pitchScale = yawScale;
-
-		EntityData player = client.getLocalPlayer();
-		
-		if (player != null) {
-			normalizeAngles(player.getDirection().add(
-					(float) (event.getChangeX() * yawScale),
-					(float) (event.getChangeY() * pitchScale)
-			));
-		}
-	}
-
-	private void normalizeAngles(Vec2 dir) {
-		// Normalize yaw
-		dir.x = FloatMathUtils.normalizeAngle(dir.x);
-		
-		// Clamp pitch
-		dir.y = Glm.clamp(
-				dir.y, -FloatMathUtils.PI_F/2, +FloatMathUtils.PI_F/2
-		);
 	}
 
 }

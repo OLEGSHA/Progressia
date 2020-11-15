@@ -18,10 +18,12 @@ dependencies {
     implementation 'ru.windcorp.fork.io.github.java-graphics:glm:1.0.1'
 
 	// log4j
-	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
-	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3'
 
 	testImplementation 'junit:junit:4.12'
+	
+	// See also LWJGL dependencies below
 }
 
 /*
@@ -77,3 +79,22 @@ dependencies {
 }
 
 // LWJGL END
+
+jar {
+    manifest {
+        attributes(
+        	"Main-Class": "ru.windcorp.progressia.client.ProgressiaClientMain",
+        	"Class-Path": configurations.runtimeClasspath.collect { "lib/" + it.getName() }.join(' ')
+        )
+    }
+}
+
+/*
+ * Copies runtime dependencies to a prespecified location so they can be packaged properly.
+ */
+task copyLibs(type: Copy) {
+    into "${libsDir}/lib"
+    from configurations.runtimeClasspath
+}
+
+build.dependsOn(copyLibs)

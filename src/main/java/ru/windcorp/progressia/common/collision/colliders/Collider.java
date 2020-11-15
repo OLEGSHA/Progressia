@@ -6,14 +6,10 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 
 import glm.vec._3.Vec3;
-import ru.windcorp.progressia.common.collision.AABB;
-import ru.windcorp.progressia.common.collision.Collideable;
-import ru.windcorp.progressia.common.collision.CollisionClock;
-import ru.windcorp.progressia.common.collision.CollisionModel;
-import ru.windcorp.progressia.common.collision.CollisionWall;
-import ru.windcorp.progressia.common.collision.CompoundCollisionModel;
+import ru.windcorp.progressia.common.collision.*;
 import ru.windcorp.progressia.common.util.LowOverheadCache;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.WorldData;
 
 public class Collider {
 	
@@ -21,7 +17,7 @@ public class Collider {
 	
 	public static void performCollisions(
 			List<? extends Collideable> colls,
-			CollisionClock clock,
+			WorldData world,
 			float tickLength,
 			ColliderWorkspace workspace
 	) {
@@ -37,12 +33,12 @@ public class Collider {
 				return;
 			}
 			
-			Collision firstCollision = getFirstCollision(colls, tickLength, workspace);
+			Collision firstCollision = getFirstCollision(colls, tickLength, world, workspace);
 			
 			if (firstCollision == null) {
 				break;
 			} else {
-				collide(firstCollision, colls, clock, tickLength, workspace);
+				collide(firstCollision, colls, world, tickLength, workspace);
 				workspace.release(firstCollision);
 				collisionCount++;
 				
@@ -50,45 +46,49 @@ public class Collider {
 			}
 		}
 		
-		advanceTime(colls, clock, tickLength);
+		advanceTime(colls, world, tickLength);
 	}
 
 	private static Collision getFirstCollision(
 			List<? extends Collideable> colls,
 			float tickLength,
+			WorldData world,
 			ColliderWorkspace workspace
 	) {
 		Collision result = null;
+		Collideable worldColl = workspace.worldCollisionHelper.getCollideable();
 		
 		// For every pair of colls
 		for (int i = 0; i < colls.size(); ++i) {
 			Collideable a = colls.get(i);
 			
+			tuneWorldCollisionHelper(a, tickLength, world, workspace);
+			
+			result = workspace.updateLatestCollision(
+					result,
+					getCollision(a, worldColl, tickLength, workspace)
+			);
+			
 			for (int j = i + 1; j < colls.size(); ++j) {
 				Collideable b = colls.get(j);
-				
 				Collision collision = getCollision(a, b, tickLength, workspace);
-				
-				// Update result
-				if (collision != null) {
-					Collision second;
-					
-					if (result == null || collision.time < result.time) {
-						second = result;
-						result = collision;
-					} else {
-						second = collision;
-					}
-					
-					// Release Collision that is no longer used
-					if (second != null) workspace.release(second);
-				}
+				result = workspace.updateLatestCollision(result, collision);
 			}
 		}
 		
 		return result;
 	}
 	
+	private static void tuneWorldCollisionHelper(
+			Collideable coll,
+			float tickLength,
+			WorldData world,
+			ColliderWorkspace workspace
+	) {
+		WorldCollisionHelper wch = workspace.worldCollisionHelper;
+		wch.tuneToCollideable(world, coll, tickLength);
+	}
+
 	static Collision getCollision(
 			Collideable a,
 			Collideable b,
@@ -108,10 +108,10 @@ public class Collider {
 			float tickLength,
 			ColliderWorkspace workspace
 	) {
-		if (aModel instanceof AABB && bModel instanceof AABB) {
-			return AABBWithAABBCollider.computeModelCollision(
+		if (aModel instanceof AABBoid && bModel instanceof AABBoid) {
+			return AABBoidCollider.computeModelCollision(
 					aBody, bBody,
-					(AABB) aModel, (AABB) bModel,
+					(AABBoid) aModel, (AABBoid) bModel,
 					tickLength,
 					workspace
 			);
@@ -144,11 +144,11 @@ public class Collider {
 			Collision collision,
 			
 			Collection<? extends Collideable> colls,
-			CollisionClock clock,
+			WorldData world,
 			float tickLength,
 			ColliderWorkspace workspace
 	) {
-		advanceTime(colls, clock, collision.time);
+		advanceTime(colls, world, collision.time);
 		
 		boolean doNotHandle = false;
 		
@@ -237,7 +237,7 @@ public class Collider {
 		Vec3 du_a = Vectors.grab3();
 		Vec3 du_b = Vectors.grab3();
 		
-		n.set(collision.wall.getWidth()).cross(collision.wall.getHeight()).normalize();
+		n.set(collision.wallWidth).cross(collision.wallHeight).normalize();
 		collision.a.getCollideableVelocity(v_a);
 		collision.b.getCollideableVelocity(v_b);
 		
@@ -306,10 +306,10 @@ public class Collider {
 
 	private static void advanceTime(
 			Collection<? extends Collideable> colls,
-			CollisionClock clock,
+			WorldData world,
 			float step
 	) {
-		clock.advanceTime(step);
+		world.advanceTime(step);
 		
 		Vec3 tmp = Vectors.grab3();
 		
@@ -328,6 +328,8 @@ public class Collider {
 				new LowOverheadCache<>(Collision::new);
 		
 		AABB dummyAABB = new AABB(0, 0, 0, 1, 1, 1);
+		
+		WorldCollisionHelper worldCollisionHelper = new WorldCollisionHelper();
 
 		Collision grab() {
 			return collisionCache.grab();
@@ -337,12 +339,35 @@ public class Collider {
 			collisionCache.release(object);
 		}
 		
+		Collision updateLatestCollision(Collision a, Collision b) {
+			if (a == null) {
+				return b; // may be null
+			} else if (b == null) {
+				return a;
+			}
+			
+			Collision first, second;
+			
+			if (a.time > b.time) {
+				first = b;
+				second = a;
+			} else {
+				first = a;
+				second = b;
+			}
+			
+			release(second);
+			return first;
+		}
+		
 	}
 	
 	static class Collision {
 		public Collideable a;
 		public Collideable b;
-		public final CollisionWall wall = new CollisionWall(0, 0, 0, 0, 0, 0, 0, 0, 0);
+		
+		public final Vec3 wallWidth = new Vec3();
+		public final Vec3 wallHeight = new Vec3();
 		
 		/**
 		 * Time offset from the start of the tick.
@@ -350,12 +375,15 @@ public class Collider {
 		 */
 		public float time;
 		
-		public Collision set(Collideable a, Collideable b, CollisionWall wall, float time) {
+		public Collision set(
+				Collideable a, Collideable b,
+				Wall wall,
+				float time
+		) {
 			this.a = a;
 			this.b = b;
-			this.wall.getOrigin().set(wall.getOrigin());
-			this.wall.getWidth().set(wall.getWidth());
-			this.wall.getHeight().set(wall.getHeight());
+			wall.getWidth(wallWidth);
+			wall.getHeight(wallHeight);
 			this.time = time;
 			
 			return this;

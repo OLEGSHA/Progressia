@@ -14,6 +14,7 @@ import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.entity.*;
 import ru.windcorp.progressia.client.world.tile.*;
 import ru.windcorp.progressia.common.collision.AABB;
+import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -41,7 +42,12 @@ public class TestContent {
 	}
 
 	private static void registerBlocks() {
-		register(new BlockData("Test", "Air"));
+		register(new BlockData("Test", "Air") {
+				@Override
+				public CollisionModel getCollisionModel() {
+					return null;
+				}
+		});
 		register(new BlockRenderNone("Test", "Air"));
 		register(new BlockLogic("Test", "Air"));
 
@@ -81,9 +87,14 @@ public class TestContent {
 	}
 
 	private static void registerEntities() {
-		registerEntityData("Test", "Javapony", e -> e.setCollisionModel(new AABB(0, 0, -0.05f, 0.75f, 0.75f, 1.2f)));
-		register(new TestEntityRenderJavapony());
-		register(new EntityLogic("Test", "Javapony"));
+//		registerEntityData("Test", "Javapony", e -> e.setCollisionModel(new AABB(0, 0, -0.05f, 0.75f, 0.75f, 1.2f)));
+//		register(new TestEntityRenderJavapony());
+//		register(new EntityLogic("Test", "Javapony"));
+		
+		float scale = 1.8f / 8;
+		registerEntityData("Test", "Player", e -> e.setCollisionModel(new AABB(0, 0, 4*scale, 0.75f, 0.75f, 1.8f)));
+		register(new TestEntityRenderHuman());
+		register(new EntityLogic("Test", "Player"));
 		
 		register("Test", "Statie", TestEntityDataStatie::new);
 		register(new TestEntityRenderStatie());
@@ -92,7 +103,7 @@ public class TestContent {
 
 	private static void regsiterControls() {
 		ControlDataRegistry.getInstance().register(new ControlData("Test", "Switch000"));
-		ControlTriggerRegistry.getInstance().register(new ControlTriggerOnKeyPress("Test", "Switch000", new KeyMatcher(GLFW.GLFW_KEY_G, new int[0], 0)::matches));
+		ControlTriggerRegistry.getInstance().register(new ControlTriggerOnKeyPress("Test", "Switch000", new KeyMatcher(GLFW.GLFW_KEY_H, new int[0], 0)::matches));
 		ControlLogicRegistry.getInstance().register(new ControlLogic("Test", "Switch000") {
 			@Override
 			public void apply(Server server, PacketControl packet, Client client) {

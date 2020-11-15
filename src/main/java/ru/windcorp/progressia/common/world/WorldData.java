@@ -24,8 +24,10 @@ import glm.vec._3.i.Vec3i;
 import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class WorldData {
@@ -41,6 +43,8 @@ public class WorldData {
 	
 	private final Collection<EntityData> entities =
 			Collections.unmodifiableCollection(entitiesById.valueCollection());
+	
+	private float time = 0;
 	
 	public WorldData() {
 		final int size = 1;
@@ -94,6 +98,27 @@ public class WorldData {
 	
 	public Collection<EntityData> getEntities() {
 		return entities;
+	}
+	
+	public float getTime() {
+		return time;
+	}
+	
+	public void advanceTime(float change) {
+		this.time += change;
+	}
+	
+	public CollisionModel getCollisionModelOfBlock(Vec3i blockInWorld) {
+		ChunkData chunk = getChunkByBlock(blockInWorld);
+		if (chunk == null) return null;
+		
+		Vec3i blockInChunk = Vectors.grab3i();
+		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
+		BlockData block = chunk.getBlock(blockInChunk);
+		Vectors.release(blockInChunk);
+		
+		if (block == null) return null;
+		return block.getCollisionModel();
 	}
 	
 }
