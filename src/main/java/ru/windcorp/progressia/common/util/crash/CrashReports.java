@@ -20,193 +20,213 @@ import java.util.*;
 
 public class CrashReports {
 
-	private CrashReports() {
-	}
+    private CrashReports() {
+    }
 
-	private static final Path CRASH_REPORTS_PATH = Paths.get("crash-reports");
+    private static final Path CRASH_REPORTS_PATH = Paths.get("crash-reports");
 
-	private static final Collection<ContextProvider> PROVIDERS = Collections.synchronizedCollection(new ArrayList<>());
+    private static final Collection<ContextProvider> PROVIDERS = Collections.synchronizedCollection(new ArrayList<>());
 
-	private static final Collection<Analyzer> ANALYZERS = Collections.synchronizedCollection(new ArrayList<>());
+    private static final Collection<Analyzer> ANALYZERS = Collections.synchronizedCollection(new ArrayList<>());
 
-	private static final Logger LOGGER = LogManager.getLogger("crash");
+    private static final Logger LOGGER = LogManager.getLogger("crash");
 
-	/**
-	 * <em>This method never returns.</em>
-	 * <p>
-	 * TODO document
-	 * 
-	 * @param throwable
-	 * @param messageFormat
-	 * @param args
-	 */
-	public static void report(Throwable throwable, String messageFormat, Object... args) {
-		StringBuilder output = new StringBuilder();
+    /**
+     * <em>This method never returns.</em>
+     * <p>
+     * TODO document
+     *
+     * @param throwable
+     * @param messageFormat
+     * @param args
+     */
+    public static void report(Throwable throwable, String messageFormat, Object... args) {
+        StringBuilder output = new StringBuilder();
 
-		appendContextProviders(output);
-		addSeparator(output);
-		if (appendAnalyzers(output, throwable, messageFormat, args)) {
-			addSeparator(output);
-		}
+        try {
+            String.format(messageFormat, args);
+        } catch (IllegalFormatException e) {
+            messageFormat = StringUtil.replaceAll(messageFormat, "%", "%%");
 
-		appendMessageFormat(output, messageFormat, args);
+            if (args.length != 0) {
+                messageFormat += "\nArgs:";
+                for (Object arg : args) {
+                    try {
+                        messageFormat += " \"" + arg.toString() + "\"";
+                    } catch (Throwable t) {
+                        messageFormat += " exc: \"" + t.getClass().toString() + "\"";
+                    }
+                }
+                args = new Object[0]; // clear args
+            }
 
-		appendStackTrace(output, throwable);
+            messageFormat += "\nCould not format provided description";
+        }
 
-		export(output.toString());
+        appendContextProviders(output);
+        addSeparator(output);
+        if (appendAnalyzers(output, throwable, messageFormat, args)) {
+            addSeparator(output);
+        }
 
-		System.exit(0);
-	}
+        appendMessageFormat(output, messageFormat, args);
 
-	private static void appendContextProviders(StringBuilder output) {
+        appendStackTrace(output, throwable);
 
-		// Do a local copy to avoid deadlocks -OLEGSHA
-		ContextProvider[] localProvidersCopy = PROVIDERS.toArray(new ContextProvider[PROVIDERS.size()]);
+        export(output.toString());
 
-		for (ContextProvider provider : localProvidersCopy) {
-			if (provider == null)
-				continue;
+        System.exit(0);
+    }
 
-			addSeparator(output);
+    private static void appendContextProviders(StringBuilder output) {
 
-			try {
-				Map<String, String> buf = new HashMap<>();
-				provider.provideContext(buf);
+        // Do a local copy to avoid deadlocks -OLEGSHA
+        ContextProvider[] localProvidersCopy = PROVIDERS.toArray(new ContextProvider[PROVIDERS.size()]);
 
-				if (!buf.isEmpty()) {
-					output.append("Provider name: ").append(provider.getName()).append("\n");
-					for (Map.Entry<String, String> entry : buf.entrySet()) {
-						output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
-					}
-				}
-			} catch (Throwable t) {
-				output.append("\n");
+        for (ContextProvider provider : localProvidersCopy) {
+            if (provider == null)
+                continue;
 
-				String providerName;
+            addSeparator(output);
 
-				try {
-					providerName = provider.getName();
-				} catch (Throwable t1) {
-					providerName = provider.getClass().getName();
-				}
+            try {
+                Map<String, String> buf = new HashMap<>();
+                provider.provideContext(buf);
 
-				output.append(providerName).append(" is broken").append("\n");
-				// ContextProvider is broken
-			}
-		}
-	}
+                if (!buf.isEmpty()) {
+                    output.append("Provider name: ").append(provider.getName()).append("\n");
+                    for (Map.Entry<String, String> entry : buf.entrySet()) {
+                        output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+                    }
+                }
+            } catch (Throwable t) {
+                output.append("\n");
 
-	private static boolean appendAnalyzers(StringBuilder output, Throwable throwable, String messageFormat,
-			Object[] args) {
-		boolean analyzerResponsesExist = false;
+                String providerName;
 
-		// Do a local copy to avoid deadlocks -OLEGSHA
-		Analyzer[] localAnalyzersCopy = ANALYZERS.toArray(new Analyzer[ANALYZERS.size()]);
+                try {
+                    providerName = provider.getName();
+                } catch (Throwable t1) {
+                    providerName = provider.getClass().getName();
+                }
 
-		for (Analyzer analyzer : localAnalyzersCopy) {
-			if (analyzer == null)
-				continue;
+                output.append(providerName).append(" is broken").append("\n");
+                // ContextProvider is broken
+            }
+        }
+    }
 
-			String answer;
-			try {
-				answer = analyzer.analyze(throwable, messageFormat, args);
+    private static boolean appendAnalyzers(StringBuilder output, Throwable throwable, String messageFormat,
+                                           Object[] args) {
+        boolean analyzerResponsesExist = false;
 
-				if (answer != null && !answer.isEmpty()) {
-					analyzerResponsesExist = true;
-					output.append(analyzer.getName()).append(": ").append(answer).append("\n");
-				}
-			} catch (Throwable t) {
-				analyzerResponsesExist = true;
+        // Do a local copy to avoid deadlocks -OLEGSHA
+        Analyzer[] localAnalyzersCopy = ANALYZERS.toArray(new Analyzer[ANALYZERS.size()]);
 
-				output.append("\n");
+        for (Analyzer analyzer : localAnalyzersCopy) {
+            if (analyzer == null)
+                continue;
 
-				String analyzerName;
+            String answer;
+            try {
+                answer = analyzer.analyze(throwable, messageFormat, args);
 
-				try {
-					analyzerName = analyzer.getName();
-				} catch (Throwable t1) {
-					analyzerName = analyzer.getClass().getName();
-				}
+                if (answer != null && !answer.isEmpty()) {
+                    analyzerResponsesExist = true;
+                    output.append(analyzer.getName()).append(": ").append(answer).append("\n");
+                }
+            } catch (Throwable t) {
+                analyzerResponsesExist = true;
 
-				output.append(analyzerName).append(" is broken").append("\n");
-				// Analyzer is broken
-			}
-		}
+                output.append("\n");
 
-		return analyzerResponsesExist;
-	}
+                String analyzerName;
 
-	private static void appendMessageFormat(StringBuilder output, String messageFormat, Object... arg) {
-		output.append("Provided description: \n").append(String.format(messageFormat, arg)).append("\n");
+                try {
+                    analyzerName = analyzer.getName();
+                } catch (Throwable t1) {
+                    analyzerName = analyzer.getClass().getName();
+                }
 
-		addSeparator(output);
-	}
+                output.append(analyzerName).append(" is broken").append("\n");
+                // Analyzer is broken
+            }
+        }
 
-	private static void appendStackTrace(StringBuilder output, Throwable throwable) {
-		output.append("Stacktrace: \n");
+        return analyzerResponsesExist;
+    }
 
-		if (throwable == null) {
-			output.append("no Throwable provided").append("\n");
-			return;
-		}
+    private static void appendMessageFormat(StringBuilder output, String messageFormat, Object... arg) {
+        output.append("Provided description: \n").append(String.format(messageFormat, arg)).append("\n");
 
-		// Formatting to a human-readable string
-		Writer sink = new StringBuilderWriter(output);
-		try {
-			throwable.printStackTrace(new PrintWriter(sink));
-		} catch (Exception e) {
-			// PLAK
-		}
-		output.append("\n");
-	}
+        addSeparator(output);
+    }
 
-	private static void export(String report) {
-		try {
-			LOGGER.fatal("/n" + report);
-		} catch (Exception e) {
-			// PLAK
-		}
+    private static void appendStackTrace(StringBuilder output, Throwable throwable) {
+        output.append("Stacktrace: \n");
 
-		System.err.println(report);
+        if (throwable == null) {
+            output.append("no Throwable provided").append("\n");
+            return;
+        }
 
-		generateCrashReportFiles(report);
-	}
+        // Formatting to a human-readable string
+        Writer sink = new StringBuilderWriter(output);
+        try {
+            throwable.printStackTrace(new PrintWriter(sink));
+        } catch (Exception e) {
+            // PLAK
+        }
+        output.append("\n");
+    }
 
-	private static void generateCrashReportFiles(String output) {
-		Date date = new Date();
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
+    private static void export(String report) {
+        try {
+            LOGGER.fatal("/n" + report);
+        } catch (Exception e) {
+            // PLAK
+        }
 
-		try {
-			if (!Files.exists(CRASH_REPORTS_PATH))
-				Files.createDirectory(CRASH_REPORTS_PATH);
+        System.err.println(report);
 
-			createFileForCrashReport(output, CRASH_REPORTS_PATH.toString() + "/latest.log");
-			createFileForCrashReport(output,
-					CRASH_REPORTS_PATH.toString() + "/crash-" + dateFormat.format(date) + ".log");
-		} catch (Throwable t) {
-			// Crash Report not created
-		}
-	}
+        generateCrashReportFiles(report);
+    }
 
-	private static void createFileForCrashReport(String buffer, String filename) {
-		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename), StandardCharsets.UTF_8)) {
-			writer.write(buffer);
-		} catch (IOException ex) {
-			// Crash Report not created
-		}
-	}
+    private static void generateCrashReportFiles(String output) {
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
 
-	public static void registerProvider(ContextProvider provider) {
-		PROVIDERS.add(provider);
-	}
+        try {
+            if (!Files.exists(CRASH_REPORTS_PATH))
+                Files.createDirectory(CRASH_REPORTS_PATH);
 
-	public static void registerAnalyzer(Analyzer analyzer) {
-		ANALYZERS.add(analyzer);
-	}
+            createFileForCrashReport(output, CRASH_REPORTS_PATH.toString() + "/latest.log");
+            createFileForCrashReport(output,
+                    CRASH_REPORTS_PATH.toString() + "/crash-" + dateFormat.format(date) + ".log");
+        } catch (Throwable t) {
+            // Crash Report not created
+        }
+    }
 
-	private static void addSeparator(StringBuilder sb) {
-		sb.append(
-				// 80 chars
-				"--------------------------------------------------------------------------------").append("\n");
-	}
+    private static void createFileForCrashReport(String buffer, String filename) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename), StandardCharsets.UTF_8)) {
+            writer.write(buffer);
+        } catch (IOException ex) {
+            // Crash Report not created
+        }
+    }
+
+    public static void registerProvider(ContextProvider provider) {
+        PROVIDERS.add(provider);
+    }
+
+    public static void registerAnalyzer(Analyzer analyzer) {
+        ANALYZERS.add(analyzer);
+    }
+
+    private static void addSeparator(StringBuilder sb) {
+        sb.append(
+                // 80 chars
+                "--------------------------------------------------------------------------------").append("\n");
+    }
 }
