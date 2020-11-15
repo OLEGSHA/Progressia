@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.IntFunction;
 
 public class StringUtil {
@@ -773,6 +774,37 @@ public class StringUtil {
 	public static char hexDigit(int value) {
 		if (value < 0xA) return (char) ('0' + value);
 		else             return (char) ('A' - 0xA + value);
+	}
+	
+	public static String replaceAll(String source, String substring, String replacement) {
+		Objects.requireNonNull(source, "source");
+		Objects.requireNonNull(substring, "substring");
+		
+		if (substring.isEmpty()) {
+			throw new IllegalArgumentException("substring is empty");
+		}
+
+		if (!source.contains(substring)) { // also passes if source is empty
+			return source;
+		}
+		
+		if (substring.equals(replacement)) { // null-safe
+			return source;
+		}
+		
+		StringBuilder sb = new StringBuilder(2 * source.length());
+		
+		for (int i = 0; i < source.length() - substring.length() + 1; ++i) {
+			if (source.startsWith(substring, i)) {
+				if (replacement != null) {
+					sb.append(replacement);
+				}
+			} else {
+				sb.append(source.charAt(i));
+			}
+		}
+		
+		return sb.toString();
 	}
 	
 }
