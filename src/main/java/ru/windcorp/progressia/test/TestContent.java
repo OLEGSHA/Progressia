@@ -87,10 +87,6 @@ public class TestContent {
 	}
 
 	private static void registerEntities() {
-//		registerEntityData("Test", "Javapony", e -> e.setCollisionModel(new AABB(0, 0, -0.05f, 0.75f, 0.75f, 1.2f)));
-//		register(new TestEntityRenderJavapony());
-//		register(new EntityLogic("Test", "Javapony"));
-		
 		float scale = 1.8f / 8;
 		registerEntityData("Test", "Player", e -> e.setCollisionModel(new AABB(0, 0, 4*scale, 0.75f, 0.75f, 1.8f)));
 		register(new TestEntityRenderHuman());
@@ -121,6 +117,26 @@ public class TestContent {
 				server.getAdHocChanger().setBlock(z000, block);
 			}
 		});
+		
+//		ControlDataRegistry.getInstance().register(new ControlData("Test", "BreakBlock"));
+//		ControlTriggerRegistry.getInstance().register(new ControlTriggerOnKeyPress("Test", "BreakBlock", new KeyMatcher(GLFW.GLFW_KEY_ENTER, new int[0], 0)::matches));
+//		ControlLogicRegistry.getInstance().register(new ControlLogic("Test", "BreakBlock") {
+//			@Override
+//			public void apply(Server server, PacketControl packet, Client client) {
+//				Vec3i z000 = new Vec3i(0, 0, 0);
+//				
+//				ChunkData data = server.getWorld().getChunk(z000).getData();
+//				
+//				BlockData block;
+//				if (data.getBlock(z000).getId().equals("Test:Stone")) {
+//					block = BlockDataRegistry.getInstance().get("Test:Glass");
+//				} else {
+//					block =  BlockDataRegistry.getInstance().get("Test:Stone");
+//				}
+//				
+//				server.getAdHocChanger().setBlock(z000, block);
+//			}
+//		});
 	}
 	
 	private static void register(BlockData x) {

@@ -13,6 +13,7 @@ import ru.windcorp.progressia.client.graphics.input.CursorMoveEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
+import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.FloatMathUtils;
 import ru.windcorp.progressia.common.util.Matrices;
@@ -65,7 +66,7 @@ public class TestPlayerControls {
 			return;
 		}
 		
-		EntityData player = getPlayer();
+		EntityData player = getEntity();
 		Mat3 angMat = Matrices.grab3();
 		
 		angMat.identity().rotateZ(player.getYaw());
@@ -185,7 +186,7 @@ public class TestPlayerControls {
 	}
 
 	private void jump() {
-		getPlayer().getVelocity().add(0, 0, JUMP_VELOCITY * (useMinecraftGravity ? 2 : 1));
+		getEntity().getVelocity().add(0, 0, JUMP_VELOCITY * (useMinecraftGravity ? 2 : 1));
 	}
 
 	private void handleShift(int multiplier) {
@@ -223,7 +224,7 @@ public class TestPlayerControls {
 		final float yawScale = -0.002f;
 		final float pitchScale = yawScale;
 
-		EntityData player = getPlayer();
+		EntityData player = getEntity();
 		
 		normalizeAngles(player.getDirection().add(
 				(float) (event.getChangeX() * yawScale),
@@ -241,7 +242,11 @@ public class TestPlayerControls {
 		);
 	}
 	
-	private EntityData getPlayer() {
+	private EntityData getEntity() {
+		return getPlayer().getEntity();
+	}
+	
+	private LocalPlayer getPlayer() {
 		return ClientState.getInstance().getLocalPlayer();
 	}
 	

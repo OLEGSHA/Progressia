@@ -133,14 +133,6 @@ public class ChunkData {
 		}
 		
 		if (!getPosition().any()) {
-//			EntityData javapony = EntityDataRegistry.getInstance().create("Test:Javapony");
-//			javapony.setEntityId(0x42);
-//			javapony.setPosition(new Vec3(-6, -6, 20));
-//			javapony.setDirection(new Vec2(
-//					(float) Math.toRadians(40), (float) Math.toRadians(45)
-//			));
-//			getEntities().add(javapony);
-			
 			EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
 			player.setEntityId(0x42);
 			player.setPosition(new Vec3(-6, -6, 20));

@@ -20,6 +20,7 @@ package ru.windcorp.progressia.client.graphics.world;
 import java.util.ArrayList;
 import java.util.List;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.comms.controls.InputBasedControls;
@@ -65,6 +66,10 @@ public class LayerWorld extends Layer {
 		if (camera.hasAnchor()) {
 			renderWorld();
 		}
+		
+		if (client.getLocalPlayer() != null) {
+			client.getLocalPlayer().update(client.getWorld());
+		}
 	}
 
 	private void renderWorld() {
@@ -89,6 +94,7 @@ public class LayerWorld extends Layer {
 		
 		try {
 			tmp_performCollisions(tickLength);
+			tmp_drawSelectionBox();
 			
 			tmp_testControls.applyPlayerControls();
 			
@@ -122,13 +128,25 @@ public class LayerWorld extends Layer {
 		);
 	}
 
+	private void tmp_drawSelectionBox() {
+		LocalPlayer player = client.getLocalPlayer();
+		if (player == null) return;
+		
+		Vec3i lookingAt = player.getLookingAt();
+		if (lookingAt == null) return;
+		
+		helper.pushTransform().translate(lookingAt.x, lookingAt.y, lookingAt.z).scale(1.1f);
+		CollisionModelRenderer.renderCollisionModel(client.getWorld().getData().getCollisionModelOfBlock(lookingAt), helper);
+		helper.popTransform();
+	}
+
 	private void tmp_applyFriction(EntityData entity) {
 		final float frictionCoeff = 1 - 1e-5f;
 		entity.getVelocity().mul(frictionCoeff);
 	}
 	
 	private void tmp_applyGravity(EntityData entity, float tickLength) {
-		if (ClientState.getInstance().getLocalPlayer() == entity && tmp_testControls.isFlying()) {
+		if (ClientState.getInstance().getLocalPlayer().getEntity() == entity && tmp_testControls.isFlying()) {
 			return;
 		}
 		

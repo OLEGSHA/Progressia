@@ -53,7 +53,7 @@ public class CollisionModelRenderer {
 	}
 	
 	public static void renderBlock(Vec3i coords, ShapeRenderHelper helper) {
-		helper.pushTransform().translate(coords.x, coords.y, coords.z);
+		helper.pushTransform().translate(coords.x, coords.y, coords.z).scale(0.25f);
 		CUBE_GRAY.render(helper);
 		helper.popTransform();
 	}
