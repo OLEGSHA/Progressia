@@ -6,7 +6,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.util.namespaces.NamespacedRegistry;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
 /**
  * Registry-like object for identification of various {@link StatefulObject}
@@ -45,8 +45,8 @@ public class StatefulObjectRegistry<T extends StatefulObject> {
 		
 	}
 	
-	private final NamespacedRegistry<Type<T>> registry =
-			new NamespacedRegistry<Type<T>>() {
+	private final NamespacedInstanceRegistry<Type<T>> registry =
+			new NamespacedInstanceRegistry<Type<T>>() {
 				@Override
 				public void register(Type<T> element) {
 					super.register(element);

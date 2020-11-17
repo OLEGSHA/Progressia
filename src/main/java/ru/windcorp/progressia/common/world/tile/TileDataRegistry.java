@@ -17,9 +17,9 @@
  *******************************************************************************/
 package ru.windcorp.progressia.common.world.tile;
 
-import ru.windcorp.progressia.common.util.namespaces.NamespacedRegistry;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
-public class TileDataRegistry extends NamespacedRegistry<TileData> {
+public class TileDataRegistry extends NamespacedInstanceRegistry<TileData> {
 	
 	private static final TileDataRegistry INSTANCE = new TileDataRegistry();
 	

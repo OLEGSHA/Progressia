@@ -1,8 +1,8 @@
 package ru.windcorp.progressia.server.world.entity;
 
-import ru.windcorp.progressia.common.util.namespaces.NamespacedRegistry;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
-public class EntityLogicRegistry extends NamespacedRegistry<EntityLogic> {
+public class EntityLogicRegistry extends NamespacedInstanceRegistry<EntityLogic> {
 	
 	private static final EntityLogicRegistry INSTANCE =
 			new EntityLogicRegistry();

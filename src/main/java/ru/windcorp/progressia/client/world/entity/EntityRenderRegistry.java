@@ -6,9 +6,9 @@ import ru.windcorp.progressia.client.graphics.texture.TextureLoader;
 import ru.windcorp.progressia.client.graphics.texture.TexturePrimitive;
 import ru.windcorp.progressia.client.graphics.texture.TextureSettings;
 import ru.windcorp.progressia.common.resource.ResourceManager;
-import ru.windcorp.progressia.common.util.namespaces.NamespacedRegistry;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
-public class EntityRenderRegistry extends NamespacedRegistry<EntityRender> {
+public class EntityRenderRegistry extends NamespacedInstanceRegistry<EntityRender> {
 	
 	private static final EntityRenderRegistry INSTANCE =
 			new EntityRenderRegistry();

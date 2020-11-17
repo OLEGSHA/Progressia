@@ -7,17 +7,20 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.errorprone.annotations.DoNotCall;
 
-public class NamespacedRegistry<E extends Namespaced>
+public class NamespacedInstanceRegistry<E extends Namespaced>
 implements Map<String, E> {
 	
 	private final Map<String, E> backingMap =
 			Collections.synchronizedMap(new HashMap<>());
 	
+	private final Logger logger = LogManager.getLogger(getClass());
+	
 	public void register(E element) {
-		LogManager.getLogger(getClass()).debug("Registering " + element.getId());
+		logger.debug("Registering {} in {}", element.getId(), getClass().getSimpleName());
 		backingMap.put(element.getId(), element);
 	}
 	
@@ -67,7 +70,7 @@ implements Map<String, E> {
 	@DoNotCall @Deprecated
 	public E put(String key, E value) {
 		throw new UnsupportedOperationException(
-				"Use NamespacedRegistry.register(E)"
+				"Use NamespacedInstanceRegistry.register(E)"
 		);
 	}
 
@@ -83,7 +86,7 @@ implements Map<String, E> {
 	@DoNotCall @Deprecated
 	public void putAll(Map<? extends String, ? extends E> m) {
 		throw new UnsupportedOperationException(
-				"Use NamespacedRegistry.registerAll(Collection<? extends E>)"
+				"Use NamespacedInstanceRegistry.registerAll(Collection<? extends E>)"
 		);
 	}
 
