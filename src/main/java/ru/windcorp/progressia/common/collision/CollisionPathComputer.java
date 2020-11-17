@@ -10,6 +10,8 @@ import static java.lang.Math.*;
 
 public class CollisionPathComputer {
 	
+	private static final float PADDING = 0.5f;
+	
 	public static void forEveryBlockInCollisionPath(
 			Collideable coll,
 			float maxTime,
@@ -52,18 +54,18 @@ public class CollisionPathComputer {
 		Vec3i pos = Vectors.grab3i();
 		
 		for (
-				pos.x =  (int) floor(origin.x + min(0, size.x) + min(0, displacement.x));
-				pos.x <= (int)  ceil(origin.x + max(0, size.x) + max(0, displacement.x));
+				pos.x =  (int) floor(origin.x + min(0, size.x) + min(0, displacement.x) - PADDING);
+				pos.x <= (int)  ceil(origin.x + max(0, size.x) + max(0, displacement.x) + PADDING);
 				pos.x += 1
 		) {
 			for (
-					pos.y =  (int) floor(origin.y + min(0, size.y) + min(0, displacement.y));
-					pos.y <= (int)  ceil(origin.y + max(0, size.y) + max(0, displacement.y));
+					pos.y =  (int) floor(origin.y + min(0, size.y) + min(0, displacement.y) - PADDING);
+					pos.y <= (int)  ceil(origin.y + max(0, size.y) + max(0, displacement.y) + PADDING);
 					pos.y += 1
 			) {
 				for (
-						pos.z =  (int) floor(origin.z + min(0, size.z) + min(0, displacement.z));
-						pos.z <= (int)  ceil(origin.z + max(0, size.z) + max(0, displacement.z));
+						pos.z =  (int) floor(origin.z + min(0, size.z) + min(0, displacement.z) - PADDING);
+						pos.z <= (int)  ceil(origin.z + max(0, size.z) + max(0, displacement.z) + PADDING);
 						pos.z += 1
 				) {
 					action.accept(pos);

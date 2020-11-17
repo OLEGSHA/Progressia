@@ -8,8 +8,11 @@ import java.util.function.Consumer;
 import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.comms.controls.*;
+import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
+import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.entity.*;
 import ru.windcorp.progressia.client.world.tile.*;
@@ -21,8 +24,6 @@ import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
 import ru.windcorp.progressia.common.world.tile.*;
-import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.comms.Client;
 import ru.windcorp.progressia.server.comms.controls.*;
 import ru.windcorp.progressia.server.world.block.*;
 import ru.windcorp.progressia.server.world.entity.*;
@@ -88,7 +89,7 @@ public class TestContent {
 
 	private static void registerEntities() {
 		float scale = 1.8f / 8;
-		registerEntityData("Test:Player", e -> e.setCollisionModel(new AABB(0, 0, 4*scale, 0.75f, 0.75f, 1.8f)));
+		registerEntityData("Test:Player", e -> e.setCollisionModel(new AABB(0, 0, 4*scale, 0.8f, 0.8f, 1.8f)));
 		register(new TestEntityRenderHuman("Test:Player"));
 		register(new EntityLogic("Test:Player"));
 		
@@ -98,25 +99,43 @@ public class TestContent {
 	}
 
 	private static void regsiterControls() {
-		ControlDataRegistry.getInstance().register(new ControlData("Test:Switch000"));
-		ControlTriggerRegistry.getInstance().register(new ControlTriggerOnKeyPress("Test:Switch000", new KeyMatcher(GLFW.GLFW_KEY_H, new int[0], 0)::matches));
-		ControlLogicRegistry.getInstance().register(new ControlLogic("Test:Switch000") {
-			@Override
-			public void apply(Server server, PacketControl packet, Client client) {
-				Vec3i z000 = new Vec3i(0, 0, 0);
-				
-				ChunkData data = server.getWorld().getChunk(z000).getData();
-				
-				BlockData block;
-				if (data.getBlock(z000).getId().equals("Test:Stone")) {
-					block = BlockDataRegistry.getInstance().get("Test:Glass");
-				} else {
-					block = BlockDataRegistry.getInstance().get("Test:Stone");
-				}
-				
-				server.getAdHocChanger().setBlock(z000, block);
+		ControlDataRegistry data = ControlDataRegistry.getInstance();
+		ControlTriggerRegistry triggers = ControlTriggerRegistry.getInstance();
+		ControlLogicRegistry logic = ControlLogicRegistry.getInstance();
+		
+		data.register("Test:Switch000", ControlData::new);
+		triggers.register(ControlTriggers.of(
+				"Test:Switch000",
+				KeyEvent.class,
+				KeyMatcher.of(GLFW.GLFW_KEY_H).matcher()
+		));
+		logic.register(ControlLogic.of("Test:Switch000", (server, packet, client) -> {
+			Vec3i z000 = new Vec3i(0, 0, 0);
+			
+			ChunkData chunk = server.getWorld().getChunk(z000).getData();
+			
+			BlockData block;
+			if (chunk.getBlock(z000).getId().equals("Test:Stone")) {
+				block = BlockDataRegistry.getInstance().get("Test:Glass");
+			} else {
+				block = BlockDataRegistry.getInstance().get("Test:Stone");
 			}
-		});
+			
+			server.getAdHocChanger().setBlock(z000, block);
+		}));
+		
+		data.register("Test:BreakBlock", ControlBreakBlockData::new);
+		triggers.register(ControlTriggers.of(
+				"Test:BreakBlock",
+				KeyEvent.class,
+				TestContent::onBlockBreakTrigger,
+				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_LEFT).matcher(),
+				i -> getLookingAt() != null
+		));
+		logic.register(ControlLogic.of("Test:BreakBlock", (server, packet, client) -> {
+			Vec3i blockInWorld = ((ControlBreakBlockData) packet.getControl()).getBlockInWorld();
+			server.getAdHocChanger().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
+		}));
 	}
 	
 	private static void register(BlockData x) {
@@ -170,6 +189,20 @@ public class TestContent {
 	
 	private static void register(EntityLogic x) {
 		EntityLogicRegistry.getInstance().register(x);
+	}
+	
+	private static Vec3i getLookingAt() {
+		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
+		if (client == null) return null;
+		
+		LocalPlayer player = client.getLocalPlayer();
+		if (player == null) return null;
+		
+		return player.getLookingAt();
+	}
+	
+	private static void onBlockBreakTrigger(ControlData control) {
+		((ControlBreakBlockData) control).setBlockInWorld(getLookingAt());
 	}
 
 }

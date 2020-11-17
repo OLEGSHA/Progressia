@@ -17,46 +17,24 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client.graphics.input;
 
-import gnu.trove.set.TIntSet;
-import ru.windcorp.progressia.client.graphics.backend.InputTracker;
+import java.util.function.Predicate;
+
+import org.lwjgl.glfw.GLFW;
 
 public class KeyMatcher {
-	
+
 	private final int key;
-	private final int[] additionalKeys;
 	private final int mods;
 	
-	public KeyMatcher(int key, int[] additionalKeys, int mods) {
+	protected KeyMatcher(int key, int mods) {
 		this.key = key;
-		this.additionalKeys = additionalKeys;
 		this.mods = mods;
-	}
-	
-	public KeyMatcher(KeyEvent template, int... additionalKeys) {
-		this(template.getKey(), additionalKeys, template.getMods());
-	}
-	
-	public static KeyMatcher createKeyMatcher(KeyEvent template) {
-		return new KeyMatcher(
-				template,
-				InputTracker.getPressedKeys().toArray()
-		);
 	}
 
 	public boolean matches(KeyEvent event) {
 		if (!event.isPress()) return false;
 		if (event.getKey() != getKey()) return false;
-		if (event.getMods() != getMods()) return false;
-		
-		TIntSet pressedKeys = InputTracker.getPressedKeys();
-		
-		if (pressedKeys.size() != additionalKeys.length) return false;
-		
-		for (int additionalKey : additionalKeys) {
-			if (!pressedKeys.contains(additionalKey)) {
-				return false;
-			}
-		}
+		if ((event.getMods() & getMods()) != getMods()) return false;
 		
 		return true;
 	}
@@ -65,12 +43,52 @@ public class KeyMatcher {
 		return key;
 	}
 	
-	public int[] getAdditionalKeys() {
-		return additionalKeys;
-	}
-	
 	public int getMods() {
 		return mods;
+	}
+	
+	public static KeyMatcher.Builder of(int key) {
+		return new KeyMatcher.Builder(key);
+	}
+	
+	public static class Builder {
+		
+		private final int key;
+		private int mods = 0;
+		
+		public Builder(int key) {
+			this.key = key;
+		}
+		
+		public Builder with(int modifier) {
+			this.mods += modifier;
+			return this;
+		}
+		
+		public Builder withShift() {
+			return with(GLFW.GLFW_MOD_SHIFT);
+		}
+		
+		public Builder withCtrl() {
+			return with(GLFW.GLFW_MOD_CONTROL);
+		}
+		
+		public Builder withAlt() {
+			return with(GLFW.GLFW_MOD_ALT);
+		}
+		
+		public Builder withSuper() {
+			return with(GLFW.GLFW_MOD_SUPER);
+		}
+		
+		public KeyMatcher build() {
+			return new KeyMatcher(key, mods);
+		}
+		
+		public Predicate<KeyEvent> matcher() {
+			return build()::matches;
+		}
+		
 	}
 
 }
