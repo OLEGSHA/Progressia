@@ -9,6 +9,7 @@ import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.Shapes.PppBuilder;
 import ru.windcorp.progressia.client.graphics.model.StaticModel;
 import ru.windcorp.progressia.client.graphics.texture.ComplexTexture;
+import ru.windcorp.progressia.client.graphics.texture.TexturePrimitive;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.entity.HumanoidModel;
 import ru.windcorp.progressia.client.world.entity.EntityRender;
@@ -29,12 +30,16 @@ public class TestEntityRenderHuman extends EntityRender {
 	private final Renderable rightArm;
 	private final Renderable leftLeg;
 	private final Renderable rightLeg;
+	
+	private final TexturePrimitive skin;
 
-	public TestEntityRenderHuman() {
-		super("Test", "Player");
+	public TestEntityRenderHuman(String id) {
+		super(id);
+		
+		this.skin = fetchSkin();
 		
 		ComplexTexture texture = new ComplexTexture(
-				EntityRenderRegistry.getEntityTexture("pyotr"),
+				this.skin,
 				16, 16
 		);
 		
@@ -45,6 +50,14 @@ public class TestEntityRenderHuman extends EntityRender {
 		this.rightArm = createLimb(texture, 10, 8, 10, 4, true,  false);
 		this.leftLeg  = createLimb(texture,  4, 0,  0, 0, false, true);
 		this.rightLeg = createLimb(texture,  0, 8,  0, 4, false, false);
+	}
+	
+	protected TexturePrimitive fetchSkin() {
+		return EntityRenderRegistry.getEntityTexture("pyotr");
+	}
+	
+	public TexturePrimitive getSkin() {
+		return skin;
 	}
 
 	private Renderable createBody(ComplexTexture texture) {

@@ -7,8 +7,8 @@ import ru.windcorp.progressia.server.world.entity.EntityLogic;
 
 public class TestEntityLogicStatie extends EntityLogic {
 	
-	public TestEntityLogicStatie() {
-		super("Test", "Statie");
+	public TestEntityLogicStatie(String id) {
+		super(id);
 	}
 	
 	@Override

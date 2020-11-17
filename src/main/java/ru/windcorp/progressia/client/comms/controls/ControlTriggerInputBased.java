@@ -5,8 +5,8 @@ import ru.windcorp.progressia.common.comms.controls.PacketControl;
 
 public abstract class ControlTriggerInputBased extends ControlTrigger {
 
-	public ControlTriggerInputBased(String namespace, String name) {
-		super(namespace, name);
+	public ControlTriggerInputBased(String id) {
+		super(id);
 	}
 	
 	public abstract PacketControl onInputEvent(InputEvent event);

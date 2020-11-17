@@ -1,11 +1,11 @@
 package ru.windcorp.progressia.common.comms.packets;
 
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 public class Packet extends Namespaced {
 
-	public Packet(String namespace, String name) {
-		super(namespace, name);
+	public Packet(String id) {
+		super(id);
 	}
 	
 }

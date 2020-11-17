@@ -1,6 +1,6 @@
 package ru.windcorp.progressia.server.world.block;
 
-import ru.windcorp.progressia.common.util.NamespacedRegistry;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedRegistry;
 
 public class BlockLogicRegistry extends NamespacedRegistry<BlockLogic> {
 	

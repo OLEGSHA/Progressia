@@ -35,7 +35,11 @@ public class ImplementedChangeTracker implements Changer {
 		private BlockData block;
 		
 		public SetBlock() {
-			super("Core", "SetBlock");
+			this("Core:SetBlock");
+		}
+		
+		protected SetBlock(String id) {
+			super(id);
 		}
 		
 		public void initialize(Vec3i position, BlockData block) {
@@ -76,7 +80,11 @@ public class ImplementedChangeTracker implements Changer {
 		private boolean shouldAdd;
 		
 		public AddOrRemoveTile() {
-			super("Core", "AddOrRemoveTile");
+			this("Core:AddOrRemoveTile");
+		}
+		
+		protected AddOrRemoveTile(String id) {
+			super(id);
 		}
 		
 		public void initialize(

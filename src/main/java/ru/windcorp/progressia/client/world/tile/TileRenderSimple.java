@@ -16,8 +16,8 @@ public class TileRenderSimple extends TileRender implements OpaqueTile {
 	
 	private final Texture texture;
 	
-	public TileRenderSimple(String namespace, String name, Texture texture) {
-		super(namespace, name);
+	public TileRenderSimple(String id, Texture texture) {
+		super(id);
 		this.texture = texture;
 	}
 

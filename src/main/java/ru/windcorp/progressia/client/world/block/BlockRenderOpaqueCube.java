@@ -23,25 +23,22 @@ import ru.windcorp.progressia.common.world.block.BlockFace;
 public class BlockRenderOpaqueCube extends BlockRenderTexturedCube {
 
 	public BlockRenderOpaqueCube(
-			String namespace, String name,
+			String id,
 			Texture topTexture, Texture bottomTexture,
 			Texture northTexture, Texture southTexture,
 			Texture eastTexture, Texture westTexture
 	) {
 		super(
-				namespace, name,
+				id,
 				topTexture, bottomTexture,
 				northTexture, southTexture,
 				eastTexture, westTexture
 		);
 	}
 	
-	public BlockRenderOpaqueCube(
-			String namespace, String name,
-			Texture texture
-	) {
+	public BlockRenderOpaqueCube(String id, Texture texture) {
 		this(
-				namespace, name,
+				id,
 				texture, texture,
 				texture, texture,
 				texture, texture

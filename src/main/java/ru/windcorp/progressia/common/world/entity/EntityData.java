@@ -20,8 +20,8 @@ public class EntityData extends StatefulObject implements Collideable {
 	
 	private double age = 0;
 
-	public EntityData(String namespace, String name) {
-		super(EntityDataRegistry.getInstance(), namespace, name);
+	public EntityData(String id) {
+		super(EntityDataRegistry.getInstance(), id);
 	}
 	
 	public Vec3 getPosition() {

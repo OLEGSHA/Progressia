@@ -6,8 +6,8 @@ public class PacketControl extends Packet {
 	
 	private final ControlData control;
 
-	public PacketControl(String namespace, String name, ControlData control) {
-		super(namespace, name);
+	public PacketControl(String id, ControlData control) {
+		super(id);
 		this.control = control;
 	}
 	

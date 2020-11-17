@@ -35,7 +35,7 @@ extends AbstractStatefulObjectLayout {
 	}
 
 	@Override
-	public StateFieldBuilder getBuilder(String namespace, String name) {
+	public StateFieldBuilder getBuilder(String id) {
 		return new RetrieverStateFieldBuilder();
 	}
 	

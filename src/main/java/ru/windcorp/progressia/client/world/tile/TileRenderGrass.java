@@ -18,10 +18,10 @@ public class TileRenderGrass extends TileRender implements OpaqueTile {
 	private final Texture sideTexture;
 	
 	public TileRenderGrass(
-			String namespace, String name,
+			String id,
 			Texture top, Texture side
 	) {
-		super(namespace, name);
+		super(id);
 		this.topTexture = top;
 		this.sideTexture = side;
 	}

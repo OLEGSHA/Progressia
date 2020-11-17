@@ -4,7 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 public abstract class StateField extends Namespaced {
 	
@@ -12,11 +12,11 @@ public abstract class StateField extends Namespaced {
 	private final int index;
 
 	public StateField(
-			String namespace, String name,
+			String id,
 			boolean isLocal,
 			int index
 	) {
-		super(namespace, name);
+		super(id);
 		this.isLocal = isLocal;
 		this.index = index;
 	}

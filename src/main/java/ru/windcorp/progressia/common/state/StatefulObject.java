@@ -5,7 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
 
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 /**
  * An abstract class describing objects that have trackable state,
@@ -44,10 +44,9 @@ public abstract class StatefulObject extends Namespaced {
 
 	public StatefulObject(
 			StatefulObjectRegistry<?> type,
-			String namespace,
-			String name
+			String id
 	) {
-		super(namespace, name);
+		super(id);
 		this.layout = type.getLayout(getId());
 		this.storage = getLayout().createStorage();
 	}
@@ -96,8 +95,8 @@ public abstract class StatefulObject extends Namespaced {
 	 * 
 	 * @return a configured builder
 	 */
-	protected StateFieldBuilder field(String namespace, String name) {
-		StateFieldBuilder builder = getLayout().getBuilder(namespace, name);
+	protected StateFieldBuilder field(String id) {
+		StateFieldBuilder builder = getLayout().getBuilder(id);
 		
 		builder.setOrdinal(fieldOrdinal);
 		fieldOrdinal++;

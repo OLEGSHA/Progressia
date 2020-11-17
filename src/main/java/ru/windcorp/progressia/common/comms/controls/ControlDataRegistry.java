@@ -1,6 +1,6 @@
 package ru.windcorp.progressia.common.comms.controls;
 
-import ru.windcorp.progressia.common.util.NamespacedRegistry;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedRegistry;
 
 public class ControlDataRegistry extends NamespacedRegistry<ControlData> {
 	

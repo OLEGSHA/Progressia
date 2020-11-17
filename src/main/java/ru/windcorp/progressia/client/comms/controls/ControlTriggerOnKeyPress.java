@@ -6,6 +6,7 @@ import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.common.comms.controls.ControlDataRegistry;
 import ru.windcorp.progressia.common.comms.controls.PacketControl;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedUtil;
 
 public class ControlTriggerOnKeyPress extends ControlTriggerInputBased {
 	
@@ -13,13 +14,13 @@ public class ControlTriggerOnKeyPress extends ControlTriggerInputBased {
 	private final PacketControl packet;
 
 	public ControlTriggerOnKeyPress(
-			String namespace, String name,
+			String id,
 			Predicate<KeyEvent> predicate
 	) {
-		super(namespace, name);
+		super(id);
 		this.predicate = predicate;
 		this.packet = new PacketControl(
-				getNamespace(), "ControlKeyPress" + getName(),
+				NamespacedUtil.getId(getNamespace(), "ControlKeyPress" + getName()),
 				ControlDataRegistry.getInstance().get(getId())
 		);
 	}

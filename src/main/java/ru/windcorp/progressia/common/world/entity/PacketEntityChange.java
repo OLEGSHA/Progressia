@@ -15,7 +15,11 @@ public class PacketEntityChange extends PacketWorldChange {
 	private final DataBuffer buffer = new DataBuffer();
 
 	public PacketEntityChange() {
-		super("Core", "EntityChange");
+		super("Core:EntityChange");
+	}
+	
+	protected PacketEntityChange(String id) {
+		super(id);
 	}
 	
 	public long getEntityId() {

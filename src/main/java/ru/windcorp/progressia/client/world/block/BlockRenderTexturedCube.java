@@ -36,12 +36,12 @@ implements OpaqueCube {
 	private final Map<BlockFace, Texture> textures = new HashMap<>();
 
 	public BlockRenderTexturedCube(
-			String namespace, String name,
+			String id,
 			Texture topTexture, Texture bottomTexture,
 			Texture northTexture, Texture southTexture,
 			Texture eastTexture, Texture westTexture
 	) {
-		super(namespace, name);
+		super(id);
 		
 		textures.put(TOP,    topTexture);
 		textures.put(BOTTOM, bottomTexture);

@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import ru.windcorp.progressia.common.util.Namespaced;
-import ru.windcorp.progressia.common.util.NamespacedRegistry;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedRegistry;
 
 /**
  * Registry-like object for identification of various {@link StatefulObject}
@@ -30,8 +30,8 @@ public class StatefulObjectRegistry<T extends StatefulObject> {
 		
 		private final AtomicBoolean isRegistered = new AtomicBoolean(false);
 		
-		public Type(String namespace, String name, Factory<T> factory) {
-			super(namespace, name);
+		public Type(String id, Factory<T> factory) {
+			super(id);
 			this.factory = factory;
 		}
 
@@ -91,8 +91,8 @@ public class StatefulObjectRegistry<T extends StatefulObject> {
 		return registry.get(id).build();
 	}
 	
-	public void register(String namespace, String name, Factory<T> factory) {
-		registry.register(new Type<>(namespace, name, factory));
+	public void register(String id, Factory<T> factory) {
+		registry.register(new Type<>(id, factory));
 	}
 
 }

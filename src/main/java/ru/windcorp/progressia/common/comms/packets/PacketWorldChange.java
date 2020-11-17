@@ -4,8 +4,8 @@ import ru.windcorp.progressia.common.world.WorldData;
 
 public abstract class PacketWorldChange extends Packet {
 
-	public PacketWorldChange(String namespace, String name) {
-		super(namespace, name);
+	public PacketWorldChange(String id) {
+		super(id);
 	}
 	
 	public abstract void apply(WorldData world);

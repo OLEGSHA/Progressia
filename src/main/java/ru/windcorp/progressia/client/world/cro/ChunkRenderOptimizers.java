@@ -30,7 +30,7 @@ public class ChunkRenderOptimizers {
 	
 	static {
 		register(ChunkRenderOptimizerSupplier.of(
-				"Default", "OpaqueCube",
+				"Default:OpaqueCube",
 				ChunkRenderOptimizerCube::new
 		));
 	}

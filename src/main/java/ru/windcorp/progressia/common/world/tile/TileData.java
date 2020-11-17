@@ -17,12 +17,12 @@
  *******************************************************************************/
 package ru.windcorp.progressia.common.world.tile;
 
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 public class TileData extends Namespaced {
 
-	public TileData(String namespace, String name) {
-		super(namespace, name);
+	public TileData(String id) {
+		super(id);
 	}
 
 }

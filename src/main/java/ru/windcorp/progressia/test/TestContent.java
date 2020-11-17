@@ -42,65 +42,65 @@ public class TestContent {
 	}
 
 	private static void registerBlocks() {
-		register(new BlockData("Test", "Air") {
+		register(new BlockData("Test:Air") {
 				@Override
 				public CollisionModel getCollisionModel() {
 					return null;
 				}
 		});
-		register(new BlockRenderNone("Test", "Air"));
-		register(new BlockLogic("Test", "Air"));
+		register(new BlockRenderNone("Test:Air"));
+		register(new BlockLogic("Test:Air"));
 
-		register(new BlockData("Test", "Dirt"));
-		register(new BlockRenderOpaqueCube("Test", "Dirt", getBlockTexture("dirt")));
-		register(new BlockLogic("Test", "Dirt"));
+		register(new BlockData("Test:Dirt"));
+		register(new BlockRenderOpaqueCube("Test:Dirt", getBlockTexture("dirt")));
+		register(new BlockLogic("Test:Dirt"));
 
-		register(new BlockData("Test", "Stone"));
-		register(new BlockRenderOpaqueCube("Test", "Stone", getBlockTexture("stone")));
-		register(new BlockLogic("Test", "Stone"));
+		register(new BlockData("Test:Stone"));
+		register(new BlockRenderOpaqueCube("Test:Stone", getBlockTexture("stone")));
+		register(new BlockLogic("Test:Stone"));
 
-		register(new BlockData("Test", "Compass"));
-		register(new BlockRenderOpaqueCube("Test", "Compass", getBlockTexture("compass")));
-		register(new BlockLogic("Test", "Compass"));
+		register(new BlockData("Test:Compass"));
+		register(new BlockRenderOpaqueCube("Test:Compass", getBlockTexture("compass")));
+		register(new BlockLogic("Test:Compass"));
 		
-		register(new BlockData("Test", "Glass"));
-		register(new BlockRenderTransparentCube("Test", "Glass", getBlockTexture("glass_clear")));
-		register(new BlockLogic("Test", "Glass"));
+		register(new BlockData("Test:Glass"));
+		register(new BlockRenderTransparentCube("Test:Glass", getBlockTexture("glass_clear")));
+		register(new BlockLogic("Test:Glass"));
 	}
 
 	private static void registerTiles() {
-		register(new TileData("Test", "Grass"));
-		register(new TileRenderGrass("Test", "Grass", getTileTexture("grass_top"), getTileTexture("grass_side")));
-		register(new TileLogic("Test", "Grass"));
+		register(new TileData("Test:Grass"));
+		register(new TileRenderGrass("Test:Grass", getTileTexture("grass_top"), getTileTexture("grass_side")));
+		register(new TileLogic("Test:Grass"));
 		
-		register(new TileData("Test", "Stones"));
-		register(new TileRenderSimple("Test", "Stones", getTileTexture("stones")));
-		register(new TileLogic("Test", "Stones"));
+		register(new TileData("Test:Stones"));
+		register(new TileRenderSimple("Test:Stones", getTileTexture("stones")));
+		register(new TileLogic("Test:Stones"));
 		
-		register(new TileData("Test", "YellowFlowers"));
-		register(new TileRenderSimple("Test", "YellowFlowers", getTileTexture("yellow_flowers")));
-		register(new TileLogic("Test", "YellowFlowers"));
+		register(new TileData("Test:YellowFlowers"));
+		register(new TileRenderSimple("Test:YellowFlowers", getTileTexture("yellow_flowers")));
+		register(new TileLogic("Test:YellowFlowers"));
 		
-		register(new TileData("Test", "Sand"));
-		register(new TileRenderSimple("Test", "Sand", getTileTexture("sand")));
-		register(new TileLogic("Test", "Sand"));
+		register(new TileData("Test:Sand"));
+		register(new TileRenderSimple("Test:Sand", getTileTexture("sand")));
+		register(new TileLogic("Test:Sand"));
 	}
 
 	private static void registerEntities() {
 		float scale = 1.8f / 8;
-		registerEntityData("Test", "Player", e -> e.setCollisionModel(new AABB(0, 0, 4*scale, 0.75f, 0.75f, 1.8f)));
-		register(new TestEntityRenderHuman());
-		register(new EntityLogic("Test", "Player"));
+		registerEntityData("Test:Player", e -> e.setCollisionModel(new AABB(0, 0, 4*scale, 0.75f, 0.75f, 1.8f)));
+		register(new TestEntityRenderHuman("Test:Player"));
+		register(new EntityLogic("Test:Player"));
 		
-		register("Test", "Statie", TestEntityDataStatie::new);
-		register(new TestEntityRenderStatie());
-		register(new TestEntityLogicStatie());
+		register("Test:Statie", TestEntityDataStatie::new);
+		register(new TestEntityRenderStatie("Test:Statie"));
+		register(new TestEntityLogicStatie("Test:Statie"));
 	}
 
 	private static void regsiterControls() {
-		ControlDataRegistry.getInstance().register(new ControlData("Test", "Switch000"));
-		ControlTriggerRegistry.getInstance().register(new ControlTriggerOnKeyPress("Test", "Switch000", new KeyMatcher(GLFW.GLFW_KEY_H, new int[0], 0)::matches));
-		ControlLogicRegistry.getInstance().register(new ControlLogic("Test", "Switch000") {
+		ControlDataRegistry.getInstance().register(new ControlData("Test:Switch000"));
+		ControlTriggerRegistry.getInstance().register(new ControlTriggerOnKeyPress("Test:Switch000", new KeyMatcher(GLFW.GLFW_KEY_H, new int[0], 0)::matches));
+		ControlLogicRegistry.getInstance().register(new ControlLogic("Test:Switch000") {
 			@Override
 			public void apply(Server server, PacketControl packet, Client client) {
 				Vec3i z000 = new Vec3i(0, 0, 0);
@@ -111,32 +111,12 @@ public class TestContent {
 				if (data.getBlock(z000).getId().equals("Test:Stone")) {
 					block = BlockDataRegistry.getInstance().get("Test:Glass");
 				} else {
-					block =  BlockDataRegistry.getInstance().get("Test:Stone");
+					block = BlockDataRegistry.getInstance().get("Test:Stone");
 				}
 				
 				server.getAdHocChanger().setBlock(z000, block);
 			}
 		});
-		
-//		ControlDataRegistry.getInstance().register(new ControlData("Test", "BreakBlock"));
-//		ControlTriggerRegistry.getInstance().register(new ControlTriggerOnKeyPress("Test", "BreakBlock", new KeyMatcher(GLFW.GLFW_KEY_ENTER, new int[0], 0)::matches));
-//		ControlLogicRegistry.getInstance().register(new ControlLogic("Test", "BreakBlock") {
-//			@Override
-//			public void apply(Server server, PacketControl packet, Client client) {
-//				Vec3i z000 = new Vec3i(0, 0, 0);
-//				
-//				ChunkData data = server.getWorld().getChunk(z000).getData();
-//				
-//				BlockData block;
-//				if (data.getBlock(z000).getId().equals("Test:Stone")) {
-//					block = BlockDataRegistry.getInstance().get("Test:Glass");
-//				} else {
-//					block =  BlockDataRegistry.getInstance().get("Test:Stone");
-//				}
-//				
-//				server.getAdHocChanger().setBlock(z000, block);
-//			}
-//		});
 	}
 	
 	private static void register(BlockData x) {
@@ -148,20 +128,20 @@ public class TestContent {
 	}
 	
 	private static void register(
-			String namespace, String name,
+			String id,
 			Factory<EntityData> factory
 	) {
-		EntityDataRegistry.getInstance().register(namespace, name, factory);
+		EntityDataRegistry.getInstance().register(id, factory);
 	}
 	
 	private static void registerEntityData(
-			String namespace, String name,
+			String id,
 			Consumer<EntityData> transform
 	) {
-		EntityDataRegistry.getInstance().register(namespace, name, new Factory<EntityData>() {
+		EntityDataRegistry.getInstance().register(id, new Factory<EntityData>() {
 			@Override
 			public EntityData build() {
-				EntityData entity = new EntityData(namespace, name);
+				EntityData entity = new EntityData(id);
 				transform.accept(entity);
 				return entity;
 			}

@@ -29,38 +29,40 @@ import java.util.Random;
 import org.junit.Test;
 
 import junit.framework.AssertionFailedError;
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.IllegalIdException;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedUtil;
 
 public class NamespacedTest {
 	
 	class TestNamespaced extends Namespaced {
 
-		public TestNamespaced(String namespace, String name) {
-			super(namespace, name);
+		public TestNamespaced(String id) {
+			super(id);
 		}
 		
 	}
 	
 	void shouldReject(String a, String b) {
 		try {
-			new TestNamespaced(a, b);
-		} catch (IllegalArgumentException | NullPointerException e) {
+			new TestNamespaced(NamespacedUtil.getId(a, b));
+		} catch (IllegalIdException | NullPointerException e) {
 			try {
-				new TestNamespaced(b, a);
-			} catch (IllegalArgumentException | NullPointerException e1) {
+				new TestNamespaced(NamespacedUtil.getId(b, a));
+			} catch (IllegalIdException | NullPointerException e1) {
 				return;
 			}
 		}
 		
-		throw new AssertionFailedError("Expected NPE or IAE for: \"" + a + "\":\"" + b + "\"");
+		throw new AssertionFailedError("Expected NPE or IllegalIdException for: \"" + a + "\":\"" + b + "\"");
 	}
 	
 	@Test
 	public void shouldAllow() {
-		new TestNamespaced("Something", "Usual");
-		new TestNamespaced("Vry", "Sml");
-		new TestNamespaced("ALL", "CAPS");
-		new TestNamespaced("WithDigits12345", "MoreDigits67890");
+		new TestNamespaced("Something:Usual");
+		new TestNamespaced("Vry:Sml");
+		new TestNamespaced("ALL:CAPS");
+		new TestNamespaced("WithDigits12345:MoreDigits67890");
 	}
 	
 	@Test
@@ -80,17 +82,17 @@ public class NamespacedTest {
 		shouldReject("XS", "Normal");
 		shouldReject("", "Normal");
 		shouldReject("Contains:separators", "Normal");
-		shouldReject("СодержитРусский", "Normal");
+		shouldReject("СодержитНеАльфанум", "Normal");
 	}
 	
 	@Test
 	public void shouldRejectGarbage() {
 		Random random = new Random(0);
 
-		byte[] bytes = new byte[1024];
+		byte[] bytes = new byte[NamespacedUtil.MAX_NAME_LENGTH];
 		for (int attempt = 0; attempt < 10000; ++attempt) {
 			random.nextBytes(bytes);
-			bytes[0] = 'a'; // Make sure it is invalid
+			bytes[bytes.length - 1] = '!'; // Make sure it is invalid
 			shouldReject(new String(bytes), "ContainsUtterGarbage");
 		}
 	}
@@ -108,8 +110,8 @@ public class NamespacedTest {
 			String namespace = getRandomValidString(random);
 			String name = getRandomValidString(random);
 			
-			TestNamespaced a = new TestNamespaced(namespace, name);
-			TestNamespaced b = new TestNamespaced(namespace, name);
+			TestNamespaced a = new TestNamespaced(NamespacedUtil.getId(namespace, name));
+			TestNamespaced b = new TestNamespaced(NamespacedUtil.getId(namespace, name));
 			
 			contains.add(a);
 			hashSet.add(b);
@@ -119,7 +121,7 @@ public class NamespacedTest {
 			String namespace = getRandomValidString(random);
 			String name = getRandomValidString(random);
 			
-			TestNamespaced c = new TestNamespaced(namespace, name);
+			TestNamespaced c = new TestNamespaced(NamespacedUtil.getId(namespace, name));
 			
 			doesNotContain.add(c);
 		}
@@ -128,7 +130,7 @@ public class NamespacedTest {
 			Iterator<TestNamespaced> it = doesNotContain.iterator();
 			while (it.hasNext()) {
 				TestNamespaced next = it.next();
-				if (next.getName().equals(x.getName()) && next.getNamespace().equals(x.getNamespace())) {
+				if (next.getId().equals(x.getId())) {
 					it.remove();
 				}
 			}
@@ -144,7 +146,7 @@ public class NamespacedTest {
 	}
 	
 	String getRandomValidString(Random random) {
-		char[] chars = new char[random.nextInt(100) + 3];
+		char[] chars = new char[random.nextInt(NamespacedUtil.MAX_NAME_LENGTH - 3) + 3];
 		
 		for (int i = 0; i < chars.length; ++i) {
 			switch (random.nextInt(3)) {

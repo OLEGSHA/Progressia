@@ -18,13 +18,13 @@
 package ru.windcorp.progressia.client.world.block;
 
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
-import ru.windcorp.progressia.common.util.Namespaced;
 
 public abstract class BlockRender extends Namespaced {
 	
-	public BlockRender(String namespace, String name) {
-		super(namespace, name);
+	public BlockRender(String id) {
+		super(id);
 	}
 
 	public void render(ShapeRenderHelper renderer) {

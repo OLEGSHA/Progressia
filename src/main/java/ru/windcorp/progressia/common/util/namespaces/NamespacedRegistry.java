@@ -1,4 +1,4 @@
-package ru.windcorp.progressia.common.util;
+package ru.windcorp.progressia.common.util.namespaces;
 
 import java.util.Collection;
 import java.util.Collections;
