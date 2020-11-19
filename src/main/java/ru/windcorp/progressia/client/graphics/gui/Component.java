@@ -235,7 +235,7 @@ public class Component extends Named {
 
 			valid = true;
 		} catch (Exception e) {
-			CrashReports.report(e, "__DOC__ME__");
+			CrashReports.report(e, "Could not layout Component %s", this);
 		}
 	}
 
@@ -248,7 +248,7 @@ public class Component extends Named {
 			try {
 				return getLayout().calculatePreferredSize(this);
 			} catch (Exception e) {
-				CrashReports.report(e, "__DOC__ME__");
+				CrashReports.report(e, "Could not calculate preferred size for Component %s", this);
 			}
 		}
 
@@ -517,7 +517,7 @@ public class Component extends Named {
 					break;
 			}
 		} catch (Exception e) {
-			CrashReports.report(e, "__DOC__ME__");
+			CrashReports.report(e, "Could not dispatch input to Component %s", this);
 		}
 	}
 
@@ -609,7 +609,7 @@ public class Component extends Named {
 		try {
 			assembleSelf(target);
 		} catch (Exception e) {
-			CrashReports.report(e, "__DOC__ME__");
+			CrashReports.report(e, "Could not assemble Component %s", this);
 		}
 
 		assembleChildren(target);
@@ -617,7 +617,7 @@ public class Component extends Named {
 		try {
 			postAssembleSelf(target);
 		} catch (Exception e) {
-			CrashReports.report(e, "__DOC__ME__");
+			CrashReports.report(e, "Post-assembly failed for Component %s", this);
 		}
 	}
 

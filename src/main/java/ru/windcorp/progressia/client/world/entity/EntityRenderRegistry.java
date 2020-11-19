@@ -29,7 +29,7 @@ public class EntityRenderRegistry extends NamespacedRegistry<EntityRender> {
 					).getData()
 			);
 		} catch (IOException e) {
-			CrashReports.report(e, "__DOC__ME__");
+			CrashReports.report(e, "Could not load entity texture %s", name);
 			return null;
 		}
 	}

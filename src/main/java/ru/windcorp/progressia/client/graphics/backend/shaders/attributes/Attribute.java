@@ -27,7 +27,7 @@ public class Attribute {
 
 	public Attribute(int handle, Program program) {
 		if (handle < 0) {
-			CrashReports.report(null, "Bad handle: %s", handle);
+			CrashReports.report(null, "Bad handle: %d", handle);
 		}
 
 		this.handle = handle;

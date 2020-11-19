@@ -40,7 +40,7 @@ public class Program implements OpenGLDeletable {
 		glLinkProgram(handle);
 
 		if (glGetProgrami(handle, GL_LINK_STATUS) == GL_FALSE) {
-			CrashReports.report(null, "Bad program:\n %s", glGetProgramInfoLog(handle));
+			CrashReports.report(null, "Bad program:\n%s", glGetProgramInfoLog(handle));
 		}
 	}
 

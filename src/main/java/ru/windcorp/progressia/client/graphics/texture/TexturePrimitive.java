@@ -90,7 +90,7 @@ public class TexturePrimitive implements OpenGLDeletable {
 		OpenGLObjectTracker.register(this);
 
 		if (handle < 0) {
-			CrashReports.report(null, "Failed to create texture");
+			CrashReports.report(null, "Failed to allocate texture");
 		}
 	}
 

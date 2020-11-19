@@ -134,7 +134,7 @@ public class ImplementedChangeTracker implements Changer {
 			try {
 				entity.write(packet.getWriter(), IOContext.COMMS);
 			} catch (IOException e) {
-				CrashReports.report(e, "__DOC__ME__");
+				CrashReports.report(e, "Could not write entity %s", entity);
 			}
 		}
 
@@ -146,7 +146,7 @@ public class ImplementedChangeTracker implements Changer {
 			try {
 				entity.write(packet.getWriter(), IOContext.COMMS);
 			} catch (IOException e) {
-				CrashReports.report(e, "Entity could not be written");
+				CrashReports.report(e, "Could not write entity %s", entity);
 			}
 		}
 

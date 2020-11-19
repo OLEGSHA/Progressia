@@ -31,7 +31,7 @@ public class SimpleTextures {
 					new Sprite(new TexturePrimitive(data.getData()))
 			);
 		} catch (IOException e) {
-			CrashReports.report(e, "Problem with load texture");
+			CrashReports.report(e, "Could not load texture %s", resource);
 			return null;
 		}
 

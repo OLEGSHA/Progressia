@@ -57,7 +57,7 @@ public class GNUUnifontLoader {
 			return createStream(reader).map(GNUUnifontLoader::parse).map(GNUUnifontLoader::addToAtlas)
 					.collect(Collectors.collectingAndThen(createMapper(), GNUUnifont::new));
 		} catch (IOException | UncheckedIOException e) {
-			CrashReports.report(e, "Problem with load GNUUnifont");
+			CrashReports.report(e, "Could not load GNUUnifont");
 			return null;
 		}
 	}
@@ -72,23 +72,30 @@ public class GNUUnifontLoader {
 	}
 
 	private static ParsedGlyph parse(String declar) {
-		int width = getWidth(declar);
-		checkDeclaration(declar, width);
-
-		char c = getChar(declar);
-
-		TextureDataEditor editor = new TextureDataEditor(width, GNUUnifont.HEIGHT, width, GNUUnifont.HEIGHT,
-				TEXTURE_SETTINGS);
-
-		for (int y = 0; y < GNUUnifont.HEIGHT; ++y) {
-			for (int x = 0; x < width; ++x) {
-				int bit = x + y * width;
-
-				editor.setPixel(x, GNUUnifont.HEIGHT - y - 1, getBit(declar, bit) ? 0xFFFFFFFF : 0x00000000);
+		try {
+			
+			int width = getWidth(declar);
+			checkDeclaration(declar, width);
+		
+			char c = getChar(declar);
+		
+			TextureDataEditor editor = new TextureDataEditor(width, GNUUnifont.HEIGHT, width, GNUUnifont.HEIGHT,
+					TEXTURE_SETTINGS);
+		
+			for (int y = 0; y < GNUUnifont.HEIGHT; ++y) {
+				for (int x = 0; x < width; ++x) {
+					int bit = x + y * width;
+		
+					editor.setPixel(x, GNUUnifont.HEIGHT - y - 1, getBit(declar, bit) ? 0xFFFFFFFF : 0x00000000);
+				}
 			}
+		
+			return new ParsedGlyph(c, editor);
+		
+		} catch (IOException e) {
+			CrashReports.report(e, "Could not load GNUUnifont: could not load character \"%s\"", declar);
+			return null;
 		}
-
-		return new ParsedGlyph(c, editor);
 	}
 
 	private static char getChar(String declar) {
@@ -117,26 +124,25 @@ public class GNUUnifontLoader {
 		return meaningfulChars / charsPerColumn;
 	}
 
-	private static void checkDeclaration(String declar, int width) {
+	private static void checkDeclaration(String declar, int width) throws IOException {
 		if (!GNUUnifont.WIDTHS.contains(width)) {
-			CrashReports.report(null, "Width %d is not supported (in declar \"%s\")", width, declar);
+			throw new IOException("Width " + width + " is not supported (in declar \"" + declar + "\")");
 		}
-
+		
 		if ((declar.length() - PREFIX_LENGTH) % width != 0) {
-			CrashReports.report(null, "Declar \"%s\" has invalid length", declar);
+			throw new IOException("Declar \"" + declar + "\" has invalid length");
 		}
-
+		
 		for (int i = 0; i < declar.length(); ++i) {
 			if (i == BITS_PER_HEX_DIGIT) {
 				if (declar.charAt(i) != ':') {
-					CrashReports.report(null, "No colon ':' found in declar \"%s\" at index 4", declar);
+					throw new IOException("No colon ':' found in declar \"" + declar + "\" at index 4");
 				}
 			} else {
 				char c = declar.charAt(i);
-
+				
 				if (!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'))) {
-					CrashReports.report(null,
-							"Illegal char in declar \"%s\" at index " + i + "; expected 0-9A-F", declar);
+					throw new IOException("Illegal char in declar \"" + declar + "\" at index " + i + "; expected 0-9A-F");
 				}
 			}
 		}

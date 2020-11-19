@@ -1,6 +1,8 @@
 package ru.windcorp.progressia.client.comms;
 
 import java.io.IOException;
+
+import ru.windcorp.jputil.chars.StringUtil;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.graphics.world.EntityAnchor;
 import ru.windcorp.progressia.client.world.ChunkRender;
@@ -42,7 +44,11 @@ public class DefaultClientCommsListener implements CommsListener {
 		);
 		
 		if (entity == null) {
-			CrashReports.report(null, "Player entity not found");
+			CrashReports.report(
+					null,
+					"Player entity with ID %s not found",
+					new String(StringUtil.toFullHex(packet.getLocalPlayerEntityId()))
+			);
 		}
 
 		getClient().setLocalPlayer(entity);
