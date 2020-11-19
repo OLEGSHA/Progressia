@@ -17,10 +17,23 @@
  *******************************************************************************/
 package ru.windcorp.progressia;
 
+import ru.windcorp.progressia.common.util.crash.CrashReports;
+import ru.windcorp.progressia.common.util.crash.analyzers.OutOfMemoryAnalyzer;
+import ru.windcorp.progressia.common.util.crash.providers.OSContextProvider;
+
 public class ProgressiaLauncher {
 
 	public static void launch(String[] args, Proxy proxy) {
+		setupCrashReports();
 		proxy.initialize();
+	}
+
+	private static void setupCrashReports() {
+		CrashReports.registerProvider(new OSContextProvider());
+		CrashReports.registerAnalyzer(new OutOfMemoryAnalyzer());
+		Thread.setDefaultUncaughtExceptionHandler((Thread thread, Throwable t)-> {
+			CrashReports.report(t,"Uncaught exception in thread %s", thread.getName());
+		});
 	}
 
 }

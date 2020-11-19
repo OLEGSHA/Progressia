@@ -3,6 +3,8 @@ package ru.windcorp.progressia.client.localization;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
+import ru.windcorp.progressia.common.util.crash.CrashReports;
+
 public class Localizer {
 	private static final Localizer INSTANCE = new Localizer("assets/languages/", "en-US");
 
@@ -17,7 +19,7 @@ public class Localizer {
 	private final Collection<WeakReference<LocaleListener>> listeners =
 			Collections.synchronizedCollection(new LinkedList<>());
 
-	//lang list must be in the same folder as .lang files
+	// lang list must be in the same folder as .lang files
 	public Localizer(String langFolder) {
 		this.langFolder = langFolder;
 		this.langList = new Parser(langFolder + "lang_list.txt").parse();
@@ -41,7 +43,7 @@ public class Localizer {
 			data = new Parser(langFolder + this.language + ".lang").parse();
 			pokeListeners(language);
 		} else {
-			throw new RuntimeException("Language not found: " + language);
+			CrashReports.report(null, "Language not found: %s", language);
 		}
 	}
 
@@ -64,7 +66,7 @@ public class Localizer {
 	}
 
 	private void pokeListeners(String newLanguage) {
-		//TODO extract as weak bus listener class
+		// TODO extract as weak bus listener class
 		synchronized (listeners) {
 			Iterator<WeakReference<LocaleListener>> iterator = listeners.iterator();
 			while (iterator.hasNext()) {

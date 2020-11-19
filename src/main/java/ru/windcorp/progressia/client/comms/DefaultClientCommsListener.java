@@ -1,6 +1,8 @@
 package ru.windcorp.progressia.client.comms;
 
 import java.io.IOException;
+
+import ru.windcorp.jputil.chars.StringUtil;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.graphics.world.EntityAnchor;
 import ru.windcorp.progressia.client.world.ChunkRender;
@@ -8,12 +10,13 @@ import ru.windcorp.progressia.common.comms.CommsListener;
 import ru.windcorp.progressia.common.comms.packets.Packet;
 import ru.windcorp.progressia.common.comms.packets.PacketSetLocalPlayer;
 import ru.windcorp.progressia.common.comms.packets.PacketWorldChange;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.entity.PacketEntityChange;
 
 // TODO refactor with no mercy
 public class DefaultClientCommsListener implements CommsListener {
-	
+
 	private final Client client;
 
 	public DefaultClientCommsListener(Client client) {
@@ -41,9 +44,13 @@ public class DefaultClientCommsListener implements CommsListener {
 		);
 		
 		if (entity == null) {
-			throw new RuntimeException("");
+			CrashReports.report(
+					null,
+					"Player entity with ID %s not found",
+					new String(StringUtil.toFullHex(packet.getLocalPlayerEntityId()))
+			);
 		}
-		
+
 		getClient().setLocalPlayer(entity);
 		getClient().getCamera().setAnchor(new EntityAnchor(
 				getClient().getWorld().getEntityRenderable(entity)
@@ -58,7 +65,7 @@ public class DefaultClientCommsListener implements CommsListener {
 	public void onIOError(IOException reason) {
 		// TODO implement
 	}
-	
+
 	public Client getClient() {
 		return client;
 	}

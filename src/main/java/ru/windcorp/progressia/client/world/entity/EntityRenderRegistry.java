@@ -7,6 +7,7 @@ import ru.windcorp.progressia.client.graphics.texture.TexturePrimitive;
 import ru.windcorp.progressia.client.graphics.texture.TextureSettings;
 import ru.windcorp.progressia.common.resource.ResourceManager;
 import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class EntityRenderRegistry extends NamespacedInstanceRegistry<EntityRender> {
 	
@@ -28,7 +29,8 @@ public class EntityRenderRegistry extends NamespacedInstanceRegistry<EntityRende
 					).getData()
 			);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			CrashReports.report(e, "Could not load entity texture %s", name);
+			return null;
 		}
 	}
 

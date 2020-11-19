@@ -7,10 +7,11 @@ import java.io.IOException;
 import ru.windcorp.progressia.common.comms.packets.PacketWorldChange;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.DataBuffer;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.WorldData;
 
 public class PacketEntityChange extends PacketWorldChange {
-	
+
 	private long entityId;
 	private final DataBuffer buffer = new DataBuffer();
 
@@ -21,15 +22,15 @@ public class PacketEntityChange extends PacketWorldChange {
 	protected PacketEntityChange(String id) {
 		super(id);
 	}
-	
+
 	public long getEntityId() {
 		return entityId;
 	}
-	
+
 	public void setEntityId(long entityId) {
 		this.entityId = entityId;
 	}
-	
+
 	public DataBuffer getBuffer() {
 		return buffer;
 	}
@@ -45,19 +46,15 @@ public class PacketEntityChange extends PacketWorldChange {
 	@Override
 	public void apply(WorldData world) {
 		EntityData entity = world.getEntity(getEntityId());
-		
+
 		if (entity == null) {
-			throw new RuntimeException(
-					"Entity with ID " + getEntityId() + " not found"
-			);
+			CrashReports.report(null, "Entity with ID %d not found", getEntityId());
 		}
-		
+
 		try {
 			entity.read(getReader(), IOContext.COMMS);
 		} catch (IOException e) {
-			throw new RuntimeException(
-					"Entity could not be read", e
-			);
+			CrashReports.report(e, "Entity could not be read");
 		}
 	}
 

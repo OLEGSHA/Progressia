@@ -30,5 +30,5 @@ public class ProgressiaClientMain {
 
 		ProgressiaLauncher.launch(args, new ClientProxy());
 	}
-	
+
 }

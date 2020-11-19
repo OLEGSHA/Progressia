@@ -30,50 +30,53 @@ import com.google.common.io.CharStreams;
 
 import ru.windcorp.progressia.Progressia;
 import ru.windcorp.progressia.common.util.Named;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class Resource extends Named {
-	
+
 	public Resource(String name) {
 		super(name);
 	}
-	
+
 	public InputStream getInputStream() {
 		// TODO Do proper resource lookup
 		return Progressia.class.getClassLoader().getResourceAsStream(getName());
 	}
-	
+
 	public Reader getReader() {
 		return new InputStreamReader(getInputStream());
 	}
-	
+
 	public String readAsString() {
 		try (Reader reader = getReader()) {
 			return CharStreams.toString(reader);
 		} catch (IOException e) {
-			throw new RuntimeException(e); // TODO handle gracefully
+			CrashReports.report(e, "Could not read resource %s as text", this);
+			return null;
 		}
 	}
-	
+
 	public ByteBuffer readAsBytes(ByteBuffer output) {
 		byte[] byteArray;
 		try (InputStream stream = getInputStream()) {
 			byteArray = ByteStreams.toByteArray(stream);
 		} catch (IOException e) {
-			throw new RuntimeException(e); // TODO handle gracefully
+			CrashReports.report(e, "Could not read resource %s as bytes", this);
+			return null;
 		}
-		
+
 		if (output == null || output.remaining() < byteArray.length) {
 			output = BufferUtils.createByteBuffer(byteArray.length);
 		}
-		
+
 		int position = output.position();
 		output.put(byteArray);
 		output.limit(output.position());
 		output.position(position);
-		
+
 		return output;
 	}
-	
+
 	public ByteBuffer readAsBytes() {
 		return readAsBytes(null);
 	}
