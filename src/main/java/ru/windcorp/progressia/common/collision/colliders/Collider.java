@@ -15,6 +15,23 @@ public class Collider {
 	
 	private static final int MAX_COLLISIONS_PER_ENTITY = 64;
 	
+	/**
+	 * Dear Princess Celestia,
+	 * <p>
+	 * When {@linkplain #advanceTime(Collection, Collision, WorldData, float) advancing time},
+	 * time step for all entities <em>except</em> currently colliding bodies is the current
+	 * collisions's timestamp relative to now. However, currently colliding bodies
+	 * (Collision.a and Collision.b) have a smaller time step. This is done to make sure
+	 * they don't intersect due to rounding errors.
+	 * <p>
+	 * Today I learned that bad code has nothing to do with friendship, although lemme tell ya:
+	 * it's got some dank magic.
+	 * <p>
+	 * Your faithful student,<br />
+	 * Kostyl.
+	 */
+	private static final float TIME_STEP_COEFFICIENT_FOR_CURRENTLY_COLLIDING_BODIES = 1e-1f; 
+	
 	public static void performCollisions(
 			List<? extends Collideable> colls,
 			WorldData world,
@@ -46,7 +63,7 @@ public class Collider {
 			}
 		}
 		
-		advanceTime(colls, world, tickLength);
+		advanceTime(colls, null, world, tickLength);
 	}
 
 	private static Collision getFirstCollision(
@@ -148,7 +165,7 @@ public class Collider {
 			float tickLength,
 			ColliderWorkspace workspace
 	) {
-		advanceTime(colls, world, collision.time);
+		advanceTime(colls, collision, world, collision.time);
 		
 		boolean doNotHandle = false;
 		
@@ -274,8 +291,6 @@ public class Collider {
 		collision.a.changeVelocityOnCollision(du_a);
 		collision.b.changeVelocityOnCollision(du_b);
 		
-		separate(collision, n, m_a, m_b);
-		
 		// JGML is still to fuck
 		Vectors.release(n);
 		Vectors.release(v_a);
@@ -287,25 +302,9 @@ public class Collider {
 		Vectors.release(du_b);
 	}
 
-	private static void separate(
-			Collision collision,
-			Vec3 normal, float aRelativeMass, float bRelativeMass
-	) {
-		final float margin = 1e-4f;
-		
-		Vec3 displacement = Vectors.grab3();
-		
-		displacement.set(normal).mul(margin).mul(bRelativeMass);
-		collision.a.moveAsCollideable(displacement);
-		
-		displacement.set(normal).mul(margin).mul(aRelativeMass).negate();
-		collision.b.moveAsCollideable(displacement);
-		
-		Vectors.release(displacement);
-	}
-
 	private static void advanceTime(
 			Collection<? extends Collideable> colls,
+			Collision exceptions,
 			WorldData world,
 			float step
 	) {
@@ -315,7 +314,14 @@ public class Collider {
 		
 		for (Collideable coll : colls) {
 			coll.getCollideableVelocity(tmp);
-			tmp.mul(step);
+			
+			float currentStep = step;
+			
+			if (exceptions != null && (exceptions.a == coll || exceptions.b == coll)) {
+				currentStep *= TIME_STEP_COEFFICIENT_FOR_CURRENTLY_COLLIDING_BODIES;
+			}
+			
+			tmp.mul(currentStep);
 			coll.moveAsCollideable(tmp);
 		}
 		
