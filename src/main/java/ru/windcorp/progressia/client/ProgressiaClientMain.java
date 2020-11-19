@@ -20,9 +20,6 @@ package ru.windcorp.progressia.client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.windcorp.progressia.ProgressiaLauncher;
-import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.util.crash.analyzers.OutOfMemoryAnalyzer;
-import ru.windcorp.progressia.common.util.crash.providers.OSContextProvider;
 
 public class ProgressiaClientMain {
 
@@ -30,15 +27,6 @@ public class ProgressiaClientMain {
 
 	public static void main(String[] args) {
 		logger.info("App started!");
-
-		CrashReports.registerProvider(new OSContextProvider());
-		CrashReports.registerAnalyzer(new OutOfMemoryAnalyzer());
-		try {
-			@SuppressWarnings("unused")
-			long[] ssdss = new long[1 << 30];
-		} catch (Throwable t) {
-			CrashReports.report(t, "u %s stupid", "vry");
-		}
 
 		ProgressiaLauncher.launch(args, new ClientProxy());
 	}
