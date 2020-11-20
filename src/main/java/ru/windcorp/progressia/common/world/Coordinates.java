@@ -11,18 +11,17 @@ import glm.vec._3.i.Vec3i;
  * Three types of coordinates are used in Progressia:
  * <ul>
  * 
- * <li><em>World coordinates</em>, in code referred to as {@code blockInWorld} -
+ * <li id="blockInWorld"><em>World coordinates</em>, in code referred to as {@code blockInWorld} -
  * coordinates relative to world origin. Every block in the world has unique
  * world coordinates.</li>
  * 
- * <li><em>Chunk coordinates</em>, in code referred to as {@code blockInChunk} -
+ * <li id="blockInChunk"><em>Chunk coordinates</em>, in code referred to as {@code blockInChunk} -
  * coordinates relative some chunk's origin. Every block in the chunk has unique
  * chunk coordinates, but blocks in different chunks may have identical chunk
  * coordinates. These coordinates are only useful in combination with a chunk
- * reference. Chunk coordinates are always <tt>[0; {@link #BLOCKS_PER_CHUNK})
- * </tt>.</li>
+ * reference. Chunk coordinates are always <tt>[0; {@link #BLOCKS_PER_CHUNK})</tt>.</li>
  * 
- * <li><em>Coordinates of chunk</em>, in code referred to as {@code chunk} -
+ * <li id="chunk"><em>Coordinates of chunk</em>, in code referred to as {@code chunk} -
  * chunk coordinates relative to world origin. Every chunk in the world has
  * unique coordinates of chunk.</li>
  * 
