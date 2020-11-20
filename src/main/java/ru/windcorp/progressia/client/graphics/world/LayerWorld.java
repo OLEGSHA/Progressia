@@ -20,6 +20,8 @@ package ru.windcorp.progressia.client.graphics.world;
 import java.util.ArrayList;
 import java.util.List;
 
+import glm.mat._4.Mat4;
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.ClientState;
@@ -28,9 +30,15 @@ import ru.windcorp.progressia.client.graphics.Layer;
 import ru.windcorp.progressia.client.graphics.backend.FaceCulling;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
+import ru.windcorp.progressia.client.graphics.model.Renderable;
+import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
+import ru.windcorp.progressia.client.graphics.model.Shapes.PppBuilder;
+import ru.windcorp.progressia.client.graphics.model.StaticModel;
+import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.colliders.Collider;
+import ru.windcorp.progressia.common.util.FloatMathUtils;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.test.CollisionModelRenderer;
 import ru.windcorp.progressia.test.TestPlayerControls;
@@ -127,17 +135,46 @@ public class LayerWorld extends Layer {
 				tmp_colliderWorkspace
 		);
 	}
+	
+	private static final Renderable SELECTION_BOX = tmp_createSelectionBox();
 
 	private void tmp_drawSelectionBox() {
 		LocalPlayer player = client.getLocalPlayer();
 		if (player == null) return;
 		
-		Vec3i lookingAt = player.getLookingAt();
-		if (lookingAt == null) return;
+		Vec3i selection = player.getSelection().getBlock();
+		if (selection == null) return;
 		
-		helper.pushTransform().translate(lookingAt.x, lookingAt.y, lookingAt.z).scale(1.1f);
-		CollisionModelRenderer.renderCollisionModel(client.getWorld().getData().getCollisionModelOfBlock(lookingAt), helper);
+		helper.pushTransform().translate(selection.x, selection.y, selection.z);
+		SELECTION_BOX.render(helper);
 		helper.popTransform();
+	}
+
+	private static Renderable tmp_createSelectionBox() {
+		StaticModel.Builder b = StaticModel.builder();
+		ShapeRenderProgram p = WorldRenderProgram.getDefault();
+		
+		final float f = 1e-2f;
+		final float scale = 1 - f/2;
+		final Vec3 color = new Vec3(1, 1, 1).mul(0);
+		
+		for (float phi = 0; phi < 2*FloatMathUtils.PI_F; phi += FloatMathUtils.PI_F/2) {
+			Mat4 rot = new Mat4().identity().rotateZ(phi).scale(scale);
+			
+			b.addPart(new PppBuilder(p, (Texture) null).setOrigin(
+					new Vec3(-f - 0.5f, -f - 0.5f, -f - 0.5f)
+			).setSize(f, f, 2*f + 1).setColorMultiplier(color).create(), rot);
+			
+			b.addPart(new PppBuilder(p, (Texture) null).setOrigin(
+					new Vec3(-f - 0.5f, - 0.5f, -f - 0.5f)
+			).setSize(f, 1, f).setColorMultiplier(color).create(), rot);
+			
+			b.addPart(new PppBuilder(p, (Texture) null).setOrigin(
+					new Vec3(-f - 0.5f, - 0.5f, + 0.5f)
+			).setSize(f, 1, f).setColorMultiplier(color).create(), rot);
+		}
+		
+		return new StaticModel(b);
 	}
 
 	private void tmp_applyFriction(EntityData entity) {

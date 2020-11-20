@@ -4,6 +4,7 @@ import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.VectorUtil.Axis;
+import ru.windcorp.progressia.common.world.block.BlockFace;
 
 import static java.lang.Math.*;
 
@@ -15,6 +16,7 @@ public class BlockRay {
 	private float distance;
 	
 	private final Vec3i block = new Vec3i();
+	private BlockFace currentFace = null;
 	
 	private boolean isValid = false;
 	
@@ -65,11 +67,8 @@ public class BlockRay {
 		// position.(axis) = round(position.(axis))
 		VectorUtil.set(position, axis, round(VectorUtil.get(position, axis)));
 		
-		return block;
-	}
-	
-	public Vec3i current() {
-		checkState();
+		this.currentFace = computeCurrentFace(axis, (int) signum(VectorUtil.get(direction, axis)));
+		
 		return block;
 	}
 
@@ -85,6 +84,32 @@ public class BlockRay {
 		}
 		
 		return (edge - c) / dir;
+	}
+
+	private BlockFace computeCurrentFace(Axis axis, int sign) {
+		if (sign == 0) throw new IllegalStateException("sign is zero");
+		
+		switch (axis) {
+		case X: return sign > 0 ? BlockFace.SOUTH  : BlockFace.NORTH;
+		case Y: return sign > 0 ? BlockFace.EAST   : BlockFace.WEST;
+		default:
+		case Z: return sign > 0 ? BlockFace.BOTTOM : BlockFace.TOP;
+		}
+	}
+	
+	public Vec3i current() {
+		checkState();
+		return block;
+	}
+	
+	public Vec3 getPoint(Vec3 output) {
+		output.set(position);
+		output.add(0.5f); // Make sure we're in the block-center coordinate system
+		return output;
+	}
+	
+	public BlockFace getCurrentFace() {
+		return currentFace;
 	}
 
 	public float getDistance() {

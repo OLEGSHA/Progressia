@@ -88,6 +88,17 @@ public class WorldData {
 		return result;
 	}
 	
+	public BlockData getBlock(Vec3i blockInWorld) {
+		ChunkData chunk = getChunkByBlock(blockInWorld);
+		if (chunk == null) return null;
+		
+		Vec3i blockInChunk = Vectors.grab3i();
+		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
+		BlockData result = chunk.getBlock(blockInChunk);
+		
+		return result;
+	}
+	
 	public Collection<ChunkData> getChunks() {
 		return chunks;
 	}

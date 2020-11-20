@@ -25,12 +25,12 @@ import glm.vec._3.i.Vec3i;
 public final class BlockFace extends BlockRelation {
 	
 	public static final BlockFace
-			TOP    = new BlockFace( 0,  0, +1, true),
-			BOTTOM = new BlockFace( 0,  0, -1, false),
-			NORTH  = new BlockFace(+1,  0,  0, true),
-			SOUTH  = new BlockFace(-1,  0,  0, false),
-			WEST   = new BlockFace( 0, +1,  0, false),
-			EAST   = new BlockFace( 0, -1,  0, true);
+			TOP    = new BlockFace( 0,  0, +1, true,  "TOP"),
+			BOTTOM = new BlockFace( 0,  0, -1, false, "BOTTOM"),
+			NORTH  = new BlockFace(+1,  0,  0, true,  "NORTH"),
+			SOUTH  = new BlockFace(-1,  0,  0, false, "SOUTH"),
+			WEST   = new BlockFace( 0, +1,  0, false, "WEST"),
+			EAST   = new BlockFace( 0, -1,  0, true,  "EAST");
 	
 	private static final ImmutableList<BlockFace> ALL_FACES =
 			ImmutableList.of(TOP, BOTTOM, NORTH, SOUTH, WEST, EAST);
@@ -77,15 +77,21 @@ public final class BlockFace extends BlockRelation {
 	private static int nextId = 0;
 	
 	private final int id;
+	private final String name;
 	private BlockFace counterFace;
 	private final boolean isPrimary;
 
-	private BlockFace(int x, int y, int z, boolean isPrimary) {
+	private BlockFace(int x, int y, int z, boolean isPrimary, String name) {
 		super(x, y, z);
 		this.id = nextId++;
 		this.isPrimary = isPrimary;
+		this.name = name;
 	}
 	
+	public String getName() {
+		return name;
+	}
+
 	public boolean isPrimary() {
 		return isPrimary;
 	}
@@ -131,6 +137,11 @@ public final class BlockFace extends BlockRelation {
 	@Override
 	public int getManhattanDistance() {
 		return 1;
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 }

@@ -13,6 +13,7 @@ import ru.windcorp.progressia.client.comms.controls.*;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
+import ru.windcorp.progressia.client.graphics.world.Selection;
 import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.entity.*;
 import ru.windcorp.progressia.client.world.tile.*;
@@ -20,10 +21,12 @@ import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
 import ru.windcorp.progressia.common.world.tile.*;
+import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.comms.controls.*;
 import ru.windcorp.progressia.server.world.block.*;
 import ru.windcorp.progressia.server.world.entity.*;
@@ -130,12 +133,19 @@ public class TestContent {
 				KeyEvent.class,
 				TestContent::onBlockBreakTrigger,
 				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_LEFT).matcher(),
-				i -> getLookingAt() != null
+				i -> getSelection().exists()
 		));
-		logic.register(ControlLogic.of("Test:BreakBlock", (server, packet, client) -> {
-			Vec3i blockInWorld = ((ControlBreakBlockData) packet.getControl()).getBlockInWorld();
-			server.getAdHocChanger().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
-		}));
+		logic.register(ControlLogic.of("Test:BreakBlock", TestContent::onBlockBreakReceived));
+		
+		data.register("Test:PlaceBlock", ControlPlaceBlockData::new);
+		triggers.register(ControlTriggers.of(
+				"Test:PlaceBlock",
+				KeyEvent.class,
+				TestContent::onBlockPlaceTrigger,
+				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
+				i -> getSelection().exists()
+		));
+		logic.register(ControlLogic.of("Test:PlaceBlock", TestContent::onBlockPlaceReceived));
 	}
 	
 	private static void register(BlockData x) {
@@ -191,18 +201,39 @@ public class TestContent {
 		EntityLogicRegistry.getInstance().register(x);
 	}
 	
-	private static Vec3i getLookingAt() {
+	private static Selection getSelection() {
 		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
 		if (client == null) return null;
 		
 		LocalPlayer player = client.getLocalPlayer();
 		if (player == null) return null;
 		
-		return player.getLookingAt();
+		return player.getSelection();
 	}
 	
 	private static void onBlockBreakTrigger(ControlData control) {
-		((ControlBreakBlockData) control).setBlockInWorld(getLookingAt());
+		((ControlBreakBlockData) control).setBlockInWorld(getSelection().getBlock());
+	}
+	
+	private static void onBlockBreakReceived(Server server, PacketControl packet, ru.windcorp.progressia.server.comms.Client client) {
+		Vec3i blockInWorld = ((ControlBreakBlockData) packet.getControl()).getBlockInWorld();
+		server.getAdHocChanger().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
+	}
+	
+	private static void onBlockPlaceTrigger(ControlData control) {
+		Vec3i blockInWorld = Vectors.grab3i();
+		Vec3i selectedBlock = getSelection().getBlock();
+		
+		blockInWorld.set(selectedBlock.x, selectedBlock.y, selectedBlock.z).add(getSelection().getSurface().getVector());
+		
+		((ControlPlaceBlockData) control).setBlockInWorld(blockInWorld);
+		Vectors.release(blockInWorld);
+	}
+	
+	private static void onBlockPlaceReceived(Server server, PacketControl packet, ru.windcorp.progressia.server.comms.Client client) {
+		Vec3i blockInWorld = ((ControlPlaceBlockData) packet.getControl()).getBlockInWorld();
+		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null) return;
+		server.getAdHocChanger().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Stone"));
 	}
 
 }
