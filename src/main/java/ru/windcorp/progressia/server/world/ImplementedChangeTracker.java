@@ -53,7 +53,7 @@ public class ImplementedChangeTracker implements Changer {
 			Vec3i blockInChunk = Vectors.grab3i();
 			Coordinates.convertInWorldToInChunk(position, blockInChunk);
 
-			world.getChunkByBlock(position).setBlock(blockInChunk, block);
+			world.getChunkByBlock(position).setBlock(blockInChunk, block, true);
 
 			Vectors.release(blockInChunk);
 		}
