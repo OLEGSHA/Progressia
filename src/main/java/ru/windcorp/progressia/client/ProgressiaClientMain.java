@@ -17,17 +17,13 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import ru.windcorp.progressia.ProgressiaLauncher;
+import ru.windcorp.progressia.test.ALTest;
 
 public class ProgressiaClientMain {
 
-	private static final Logger logger = LogManager.getLogger(ProgressiaClientMain.class.getName());
-
 	public static void main(String[] args) {
-		logger.info("App started!");
-
+		ALTest.execute();
 		ProgressiaLauncher.launch(args, new ClientProxy());
 	}
 
