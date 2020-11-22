@@ -22,9 +22,9 @@ import ru.windcorp.progressia.client.graphics.texture.Atlases.AtlasGroup;
 import ru.windcorp.progressia.client.graphics.texture.SimpleTexture;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.common.resource.ResourceManager;
-import ru.windcorp.progressia.common.util.NamespacedRegistry;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
-public class TileRenderRegistry extends NamespacedRegistry<TileRender> {
+public class TileRenderRegistry extends NamespacedInstanceRegistry<TileRender> {
 	
 	private static final TileRenderRegistry INSTANCE = new TileRenderRegistry();
 	

@@ -66,6 +66,18 @@ public class ArrayUtil {
 		return -1;
 	}
 	
+	public static boolean isSorted(byte[] array, boolean ascending) {
+		for (int i = 0; i < array.length - 1; ++i) {
+			if (array[i] == array[i + 1]) continue;
+			
+			if ((array[i] < array[i + 1]) != ascending) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public static int firstIndexOf(short[] array, short element) {
 		for (int i = 0; i < array.length; ++i) {
 			if (array[i] == element) {
@@ -105,6 +117,18 @@ public class ArrayUtil {
 		}
 		
 		return -1;
+	}
+	
+	public static boolean isSorted(short[] array, boolean ascending) {
+		for (int i = 0; i < array.length - 1; ++i) {
+			if (array[i] == array[i + 1]) continue;
+			
+			if ((array[i] < array[i + 1]) != ascending) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	public static int firstIndexOf(int[] array, int element) {
@@ -148,6 +172,18 @@ public class ArrayUtil {
 		return -1;
 	}
 	
+	public static boolean isSorted(int[] array, boolean ascending) {
+		for (int i = 0; i < array.length - 1; ++i) {
+			if (array[i] == array[i + 1]) continue;
+			
+			if ((array[i] < array[i + 1]) != ascending) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public static int firstIndexOf(long[] array, long element) {
 		for (int i = 0; i < array.length; ++i) {
 			if (array[i] == element) {
@@ -187,6 +223,18 @@ public class ArrayUtil {
 		}
 		
 		return -1;
+	}
+	
+	public static boolean isSorted(long[] array, boolean ascending) {
+		for (int i = 0; i < array.length - 1; ++i) {
+			if (array[i] == array[i + 1]) continue;
+			
+			if ((array[i] < array[i + 1]) != ascending) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	public static int firstIndexOf(float[] array, float element) {
@@ -229,6 +277,18 @@ public class ArrayUtil {
 		
 		return -1;
 	}
+	
+	public static boolean isSorted(float[] array, boolean ascending) {
+		for (int i = 0; i < array.length - 1; ++i) {
+			if (array[i] == array[i + 1]) continue;
+			
+			if ((array[i] < array[i + 1]) != ascending) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
 
 	public static int firstIndexOf(double[] array, double element) {
 		for (int i = 0; i < array.length; ++i) {
@@ -269,6 +329,18 @@ public class ArrayUtil {
 		}
 		
 		return -1;
+	}
+	
+	public static boolean isSorted(double[] array, boolean ascending) {
+		for (int i = 0; i < array.length - 1; ++i) {
+			if (array[i] == array[i + 1]) continue;
+			
+			if ((array[i] < array[i + 1]) != ascending) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	public static int firstIndexOf(boolean[] array, boolean element) {
@@ -338,6 +410,18 @@ public class ArrayUtil {
 		}
 		
 		return -1;
+	}
+	
+	public static boolean isSorted(char[] array, boolean ascending) {
+		for (int i = 0; i < array.length - 1; ++i) {
+			if (array[i] == array[i + 1]) continue;
+			
+			if ((array[i] < array[i + 1]) != ascending) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	public static int firstIndexOf(Object[] array, Object element) {
@@ -420,6 +504,20 @@ public class ArrayUtil {
 		}
 		
 		return -1;
+	}
+	
+	public static <T extends Comparable<T>> boolean isSorted(T[] array, boolean ascending) {
+		for (int i = 0; i < array.length - 1; ++i) {
+			if (array[i] == array[i + 1]) continue;
+			
+			int order = array[i].compareTo(array[i + 1]);
+			
+			if ((order < 0) != ascending) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	public static long sum(byte[] array, int start, int length) {

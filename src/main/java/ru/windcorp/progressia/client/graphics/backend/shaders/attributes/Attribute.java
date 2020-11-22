@@ -18,29 +18,30 @@
 package ru.windcorp.progressia.client.graphics.backend.shaders.attributes;
 
 import ru.windcorp.progressia.client.graphics.backend.shaders.Program;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class Attribute {
-	
+
 	protected final int handle;
 	private final Program program;
-	
+
 	public Attribute(int handle, Program program) {
 		if (handle < 0) {
-			throw new RuntimeException("Bad handle: " + handle);
+			CrashReports.report(null, "Bad handle: %d", handle);
 		}
-		
+
 		this.handle = handle;
 		this.program = program;
 	}
-	
+
 	public int getHandle() {
 		return handle;
 	}
-	
+
 	public Program getProgram() {
 		return program;
 	}
-	
+
 	public AttributeVertexArray asVertexArray() {
 		return new AttributeVertexArray(handle, program);
 	}

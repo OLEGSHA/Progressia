@@ -8,20 +8,25 @@ import java.util.function.Consumer;
 import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.comms.controls.*;
+import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
+import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
+import ru.windcorp.progressia.client.graphics.world.Selection;
 import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.entity.*;
 import ru.windcorp.progressia.client.world.tile.*;
 import ru.windcorp.progressia.common.collision.AABB;
+import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
 import ru.windcorp.progressia.common.world.tile.*;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.comms.Client;
 import ru.windcorp.progressia.server.comms.controls.*;
 import ru.windcorp.progressia.server.world.block.*;
 import ru.windcorp.progressia.server.world.entity.*;
@@ -41,75 +46,106 @@ public class TestContent {
 	}
 
 	private static void registerBlocks() {
-		register(new BlockData("Test", "Air"));
-		register(new BlockRenderNone("Test", "Air"));
-		register(new BlockLogic("Test", "Air"));
+		register(new BlockData("Test:Air") {
+				@Override
+				public CollisionModel getCollisionModel() {
+					return null;
+				}
+		});
+		register(new BlockRenderNone("Test:Air"));
+		register(new BlockLogic("Test:Air"));
 
-		register(new BlockData("Test", "Dirt"));
-		register(new BlockRenderOpaqueCube("Test", "Dirt", getBlockTexture("dirt")));
-		register(new BlockLogic("Test", "Dirt"));
+		register(new BlockData("Test:Dirt"));
+		register(new BlockRenderOpaqueCube("Test:Dirt", getBlockTexture("dirt")));
+		register(new BlockLogic("Test:Dirt"));
 
-		register(new BlockData("Test", "Stone"));
-		register(new BlockRenderOpaqueCube("Test", "Stone", getBlockTexture("stone")));
-		register(new BlockLogic("Test", "Stone"));
+		register(new BlockData("Test:Stone"));
+		register(new BlockRenderOpaqueCube("Test:Stone", getBlockTexture("stone")));
+		register(new BlockLogic("Test:Stone"));
 
-		register(new BlockData("Test", "Compass"));
-		register(new BlockRenderOpaqueCube("Test", "Compass", getBlockTexture("compass")));
-		register(new BlockLogic("Test", "Compass"));
+		register(new BlockData("Test:Compass"));
+		register(new BlockRenderOpaqueCube("Test:Compass", getBlockTexture("compass")));
+		register(new BlockLogic("Test:Compass"));
 		
-		register(new BlockData("Test", "Glass"));
-		register(new BlockRenderTransparentCube("Test", "Glass", getBlockTexture("glass_clear")));
-		register(new BlockLogic("Test", "Glass"));
+		register(new BlockData("Test:Glass"));
+		register(new BlockRenderTransparentCube("Test:Glass", getBlockTexture("glass_clear")));
+		register(new BlockLogic("Test:Glass"));
 	}
 
 	private static void registerTiles() {
-		register(new TileData("Test", "Grass"));
-		register(new TileRenderGrass("Test", "Grass", getTileTexture("grass_top"), getTileTexture("grass_side")));
-		register(new TileLogic("Test", "Grass"));
+		register(new TileData("Test:Grass"));
+		register(new TileRenderGrass("Test:Grass", getTileTexture("grass_top"), getTileTexture("grass_side")));
+		register(new TileLogic("Test:Grass"));
 		
-		register(new TileData("Test", "Stones"));
-		register(new TileRenderSimple("Test", "Stones", getTileTexture("stones")));
-		register(new TileLogic("Test", "Stones"));
+		register(new TileData("Test:Stones"));
+		register(new TileRenderSimple("Test:Stones", getTileTexture("stones")));
+		register(new TileLogic("Test:Stones"));
 		
-		register(new TileData("Test", "YellowFlowers"));
-		register(new TileRenderSimple("Test", "YellowFlowers", getTileTexture("yellow_flowers")));
-		register(new TileLogic("Test", "YellowFlowers"));
+		register(new TileData("Test:YellowFlowers"));
+		register(new TileRenderSimple("Test:YellowFlowers", getTileTexture("yellow_flowers")));
+		register(new TileLogic("Test:YellowFlowers"));
 		
-		register(new TileData("Test", "Sand"));
-		register(new TileRenderSimple("Test", "Sand", getTileTexture("sand")));
-		register(new TileLogic("Test", "Sand"));
+		register(new TileData("Test:Sand"));
+		register(new TileRenderSimple("Test:Sand", getTileTexture("sand")));
+		register(new TileLogic("Test:Sand"));
 	}
 
 	private static void registerEntities() {
-		registerEntityData("Test", "Javapony", e -> e.setCollisionModel(new AABB(0, 0, -0.05f, 0.75f, 0.75f, 1.2f)));
-		register(new TestEntityRenderJavapony());
-		register(new EntityLogic("Test", "Javapony"));
+		float scale = 1.8f / 8;
+		registerEntityData("Test:Player", e -> e.setCollisionModel(new AABB(0, 0, 4*scale, 0.8f, 0.8f, 1.8f)));
+		register(new TestEntityRenderHuman("Test:Player"));
+		register(new EntityLogic("Test:Player"));
 		
-		register("Test", "Statie", TestEntityDataStatie::new);
-		register(new TestEntityRenderStatie());
-		register(new TestEntityLogicStatie());
+		register("Test:Statie", TestEntityDataStatie::new);
+		register(new TestEntityRenderStatie("Test:Statie"));
+		register(new TestEntityLogicStatie("Test:Statie"));
 	}
 
 	private static void regsiterControls() {
-		ControlDataRegistry.getInstance().register(new ControlData("Test", "Switch000"));
-		ControlTriggerRegistry.getInstance().register(new ControlTriggerOnKeyPress("Test", "Switch000", new KeyMatcher(GLFW.GLFW_KEY_G, new int[0], 0)::matches));
-		ControlLogicRegistry.getInstance().register(new ControlLogic("Test", "Switch000") {
-			@Override
-			public void apply(Server server, PacketControl packet, Client client) {
-				Vec3i z000 = new Vec3i(0, 0, 0);
-				
-				ChunkData data = server.getWorld().getChunk(z000).getData();
-				
-				BlockData block;
-				if (data.getBlock(z000).getId().equals("Test:Stone")) {
-					block = BlockDataRegistry.getInstance().get("Test:Glass");
-				} else {
-					block =  BlockDataRegistry.getInstance().get("Test:Stone");
-				}
-				
-				server.getAdHocChanger().setBlock(z000, block);
+		ControlDataRegistry data = ControlDataRegistry.getInstance();
+		ControlTriggerRegistry triggers = ControlTriggerRegistry.getInstance();
+		ControlLogicRegistry logic = ControlLogicRegistry.getInstance();
+		
+		data.register("Test:Switch000", ControlData::new);
+		triggers.register(ControlTriggers.of(
+				"Test:Switch000",
+				KeyEvent.class,
+				KeyMatcher.of(GLFW.GLFW_KEY_H).matcher()
+		));
+		logic.register(ControlLogic.of("Test:Switch000", (server, packet, client) -> {
+			Vec3i z000 = new Vec3i(0, 0, 0);
+			
+			ChunkData chunk = server.getWorld().getChunk(z000).getData();
+			
+			BlockData block;
+			if (chunk.getBlock(z000).getId().equals("Test:Stone")) {
+				block = BlockDataRegistry.getInstance().get("Test:Glass");
+			} else {
+				block = BlockDataRegistry.getInstance().get("Test:Stone");
 			}
-		});
+			
+			server.getAdHocChanger().setBlock(z000, block);
+		}));
+		
+		data.register("Test:BreakBlock", ControlBreakBlockData::new);
+		triggers.register(ControlTriggers.of(
+				"Test:BreakBlock",
+				KeyEvent.class,
+				TestContent::onBlockBreakTrigger,
+				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_LEFT).matcher(),
+				i -> getSelection().exists()
+		));
+		logic.register(ControlLogic.of("Test:BreakBlock", TestContent::onBlockBreakReceived));
+		
+		data.register("Test:PlaceBlock", ControlPlaceBlockData::new);
+		triggers.register(ControlTriggers.of(
+				"Test:PlaceBlock",
+				KeyEvent.class,
+				TestContent::onBlockPlaceTrigger,
+				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
+				i -> getSelection().exists()
+		));
+		logic.register(ControlLogic.of("Test:PlaceBlock", TestContent::onBlockPlaceReceived));
 	}
 	
 	private static void register(BlockData x) {
@@ -121,20 +157,20 @@ public class TestContent {
 	}
 	
 	private static void register(
-			String namespace, String name,
+			String id,
 			Factory<EntityData> factory
 	) {
-		EntityDataRegistry.getInstance().register(namespace, name, factory);
+		EntityDataRegistry.getInstance().register(id, factory);
 	}
 	
 	private static void registerEntityData(
-			String namespace, String name,
+			String id,
 			Consumer<EntityData> transform
 	) {
-		EntityDataRegistry.getInstance().register(namespace, name, new Factory<EntityData>() {
+		EntityDataRegistry.getInstance().register(id, new Factory<EntityData>() {
 			@Override
 			public EntityData build() {
-				EntityData entity = new EntityData(namespace, name);
+				EntityData entity = new EntityData(id);
 				transform.accept(entity);
 				return entity;
 			}
@@ -163,6 +199,41 @@ public class TestContent {
 	
 	private static void register(EntityLogic x) {
 		EntityLogicRegistry.getInstance().register(x);
+	}
+	
+	private static Selection getSelection() {
+		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
+		if (client == null) return null;
+		
+		LocalPlayer player = client.getLocalPlayer();
+		if (player == null) return null;
+		
+		return player.getSelection();
+	}
+	
+	private static void onBlockBreakTrigger(ControlData control) {
+		((ControlBreakBlockData) control).setBlockInWorld(getSelection().getBlock());
+	}
+	
+	private static void onBlockBreakReceived(Server server, PacketControl packet, ru.windcorp.progressia.server.comms.Client client) {
+		Vec3i blockInWorld = ((ControlBreakBlockData) packet.getControl()).getBlockInWorld();
+		server.getAdHocChanger().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
+	}
+	
+	private static void onBlockPlaceTrigger(ControlData control) {
+		Vec3i blockInWorld = Vectors.grab3i();
+		Vec3i selectedBlock = getSelection().getBlock();
+		
+		blockInWorld.set(selectedBlock.x, selectedBlock.y, selectedBlock.z).add(getSelection().getSurface().getVector());
+		
+		((ControlPlaceBlockData) control).setBlockInWorld(blockInWorld);
+		Vectors.release(blockInWorld);
+	}
+	
+	private static void onBlockPlaceReceived(Server server, PacketControl packet, ru.windcorp.progressia.server.comms.Client client) {
+		Vec3i blockInWorld = ((ControlPlaceBlockData) packet.getControl()).getBlockInWorld();
+		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null) return;
+		server.getAdHocChanger().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Stone"));
 	}
 
 }

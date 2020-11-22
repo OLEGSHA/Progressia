@@ -7,11 +7,11 @@ import java.io.IOException;
 public class IntStateField extends StateField {
 
 	public IntStateField(
-			String namespace, String name,
+			String id,
 			boolean isLocal,
 			int index
 	) {
-		super(namespace, name, isLocal, index);
+		super(id, isLocal, index);
 	}
 	
 	public int get(StatefulObject object) {

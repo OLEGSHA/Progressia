@@ -13,18 +13,14 @@
 
         <RollingFile name="FileLog" fileName="${APP_LOG_ROOT}/game.log"
                      filePattern="${APP_LOG_ROOT}/game-%d{yyyy-MM-dd}-%i.log">
-            <LevelRangeFilter minLevel="FATAL" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="18MB" />
             </Policies>
-            <DefaultRolloverStrategy max="10"/>
         </RollingFile>
-
     </Appenders>
 
     <Loggers>
-
         <Root level="info">
             <AppenderRef ref="FileLog"  />
             <AppenderRef ref="Console"  />

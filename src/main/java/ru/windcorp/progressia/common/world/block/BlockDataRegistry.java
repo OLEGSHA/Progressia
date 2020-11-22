@@ -17,9 +17,9 @@
  *******************************************************************************/
 package ru.windcorp.progressia.common.world.block;
 
-import ru.windcorp.progressia.common.util.NamespacedRegistry;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
-public class BlockDataRegistry extends NamespacedRegistry<BlockData> {
+public class BlockDataRegistry extends NamespacedInstanceRegistry<BlockData> {
 	
 	private static final BlockDataRegistry INSTANCE = new BlockDataRegistry();
 	

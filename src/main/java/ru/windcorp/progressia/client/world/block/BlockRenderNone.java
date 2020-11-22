@@ -22,8 +22,8 @@ import ru.windcorp.progressia.client.graphics.model.Renderable;
 
 public class BlockRenderNone extends BlockRender {
 
-	public BlockRenderNone(String namespace, String name) {
-		super(namespace, name);
+	public BlockRenderNone(String id) {
+		super(id);
 	}
 	
 	@Override

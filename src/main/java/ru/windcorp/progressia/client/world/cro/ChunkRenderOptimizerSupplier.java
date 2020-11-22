@@ -19,21 +19,21 @@ package ru.windcorp.progressia.client.world.cro;
 
 import com.google.common.base.Supplier;
 
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 public abstract class ChunkRenderOptimizerSupplier extends Namespaced {
 
-	public ChunkRenderOptimizerSupplier(String namespace, String name) {
-		super(namespace, name);
+	public ChunkRenderOptimizerSupplier(String id) {
+		super(id);
 	}
 	
 	public abstract ChunkRenderOptimizer createOptimizer();
 	
 	public static ChunkRenderOptimizerSupplier of(
-			String namespace, String name,
+			String id,
 			Supplier<ChunkRenderOptimizer> supplier
 	) {
-		return new ChunkRenderOptimizerSupplier(namespace, name) {
+		return new ChunkRenderOptimizerSupplier(id) {
 			@Override
 			public ChunkRenderOptimizer createOptimizer() {
 				return supplier.get();

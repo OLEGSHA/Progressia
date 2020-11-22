@@ -18,69 +18,70 @@
 package ru.windcorp.progressia.client.graphics.backend.shaders.uniforms;
 
 import ru.windcorp.progressia.client.graphics.backend.shaders.Program;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class Uniform {
-	
+
 	protected final int handle;
 	private final Program program;
-	
+
 	public Uniform(int handle, Program program) {
 		if (handle < 0) {
-			throw new RuntimeException("Bad handle: " + handle);
+			CrashReports.report(null, "Bad handle: %d", handle);
 		}
-		
+
 		this.handle = handle;
 		this.program = program;
 	}
-	
+
 	public int getHandle() {
 		return handle;
 	}
-	
+
 	public Program getProgram() {
 		return program;
 	}
-	
+
 	public Uniform1Float as1Float() {
 		return new Uniform1Float(handle, program);
 	}
-	
+
 	public Uniform1Int as1Int() {
 		return new Uniform1Int(handle, program);
 	}
-	
+
 	public Uniform2Float as2Float() {
 		return new Uniform2Float(handle, program);
 	}
-	
+
 	public Uniform2Int as2Int() {
 		return new Uniform2Int(handle, program);
 	}
-	
+
 	public Uniform3Float as3Float() {
 		return new Uniform3Float(handle, program);
 	}
-	
+
 	public Uniform3Int as3Int() {
 		return new Uniform3Int(handle, program);
 	}
-	
+
 	public Uniform4Float as4Float() {
 		return new Uniform4Float(handle, program);
 	}
-	
+
 	public Uniform4Int as4Int() {
 		return new Uniform4Int(handle, program);
 	}
-	
+
 	public Uniform2Matrix as2Matrix() {
 		return new Uniform2Matrix(handle, program);
 	}
-	
+
 	public Uniform3Matrix as3Matrix() {
 		return new Uniform3Matrix(handle, program);
 	}
-	
+
 	public Uniform4Matrix as4Matrix() {
 		return new Uniform4Matrix(handle, program);
 	}

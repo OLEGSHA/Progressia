@@ -22,9 +22,9 @@ import ru.windcorp.progressia.client.graphics.texture.Atlases.AtlasGroup;
 import ru.windcorp.progressia.client.graphics.texture.SimpleTexture;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.common.resource.ResourceManager;
-import ru.windcorp.progressia.common.util.NamespacedRegistry;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
-public class BlockRenderRegistry extends NamespacedRegistry<BlockRender> {
+public class BlockRenderRegistry extends NamespacedInstanceRegistry<BlockRender> {
 	
 	private static final BlockRenderRegistry INSTANCE =
 			new BlockRenderRegistry();

@@ -11,6 +11,7 @@ import ru.windcorp.progressia.common.comms.packets.PacketWorldChange;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.LowOverheadCache;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.block.BlockData;
@@ -21,50 +22,54 @@ import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.Server;
 
 public class ImplementedChangeTracker implements Changer {
-	
+
 	public static interface ChangeImplementation {
 		void applyOnServer(WorldData world);
 		Packet asPacket();
 	}
-	
+
 	private static class SetBlock
 	extends PacketWorldChange
 	implements ChangeImplementation {
 
 		private final Vec3i position = new Vec3i();
 		private BlockData block;
-		
+
 		public SetBlock() {
-			super("Core", "SetBlock");
+			this("Core:SetBlock");
 		}
 		
+		protected SetBlock(String id) {
+			super(id);
+		}
+
 		public void initialize(Vec3i position, BlockData block) {
 			this.position.set(position.x, position.y, position.z);
 			this.block = block;
 		}
-		
+
 		@Override
 		public void applyOnServer(WorldData world) {
 			Vec3i blockInChunk = Vectors.grab3i();
 			Coordinates.convertInWorldToInChunk(position, blockInChunk);
-			
-			world.getChunkByBlock(position).setBlock(blockInChunk, block);
-			
+
+			world.getChunkByBlock(position).setBlock(blockInChunk, block, true);
+
 			Vectors.release(blockInChunk);
 		}
-		
+
 		@Override
 		public void apply(WorldData world) {
 			applyOnServer(world);
 		}
-		
+
 		@Override
 		public Packet asPacket() {
 			return this;
 		}
-		
+
 	}
-	
+
 	private static class AddOrRemoveTile
 	extends PacketWorldChange
 	implements ChangeImplementation {
@@ -72,13 +77,17 @@ public class ImplementedChangeTracker implements Changer {
 		private final Vec3i position = new Vec3i();
 		private BlockFace face;
 		private TileData tile;
-		
+
 		private boolean shouldAdd;
-		
+
 		public AddOrRemoveTile() {
-			super("Core", "AddOrRemoveTile");
+			this("Core:AddOrRemoveTile");
 		}
 		
+		protected AddOrRemoveTile(String id) {
+			super(id);
+		}
+
 		public void initialize(
 				Vec3i position, BlockFace face,
 				TileData tile,
@@ -89,52 +98,51 @@ public class ImplementedChangeTracker implements Changer {
 			this.tile = tile;
 			this.shouldAdd = shouldAdd;
 		}
-		
+
 		@Override
 		public void applyOnServer(WorldData world) {
 			Vec3i blockInChunk = Vectors.grab3i();
 			Coordinates.convertInWorldToInChunk(position, blockInChunk);
-			
-			List<TileData> tiles = world.getChunkByBlock(position)
-					.getTiles(blockInChunk, face);
-			
+
+			List<TileData> tiles = world.getChunkByBlock(position).getTiles(blockInChunk, face);
+
 			if (shouldAdd) {
 				tiles.add(tile);
 			} else {
 				tiles.remove(tile);
 			}
-			
+
 			Vectors.release(blockInChunk);
 		}
-		
+
 		@Override
 		public void apply(WorldData world) {
 			applyOnServer(world);
 		}
-		
+
 		@Override
 		public Packet asPacket() {
 			return this;
 		}
-		
+
 	}
-	
+
 	private static class ChangeEntity implements ChangeImplementation {
-		
+
 		private EntityData entity;
 		private Change<?> change;
-		
+
 		private final PacketEntityChange packet = new PacketEntityChange();
 
 		public <T extends EntityData> void set(T entity, Change<T> change) {
 			this.entity = entity;
 			this.change = change;
-			
+
 			packet.setEntityId(entity.getEntityId());
 			try {
 				entity.write(packet.getWriter(), IOContext.COMMS);
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				CrashReports.report(e, "Could not write entity %s", entity);
 			}
 		}
 
@@ -142,11 +150,11 @@ public class ImplementedChangeTracker implements Changer {
 		@Override
 		public void applyOnServer(WorldData world) {
 			((Change<EntityData>) change).change(entity);
-			
+
 			try {
 				entity.write(packet.getWriter(), IOContext.COMMS);
 			} catch (IOException e) {
-				throw new RuntimeException("Entity could not be written", e);
+				CrashReports.report(e, "Could not write entity %s", entity);
 			}
 		}
 
@@ -154,11 +162,11 @@ public class ImplementedChangeTracker implements Changer {
 		public Packet asPacket() {
 			return packet;
 		}
-		
+
 	}
 
 	private final List<ChangeImplementation> changes = new ArrayList<>(1024);
-	
+
 	private final LowOverheadCache<SetBlock> setBlockCache =
 			new LowOverheadCache<>(SetBlock::new);
 	
@@ -174,21 +182,21 @@ public class ImplementedChangeTracker implements Changer {
 		change.initialize(pos, block);
 		changes.add(change);
 	}
-	
+
 	@Override
 	public void addTile(Vec3i block, BlockFace face, TileData tile) {
 		AddOrRemoveTile change = addOrRemoveTileCache.grab();
 		change.initialize(block, face, tile, true);
 		changes.add(change);
 	}
-	
+
 	@Override
 	public void removeTile(Vec3i block, BlockFace face, TileData tile) {
 		AddOrRemoveTile change = addOrRemoveTileCache.grab();
 		change.initialize(block, face, tile, false);
 		changes.add(change);
 	}
-	
+
 	@Override
 	public <T extends EntityData> void changeEntity(
 			T entity, Change<T> change
@@ -197,7 +205,7 @@ public class ImplementedChangeTracker implements Changer {
 		changeRecord.set(entity, change);
 		changes.add(changeRecord);
 	}
-	
+
 	public void applyChanges(Server server) {
 		changes.forEach(c -> c.applyOnServer(server.getWorld().getData()));
 		changes.stream().map(ChangeImplementation::asPacket).filter(Objects::nonNull).forEach(
@@ -206,7 +214,7 @@ public class ImplementedChangeTracker implements Changer {
 		changes.forEach(this::release);
 		changes.clear();
 	}
-	
+
 	private void release(ChangeImplementation c) {
 		if (c instanceof SetBlock) {
 			setBlockCache.release((SetBlock) c);

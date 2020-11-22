@@ -17,12 +17,18 @@
  *******************************************************************************/
 package ru.windcorp.progressia.common.world.block;
 
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.collision.AABB;
+import ru.windcorp.progressia.common.collision.CollisionModel;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 public class BlockData extends Namespaced {
 
-	public BlockData(String namespace, String name) {
-		super(namespace, name);
+	public BlockData(String id) {
+		super(id);
+	}
+	
+	public CollisionModel getCollisionModel() {
+		return AABB.UNIT_CUBE;
 	}
 
 }

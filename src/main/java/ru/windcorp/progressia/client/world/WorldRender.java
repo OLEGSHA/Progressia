@@ -29,7 +29,9 @@ import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.world.entity.EntityRenderRegistry;
 import ru.windcorp.progressia.client.world.entity.EntityRenderable;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.ChunkDataListeners;
 import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.WorldDataListener;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class WorldRender {
@@ -43,9 +45,18 @@ public class WorldRender {
 	public WorldRender(WorldData data) {
 		this.data = data;
 		
-		for (ChunkData chunkData : data.getChunks()) {
-			chunks.put(chunkData, new ChunkRender(this, chunkData));
-		}
+		data.addListener(ChunkDataListeners.createAdder(new ChunkUpdateListener(this)));
+		data.addListener(new WorldDataListener() {
+			@Override
+			public void onChunkLoaded(WorldData world, ChunkData chunk) {
+				chunks.put(chunk, new ChunkRender(WorldRender.this, chunk));
+			}
+			
+			@Override
+			public void beforeChunkUnloaded(WorldData world, ChunkData chunk) {
+				chunks.remove(chunk);
+			}
+		});
 	}
 	
 	public WorldData getData() {

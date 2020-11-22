@@ -17,6 +17,7 @@
  *******************************************************************************/
 package ru.windcorp.progressia.common.world;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -24,8 +25,10 @@ import glm.vec._3.i.Vec3i;
 import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class WorldData {
@@ -42,14 +45,30 @@ public class WorldData {
 	private final Collection<EntityData> entities =
 			Collections.unmodifiableCollection(entitiesById.valueCollection());
 	
+	private float time = 0;
+	
+	private final Collection<WorldDataListener> listeners =
+			Collections.synchronizedCollection(new ArrayList<>());
+	
 	public WorldData() {
-		final int size = 1;
 		
-		for (int x = -(size / 2); x <= (size / 2); ++x) {
-			for (int y = -(size / 2); y <= (size / 2); ++y) {
-				addChunk(new ChunkData(x, y, 0, this));
+	}
+	
+	public void tmp_generate() {
+		final int size = 1;
+		Vec3i cursor = new Vec3i(0, 0, 0);
+		
+		for (cursor.x = -(size / 2); cursor.x <= (size / 2); ++cursor.x) {
+			for (cursor.y = -(size / 2); cursor.y <= (size / 2); ++cursor.y) {
+				ChunkData chunk = new ChunkData(cursor, this);
+				addChunkListeners(chunk);
+				addChunk(chunk);
 			}
 		}
+	}
+	
+	private void addChunkListeners(ChunkData chunk) {
+		getListeners().forEach(l -> l.getChunkListeners(this, chunk.getPosition(), chunk::addListener));
 	}
 	
 	private synchronized void addChunk(ChunkData chunk) {
@@ -58,14 +77,20 @@ public class WorldData {
 		chunk.forEachEntity(entity ->
 			entitiesById.put(entity.getEntityId(), entity)
 		);
+		
+		chunk.onLoaded();
+		getListeners().forEach(l -> l.onChunkLoaded(this, chunk));
 	}
 	
 //	private synchronized void removeChunk(ChunkData chunk) {
-//		chunksByPos.remove(getChunkKey(chunk));
+//		getListeners().forEach(l -> l.beforeChunkUnloaded(this, chunk));
+//		chunk.beforeUnloaded();
 //		
 //		chunk.forEachEntity(entity ->
 //			entitiesById.remove(entity.getEntityId())
 //		);
+//		
+//		chunksByPos.remove(getChunkKey(chunk));
 //	}
 	
 	private static long getChunkKey(ChunkData chunk) {
@@ -84,6 +109,31 @@ public class WorldData {
 		return result;
 	}
 	
+	public BlockData getBlock(Vec3i blockInWorld) {
+		ChunkData chunk = getChunkByBlock(blockInWorld);
+		if (chunk == null) return null;
+		
+		Vec3i blockInChunk = Vectors.grab3i();
+		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
+		BlockData result = chunk.getBlock(blockInChunk);
+		
+		return result;
+	}
+	
+	public void setBlock(Vec3i blockInWorld, BlockData block, boolean notify) {
+		ChunkData chunk = getChunkByBlock(blockInWorld);
+		if (chunk == null)
+			throw new IllegalCoordinatesException(
+					"Coordinates "
+					+ "(" + blockInWorld.x + "; " + blockInWorld.y + "; " + blockInWorld.z + ") "
+					+ "do not belong to a loaded chunk"
+			);
+		
+		Vec3i blockInChunk = Vectors.grab3i();
+		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
+		chunk.setBlock(blockInChunk, block, notify);
+	}
+	
 	public Collection<ChunkData> getChunks() {
 		return chunks;
 	}
@@ -94,6 +144,39 @@ public class WorldData {
 	
 	public Collection<EntityData> getEntities() {
 		return entities;
+	}
+	
+	public float getTime() {
+		return time;
+	}
+	
+	public void advanceTime(float change) {
+		this.time += change;
+	}
+	
+	public CollisionModel getCollisionModelOfBlock(Vec3i blockInWorld) {
+		ChunkData chunk = getChunkByBlock(blockInWorld);
+		if (chunk == null) return null;
+		
+		Vec3i blockInChunk = Vectors.grab3i();
+		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
+		BlockData block = chunk.getBlock(blockInChunk);
+		Vectors.release(blockInChunk);
+		
+		if (block == null) return null;
+		return block.getCollisionModel();
+	}
+	
+	public Collection<WorldDataListener> getListeners() {
+		return listeners;
+	}
+
+	public void addListener(WorldDataListener e) {
+		listeners.add(e);
+	}
+
+	public void removeListener(WorldDataListener o) {
+		listeners.remove(o);
 	}
 	
 }

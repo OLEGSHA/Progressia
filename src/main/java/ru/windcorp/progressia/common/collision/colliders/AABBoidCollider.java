@@ -2,26 +2,25 @@ package ru.windcorp.progressia.common.collision.colliders;
 
 import glm.mat._3.Mat3;
 import glm.vec._3.Vec3;
-import ru.windcorp.progressia.common.collision.AABB;
-import ru.windcorp.progressia.common.collision.Collideable;
-import ru.windcorp.progressia.common.collision.CollisionWall;
+import ru.windcorp.progressia.common.collision.*;
 import ru.windcorp.progressia.common.collision.colliders.Collider.ColliderWorkspace;
 import ru.windcorp.progressia.common.collision.colliders.Collider.Collision;
 import ru.windcorp.progressia.common.util.Matrices;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.block.BlockFace;
 
-class AABBWithAABBCollider {
+class AABBoidCollider {
 	
 	static Collider.Collision computeModelCollision(
 			Collideable aBody, Collideable bBody,
-			AABB aModel, AABB bModel,
+			AABBoid aModel, AABBoid bModel,
 			float tickLength,
 			ColliderWorkspace workspace
 	) {
 		Collideable obstacleBody = bBody;
 		Collideable colliderBody = aBody;
-		AABB obstacleModel = bModel;
-		AABB colliderModel = aModel;
+		AABBoid obstacleModel = bModel;
+		AABBoid colliderModel = aModel;
 		
 		Collision result = null;
 		
@@ -32,7 +31,8 @@ class AABBWithAABBCollider {
 		computeCollisionVelocity(collisionVelocity, obstacleBody, colliderBody);
 		
 		// For every wall of collision space
-		for (CollisionWall wall : originCollisionSpace.getFaces()) {
+		for (int i = 0; i < BlockFace.BLOCK_FACE_COUNT; ++i) {
+			Wall wall = originCollisionSpace.getWall(i);
 				
 			Collision collision = computeWallCollision(
 					wall, colliderModel,
@@ -80,12 +80,21 @@ class AABBWithAABBCollider {
 		Vectors.release(colliderVelocity);
 	}
 
-	private static AABB createOriginCollisionSpace(AABB obstacle, AABB collider, AABB output) {
-		output.setOrigin(obstacle.getOrigin());
+	private static AABB createOriginCollisionSpace(AABBoid obstacle, AABBoid collider, AABB output) {
+		Vec3 obstacleOrigin = Vectors.grab3();
+		Vec3 obstacleSize = Vectors.grab3();
+		Vec3 colliderSize = Vectors.grab3();
 		
-		Vec3 size = Vectors.grab3().set(obstacle.getSize()).add(collider.getSize());
-		output.setSize(size);
-		Vectors.release(size);
+		obstacle.getOrigin(obstacleOrigin);
+		output.setOrigin(obstacleOrigin);
+		
+		obstacle.getSize(obstacleSize);
+		collider.getSize(colliderSize);
+		output.setSize(obstacleSize.add(colliderSize));
+		
+		Vectors.release(obstacleOrigin);
+		Vectors.release(obstacleSize);
+		Vectors.release(colliderSize);
 		
 		return output;
 	}
@@ -134,27 +143,34 @@ class AABBWithAABBCollider {
 	 * If all conditions are satisfied, then the moment of impact is t0 + t.
 	 */
 	private static Collision computeWallCollision(
-			CollisionWall obstacleWall,
-			AABB colliderModel,
+			Wall obstacleWall,
+			AABBoid colliderModel,
 			Vec3 collisionVelocity,
 			float tickLength, ColliderWorkspace workspace,
 			Collideable aBody, Collideable bBody
 	) {
-		Vec3 w = obstacleWall.getWidth();
-		Vec3 h = obstacleWall.getHeight();
+		Vec3 w = Vectors.grab3();
+		Vec3 h = Vectors.grab3();
 		Vec3 v = Vectors.grab3();
 		Mat3 m = Matrices.grab3(); // The matrix [w h -v]
 		Vec3 r = Vectors.grab3();
+		Vec3 r_line = Vectors.grab3();
+		Vec3 r_wall = Vectors.grab3();
 		Vec3 xyt = Vectors.grab3();
 		
 		try {
+			obstacleWall.getWidth(w);
+			obstacleWall.getHeight(h);
+			
 			v.set(collisionVelocity);
 			
 			if (isExiting(v, w, h)) {
 				return null;
 			}
 			
-			r.set(colliderModel.getOrigin()).sub(obstacleWall.getOrigin());
+			obstacleWall.getOrigin(r_wall);
+			colliderModel.getOrigin(r_line);
+			r.set(r_line).sub(r_wall);
 			m.c0(w).c1(h).c2(v.negate());
 			
 			if (Math.abs(m.det()) < 1e-6) {
@@ -179,9 +195,13 @@ class AABBWithAABBCollider {
 			
 			return workspace.grab().set(aBody, bBody, obstacleWall, t);
 		} finally {
+			Vectors.release(w);
+			Vectors.release(h);
 			Vectors.release(v);
-			Vectors.release(r);
 			Matrices.release(m);
+			Vectors.release(r);
+			Vectors.release(r_line);
+			Vectors.release(r_wall);
 			Vectors.release(xyt);
 		}
 	}
@@ -193,6 +213,6 @@ class AABBWithAABBCollider {
 		return result;
 	}
 
-	private AABBWithAABBCollider() {}
+	private AABBoidCollider() {}
 
 }

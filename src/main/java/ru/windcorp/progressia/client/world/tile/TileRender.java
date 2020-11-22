@@ -3,13 +3,13 @@ package ru.windcorp.progressia.client.world.tile;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizer;
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class TileRender extends Namespaced {
 
-	public TileRender(String namespace, String name) {
-		super(namespace, name);
+	public TileRender(String id) {
+		super(id);
 	}
 	
 	public void render(ShapeRenderHelper renderer, BlockFace face) {

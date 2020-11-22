@@ -5,7 +5,11 @@ public class PacketSetLocalPlayer extends Packet {
 	private long localPlayerEntityId;
 
 	public PacketSetLocalPlayer(long entityId) {
-		super("Core", "SetLocalPlayer");
+		this("Core:SetLocalPlayer", entityId);
+	}
+	
+	protected PacketSetLocalPlayer(String id, long entityId) {
+		super(id);
 		this.localPlayerEntityId = entityId;
 	}
 	

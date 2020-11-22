@@ -10,8 +10,8 @@ public class EntityDataRegistry extends StatefulObjectRegistry<EntityData> {
 		return INSTANCE;
 	}
 	
-	public void register(String namespace, String name) {
-		super.register(namespace, name, () -> new EntityData(namespace, name));
+	public void register(String id) {
+		super.register(id, () -> new EntityData(id));
 	}
 
 }

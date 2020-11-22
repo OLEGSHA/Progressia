@@ -19,8 +19,8 @@ public class TestEntityRenderStatie extends EntityRender {
 			.setColorMultiplier(1, 1, 0)
 			.create();
 
-	public TestEntityRenderStatie() {
-		super("Test", "Statie");
+	public TestEntityRenderStatie(String id) {
+		super(id);
 	}
 
 	@Override

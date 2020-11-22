@@ -16,6 +16,7 @@ public class ServerState {
 	
 	public static void startServer() {
 		Server server = new Server(new WorldData());
+		server.getWorld().getData().tmp_generate();
 		setInstance(server);
 		server.start();
 	}

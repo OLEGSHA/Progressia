@@ -1,12 +1,12 @@
 package ru.windcorp.progressia.server.world.tile;
 
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class TileLogic extends Namespaced {
 
-	public TileLogic(String namespace, String name) {
-		super(namespace, name);
+	public TileLogic(String id) {
+		super(id);
 	}
 	
 	public boolean canOccupyFace(TileTickContext context) {

@@ -20,8 +20,8 @@ public class EntityData extends StatefulObject implements Collideable {
 	
 	private double age = 0;
 
-	public EntityData(String namespace, String name) {
-		super(EntityDataRegistry.getInstance(), namespace, name);
+	public EntityData(String id) {
+		super(EntityDataRegistry.getInstance(), id);
 	}
 	
 	public Vec3 getPosition() {
@@ -118,6 +118,16 @@ public class EntityData extends StatefulObject implements Collideable {
 	@Override
 	public void changeVelocityOnCollision(Vec3 velocityChange) {
 		getVelocity().add(velocityChange);
+	}
+	
+	public Vec3 getLookingAtVector(Vec3 output) {
+		output.set(
+				 Math.cos(getPitch()) * Math.cos(getYaw()),
+				 Math.cos(getPitch()) * Math.sin(getYaw()),
+				-Math.sin(getPitch())
+		);
+		
+		return output;
 	}
 
 }

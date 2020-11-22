@@ -43,10 +43,8 @@ extends AbstractStatefulObjectLayout {
 	}
 	
 	@Override
-	public StateFieldBuilder getBuilder(String namespace, String name) {
-		return new InspectingStateFieldBuilder(
-				namespace, name
-		);
+	public StateFieldBuilder getBuilder(String id) {
+		return new InspectingStateFieldBuilder(id);
 	}
 	
 	private class InspectingStateFieldBuilder implements StateFieldBuilder {
@@ -56,7 +54,7 @@ extends AbstractStatefulObjectLayout {
 			@Override
 			public IntStateField build() {
 				return registerField(new IntStateField(
-						namespace, name,
+						id,
 						isLocal,
 						fieldIndexCounters.getIntsThenIncrement()
 				));
@@ -64,16 +62,12 @@ extends AbstractStatefulObjectLayout {
 			
 		}
 		
-		private final String namespace;
-		private final String name;
+		private final String id;
 		
 		private boolean isLocal = true;
 
-		public InspectingStateFieldBuilder(
-				String namespace, String name
-		) {
-			this.namespace = namespace;
-			this.name = name;
+		public InspectingStateFieldBuilder(String id) {
+			this.id = id;
 		}
 
 		@Override

@@ -32,8 +32,8 @@ public class TestEntityRenderJavapony extends EntityRender {
 	private final Renderable rightForeLeg;
 	private final Renderable rightHindLeg;
 
-	public TestEntityRenderJavapony() {
-		super("Test", "Javapony");
+	public TestEntityRenderJavapony(String id) {
+		super(id);
 		
 		ComplexTexture texture = new ComplexTexture(
 				EntityRenderRegistry.getEntityTexture("javapony"),

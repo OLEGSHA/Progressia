@@ -20,6 +20,7 @@ package ru.windcorp.progressia.common.world;
 import static ru.windcorp.progressia.common.world.block.BlockFace.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -63,8 +64,11 @@ public class ChunkData {
 	private final List<EntityData> entities =
 			Collections.synchronizedList(new ArrayList<>());
 	
-	public ChunkData(int x, int y, int z, WorldData world) {
-		this.position.set(x, y, z);
+	private final Collection<ChunkDataListener> listeners =
+			Collections.synchronizedCollection(new ArrayList<>());
+	
+	public ChunkData(Vec3i position, WorldData world) {
+		this.position.set(position.x, position.y, position.z);
 		this.world = world;
 		
 		tmp_generate();
@@ -80,7 +84,7 @@ public class ChunkData {
 		TileData flowers = TileDataRegistry.getInstance().get("Test:YellowFlowers");
 		TileData sand = TileDataRegistry.getInstance().get("Test:Sand");
 	
-		Vec3i aPoint = new Vec3i(5, 0, BLOCKS_PER_CHUNK + BLOCKS_PER_CHUNK/2);
+		Vec3i aPoint = new Vec3i(5, 0, BLOCKS_PER_CHUNK + BLOCKS_PER_CHUNK/2).sub(getPosition());
 		Vec3i pos = new Vec3i();
 		
 		for (int x = 0; x < BLOCKS_PER_CHUNK; ++x) {
@@ -92,11 +96,11 @@ public class ChunkData {
 					pos.set(x, y, z);
 					
 					if (f > 17) {
-						setBlock(pos, stone);
+						setBlock(pos, stone, false);
 					} else if (f > 14) {
-						setBlock(pos, dirt);
+						setBlock(pos, dirt, false);
 					} else {
-						setBlock(pos, air);
+						setBlock(pos, air, false);
 					}
 					
 				}
@@ -132,26 +136,36 @@ public class ChunkData {
 			}
 		}
 		
-		EntityData javapony = EntityDataRegistry.getInstance().create("Test:Javapony");
-		javapony.setEntityId(0x42);
-		javapony.setPosition(new Vec3(-6, -6, 20));
-		javapony.setDirection(new Vec2(
-				(float) Math.toRadians(40), (float) Math.toRadians(45)
-		));
-		getEntities().add(javapony);
-		
-		EntityData statie = EntityDataRegistry.getInstance().create("Test:Statie");
-		statie.setEntityId(0xDEADBEEF);
-		statie.setPosition(new Vec3(0, 15, 16));
-		getEntities().add(statie);
+		if (!getPosition().any()) {
+			EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
+			player.setEntityId(0x42);
+			player.setPosition(new Vec3(-6, -6, 20));
+			player.setDirection(new Vec2(
+					(float) Math.toRadians(40), (float) Math.toRadians(45)
+			));
+			getEntities().add(player);
+			
+			EntityData statie = EntityDataRegistry.getInstance().create("Test:Statie");
+			statie.setEntityId(0xDEADBEEF);
+			statie.setPosition(new Vec3(0, 15, 16));
+			getEntities().add(statie);
+		}
 	}
 
 	public BlockData getBlock(Vec3i posInChunk) {
 		return blocks[getBlockIndex(posInChunk)];
 	}
 
-	public void setBlock(Vec3i posInChunk, BlockData block) {
+	public void setBlock(Vec3i posInChunk, BlockData block, boolean notify) {
+		BlockData previous = blocks[getBlockIndex(posInChunk)];
 		blocks[getBlockIndex(posInChunk)] = block;
+		
+		if (notify) {
+			getListeners().forEach(l -> {
+				l.onChunkBlockChanged(this, posInChunk, previous, block);
+				l.onChunkChanged(this);
+			});
+		}
 	}
 	
 	public List<TileData> getTilesOrNull(Vec3i blockInChunk, BlockFace face) {
@@ -243,7 +257,7 @@ public class ChunkData {
 	
 	private static void checkLocalCoordinates(Vec3i posInChunk) {
 		if (!isInBounds(posInChunk)) {
-			throw new IllegalArgumentException(
+			throw new IllegalCoordinatesException(
 					"Coordinates " + str(posInChunk) + " "
 							+ "are not legal chunk coordinates"
 			);
@@ -329,8 +343,28 @@ public class ChunkData {
 		return world;
 	}
 	
+	public Collection<ChunkDataListener> getListeners() {
+		return listeners;
+	}
+	
+	public void addListener(ChunkDataListener listener) {
+		this.listeners.add(listener);
+	}
+	
+	public void removeListener(ChunkDataListener listener) {
+		this.listeners.remove(listener);
+	}
+	
 	private static String str(Vec3i v) {
 		return "(" + v.x + "; " + v.y + "; " + v.z + ")";
+	}
+
+	protected void onLoaded() {
+		getListeners().forEach(l -> l.onChunkLoaded(this));
+	}
+	
+	protected void beforeUnloaded() {
+		getListeners().forEach(l -> l.beforeChunkUnloaded(this));
 	}
 
 }

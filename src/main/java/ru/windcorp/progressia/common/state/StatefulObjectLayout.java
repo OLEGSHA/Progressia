@@ -43,6 +43,6 @@ public abstract class StatefulObjectLayout {
 	public abstract int computeHashCode(StatefulObject object);
 	public abstract boolean areEqual(StatefulObject a, StatefulObject b);
 	
-	public abstract StateFieldBuilder getBuilder(String namespace, String name);
+	public abstract StateFieldBuilder getBuilder(String id);
 
 }

@@ -26,5 +26,5 @@ public class ProgressiaClientMain {
 		ALTest.execute();
 		ProgressiaLauncher.launch(args, new ClientProxy());
 	}
-	
+
 }

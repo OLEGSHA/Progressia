@@ -26,7 +26,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.IntFunction;
+
+import ru.windcorp.jputil.ArrayUtil;
 
 public class StringUtil {
 	
@@ -364,6 +367,106 @@ public class StringUtil {
 		}
 		
 		result[resultIndex] = sb.toString();
+		
+		return result;
+	}
+	
+	/**
+	 * Splits {@code src} at index {@code at} discarding the character at that index.
+	 * <p>
+	 * Indices {@code 0} and {@code src.length() - 1} produce {@code str} excluding
+	 * the specified character and {@code ""}.
+	 * <p>
+	 * @param src the String to split
+	 * @param at index to split at
+	 * @throws IllegalArgumentException if the index is out of bounds for {@code src}
+	 * @return an array containing the substrings, in order of encounter in {@code src}.
+	 * Its length is always 2.
+	 */
+	public static String[] splitAt(String src, int at) {
+		Objects.requireNonNull(src, "src");
+		
+		if (at < 0) {
+			throw new StringIndexOutOfBoundsException(at);
+		} else if (at >= src.length()) {
+			throw new StringIndexOutOfBoundsException(at);
+		}
+		
+		if (at == 0) {
+			return new String[] {"", src.substring(1)};
+		} else if (at == src.length()) {
+			return new String[] {src.substring(0, src.length() - 1), ""};
+		}
+		
+		return new String[] {
+				src.substring(0, at),
+				src.substring(at + 1)
+		};
+	}
+	
+	/**
+	 * Splits {@code src} at indices {@code at} discarding characters at those indices.
+	 * <p>
+	 * Indices {@code 0} and {@code src.length() - 1} produce extra zero-length outputs.
+	 * Duplicate indices produce extra zero-length outputs.
+	 * <p>
+	 * Examples:
+	 * <pre>
+	 * splitAt("a.b.c", new int[] {1, 3})    -> {"a", "b", "c"}
+	 * splitAt("a..b",  new int[] {1, 2})    -> {"a", "", "b"}
+	 * splitAt(".b.",   new int[] {0, 2})    -> {"", "b", ""}
+	 * splitAt("a.b",   new int[] {1, 1, 1}) -> {"a", "", "", "b"}
+	 * </pre>
+	 * @param src the String to split
+	 * @param at indices to split at, in any order
+	 * @throws IllegalArgumentException if some index is out of bounds for {@code src}
+	 * @return an array containing the substrings, in order of encounter in {@code src}.
+	 * Its length is always {@code at.length + 1}.
+	 */
+	public static String[] splitAt(String src, int... at) {
+		Objects.requireNonNull(src, "src");
+		Objects.requireNonNull(at, "at");
+		
+		if (at.length == 0) return new String[] {src};
+		if (at.length == 1) return splitAt(src, at[0]);
+		
+		int[] indices; // Always sorted
+		
+		if (ArrayUtil.isSorted(at, true)) {
+			indices = at;
+		} else {
+			indices = at.clone();
+			Arrays.sort(indices);
+		}
+		
+		if (indices[0] < 0) {
+			throw new StringIndexOutOfBoundsException(indices[0]);
+		} else if (indices[indices.length - 1] >= src.length()) {
+			throw new StringIndexOutOfBoundsException(indices[indices.length - 1]);
+		}
+		
+		String[] result = new String[at.length + 1];
+		
+		int start = 0;
+		int resultIndex = 0;
+		for (int index : indices) {
+			int end = index;
+			
+			String substring;
+			
+			if (end <= start) {
+				// Duplicate or successive index
+				substring = "";
+			} else {
+				substring = src.substring(start, end);
+			}
+			
+			result[resultIndex] = substring;
+			resultIndex++;
+			start = end + 1;
+		}
+		
+		result[resultIndex] = src.substring(start);
 		
 		return result;
 	}
@@ -773,6 +876,37 @@ public class StringUtil {
 	public static char hexDigit(int value) {
 		if (value < 0xA) return (char) ('0' + value);
 		else             return (char) ('A' - 0xA + value);
+	}
+	
+	public static String replaceAll(String source, String substring, String replacement) {
+		Objects.requireNonNull(source, "source");
+		Objects.requireNonNull(substring, "substring");
+		
+		if (substring.isEmpty()) {
+			throw new IllegalArgumentException("substring is empty");
+		}
+
+		if (!source.contains(substring)) { // also passes if source is empty
+			return source;
+		}
+		
+		if (substring.equals(replacement)) { // null-safe
+			return source;
+		}
+		
+		StringBuilder sb = new StringBuilder(2 * source.length());
+		
+		for (int i = 0; i < source.length() - substring.length() + 1; ++i) {
+			if (source.startsWith(substring, i)) {
+				if (replacement != null) {
+					sb.append(replacement);
+				}
+			} else {
+				sb.append(source.charAt(i));
+			}
+		}
+		
+		return sb.toString();
 	}
 	
 }
