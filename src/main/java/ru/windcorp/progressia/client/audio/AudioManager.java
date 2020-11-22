@@ -26,7 +26,7 @@ public class AudioManager {
 	private static List<Speaker> soundSpeakers = new ArrayList<>(SOUNDS_NUM);
 	private static Speaker musicSpeaker;
 	private static ArrayList<SoundType> soundsBuffer = new ArrayList<>();
-	
+
 	public static void initAL() {
 		String defaultDeviceName = alcGetString(
 				0,
@@ -45,13 +45,13 @@ public class AudioManager {
 		checkALError();
 		createBuffers();
 	}
-	
+
 	public static void update() {
 		// Position of the listener
 		Listener.getInstance().update();
 
 	}
-	
+
 	private static Speaker getLastSpeaker() {
 		Speaker speaker;
 		do {
@@ -72,9 +72,9 @@ public class AudioManager {
 			}
 		}
 		throw new Exception("ERROR: The selected sound is not loaded or" +
-							" not exists");
+				" not exists");
 	}
-	
+
 	public static Speaker initSpeaker(String soundID) {
 		Speaker speaker = getLastSpeaker();
 		try {
@@ -103,29 +103,30 @@ public class AudioManager {
 		}
 	}
 
-	public static void loadSound(String path, String namespace, String name,
-								 AudioFormat format) {
+	public static void loadSound(String path, String id, AudioFormat format) {
 		if (format == AudioFormat.MONO) {
-			soundsBuffer.add(AudioReader.readAsMono(path, namespace, name));
+			soundsBuffer.add(AudioReader.readAsMono(path, id));
 		} else
 		{
-			soundsBuffer.add(AudioReader.readAsStereo(path, namespace, name));
+			soundsBuffer.add(AudioReader.readAsStereo(path, id));
 		}
 	}
-	
+
 	public static void closeAL() {
-		//clearSounds();
-		//TODO replace alDeleteSources(SOURCES);
 		for (Speaker s : soundSpeakers) {
 			alDeleteBuffers(s.getAudioData());
+			alDeleteBuffers(s.getSourceData());
 		}
+		alDeleteBuffers(musicSpeaker.getAudioData());
+		alDeleteBuffers(musicSpeaker.getSourceData());
+
 		alcCloseDevice(device);
 	}
-	
+
 	public static ALCapabilities getALCapabilities() {
 		return alCapabilities;
 	}
-	
+
 	public static ALCCapabilities getDeviceCapabilities() {
 		return deviceCapabilities;
 	}
@@ -138,5 +139,5 @@ public class AudioManager {
 
 		musicSpeaker = new Speaker();
 	}
-	
+
 }

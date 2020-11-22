@@ -11,44 +11,39 @@ import static org.lwjgl.stb.STBVorbis.*;
 import static org.lwjgl.openal.AL10.*;
 
 public class AudioReader {
-	
+
 	private AudioReader() {}
-	
+
 	// TODO fix converting from mono-stereo
-	// TODO change audio naming from full path to just name
-	private static SoundType readAsSpecified(String path, String audioNamespace,
-											 String audioName, int format) {
+	private static SoundType readAsSpecified(String path, String id, int format) {
 		IntBuffer channelBuffer = BufferUtils.createIntBuffer(1);
 		IntBuffer rateBuffer = BufferUtils.createIntBuffer(1);
-		
+
 		Resource res = ResourceManager.getResource(path);
-		
+
 		ShortBuffer rawAudio = decodeVorbis(res, channelBuffer, rateBuffer);
-		
-		return new SoundType(audioNamespace ,audioName, rawAudio, format,
+
+		return new SoundType(id, rawAudio, format,
 				rateBuffer.get(0));
 	}
-	
-	public static SoundType readAsMono(String path, String audioNamespace,
-									   String audioName) {
-		return readAsSpecified(path, audioNamespace,
-				audioName, AL_FORMAT_MONO16);
+
+	public static SoundType readAsMono(String path, String id) {
+		return readAsSpecified(path, id, AL_FORMAT_MONO16);
 	}
-	
-	public static SoundType readAsStereo(String path,String audioNamespace,
-										 String audioName) {
-		return readAsSpecified(path, audioNamespace, audioName, AL_FORMAT_STEREO16);
+
+	public static SoundType readAsStereo(String path,String id) {
+		return readAsSpecified(path, id, AL_FORMAT_STEREO16);
 	}
-	
+
 	private static ShortBuffer decodeVorbis(
-		Resource dataToDecode,
-		IntBuffer channelsBuffer,
-		IntBuffer rateBuffer
+			Resource dataToDecode,
+			IntBuffer channelsBuffer,
+			IntBuffer rateBuffer
 	) {
 		return stb_vorbis_decode_memory(
-			dataToDecode.readAsBytes(),
-			channelsBuffer,
-			rateBuffer
+				dataToDecode.readAsBytes(),
+				channelsBuffer,
+				rateBuffer
 		);
 	}
 }

@@ -2,30 +2,27 @@ package ru.windcorp.progressia.client.audio;
 
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.audio.backend.Speaker;
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
-public class Music
-        extends Namespaced {
+public class Music extends Namespaced {
     private Vec3 position = new Vec3();
     private Vec3 velocity = new Vec3();
     private float pitch = 1.0f;
     private float gain = 1.0f;
 
 
-    public Music(String namespace,
-                       String name)
+    public Music(String id)
     {
-        super(namespace, name);
+        super(id);
     }
 
-    public Music(String namespace,
-                       String name,
-                       Vec3 position,
-                       Vec3 velocity,
-                       float pitch,
-                       float gain)
+    public Music(String id,
+                 Vec3 position,
+                 Vec3 velocity,
+                 float pitch,
+                 float gain)
     {
-        this(namespace, name);
+        this(id);
         this.position = position;
         this.velocity = velocity;
         this.pitch = pitch;
@@ -46,9 +43,6 @@ public class Music
             speaker.play();
         }
     }
-
-    //TODO implement
-    public void stop() {}
 
     public void setGain(float gain) {
         this.gain = gain;

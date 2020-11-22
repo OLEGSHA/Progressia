@@ -2,7 +2,7 @@ package ru.windcorp.progressia.client.audio;
 
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.audio.backend.Speaker;
-import ru.windcorp.progressia.common.util.Namespaced;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 public class SoundEffect
         extends Namespaced {
@@ -13,20 +13,18 @@ public class SoundEffect
     private float gain = 1.0f;
 
 
-    public SoundEffect(String namespace,
-                       String name)
+    public SoundEffect(String id)
     {
-        super(namespace, name);
+        super(id);
     }
 
-    public SoundEffect(String namespace,
-                       String name,
+    public SoundEffect(String id,
                        Vec3 position,
                        Vec3 velocity,
                        float pitch,
                        float gain)
     {
-        this(namespace, name);
+        this(id);
         this.position = position;
         this.velocity = velocity;
         this.pitch = pitch;
@@ -47,9 +45,6 @@ public class SoundEffect
             speaker.play();
         }
     }
-
-    //TODO implement
-    public void stop() {}
 
     public void setGain(float gain) {
         this.gain = gain;

@@ -98,6 +98,10 @@ public class Speaker {
         return audioData;
     }
 
+    public int getSourceData() {
+        return sourceData;
+    }
+
     public void setAudioData(int audioData) {
         this.audioData = audioData;
         alSourcei(this.sourceData, AL_BUFFER, audioData);
