@@ -19,18 +19,29 @@ package ru.windcorp.progressia;
 
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.crash.analyzers.OutOfMemoryAnalyzer;
-import ru.windcorp.progressia.common.util.crash.providers.OSContextProvider;
+import ru.windcorp.progressia.common.util.crash.providers.*;
 
 public class ProgressiaLauncher {
 
+	public static String[] arguments;
+
 	public static void launch(String[] args, Proxy proxy) {
+		arguments = args.clone();
 		setupCrashReports();
 		proxy.initialize();
 	}
 
 	private static void setupCrashReports() {
+		// Context providers
 		CrashReports.registerProvider(new OSContextProvider());
+		CrashReports.registerProvider(new RAMContextProvider());
+		CrashReports.registerProvider(new JavaVersionContextProvider());
+		CrashReports.registerProvider(new OpenALContextProvider());
+		CrashReports.registerProvider(new ArgsContextProvider());
+		CrashReports.registerProvider(new LanguageContextProvider());
+		// Analyzers
 		CrashReports.registerAnalyzer(new OutOfMemoryAnalyzer());
+
 		Thread.setDefaultUncaughtExceptionHandler((Thread thread, Throwable t)-> {
 			CrashReports.report(t,"Uncaught exception in thread %s", thread.getName());
 		});

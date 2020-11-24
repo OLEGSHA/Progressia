@@ -94,14 +94,12 @@ public class CrashReports {
                 provider.provideContext(buf);
 
                 if (!buf.isEmpty()) {
-                    output.append("Provider name: ").append(provider.getName()).append("\n");
+                    output.append(StringUtilsTemp.center(provider.getName(), 80)).append("\n");
                     for (Map.Entry<String, String> entry : buf.entrySet()) {
                         output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
                     }
                 }
             } catch (Throwable t) {
-                output.append("\n");
-
                 String providerName;
 
                 try {
@@ -122,6 +120,10 @@ public class CrashReports {
 
         // Do a local copy to avoid deadlocks -OLEGSHA
         Analyzer[] localAnalyzersCopy = ANALYZERS.toArray(new Analyzer[ANALYZERS.size()]);
+
+        if (localAnalyzersCopy.length > 0) {
+            output.append(StringUtilsTemp.center("Analyzers", 80)).append("\n");
+        }
 
         for (Analyzer analyzer : localAnalyzersCopy) {
             if (analyzer == null)
@@ -157,7 +159,11 @@ public class CrashReports {
     }
 
     private static void appendMessageFormat(StringBuilder output, String messageFormat, Object... arg) {
-        output.append("Provided description: \n").append(String.format(messageFormat, arg)).append("\n");
+        output.append("Provided description: \n");
+        if (messageFormat.isEmpty())
+            output.append("none").append("\n");
+        else
+            output.append(String.format(messageFormat, arg)).append("\n");
 
         addSeparator(output);
     }
@@ -226,5 +232,26 @@ public class CrashReports {
 
     private static void addSeparator(StringBuilder sb) {
         sb.append(StringUtil.sequence('-', 80)).append("\n");
+    }
+}
+
+class StringUtilsTemp {
+    public static String center(String s, int size) {
+        return center(s, size, ' ');
+    }
+
+    public static String center(String s, int size, char pad) {
+        if (s == null || size <= s.length())
+            return s;
+
+        StringBuilder sb = new StringBuilder(size);
+        for (int i = 0; i < (size - s.length()) / 2; i++) {
+            sb.append(pad);
+        }
+        sb.append(s);
+        while (sb.length() < size) {
+            sb.append(pad);
+        }
+        return sb.toString();
     }
 }
