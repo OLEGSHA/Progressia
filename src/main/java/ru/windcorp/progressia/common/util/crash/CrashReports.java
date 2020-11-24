@@ -182,7 +182,7 @@ public class CrashReports {
 
     private static void export(String report) {
         try {
-            LOGGER.fatal("/n" + report);
+            LOGGER.fatal("\n" + report);
         } catch (Exception e) {
             // PLAK
         }
@@ -225,8 +225,6 @@ public class CrashReports {
     }
 
     private static void addSeparator(StringBuilder sb) {
-        sb.append(
-                // 80 chars
-                "--------------------------------------------------------------------------------").append("\n");
+        sb.append(StringUtil.sequence('-', 80)).append("\n");
     }
 }
