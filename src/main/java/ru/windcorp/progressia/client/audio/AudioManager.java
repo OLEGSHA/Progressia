@@ -1,9 +1,6 @@
 package ru.windcorp.progressia.client.audio;
 
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.ALC;
-import org.lwjgl.openal.ALCCapabilities;
-import org.lwjgl.openal.ALCapabilities;
+import org.lwjgl.openal.*;
 import ru.windcorp.progressia.client.audio.backend.AudioReader;
 import ru.windcorp.progressia.client.audio.backend.Listener;
 import ru.windcorp.progressia.client.audio.backend.SoundType;
@@ -138,6 +135,10 @@ public class AudioManager {
 		}
 
 		musicSpeaker = new Speaker();
+	}
+
+	public static String ALversion() {
+		return alGetString(AL11.AL_VERSION);
 	}
 
 }
