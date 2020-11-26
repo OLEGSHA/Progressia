@@ -1,9 +1,11 @@
 package ru.windcorp.progressia.server.world.block;
 
-import ru.windcorp.progressia.server.world.Changer;
+import org.apache.logging.log4j.LogManager;
 
 public interface UpdateableBlock {
 	
-	void update(BlockTickContext context, Changer changer);
+	default void update(BlockTickContext context) {
+		LogManager.getLogger().info("Updating block {} @ ({}; {}; {})", context.getBlock(), context.getBlockInWorld().x, context.getBlockInWorld().y, context.getBlockInWorld().z);
+	}
 
 }

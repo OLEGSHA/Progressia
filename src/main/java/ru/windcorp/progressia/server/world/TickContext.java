@@ -1,9 +1,8 @@
 package ru.windcorp.progressia.server.world;
 
-import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.WorldData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 
 public interface TickContext {
 	
@@ -15,12 +14,12 @@ public interface TickContext {
 		return getServer().getWorld();
 	}
 	
+	default WorldAccessor getAccessor() {
+		return getServer().getWorldAccessor();
+	}
+	
 	default WorldData getWorldData() {
 		return getWorld().getData();
 	}
-	
-	void requestBlockTick(Vec3i blockInWorld);
-	
-	void requestTileTick(Vec3i blockInWorld, BlockFace face, int layer);
 
 }

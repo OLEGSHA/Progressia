@@ -1,10 +1,8 @@
 package ru.windcorp.progressia.server.world.block;
 
-import ru.windcorp.progressia.server.world.Changer;
-
 public interface TickableBlock {
 
-	void tick(BlockTickContext context, Changer changer);
+	void tick(BlockTickContext context);
 
 	default boolean doesTickRegularly(BlockTickContext context) {
 		return false;

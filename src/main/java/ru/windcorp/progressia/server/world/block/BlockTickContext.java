@@ -10,20 +10,14 @@ public interface BlockTickContext extends ChunkTickContext {
 	 * Returns the current world coordinates.
 	 * @return the world coordinates of the block being ticked
 	 */
-	Vec3i getCoords();
-	
-	/**
-	 * Returns the current chunk coordinates.
-	 * @return the chunk coordinates of the block being ticked
-	 */
-	Vec3i getChunkCoords();
+	Vec3i getBlockInWorld();
 	
 	default BlockLogic getBlock() {
-		return getChunk().getBlock(getChunkCoords());
+		return getWorld().getBlock(getBlockInWorld());
 	}
 	
 	default BlockData getBlockData() {
-		return getChunkData().getBlock(getChunkCoords());
+		return getWorldData().getBlock(getBlockInWorld());
 	}
 
 }

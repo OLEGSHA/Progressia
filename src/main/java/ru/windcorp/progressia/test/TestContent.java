@@ -54,7 +54,7 @@ public class TestContent {
 				}
 		});
 		register(new BlockRenderNone("Test:Air"));
-		register(new BlockLogic("Test:Air"));
+		register(new TestBlockLogicAir("Test:Air"));
 
 		register(new BlockData("Test:Dirt"));
 		register(new BlockRenderOpaqueCube("Test:Dirt", getBlockTexture("dirt")));
@@ -76,19 +76,19 @@ public class TestContent {
 	private static void registerTiles() {
 		register(new TileData("Test:Grass"));
 		register(new TileRenderGrass("Test:Grass", getTileTexture("grass_top"), getTileTexture("grass_side")));
-		register(new TileLogic("Test:Grass"));
+		register(new TestTileLogicGrass("Test:Grass"));
 		
 		register(new TileData("Test:Stones"));
 		register(new TileRenderSimple("Test:Stones", getTileTexture("stones")));
-		register(new TileLogic("Test:Stones"));
+		register(new EdgeTileLogic("Test:Stones"));
 		
 		register(new TileData("Test:YellowFlowers"));
 		register(new TileRenderSimple("Test:YellowFlowers", getTileTexture("yellow_flowers")));
-		register(new TileLogic("Test:YellowFlowers"));
+		register(new EdgeTileLogic("Test:YellowFlowers"));
 		
 		register(new TileData("Test:Sand"));
 		register(new TileRenderSimple("Test:Sand", getTileTexture("sand")));
-		register(new TileLogic("Test:Sand"));
+		register(new EdgeTileLogic("Test:Sand"));
 	}
 
 	private static void registerEntities() {
@@ -125,7 +125,7 @@ public class TestContent {
 				block = BlockDataRegistry.getInstance().get("Test:Stone");
 			}
 			
-			server.getAdHocChanger().setBlock(z000, block);
+			server.getWorldAccessor().setBlock(z000, block);
 		}));
 		
 		data.register("Test:BreakBlock", ControlBreakBlockData::new);
@@ -222,7 +222,7 @@ public class TestContent {
 	
 	private static void onBlockBreakReceived(Server server, PacketControl packet, ru.windcorp.progressia.server.comms.Client client) {
 		Vec3i blockInWorld = ((ControlBreakBlockData) packet.getControl()).getBlockInWorld();
-		server.getAdHocChanger().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
+		server.getWorldAccessor().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
 	}
 	
 	private static void onBlockPlaceTrigger(ControlData control) {
@@ -238,7 +238,7 @@ public class TestContent {
 	private static void onBlockPlaceReceived(Server server, PacketControl packet, ru.windcorp.progressia.server.comms.Client client) {
 		Vec3i blockInWorld = ((ControlPlaceBlockData) packet.getControl()).getBlockInWorld();
 		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null) return;
-		server.getAdHocChanger().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Stone"));
+		server.getWorldAccessor().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Stone"));
 	}
 
 }

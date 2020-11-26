@@ -1,7 +1,6 @@
 package ru.windcorp.progressia.client.audio.backend;
 
 import org.lwjgl.BufferUtils;
-import ru.windcorp.progressia.client.audio.backend.SoundType;
 import ru.windcorp.progressia.common.resource.*;
 
 import java.nio.IntBuffer;

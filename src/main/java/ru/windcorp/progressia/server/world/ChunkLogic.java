@@ -12,7 +12,9 @@ import com.google.common.collect.Lists;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.world.tile.TileLocation;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
@@ -47,34 +49,33 @@ public class ChunkLogic {
 		MutableTileTickContext tileTickContext =
 				new MutableTileTickContext();
 		
-		blockTickContext.setWorld(getWorld());
-		blockTickContext.setChunk(this);
-		
-		tileTickContext.setWorld(getWorld());
-		tileTickContext.setChunk(this);
-		
 		data.forEachBlock(blockInChunk -> {
 			BlockLogic block = getBlock(blockInChunk);
 			
 			if (block instanceof TickableBlock) {
-				blockTickContext.setCoordsInChunk(blockInChunk);
+				Vec3i blockInWorld = Vectors.grab3i();
+				Coordinates.getInWorld(getData().getPosition(), blockInChunk, blockInWorld);
 				
-				if (((TickableBlock) block)
-						.doesTickRegularly(blockTickContext)
-				) {
+				blockTickContext.init(getWorld().getServer(), blockInWorld);
+
+				Vectors.release(blockInWorld);
+				
+				if (((TickableBlock) block).doesTickRegularly(blockTickContext)) {
 					tickingBlocks.add(new Vec3i(blockInChunk));
 				}
 			}
 		});
 		
 		data.forEachTile((loc, tileData) -> {
-			TileLogic tile =
-					TileLogicRegistry.getInstance().get(tileData.getId());
+			TileLogic tile = TileLogicRegistry.getInstance().get(tileData.getId());
 			
 			if (tile instanceof TickableTile) {
-				tileTickContext.setCoordsInChunk(loc.pos);
-				tileTickContext.setFace(loc.face);
-				tileTickContext.setLayer(loc.layer);
+				Vec3i blockInWorld = Vectors.grab3i();
+				Coordinates.getInWorld(getData().getPosition(), loc.pos, blockInWorld);
+				
+				tileTickContext.init(getWorld().getServer(), blockInWorld, loc.face, loc.layer);
+				
+				Vectors.release(blockInWorld);
 				
 				if (((TickableTile) tile).doesTickRegularly(tileTickContext)) {
 					tickingTiles.add(new TileLocation(loc));
@@ -109,8 +110,7 @@ public class ChunkLogic {
 		tickingTiles.forEach(location -> {
 			action.accept(
 					location,
-					getTilesOrNull(location.pos, location.face)
-							.get(location.layer)
+					getTilesOrNull(location.pos, location.face).get(location.layer)
 			);
 		});
 	}

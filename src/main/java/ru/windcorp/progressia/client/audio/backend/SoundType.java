@@ -26,15 +26,6 @@ public class SoundType extends Namespaced {
 		alBufferData(audioBuffer, format, rawAudio, sampleRate);
 	}
 
-	//TODO What is this (Eugene Smirnov)
-	private Speaker createSound(int source, int audio) {
-		if (!alIsBuffer(audio) || !alIsSource(source))
-			throw new RuntimeException();
-
-		alBufferData(audio, format, rawAudio, sampleRate);
-		return new Speaker(audio);
-	}
-
 	public void initSpeaker(Speaker speaker) {
 		speaker.setAudioData(audioBuffer);
 	}

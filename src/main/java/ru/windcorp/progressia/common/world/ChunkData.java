@@ -210,7 +210,11 @@ public class ChunkData {
 	private void createNormalTileContainer(Vec3i blockInChunk, BlockFace face) {
 		List<TileData> primaryList =
 				SizeLimitedList.wrap(
-						new ArrayList<>(TILES_PER_FACE), TILES_PER_FACE
+						new ChunkDataReportingList(
+								new ArrayList<>(TILES_PER_FACE),
+								this, blockInChunk, face
+						),
+						TILES_PER_FACE
 				);
 		
 		List<TileData> secondaryList = Lists.reverse(primaryList);

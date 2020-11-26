@@ -120,6 +120,15 @@ public final class BlockFace extends BlockRelation {
 		return counterFace;
 	}
 	
+	public BlockFace getCounter() {
+		return counterFace;
+	}
+	
+	public BlockFace getCounterAndMoveCursor(Vec3i cursor) {
+		cursor.add(getVector());
+		return counterFace;
+	}
+	
 	public int getId() {
 		return id;
 	}

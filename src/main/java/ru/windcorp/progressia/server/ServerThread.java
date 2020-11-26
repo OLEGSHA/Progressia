@@ -3,10 +3,9 @@ package ru.windcorp.progressia.server;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.logging.log4j.LogManager;
 
-import ru.windcorp.progressia.server.world.Ticker;
+import ru.windcorp.progressia.server.world.ticking.TickerCoordinator;
 
 public class ServerThread implements Runnable {
 	
@@ -39,14 +38,15 @@ public class ServerThread implements Runnable {
 					r -> new Thread(new ServerThreadTracker(r), "Server thread")
 			);
 	
-	private final Ticker ticker;
+	private final TickerCoordinator ticker;
 	
 	public ServerThread(Server server) {
 		this.server = server;
-		this.ticker = new Ticker(server);
+		this.ticker = new TickerCoordinator(server, 1);
 	}
 	
 	public void start() {
+		ticker.start();
 		executor.scheduleAtFixedRate(this, 0, 1000 / 20, TimeUnit.MILLISECONDS);
 	}
 	
@@ -54,14 +54,18 @@ public class ServerThread implements Runnable {
 	public void run() {
 		try {
 			server.tick();
-			ticker.run();
+			ticker.runOneTick();
 		} catch (Exception e) {
 			LogManager.getLogger(getClass()).error("Got an exception in server thread", e);
 		}
 	}
-	
+
 	public Server getServer() {
 		return server;
+	}
+	
+	public TickerCoordinator getTicker() {
+		return ticker;
 	}
 
 }

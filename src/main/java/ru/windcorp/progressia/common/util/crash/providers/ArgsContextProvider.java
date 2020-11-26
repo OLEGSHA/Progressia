@@ -1,6 +1,5 @@
 package ru.windcorp.progressia.common.util.crash.providers;
 
-import ru.windcorp.progressia.Progressia;
 import ru.windcorp.progressia.ProgressiaLauncher;
 import ru.windcorp.progressia.common.util.crash.ContextProvider;
 

@@ -1,10 +1,8 @@
 package ru.windcorp.progressia.server.world.tile;
 
-import ru.windcorp.progressia.server.world.Changer;
-
 public interface TickableTile {
 
-	void tick(TileTickContext context, Changer changer);
+	void tick(TileTickContext context);
 
 	default boolean doesTickRegularly(TileTickContext context) {
 		return false;
