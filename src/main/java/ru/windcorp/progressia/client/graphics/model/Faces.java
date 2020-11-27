@@ -23,7 +23,6 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram.VertexBuilder;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class Faces {
@@ -41,47 +40,37 @@ public class Faces {
 	) {
 		VertexBuilder builder = program.getVertexBuilder();
 		
-		Vec3 pos = Vectors.grab3();
-		Vec2 texCoords = Vectors.grab2();
+		builder.addVertex(
+				origin,
+				colorMultiplier,
+				new Vec2(0, 0)
+		).addVertex(
+				origin.add_(height),
+				colorMultiplier,
+				new Vec2(0, 1)
+		).addVertex(
+				origin.add_(width),
+				colorMultiplier,
+				new Vec2(1, 0)
+		).addVertex(
+				origin.add_(width).add(height),
+				colorMultiplier,
+				new Vec2(1, 1)
+		);
 		
-		try {
+		ShortBuffer buffer = flip ? ShortBuffer.wrap(new short[] {
+				0, 1, 3,
+				0, 3, 2
+		}) : ShortBuffer.wrap(new short[] {
+				3, 1, 0,
+				2, 3, 0
+		});
 		
-			builder.addVertex(
-					origin,
-					colorMultiplier,
-					texCoords.set(0, 0)
-			).addVertex(
-					pos.set(origin).add(height),
-					colorMultiplier,
-					texCoords.set(0, 1)
-			).addVertex(
-					pos.set(origin).add(width),
-					colorMultiplier,
-					texCoords.set(1, 0)
-			).addVertex(
-					pos.add(height),
-					colorMultiplier,
-					texCoords.set(1, 1)
-			);
-			
-			ShortBuffer buffer = flip ? ShortBuffer.wrap(new short[] {
-					0, 1, 3,
-					0, 3, 2
-			}) : ShortBuffer.wrap(new short[] {
-					3, 1, 0,
-					2, 3, 0
-			});
-			
-			return new Face(
-					texture,
-					builder.assemble(),
-					buffer
-			);
-		
-		} finally {
-			Vectors.release(pos);
-			Vectors.release(texCoords);
-		}
+		return new Face(
+				texture,
+				builder.assemble(),
+				buffer
+		);
 	}
 	
 	public static Face createBlockFace(
@@ -94,22 +83,15 @@ public class Faces {
 	) {
 		BlockFaceVectors vectors = BlockFaceVectors.get(inner);
 		
-		Vec3 origin =
-				Vectors.grab3().set(blockCenter).add(vectors.getOrigin(face));
-		try {
-			
-			Vec3 width = vectors.getWidth(face);
-			Vec3 height = vectors.getHeight(face);
-			
-			return createRectangle(
-					program, texture, colorMultiplier,
-					origin, width, height,
-					inner
-			);
-			
-		} finally {
-			Vectors.release(origin);
-		}
+		Vec3 origin = blockCenter.add_(vectors.getOrigin(face));
+		Vec3 width = vectors.getWidth(face);
+		Vec3 height = vectors.getHeight(face);
+		
+		return createRectangle(
+				program, texture, colorMultiplier,
+				origin, width, height,
+				inner
+		);
 	}
 
 }

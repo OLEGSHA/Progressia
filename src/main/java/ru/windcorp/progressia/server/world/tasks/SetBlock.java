@@ -3,7 +3,6 @@ package ru.windcorp.progressia.server.world.tasks;
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.block.BlockData;
@@ -27,12 +26,9 @@ class SetBlock extends CachedWorldChange {
 	
 	@Override
 	protected void affectCommon(WorldData world) {
-		Vec3i blockInChunk = Vectors.grab3i();
-		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
-
-		world.getChunkByBlock(blockInWorld).setBlock(blockInChunk, block, true);
-
-		Vectors.release(blockInChunk);
+		world
+			.getChunkByBlock(blockInWorld)
+			.setBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null), block, true);
 	}
 
 	@Override

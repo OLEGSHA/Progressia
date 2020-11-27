@@ -20,15 +20,8 @@ public class EdgeTileLogic extends TileLogic implements UpdateableTile {
 	@Override
 	public boolean canOccupyFace(TileTickContext context) {
 		boolean canOccupy = false;
-		
-		BlockTickContext currentTickContext = context.grabCurrentBlockContext();
-		canOccupy ^= canOccupyFace(context, context.getCurrentFace(), currentTickContext);
-		context.release(currentTickContext);
-		
-		BlockTickContext counterTickContext = context.grabCounterBlockContext();
-		canOccupy ^= canOccupyFace(context, context.getCounterFace(), counterTickContext);
-		context.release(counterTickContext);
-		
+		canOccupy ^= canOccupyFace(context, context.getCurrentFace(), context.getCurrentBlockContext());
+		canOccupy ^= canOccupyFace(context, context.getCounterFace(), context.getCounterBlockContext());
 		return canOccupy;
 	}
 	

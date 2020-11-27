@@ -36,7 +36,6 @@ import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.ChunkRender;
 import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.tile.TileRender;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
@@ -173,16 +172,11 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 			Vec3i cursor,
 			Consumer<Face> output
 	) {
-		Vec3 faceOrigin = Vectors.grab3();
-		Vec3 offset = Vectors.grab3();
-		
 		for (BlockFace face : BlockFace.getFaces()) {
 			if (!shouldRenderOuterFace(cursor, face)) continue;
 			
-			faceOrigin.set(cursor.x, cursor.y, cursor.z);
-			offset
-				.set(face.getVector().x, face.getVector().y, face.getVector().z)
-				.mul(1f / 128);
+			Vec3 faceOrigin = new Vec3(cursor.x, cursor.y, cursor.z);
+			Vec3 offset = new Vec3(face.getVector().x, face.getVector().y, face.getVector().z).mul(1f / 128);
 			
 			FaceInfo info = getFace(cursor, face);
 			
@@ -215,9 +209,6 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 				faceOrigin.add(offset);
 			}
 		}
-
-		Vectors.release(offset);
-		Vectors.release(faceOrigin);
 	}
 	
 	private void addFace(

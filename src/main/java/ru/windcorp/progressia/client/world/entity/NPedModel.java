@@ -14,8 +14,6 @@ import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.common.Units;
-import ru.windcorp.progressia.common.util.Matrices;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public abstract class NPedModel extends EntityRenderable {
@@ -162,8 +160,7 @@ public abstract class NPedModel extends EntityRenderable {
 	}
 
 	private void accountForVelocity() {
-		Vec3 horizontal = Vectors.grab3();
-		horizontal.set(getData().getVelocity());
+		Vec3 horizontal = new Vec3(getData().getVelocity());
 		horizontal.z = 0;
 		
 		velocity = horizontal.length();
@@ -176,7 +173,6 @@ public abstract class NPedModel extends EntityRenderable {
 		bodyYaw += velocityParameter * normalizeAngle(
 				(float) (atan2(horizontal.y, horizontal.x) - bodyYaw)
 		) * min(1, GraphicsInterface.getFrameLength() * 10);
-		Vectors.release(horizontal);
 	}
 
 	private void evaluateVelocityCoeff() {
@@ -189,8 +185,8 @@ public abstract class NPedModel extends EntityRenderable {
 
 	@Override
 	public void getViewPoint(Vec3 output) {
-		Mat4 m = Matrices.grab4();
-		Vec4 v = Vectors.grab4();
+		Mat4 m = new Mat4();
+		Vec4 v = new Vec4();
 		
 		m.identity()
 		.scale(scale)
@@ -203,9 +199,6 @@ public abstract class NPedModel extends EntityRenderable {
 		m.mul(v);
 		
 		output.set(v.x, v.y, v.z);
-		
-		Vectors.release(v);
-		Matrices.release(m);
 	}
 	
 	public Body getBody() {

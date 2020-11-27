@@ -8,8 +8,7 @@ import glm.vec._4.Vec4;
 import glm.vec._4.i.Vec4i;
 
 /**
- * A set of caches for GLM vector objects. Use this instead of allocating new
- * vectors when the objects are effectively local.
+ * A set of caches for GLM vector objects.
  * <p>
  * All {@code grab}bed objects must be {@code release}d as soon as possible.
  * Ideally, user code should be:

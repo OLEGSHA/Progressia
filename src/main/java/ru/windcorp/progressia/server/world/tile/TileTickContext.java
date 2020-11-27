@@ -3,7 +3,6 @@ package ru.windcorp.progressia.server.world.tile;
 import java.util.List;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
@@ -62,35 +61,31 @@ public interface TileTickContext extends TickContext {
 	}
 	
 	default List<TileLogic> getTiles() {
-		Vec3i blockInChunk = Vectors.grab3i();
-		Coordinates.convertInWorldToInChunk(getCurrentBlockInWorld(), blockInChunk);
-		List<TileLogic> result = getCurrentChunk().getTiles(blockInChunk, getCurrentFace());
-		Vectors.release(blockInChunk);
-		return result;
+		return getCurrentChunk().getTiles(
+				Coordinates.convertInWorldToInChunk(getCurrentBlockInWorld(), null),
+				getCurrentFace()
+		);
 	}
 	
 	default List<TileLogic> getTilesOrNull() {
-		Vec3i blockInChunk = Vectors.grab3i();
-		Coordinates.convertInWorldToInChunk(getCurrentBlockInWorld(), blockInChunk);
-		List<TileLogic> result = getCurrentChunk().getTilesOrNull(blockInChunk, getCurrentFace());
-		Vectors.release(blockInChunk);
-		return result;
+		return getCurrentChunk().getTilesOrNull(
+				Coordinates.convertInWorldToInChunk(getCurrentBlockInWorld(), null),
+				getCurrentFace()
+		);
 	}
 	
 	default List<TileData> getTileDataList() {
-		Vec3i blockInChunk = Vectors.grab3i();
-		Coordinates.convertInWorldToInChunk(getCurrentBlockInWorld(), blockInChunk);
-		List<TileData> result = getCurrentChunkData().getTiles(blockInChunk, getCurrentFace());
-		Vectors.release(blockInChunk);
-		return result;
+		return getCurrentChunkData().getTiles(
+				Coordinates.convertInWorldToInChunk(getCurrentBlockInWorld(), null),
+				getCurrentFace()
+		);
 	}
 	
 	default List<TileData> getTileDataListOrNull() {
-		Vec3i blockInChunk = Vectors.grab3i();
-		Coordinates.convertInWorldToInChunk(getCurrentBlockInWorld(), blockInChunk);
-		List<TileData> result = getCurrentChunkData().getTilesOrNull(blockInChunk, getCurrentFace());
-		Vectors.release(blockInChunk);
-		return result;
+		return getCurrentChunkData().getTilesOrNull(
+				Coordinates.convertInWorldToInChunk(getCurrentBlockInWorld(), null),
+				getCurrentFace()
+		);
 	}
 	
 	/*
@@ -113,8 +108,8 @@ public interface TileTickContext extends TickContext {
 		return getWorldData().getBlock(getCurrentBlockInWorld());
 	}
 	
-	default BlockTickContext grabCurrentBlockContext() {
-		return TickAndUpdateUtil.grabBlockTickContext(getServer(), getCurrentBlockInWorld());
+	default BlockTickContext getCurrentBlockContext() {
+		return TickAndUpdateUtil.getBlockTickContext(getServer(), getCurrentBlockInWorld());
 	}
 	
 	/*
@@ -137,8 +132,8 @@ public interface TileTickContext extends TickContext {
 		return getWorldData().getBlock(getCounterBlockInWorld());
 	}
 	
-	default BlockTickContext grabCounterBlockContext() {
-		return TickAndUpdateUtil.grabBlockTickContext(getServer(), getCounterBlockInWorld());
+	default BlockTickContext getCounterBlockContext() {
+		return TickAndUpdateUtil.getBlockTickContext(getServer(), getCounterBlockInWorld());
 	}
 	
 	/*
@@ -147,14 +142,6 @@ public interface TileTickContext extends TickContext {
 	
 	default void removeThisTile() {
 		getAccessor().removeTile(getCurrentBlockInWorld(), getCurrentFace(), getTileData());
-	}
-	
-	/*
-	 * Misc
-	 */
-	
-	default void release(BlockTickContext context) {
-		TickAndUpdateUtil.releaseTickContext(context);
 	}
 
 }

@@ -4,7 +4,6 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.world.WorldRender;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.BlockRay;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
@@ -21,8 +20,8 @@ public class Selection {
 	private BlockRay ray = new BlockRay();
 	
 	public void update(WorldRender world, EntityData player) {
-		Vec3 direction = Vectors.grab3();
-		Vec3 start = Vectors.grab3();
+		Vec3 direction = new Vec3();
+		Vec3 start = new Vec3();
 		
 		player.getLookingAtVector(direction);
 		world.getEntityRenderable(player).getViewPoint(start);
@@ -44,9 +43,6 @@ public class Selection {
 		}
 		
 		ray.end();
-		
-		Vectors.release(direction);
-		Vectors.release(start);
 	}
 	
 	public Vec3i getBlock() {

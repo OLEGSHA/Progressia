@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.ChunkDataListeners;
@@ -48,10 +47,7 @@ public class WorldLogic {
 			public void onChunkBlockChanged(
 					ChunkData chunk, Vec3i blockInChunk, BlockData previous, BlockData current
 			) {
-				Vec3i blockInWorld = Vectors.grab3i();
-				Coordinates.getInWorld(chunk.getPosition(), blockInChunk, blockInWorld);
-				getServer().getWorldAccessor().triggerUpdates(blockInWorld);
-				Vectors.release(blockInWorld);
+				getServer().getWorldAccessor().triggerUpdates(Coordinates.getInWorld(chunk.getPosition(), blockInChunk, null));
 			}
 			
 			@Override
@@ -59,10 +55,7 @@ public class WorldLogic {
 					ChunkData chunk, Vec3i blockInChunk, BlockFace face, TileData tile,
 					boolean wasAdded
 			) {
-				Vec3i blockInWorld = Vectors.grab3i();
-				Coordinates.getInWorld(chunk.getPosition(), blockInChunk, blockInWorld);
-				getServer().getWorldAccessor().triggerUpdates(blockInWorld, face);
-				Vectors.release(blockInWorld);
+				getServer().getWorldAccessor().triggerUpdates(Coordinates.getInWorld(chunk.getPosition(), blockInChunk, null), face);
 			}
 		}));
 	}
@@ -84,22 +77,14 @@ public class WorldLogic {
 	}
 	
 	public ChunkLogic getChunkByBlock(Vec3i blockInWorld) {
-		Vec3i chunkPos = Vectors.grab3i();
-		Coordinates.convertInWorldToChunk(blockInWorld, chunkPos);
-		ChunkLogic result = getChunk(chunkPos);
-		Vectors.release(chunkPos);
-		return result;
+		return getChunk(Coordinates.convertInWorldToChunk(blockInWorld, null));
 	}
 	
 	public BlockLogic getBlock(Vec3i blockInWorld) {
 		ChunkLogic chunk = getChunkByBlock(blockInWorld);
 		if (chunk == null) return null;
 		
-		Vec3i blockInChunk = Vectors.grab3i();
-		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
-		BlockLogic result = chunk.getBlock(blockInChunk);
-		Vectors.release(blockInChunk);
-		return result;
+		return chunk.getBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null));
 	}
 	
 	public List<TileLogic> getTiles(Vec3i blockInWorld, BlockFace face) {
@@ -114,15 +99,12 @@ public class WorldLogic {
 		ChunkLogic chunk = getChunkByBlock(blockInWorld);
 		if (chunk == null) return null;
 		
-		Vec3i blockInChunk = Vectors.grab3i();
-		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
+		Vec3i blockInChunk = Coordinates.convertInWorldToInChunk(blockInWorld, null);
 		
 		List<TileLogic> result =
 				createIfMissing
 				? chunk.getTiles(blockInChunk, face)
 				: chunk.getTilesOrNull(blockInChunk, face);
-				
-		Vectors.release(blockInChunk);
 		
 		return result;
 	}

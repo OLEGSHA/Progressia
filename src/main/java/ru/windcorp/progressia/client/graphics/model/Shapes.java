@@ -22,7 +22,6 @@ import java.util.Map;
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class Shapes {
@@ -48,14 +47,11 @@ public class Shapes {
 			boolean flip
 	) {
 		
-		Vec3 faceOrigin = Vectors.grab3();
-		Vec3 faceWidth = Vectors.grab3();
-		
 		Face top = Faces.createRectangle(
 				program,
 				topTexture, colorMultiplier,
-				faceOrigin.set(origin).add(height).add(width),
-				faceWidth.set(width).negate(),
+				origin.add_(height).add(width),
+				width.negate_(),
 				depth,
 				flip
 		);
@@ -72,7 +68,7 @@ public class Shapes {
 		Face north = Faces.createRectangle(
 				program,
 				northTexture, colorMultiplier,
-				faceOrigin.set(origin).add(depth),
+				origin.add_(depth),
 				width,
 				height,
 				flip
@@ -81,8 +77,8 @@ public class Shapes {
 		Face south = Faces.createRectangle(
 				program,
 				southTexture, colorMultiplier,
-				faceOrigin.set(origin).add(width),
-				faceWidth.set(width).negate(),
+				origin.add_(width),
+				width.negate_(),
 				height,
 				flip
 		);
@@ -99,8 +95,8 @@ public class Shapes {
 		Face west = Faces.createRectangle(
 				program,
 				westTexture, colorMultiplier,
-				faceOrigin.set(origin).add(width).add(depth),
-				faceWidth.set(depth).negate(),
+				origin.add_(width).add(depth),
+				depth.negate_(),
 				height,
 				flip
 		);
@@ -110,9 +106,6 @@ public class Shapes {
 				program,
 				top, bottom, north, south, east, west
 		);
-		
-		Vectors.release(faceOrigin);
-		Vectors.release(faceWidth);
 		
 		return result;
 	}

@@ -5,7 +5,6 @@ import glm.vec._3.Vec3;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.state.StatefulObject;
-import ru.windcorp.progressia.common.util.Vectors;
 
 public class EntityData extends StatefulObject implements Collideable {
 	
@@ -29,10 +28,7 @@ public class EntityData extends StatefulObject implements Collideable {
 	}
 	
 	public void setPosition(Vec3 position) {
-		Vec3 displacement = Vectors.grab3();
-		displacement.set(position).sub(getPosition());
-		move(displacement);
-		Vectors.release(displacement);
+		move(position.sub_(getPosition()));
 	}
 	
 	public void move(Vec3 displacement) {

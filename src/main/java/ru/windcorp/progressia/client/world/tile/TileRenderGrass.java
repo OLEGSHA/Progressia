@@ -9,7 +9,6 @@ import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerCube.OpaqueTile;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class TileRenderGrass extends TileRender implements OpaqueTile {
@@ -40,21 +39,13 @@ public class TileRenderGrass extends TileRender implements OpaqueTile {
 	public Renderable createRenderable(BlockFace face) {
 		ShapeRenderProgram program = WorldRenderProgram.getDefault();
 		
-		Vec3 color = Vectors.grab3().set(1, 1, 1);
-		Vec3 center = Vectors.grab3().set(0, 0, 0);
-		
-		try {
-			return new Shape(
-					Usage.STATIC, WorldRenderProgram.getDefault(),
-					Faces.createBlockFace(
-							program, getTexture(face), color,
-							center, face, false
-					)
-			);
-		} finally {
-			Vectors.release(color);
-			Vectors.release(center);
-		}
+		return new Shape(
+				Usage.STATIC, WorldRenderProgram.getDefault(),
+				Faces.createBlockFace(
+						program, getTexture(face), new Vec3(1, 1, 1),
+						new Vec3(0, 0, 0), face, false
+				)
+		);
 	}
 	
 	@Override

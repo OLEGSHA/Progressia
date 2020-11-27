@@ -27,7 +27,6 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
@@ -102,22 +101,14 @@ public class WorldData {
 	}
 	
 	public ChunkData getChunkByBlock(Vec3i blockInWorld) {
-		Vec3i chunkPos = Vectors.grab3i();
-		Coordinates.convertInWorldToChunk(blockInWorld, chunkPos);
-		ChunkData result = getChunk(chunkPos);
-		Vectors.release(chunkPos);
-		return result;
+		return getChunk(Coordinates.convertInWorldToChunk(blockInWorld, null));
 	}
 	
 	public BlockData getBlock(Vec3i blockInWorld) {
 		ChunkData chunk = getChunkByBlock(blockInWorld);
 		if (chunk == null) return null;
 		
-		Vec3i blockInChunk = Vectors.grab3i();
-		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
-		BlockData result = chunk.getBlock(blockInChunk);
-		
-		return result;
+		return chunk.getBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null));
 	}
 	
 	public void setBlock(Vec3i blockInWorld, BlockData block, boolean notify) {
@@ -129,9 +120,7 @@ public class WorldData {
 					+ "do not belong to a loaded chunk"
 			);
 		
-		Vec3i blockInChunk = Vectors.grab3i();
-		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
-		chunk.setBlock(blockInChunk, block, notify);
+		chunk.setBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null), block, notify);
 	}
 	
 	public Collection<ChunkData> getChunks() {
@@ -158,11 +147,7 @@ public class WorldData {
 		ChunkData chunk = getChunkByBlock(blockInWorld);
 		if (chunk == null) return null;
 		
-		Vec3i blockInChunk = Vectors.grab3i();
-		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
-		BlockData block = chunk.getBlock(blockInChunk);
-		Vectors.release(blockInChunk);
-		
+		BlockData block = chunk.getBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null));
 		if (block == null) return null;
 		return block.getCollisionModel();
 	}

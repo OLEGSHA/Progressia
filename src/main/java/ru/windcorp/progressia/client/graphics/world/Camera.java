@@ -28,7 +28,6 @@ import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.world.Camera.Anchor.Mode;
-import ru.windcorp.progressia.common.util.Vectors;
 
 public class Camera {
 	
@@ -133,13 +132,11 @@ public class Camera {
 		
 		Mat4 matrix = helper.pushViewTransform();
 		
-		Vec3 offset = Vectors.grab3();
+		Vec3 offset = new Vec3();
 		mode.getCameraOffset(offset);
 		
 		offset.negate();
 		matrix.translate(offset);
-		
-		Vectors.release(offset);
 		
 		mode.applyCameraRotation(matrix);
 	}
@@ -168,15 +165,12 @@ public class Camera {
 	}
 
 	private void applyPosition(WorldRenderHelper helper) {
-		Vec3 v = Vectors.grab3();
-		
+		Vec3 v = new Vec3();
 		anchor.getCameraPosition(v);
 		this.lastAnchorPosition.set(v);
 		
 		v.negate();
 		helper.pushViewTransform().translate(v);
-		
-		Vectors.release(v);
 	}
 
 	private void cacheCameraTransform(WorldRenderHelper helper) {

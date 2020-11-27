@@ -1,7 +1,6 @@
 package ru.windcorp.progressia.test;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.TickAndUpdateUtil;
@@ -17,21 +16,12 @@ public class TestTileLogicGrass extends EdgeTileLogic {
 	}
 	
 	private boolean isBlockAboveTransparent(Server server, Vec3i blockInWorld) {
-		Vec3i blockAboveCoords = Vectors.grab3i();
-		blockAboveCoords.set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
-		blockAboveCoords.add(BlockFace.TOP.getVector());
+		BlockTickContext blockAboveContext = TickAndUpdateUtil.getBlockTickContext(server, blockInWorld.add_(BlockFace.TOP.getVector()));
 		
-		BlockTickContext blockAboveContext = TickAndUpdateUtil.grabBlockTickContext(server, blockAboveCoords);
+		BlockLogic blockAbove = blockAboveContext.getBlock();
+		if (blockAbove == null) return true;
 		
-		try {
-			BlockLogic blockAbove = blockAboveContext.getBlock();
-			if (blockAbove == null) return true;
-			
-			return blockAbove.isTransparent(blockAboveContext);
-		} finally {
-			TickAndUpdateUtil.releaseTickContext(blockAboveContext);
-			Vectors.release(blockAboveCoords);
-		}
+		return blockAbove.isTransparent(blockAboveContext);
 	}
 	
 	@Override

@@ -1,8 +1,6 @@
 package ru.windcorp.progressia.server.world;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockTickContext;
 
@@ -20,11 +18,7 @@ implements BlockTickContext {
 	
 	public void setCoordsInWorld(Vec3i blockInWorld) {
 		getBlockInWorld().set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
-		
-		Vec3i chunk = Vectors.grab3i();
-		Coordinates.convertInWorldToChunk(blockInWorld, chunk);
-		setChunk(getWorld().getChunk(chunk));
-		Vectors.release(chunk);
+		setChunk(getWorld().getChunkByBlock(blockInWorld));
 	}
 
 	@Override

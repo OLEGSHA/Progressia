@@ -60,6 +60,8 @@ public class Coordinates {
 			Vec3i blockInWorld,
 			Vec3i output
 	) {
+		if (output == null) output = new Vec3i();
+		
 		output.x = convertInWorldToChunk(blockInWorld.x);
 		output.y = convertInWorldToChunk(blockInWorld.y);
 		output.z = convertInWorldToChunk(blockInWorld.z);
@@ -94,6 +96,8 @@ public class Coordinates {
 			Vec3i blockInWorld,
 			Vec3i output
 	) {
+		if (output == null) output = new Vec3i();
+		
 		output.x = convertInWorldToInChunk(blockInWorld.x);
 		output.y = convertInWorldToInChunk(blockInWorld.y);
 		output.z = convertInWorldToInChunk(blockInWorld.z);
@@ -130,6 +134,8 @@ public class Coordinates {
 			Vec3i chunk, Vec3i blockInChunk,
 			Vec3i output
 	) {
+		if (output == null) output = new Vec3i();
+		
 		output.x = getInWorld(chunk.x, blockInChunk.x);
 		output.y = getInWorld(chunk.y, blockInChunk.y);
 		output.z = getInWorld(chunk.z, blockInChunk.z);

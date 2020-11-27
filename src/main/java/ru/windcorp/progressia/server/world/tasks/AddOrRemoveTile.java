@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.block.BlockFace;
@@ -38,18 +37,15 @@ class AddOrRemoveTile extends CachedWorldChange {
 	
 	@Override
 	protected void affectCommon(WorldData world) {
-		Vec3i blockInChunk = Vectors.grab3i();
-		Coordinates.convertInWorldToInChunk(blockInWorld, blockInChunk);
-
-		List<TileData> tiles = world.getChunkByBlock(blockInWorld).getTiles(blockInChunk, face);
+		List<TileData> tiles = world
+				.getChunkByBlock(blockInWorld)
+				.getTiles(Coordinates.convertInWorldToInChunk(blockInWorld, null), face);
 
 		if (shouldAdd) {
 			tiles.add(tile);
 		} else {
 			tiles.remove(tile);
 		}
-
-		Vectors.release(blockInChunk);
 	}
 	
 	@Override

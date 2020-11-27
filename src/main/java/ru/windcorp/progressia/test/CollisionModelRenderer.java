@@ -11,7 +11,6 @@ import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.common.collision.AABBoid;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.collision.CompoundCollisionModel;
-import ru.windcorp.progressia.common.util.Vectors;
 
 public class CollisionModelRenderer {
 	
@@ -30,14 +29,12 @@ public class CollisionModelRenderer {
 	
 	private static void renderAABBoid(AABBoid aabb, ShapeRenderHelper helper) {
 		Mat4 mat = helper.pushTransform();
-		Vec3 tmp = Vectors.grab3();
+		Vec3 tmp = new Vec3();
 		
 		aabb.getOrigin(tmp);
 		mat.translate(tmp);
 		aabb.getSize(tmp);
 		mat.scale(tmp);
-		
-		Vectors.release(tmp);
 		
 		CUBE.render(helper);
 		helper.popTransform();

@@ -12,7 +12,6 @@ import com.google.common.collect.Lists;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.world.tile.TileLocation;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockFace;
@@ -53,12 +52,10 @@ public class ChunkLogic {
 			BlockLogic block = getBlock(blockInChunk);
 			
 			if (block instanceof TickableBlock) {
-				Vec3i blockInWorld = Vectors.grab3i();
-				Coordinates.getInWorld(getData().getPosition(), blockInChunk, blockInWorld);
-				
-				blockTickContext.init(getWorld().getServer(), blockInWorld);
-
-				Vectors.release(blockInWorld);
+				blockTickContext.init(
+						getWorld().getServer(),
+						Coordinates.getInWorld(getData().getPosition(), blockInChunk, null)
+				);
 				
 				if (((TickableBlock) block).doesTickRegularly(blockTickContext)) {
 					tickingBlocks.add(new Vec3i(blockInChunk));
@@ -70,12 +67,12 @@ public class ChunkLogic {
 			TileLogic tile = TileLogicRegistry.getInstance().get(tileData.getId());
 			
 			if (tile instanceof TickableTile) {
-				Vec3i blockInWorld = Vectors.grab3i();
-				Coordinates.getInWorld(getData().getPosition(), loc.pos, blockInWorld);
-				
-				tileTickContext.init(getWorld().getServer(), blockInWorld, loc.face, loc.layer);
-				
-				Vectors.release(blockInWorld);
+				tileTickContext.init(
+						getWorld().getServer(),
+						Coordinates.getInWorld(getData().getPosition(), loc.pos, null),
+						loc.face,
+						loc.layer
+				);
 				
 				if (((TickableTile) tile).doesTickRegularly(tileTickContext)) {
 					tickingTiles.add(new TileLocation(loc));

@@ -38,7 +38,6 @@ import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSupplier;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizers;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.client.world.tile.TileRenderRegistry;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
@@ -216,16 +215,13 @@ public class ChunkRender {
 	) {
 		// TODO implement
 		
-		Vec3 pos = Vectors.grab3().set(cursor.x, cursor.y, cursor.z);
+		Vec3 pos = new Vec3(cursor.x, cursor.y, cursor.z);
 		
 		optimizers.forEach(cro -> cro.processTile(tile, cursor, face));
 		
-		if (!tile.needsOwnRenderable()) {
-			Vectors.release(pos);
-			return;
-		}
+		if (!tile.needsOwnRenderable()) return;
 		
-		Vec3 offset = Vectors.grab3().set(
+		Vec3 offset = new Vec3(
 				face.getVector().x, face.getVector().y, face.getVector().z
 		);
 		
@@ -235,9 +231,6 @@ public class ChunkRender {
 				tile.createRenderable(face),
 				new Mat4().identity().translate(pos)
 		);
-		
-		Vectors.release(pos);
-		Vectors.release(offset);
 	}
 
 }

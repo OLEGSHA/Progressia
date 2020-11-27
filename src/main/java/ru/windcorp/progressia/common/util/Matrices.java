@@ -5,8 +5,7 @@ import glm.mat._4.Mat4;
 import glm.mat._4.d.Mat4d;
 
 /**
- * A set of caches for GLM matrix objects. Use this instead of allocating new
- * matrices when the objects are effectively local.
+ * A set of caches for GLM matrix objects.
  * <p>
  * All {@code grab}bed objects must be {@code release}d as soon as possible.
  * Ideally, user code should be:

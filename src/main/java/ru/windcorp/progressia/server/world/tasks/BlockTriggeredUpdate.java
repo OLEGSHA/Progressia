@@ -3,7 +3,6 @@ package ru.windcorp.progressia.server.world.tasks;
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.server.Server;
@@ -20,8 +19,7 @@ class BlockTriggeredUpdate extends CachedEvaluation {
 
 	@Override
 	public void evaluate(Server server) {
-		Vec3i cursor = Vectors.grab3i();
-		cursor.set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
+		Vec3i cursor = new Vec3i(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 		
 		WorldLogic world = server.getWorld();
 		
@@ -31,8 +29,6 @@ class BlockTriggeredUpdate extends CachedEvaluation {
 			TickAndUpdateUtil.updateBlock(world, cursor);
 			cursor.sub(face.getVector());
 		}
-		
-		Vectors.release(cursor);
 	}
 	
 	public void init(Vec3i blockInWorld) {

@@ -22,7 +22,6 @@ import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
@@ -226,13 +225,9 @@ public class TestContent {
 	}
 	
 	private static void onBlockPlaceTrigger(ControlData control) {
-		Vec3i blockInWorld = Vectors.grab3i();
-		Vec3i selectedBlock = getSelection().getBlock();
-		
-		blockInWorld.set(selectedBlock.x, selectedBlock.y, selectedBlock.z).add(getSelection().getSurface().getVector());
-		
-		((ControlPlaceBlockData) control).setBlockInWorld(blockInWorld);
-		Vectors.release(blockInWorld);
+		((ControlPlaceBlockData) control).setBlockInWorld(
+				getSelection().getBlock().add_(getSelection().getSurface().getVector())
+		);
 	}
 	
 	private static void onBlockPlaceReceived(Server server, PacketControl packet, ru.windcorp.progressia.server.comms.Client client) {

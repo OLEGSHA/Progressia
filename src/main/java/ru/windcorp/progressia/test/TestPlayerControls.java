@@ -16,8 +16,6 @@ import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.FloatMathUtils;
-import ru.windcorp.progressia.common.util.Matrices;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class TestPlayerControls {
@@ -67,13 +65,9 @@ public class TestPlayerControls {
 		}
 		
 		EntityData player = getEntity();
-		Mat3 angMat = Matrices.grab3();
 		
-		angMat.identity().rotateZ(player.getYaw());
-		
-		Vec3 movement = Vectors.grab3();
-		
-		movement.set(movementForward, -movementRight, 0);
+		Mat3 angMat = new Mat3().identity().rotateZ(player.getYaw());
+		Vec3 movement = new Vec3(movementForward, -movementRight, 0);
 		
 		if (movementForward != 0 && movementRight != 0) {
 			movement.normalize();
@@ -94,9 +88,6 @@ public class TestPlayerControls {
 		}
 		
 		player.getVelocity().add(movement);
-		
-		Matrices.release(angMat);
-		Vectors.release(movement);
 	}
 	
 	public void handleInput(Input input) {

@@ -34,7 +34,6 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.world.tile.TileLocation;
 import ru.windcorp.progressia.common.util.SizeLimitedList;
 import ru.windcorp.progressia.common.util.VectorUtil;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.block.BlockFace;
@@ -219,9 +218,7 @@ public class ChunkData {
 		
 		List<TileData> secondaryList = Lists.reverse(primaryList);
 		
-		
-		Vec3i cursor = Vectors.grab3i()
-				.set(blockInChunk.x, blockInChunk.y, blockInChunk.z);
+		Vec3i cursor = new Vec3i(blockInChunk.x, blockInChunk.y, blockInChunk.z);
 		
 		face = face.getPrimaryAndMoveCursor(cursor);
 		setTiles(cursor, face, primaryList);
