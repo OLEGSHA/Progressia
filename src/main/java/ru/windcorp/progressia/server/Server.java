@@ -132,7 +132,7 @@ public class Server {
 	}
 	
 	private void scheduleChunkTicks(Server server) {
-		
+		server.getWorld().getChunks().forEach(chunk -> requestEvaluation(chunk.getTickTask()));
 	}
 
 }

@@ -19,6 +19,7 @@ import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.BlockLogicRegistry;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
+import ru.windcorp.progressia.server.world.tasks.TickChunk;
 import ru.windcorp.progressia.server.world.tile.TickableTile;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogicRegistry;
@@ -30,6 +31,8 @@ public class ChunkLogic {
 	
 	private final Collection<Vec3i> tickingBlocks = new ArrayList<>();
 	private final Collection<TileLocation> tickingTiles = new ArrayList<>();
+	
+	private final TickChunk tickTask = new TickChunk(this);
 	
 	private final Map<List<TileData>, List<TileLogic>> tileLogicLists =
 			Collections.synchronizedMap(new WeakHashMap<>());
@@ -89,6 +92,10 @@ public class ChunkLogic {
 		return data;
 	}
 	
+	public Vec3i getPosition() {
+		return getData().getPosition();
+	}
+	
 	public boolean hasTickingBlocks() {
 		return !tickingBlocks.isEmpty();
 	}
@@ -140,6 +147,10 @@ public class ChunkLogic {
 				tileDataList,
 				data -> TileLogicRegistry.getInstance().get(data.getId())
 		);
+	}
+	
+	public TickChunk getTickTask() {
+		return tickTask;
 	}
 
 }
