@@ -6,6 +6,7 @@ import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.ChunkLogic;
 import ru.windcorp.progressia.server.world.MutableBlockTickContext;
 import ru.windcorp.progressia.server.world.MutableTileTickContext;
+import ru.windcorp.progressia.server.world.TickAndUpdateUtil;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
 import ru.windcorp.progressia.server.world.tile.TickableTile;
@@ -65,7 +66,9 @@ public class TickChunk extends Evaluation {
 	}
 
 	private void tickEntities(Server server) {
-		// TODO Implement
+		chunk.getData().forEachEntity(entity -> {
+			TickAndUpdateUtil.tickEntity(entity, server);
+		});
 	}
 
 	@Override

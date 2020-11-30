@@ -5,11 +5,14 @@ import java.util.List;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.BlockTickContext;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
 import ru.windcorp.progressia.server.world.block.UpdateableBlock;
+import ru.windcorp.progressia.server.world.entity.EntityLogic;
+import ru.windcorp.progressia.server.world.entity.EntityLogicRegistry;
 import ru.windcorp.progressia.server.world.tile.TickableTile;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 import ru.windcorp.progressia.server.world.tile.TileTickContext;
@@ -111,6 +114,18 @@ public class TickAndUpdateUtil {
 		}
 	}
 	
+	public static void tickEntity(EntityLogic logic, EntityData data, TickContext context) {
+		try {
+			logic.tick(data, context);
+		} catch (Exception e) {
+			CrashReports.report(e, "Could not tick entity {}", logic);
+		}
+	}
+	
+	public static void tickEntity(EntityData data, Server server) {
+		tickEntity(EntityLogicRegistry.getInstance().get(data.getId()), data, getTickContext(server));
+	}
+	
 	public static BlockTickContext getBlockTickContext(
 			Server server,
 			Vec3i blockInWorld
@@ -129,6 +144,10 @@ public class TickAndUpdateUtil {
 		MutableTileTickContext result = new MutableTileTickContext();
 		result.init(server, blockInWorld, face, layer);
 		return result;
+	}
+	
+	public static TickContext getTickContext(Server server) {
+		return getBlockTickContext(server, null);
 	}
 	
 	private TickAndUpdateUtil() {}

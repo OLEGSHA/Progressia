@@ -15,10 +15,13 @@ import ru.windcorp.progressia.client.world.tile.TileLocation;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.BlockLogicRegistry;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
+import ru.windcorp.progressia.server.world.entity.EntityLogic;
+import ru.windcorp.progressia.server.world.entity.EntityLogicRegistry;
 import ru.windcorp.progressia.server.world.tasks.TickChunk;
 import ru.windcorp.progressia.server.world.tile.TickableTile;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
@@ -115,6 +118,15 @@ public class ChunkLogic {
 			action.accept(
 					location,
 					getTilesOrNull(location.pos, location.face).get(location.layer)
+			);
+		});
+	}
+	
+	public void forEachEntity(BiConsumer<EntityLogic, EntityData> action) {
+		getData().forEachEntity(data -> {
+			action.accept(
+					EntityLogicRegistry.getInstance().get(data.getId()),
+					data
 			);
 		});
 	}

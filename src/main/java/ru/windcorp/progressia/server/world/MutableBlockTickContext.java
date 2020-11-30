@@ -32,7 +32,7 @@ implements BlockTickContext {
 	
 	public void init(Server server, Vec3i blockInWorld) {
 		setServer(server);
-		setCoordsInWorld(blockInWorld);
+		if (blockInWorld != null) setCoordsInWorld(blockInWorld);
 	}
 	
 }
