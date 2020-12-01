@@ -9,7 +9,7 @@ public class JavaVersionContextProvider implements ContextProvider {
 	@Override
 	public void provideContext(Map<String, String> output) {
 		// JAVA
-		output.put("Java version", Runtime.version().toString());
+		output.put("Java version", System.getProperty("java.version"));
 		output.put("Java vendor", System.getProperty("java.vendor"));
 		output.put("Java home path", System.getProperty("java.home"));
 		// VM
