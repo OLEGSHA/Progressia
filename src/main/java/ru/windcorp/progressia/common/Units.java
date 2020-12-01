@@ -6,6 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+
+import org.apache.logging.log4j.LogManager;
 
 import gnu.trove.TCollections;
 import gnu.trove.map.TCharFloatMap;
@@ -17,7 +20,7 @@ import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class Units {
 	
-	@Retention(RetentionPolicy.CLASS)
+	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	public static @interface RegisteredUnit {
 		String[] value();
@@ -83,14 +86,6 @@ public class Units {
 	@RegisteredUnit("N")
 	public static final float NEWTONS                    = METERS_PER_SECOND_SQUARED * KILOGRAMS;
 	
-	static {
-		try {
-			registerUnits(Units.class);
-		} catch (IllegalAccessException e) {
-			CrashReports.report(e, "Could not register units declared in {}", Units.class.getName());
-		}
-	}
-	
 	/*
 	 * Utilities
 	 */
@@ -111,7 +106,9 @@ public class Units {
 		prefixes.put('k', 1e+3f);
 		prefixes.put('c', 1e-2f);
 		prefixes.put('m', 1e-3f);
-		prefixes.put('μ', 1e-6f);
+		prefixes.put('µ', 1e-6f); // \u00B5
+		prefixes.put('u', 1e-6f); // for extra compatibility
+		
 		
 		PREFIXES_BY_CHAR = TCollections.unmodifiableMap(prefixes);
 	}
@@ -138,6 +135,8 @@ public class Units {
 			if (field.getType() != Float.TYPE) continue;
 			
 			RegisteredUnit request = field.getAnnotation(RegisteredUnit.class);
+			if (request == null) continue;
+			
 			float value = field.getFloat(null); // adding throws since we might not have accounted for something
 			registerUnit(value, request.value());
 		}
@@ -145,10 +144,14 @@ public class Units {
 	
 	public static void registerUnit(float value, String... names) {
 		for (String name : names) {
-			if (!Float.isNaN(UNITS_BY_NAME.put(name, value))) {
+			float previous = UNITS_BY_NAME.put(name, value);
+			
+			if (!Float.isNaN(previous)) {
 				throw new IllegalArgumentException("Duplicate unit name " + name);
 			}
 		}
+		
+		LogManager.getLogger().debug("Registered unit {} with value {}", Arrays.toString(names), value);
 	}
 	
 	/**
@@ -161,7 +164,7 @@ public class Units {
 	 * unit_name_and_exp ::= unit_name[[ws]"^"[ws]exponent]
 	 * unit_name         ::= [prefix]named_unit | special_unit
 	 * named_unit        ::= &lt;any registered unit name, case-sensitive&gt;
-	 * prefix            ::= "G" | "M" | "k" | "c" | "m" | "μ"
+	 * prefix            ::= "G" | "M" | "k" | "c" | "m" | "µ" (\u00B5) | "u"
 	 * special_unit      ::= "1"
 	 * exponent          ::= &lt;any float&gt;
 	 * ws                ::= &lt;any character &lt;= 'U+0020'&gt;+</pre>
@@ -296,6 +299,14 @@ public class Units {
 		if (parts[1] == null) throw new IllegalArgumentException("No space (' ') found");
 		assert parts[0] == parts[0].trim();
 		return Double.parseDouble(parts[0]) * getUnitValue(parts[1]);
+	}
+	
+	static {
+		try {
+			registerUnits(Units.class);
+		} catch (IllegalAccessException e) {
+			CrashReports.report(e, "Could not register units declared in {}", Units.class.getName());
+		}
 	}
 
 }

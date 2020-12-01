@@ -182,18 +182,15 @@ public class LayerWorld extends Layer {
 		entity.getVelocity().mul(frictionCoeff);
 	}
 	
+	private static final float MC_g  = Units.get("32  m/s^2");
+	private static final float IRL_g = Units.get("9.8 m/s^2");
+	
 	private void tmp_applyGravity(EntityData entity, float tickLength) {
 		if (ClientState.getInstance().getLocalPlayer().getEntity() == entity && tmp_testControls.isFlying()) {
 			return;
 		}
 		
-		final float gravitationalAcceleration;
-		
-		if (tmp_testControls.useMinecraftGravity()) {
-			gravitationalAcceleration = 32f * Units.METERS_PER_SECOND_SQUARED; // plz dont sue me M$
-		} else {
-			gravitationalAcceleration = 9.81f * Units.METERS_PER_SECOND_SQUARED;
-		}
+		final float gravitationalAcceleration = tmp_testControls.useMinecraftGravity() ? MC_g : IRL_g;
 		entity.getVelocity().add(0, 0, -gravitationalAcceleration * tickLength);
 	}
 
