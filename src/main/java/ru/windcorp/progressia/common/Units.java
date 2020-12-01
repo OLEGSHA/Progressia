@@ -106,8 +106,7 @@ public class Units {
 		prefixes.put('k', 1e+3f);
 		prefixes.put('c', 1e-2f);
 		prefixes.put('m', 1e-3f);
-		prefixes.put('µ', 1e-6f); // \u00B5
-		prefixes.put('u', 1e-6f); // for extra compatibility
+		prefixes.put('u', 1e-6f); // not using U+00B5 MICRO SIGN for ease of input
 		
 		
 		PREFIXES_BY_CHAR = TCollections.unmodifiableMap(prefixes);
