@@ -20,4 +20,16 @@ public interface BlockTickContext extends ChunkTickContext {
 		return getWorldData().getBlock(getBlockInWorld());
 	}
 
+	/*
+	 * Convenience methods - changes
+	 */
+	
+	default void setThisBlock(BlockData block) {
+		getAccessor().setBlock(getBlockInWorld(), block);
+	}
+	
+	default void setThisBlock(String id) {
+		getAccessor().setBlock(getBlockInWorld(), id);
+	}
+
 }

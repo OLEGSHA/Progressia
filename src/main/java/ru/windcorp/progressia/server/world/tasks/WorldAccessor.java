@@ -5,9 +5,11 @@ import java.util.function.Consumer;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.MultiLOC;
 import ru.windcorp.progressia.common.world.block.BlockData;
+import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.tile.TileData;
+import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.ticking.TickerTask;
 
@@ -38,11 +40,19 @@ public class WorldAccessor {
 		change.initialize(blockInWorld, block);
 		server.requestChange(change);
 	}
+	
+	public void setBlock(Vec3i blockInWorld, String id) {
+		setBlock(blockInWorld, BlockDataRegistry.getInstance().get(id));
+	}
 
 	public void addTile(Vec3i blockInWorld, BlockFace face, TileData tile) {
 		AddOrRemoveTile change = cache.grab(AddOrRemoveTile.class);
 		change.initialize(blockInWorld, face, tile, true);
 		server.requestChange(change);
+	}
+	
+	public void addTile(Vec3i blockInWorld, BlockFace face, String id) {
+		addTile(blockInWorld, face, TileDataRegistry.getInstance().get(id));
 	}
 
 	public void removeTile(Vec3i blockInWorld, BlockFace face, TileData tile) {

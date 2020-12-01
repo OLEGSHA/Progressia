@@ -23,6 +23,7 @@ import ru.windcorp.progressia.server.world.block.TickableBlock;
 import ru.windcorp.progressia.server.world.entity.EntityLogic;
 import ru.windcorp.progressia.server.world.entity.EntityLogicRegistry;
 import ru.windcorp.progressia.server.world.tasks.TickChunk;
+import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
 import ru.windcorp.progressia.server.world.tile.TickableTile;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogicRegistry;
@@ -63,7 +64,7 @@ public class ChunkLogic {
 						Coordinates.getInWorld(getData().getPosition(), blockInChunk, null)
 				);
 				
-				if (((TickableBlock) block).doesTickRegularly(blockTickContext)) {
+				if (((TickableBlock) block).getTickingPolicy(blockTickContext) == TickingPolicy.REGULAR) {
 					tickingBlocks.add(new Vec3i(blockInChunk));
 				}
 			}
@@ -80,7 +81,7 @@ public class ChunkLogic {
 						loc.layer
 				);
 				
-				if (((TickableTile) tile).doesTickRegularly(tileTickContext)) {
+				if (((TickableTile) tile).getTickingPolicy(tileTickContext) == TickingPolicy.REGULAR) {
 					tickingTiles.add(new TileLocation(loc));
 				}
 			}

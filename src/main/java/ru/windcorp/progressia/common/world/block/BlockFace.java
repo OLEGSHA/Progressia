@@ -35,10 +35,21 @@ public final class BlockFace extends BlockRelation {
 	private static final ImmutableList<BlockFace> ALL_FACES =
 			ImmutableList.of(TOP, BOTTOM, NORTH, SOUTH, WEST, EAST);
 	
+	static {
+		link(TOP, BOTTOM);
+		link(NORTH, SOUTH);
+		link(WEST, EAST);
+	}
+	
 	private static final ImmutableList<BlockFace> PRIMARY_FACES =
-			ImmutableList.of(TOP, NORTH, WEST);
+			ALL_FACES.stream().filter(BlockFace::isPrimary).collect(ImmutableList.toImmutableList());
+	
+	private static final ImmutableList<BlockFace> SECONDARY_FACES =
+			ALL_FACES.stream().filter(BlockFace::isSecondary).collect(ImmutableList.toImmutableList());
 	
 	public static final int BLOCK_FACE_COUNT = ALL_FACES.size();
+	public static final int PRIMARY_BLOCK_FACE_COUNT = PRIMARY_FACES.size();
+	public static final int SECONDARY_BLOCK_FACE_COUNT = SECONDARY_FACES.size();
 	
 	public static ImmutableList<BlockFace> getFaces() {
 		return ALL_FACES;
@@ -48,10 +59,8 @@ public final class BlockFace extends BlockRelation {
 		return PRIMARY_FACES;
 	}
 	
-	static {
-		link(TOP, BOTTOM);
-		link(NORTH, SOUTH);
-		link(WEST, EAST);
+	public static ImmutableList<BlockFace> getSecondaryFaces() {
+		return SECONDARY_FACES;
 	}
 	
 	private static void link(BlockFace a, BlockFace b) {
@@ -106,6 +115,10 @@ public final class BlockFace extends BlockRelation {
 		
 		cursor.add(getVector());
 		return counterFace;
+	}
+	
+	public boolean isSecondary() {
+		return !isPrimary;
 	}
 	
 	public BlockFace getSecondary() {

@@ -1,15 +1,11 @@
 package ru.windcorp.progressia.server.world.tile;
 
+import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
+
 public interface TickableTile {
 
 	void tick(TileTickContext context);
 
-	default boolean doesTickRegularly(TileTickContext context) {
-		return false;
-	}
-
-	default boolean doesTickRandomly(TileTickContext context) {
-		return false;
-	}
+	TickingPolicy getTickingPolicy(TileTickContext context);
 
 }

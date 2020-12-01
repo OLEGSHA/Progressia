@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
 
+import org.apache.logging.log4j.LogManager;
+
 import ru.windcorp.jputil.functions.ThrowingRunnable;
 import ru.windcorp.progressia.common.util.TaskQueue;
 import ru.windcorp.progressia.common.world.WorldData;
@@ -16,6 +18,10 @@ import ru.windcorp.progressia.server.world.ticking.Evaluation;
 
 public class Server {
 	
+	/**
+	 * Returns the {@link Server} instance whose main thread is the current thread.
+	 * @return the server that operates in this thread
+	 */
 	public static Server getCurrentServer() {
 		return ServerThread.getCurrentServer();
 	}
@@ -30,6 +36,8 @@ public class Server {
 	private final TaskQueue taskQueue = new TaskQueue(this::isServerThread);
 	private final Collection<Consumer<Server>> repeatingTasks = Collections.synchronizedCollection(new ArrayList<>());
 	
+	private final TickingSettings tickingSettings = new TickingSettings();
+	
 	public Server(WorldData world) {
 		this.world = new WorldLogic(world, this);
 		this.serverThread = new ServerThread(this);
@@ -37,6 +45,10 @@ public class Server {
 		invokeEveryTick(this::scheduleChunkTicks);
 	}
 	
+	/**
+	 * Returns this server's world.
+	 * @return this server's {@link WorldLogic}
+	 */
 	public WorldLogic getWorld() {
 		return world;
 	}
@@ -110,29 +122,70 @@ public class Server {
 		serverThread.getTicker().requestEvaluation(evaluation);
 	}
 	
+	/**
+	 * Returns the duration of the last server tick. Server logic should assume that this much in-world time has passed.
+	 * @return the length of the last server tick
+	 */
 	public double getTickLength() {
 		return this.serverThread.getTicker().getTickLength();
 	}
 	
+	/**
+	 * Returns the {@link WorldAccessor} object for this server. Use the provided accessor to
+	 * request common {@link Evaluation}s and {@link Change}s.
+	 * @return a {@link WorldAccessor}
+	 * @see #requestChange(Change)
+	 * @see #requestEvaluation(Evaluation)
+	 */
 	public WorldAccessor getWorldAccessor() {
 		return worldAccessor;
 	}
+	
+	/**
+	 * Returns the ticking settings for this server.
+	 * @return a {@link TickingSettings} object
+	 */
+	public TickingSettings getTickingSettings() {
+		return tickingSettings;
+	}
 
+	/**
+	 * Starts the server. This method blocks until the server enters normal operation or fails to start.
+	 */
 	public void start() {
 		this.serverThread.start();
 	}
 	
+	/**
+	 * Performs the tasks from tasks queues and repeating tasks.
+	 */
 	public void tick() {
 		taskQueue.runTasks();
 		repeatingTasks.forEach(t -> t.accept(this));
 	}
 	
+	/**
+	 * Shuts the server down, disconnecting the clients with the provided message.
+	 * This method blocks until the shutdown is complete.
+	 * @param message the message to send to the clients as the disconnect reason
+	 */
 	public void shutdown(String message) {
-		// Do nothing
+		LogManager.getLogger().warn("Server.shutdown() is not yet implemented");
+		serverThread.stop();
 	}
 	
 	private void scheduleChunkTicks(Server server) {
 		server.getWorld().getChunks().forEach(chunk -> requestEvaluation(chunk.getTickTask()));
+	}
+
+	/**
+	 * Returns an instance of {@link java.util.Random Random} that can be used as a source of indeterministic
+	 * randomness. World generation and other algorithms that must have random but reproducible results should
+	 * not use this.
+	 * @return a thread-safe indeterministic instance of {@link java.util.Random}.
+	 */
+	public java.util.Random getAdHocRandom() {
+		return java.util.concurrent.ThreadLocalRandom.current();
 	}
 
 }

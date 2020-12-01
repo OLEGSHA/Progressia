@@ -59,6 +59,16 @@ public class ServerThread implements Runnable {
 			LogManager.getLogger(getClass()).error("Got an exception in server thread", e);
 		}
 	}
+	
+	public void stop() {
+		try {
+			executor.awaitTermination(10, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+			LogManager.getLogger().warn("Received interrupt in ServerThread.stop(), aborting wait");
+		}
+		
+		getTicker().stop();
+	}
 
 	public Server getServer() {
 		return server;
