@@ -115,7 +115,14 @@ public class ChunkData {
 				getTiles(pos, BlockFace.TOP).add(grass);
 				for (BlockFace face : BlockFace.getFaces()) {
 					if (face.getVector().z != 0) continue;
-					getTiles(pos, face).add(grass);
+					pos.add(face.getVector());
+					
+					if (!isInBounds(pos) || (getBlock(pos) == air)) {
+						pos.sub(face.getVector());
+						getTiles(pos, face).add(grass);
+					} else {
+						pos.sub(face.getVector());
+					}
 				}
 				
 				int hash = x*x * 19 ^ y*y * 41 ^ pos.z*pos.z * 147;

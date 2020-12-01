@@ -19,10 +19,10 @@ public class EdgeTileLogic extends TileLogic implements UpdateableTile {
 	
 	@Override
 	public boolean canOccupyFace(TileTickContext context) {
-		boolean canOccupy = false;
-		canOccupy ^= canOccupyFace(context, context.getCurrentFace(), context.getCurrentBlockContext());
-		canOccupy ^= canOccupyFace(context, context.getCounterFace(), context.getCounterBlockContext());
-		return canOccupy;
+		boolean canOccupyCurrent = canOccupyFace(context, context.getCurrentFace(), context.getCurrentBlockContext());
+		boolean canOccupyCounter = canOccupyFace(context, context.getCounterFace(), context.getCounterBlockContext());
+		
+		return (canOccupyCurrent != canOccupyCounter) || (canOccupyCurrent && canOccupyCounter && canBeSquashed(context));
 	}
 	
 	public boolean canOccupyFace(TileTickContext ownContext, BlockFace blockFace, BlockTickContext blockContext) {
@@ -30,6 +30,10 @@ public class EdgeTileLogic extends TileLogic implements UpdateableTile {
 		if (block == null) return false;
 		
 		return block.isSolid(blockContext, ownContext.getCurrentFace());
+	}
+	
+	public boolean canBeSquashed(TileTickContext context) {
+		return false;
 	}
 
 }
