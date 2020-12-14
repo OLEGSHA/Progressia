@@ -147,7 +147,7 @@ class Ticker {
 			try {
 				task.run(srv);
 			} catch (Exception e) {
-				CrashReports.report(e, "Could not run {} task {}", task.getClass().getSimpleName(), task);
+				CrashReports.report(e, "Could not run %s task %s", task.getClass().getSimpleName(), task);
 			}
 			
 			tasksCompleted++;

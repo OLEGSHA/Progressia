@@ -10,7 +10,7 @@ public class TileLogic extends Namespaced {
 	}
 	
 	public boolean canOccupyFace(TileTickContext context) {
-		return canOccupyFace(context.getCurrentFace());
+		return canOccupyFace(context.getFace());
 	}
 	
 	public boolean canOccupyFace(BlockFace face) {

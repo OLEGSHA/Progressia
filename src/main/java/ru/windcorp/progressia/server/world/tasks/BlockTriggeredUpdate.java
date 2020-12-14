@@ -27,6 +27,7 @@ class BlockTriggeredUpdate extends CachedEvaluation {
 			TickAndUpdateUtil.updateTiles(world, cursor, face);
 			cursor.add(face.getVector());
 			TickAndUpdateUtil.updateBlock(world, cursor);
+			TickAndUpdateUtil.updateTiles(world, cursor, face.getCounter());
 			cursor.sub(face.getVector());
 		}
 	}

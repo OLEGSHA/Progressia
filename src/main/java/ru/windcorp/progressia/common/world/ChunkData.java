@@ -20,32 +20,27 @@ package ru.windcorp.progressia.common.world;
 import static ru.windcorp.progressia.common.world.block.BlockFace.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import com.google.common.collect.Lists;
-
-import glm.vec._2.Vec2;
-import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.client.world.tile.TileLocation;
-import ru.windcorp.progressia.common.util.SizeLimitedList;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
 import ru.windcorp.progressia.common.world.tile.TileData;
-import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
+import ru.windcorp.progressia.common.world.tile.TileDataStack;
+import ru.windcorp.progressia.common.world.tile.TileReference;
+import ru.windcorp.progressia.common.world.tile.TileStackIsFullException;
 
 public class ChunkData {
 	
 	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
-	public static final int TILES_PER_FACE = 8;
 	
 	private final Vec3i position = new Vec3i();
 	private final WorldData world;
@@ -54,8 +49,7 @@ public class ChunkData {
 		BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK
 	];
 	
-	@SuppressWarnings("unchecked")
-	private final List<TileData>[] tiles = (List<TileData>[]) new List<?>[
+	private final TileDataStack[] tiles = new TileDataStack[
 		BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK *
 		BLOCK_FACE_COUNT
 	];
@@ -69,95 +63,8 @@ public class ChunkData {
 	public ChunkData(Vec3i position, WorldData world) {
 		this.position.set(position.x, position.y, position.z);
 		this.world = world;
-		
-		tmp_generate();
 	}
 	
-	private void tmp_generate() {
-		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
-		BlockData stone = BlockDataRegistry.getInstance().get("Test:Stone");
-		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
-
-		TileData grass = TileDataRegistry.getInstance().get("Test:Grass");
-		TileData stones = TileDataRegistry.getInstance().get("Test:Stones");
-		TileData flowers = TileDataRegistry.getInstance().get("Test:YellowFlowers");
-		TileData sand = TileDataRegistry.getInstance().get("Test:Sand");
-	
-		Vec3i aPoint = new Vec3i(5, 0, BLOCKS_PER_CHUNK + BLOCKS_PER_CHUNK/2).sub(getPosition());
-		Vec3i pos = new Vec3i();
-		
-		for (int x = 0; x < BLOCKS_PER_CHUNK; ++x) {
-			for (int y = 0; y < BLOCKS_PER_CHUNK; ++y) {
-				for (int z = 0; z < BLOCKS_PER_CHUNK; ++z) {
-					
-					pos.set(x, y, z);
-					float f = aPoint.sub(pos, pos).length();
-					pos.set(x, y, z);
-					
-					if (f > 17) {
-						setBlock(pos, stone, false);
-					} else if (f > 14) {
-						setBlock(pos, dirt, false);
-					} else {
-						setBlock(pos, air, false);
-					}
-					
-				}
-			}
-		}
-		
-		for (int x = 0; x < BLOCKS_PER_CHUNK; ++x) {
-			for (int y = 0; y < BLOCKS_PER_CHUNK; ++y) {
-				pos.set(x, y, 0);
-				
-				for (pos.z = BLOCKS_PER_CHUNK - 1; pos.z >= 0 && getBlock(pos) == air; --pos.z);
-				
-				getTiles(pos, BlockFace.TOP).add(grass);
-				for (BlockFace face : BlockFace.getFaces()) {
-					if (face.getVector().z != 0) continue;
-					pos.add(face.getVector());
-					
-					if (!isInBounds(pos) || (getBlock(pos) == air)) {
-						pos.sub(face.getVector());
-						getTiles(pos, face).add(grass);
-					} else {
-						pos.sub(face.getVector());
-					}
-				}
-				
-				int hash = x*x * 19 ^ y*y * 41 ^ pos.z*pos.z * 147;
-				if (hash % 5 == 0) {
-					getTiles(pos, BlockFace.TOP).add(sand);
-				}
-				
-				hash = x*x * 13 ^ y*y * 37 ^ pos.z*pos.z * 129;
-				if (hash % 5 == 0) {
-					getTiles(pos, BlockFace.TOP).add(stones);
-				}
-				
-				hash = x*x * 17 ^ y*y * 39 ^ pos.z*pos.z * 131;
-				if (hash % 9 == 0) {
-					getTiles(pos, BlockFace.TOP).add(flowers);
-				}
-			}
-		}
-		
-		if (!getPosition().any()) {
-			EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
-			player.setEntityId(0x42);
-			player.setPosition(new Vec3(-6, -6, 20));
-			player.setDirection(new Vec2(
-					(float) Math.toRadians(40), (float) Math.toRadians(45)
-			));
-			getEntities().add(player);
-			
-			EntityData statie = EntityDataRegistry.getInstance().create("Test:Statie");
-			statie.setEntityId(0xDEADBEEF);
-			statie.setPosition(new Vec3(0, 15, 16));
-			getEntities().add(statie);
-		}
-	}
-
 	public BlockData getBlock(Vec3i posInChunk) {
 		return blocks[getBlockIndex(posInChunk)];
 	}
@@ -174,7 +81,7 @@ public class ChunkData {
 		}
 	}
 	
-	public List<TileData> getTilesOrNull(Vec3i blockInChunk, BlockFace face) {
+	public TileDataStack getTilesOrNull(Vec3i blockInChunk, BlockFace face) {
 		return tiles[getTileIndex(blockInChunk, face)];
 	}
 	
@@ -186,7 +93,7 @@ public class ChunkData {
 	 */
 	protected void setTiles(
 			Vec3i blockInChunk, BlockFace face,
-			List<TileData> tiles
+			TileDataStack tiles
 	) {
 		this.tiles[getTileIndex(blockInChunk, face)] = tiles;
 	}
@@ -195,53 +102,31 @@ public class ChunkData {
 		return getTilesOrNull(blockInChunk, face) != null;
 	}
 	
-	public List<TileData> getTiles(Vec3i blockInChunk, BlockFace face) {
+	public TileDataStack getTiles(Vec3i blockInChunk, BlockFace face) {
 		int index = getTileIndex(blockInChunk, face);
 		
 		if (tiles[index] == null) {
-			createTileContainer(blockInChunk, face);
+			createTileStack(blockInChunk, face);
 		}
 		
 		return tiles[index];
 	}
 	
-	private void createTileContainer(Vec3i blockInChunk, BlockFace face) {
-		if (isBorder(blockInChunk, face)) {
-			createBorderTileContainer(blockInChunk, face);
-		} else {
-			createNormalTileContainer(blockInChunk, face);
+	private void createTileStack(Vec3i blockInChunk, BlockFace face) {
+		Vec3i independentBlockInChunk = conjureIndependentBlockInChunkVec3i(blockInChunk);
+		TileDataStackImpl stack = new TileDataStackImpl(independentBlockInChunk, face);
+		setTiles(blockInChunk, face, stack);
+	}
+
+	private Vec3i conjureIndependentBlockInChunkVec3i(Vec3i blockInChunk) {
+		for (int i = 0; i < BlockFace.BLOCK_FACE_COUNT; ++i) {
+			TileDataStack stack = getTilesOrNull(blockInChunk, BlockFace.getFaces().get(i));
+			if (stack instanceof TileDataStackImpl) {
+				return ((TileDataStackImpl) stack).blockInChunk;
+			}
 		}
-	}
-
-	private void createNormalTileContainer(Vec3i blockInChunk, BlockFace face) {
-		List<TileData> primaryList =
-				SizeLimitedList.wrap(
-						new ChunkDataReportingList(
-								new ArrayList<>(TILES_PER_FACE),
-								this, blockInChunk, face
-						),
-						TILES_PER_FACE
-				);
 		
-		List<TileData> secondaryList = Lists.reverse(primaryList);
-		
-		Vec3i cursor = new Vec3i(blockInChunk.x, blockInChunk.y, blockInChunk.z);
-		
-		face = face.getPrimaryAndMoveCursor(cursor);
-		setTiles(cursor, face, primaryList);
-		
-		face = face.getSecondaryAndMoveCursor(cursor);
-		setTiles(cursor, face, secondaryList);
-	}
-
-	private void createBorderTileContainer(Vec3i blockInChunk, BlockFace face) {
-		// TODO cooperate with neighbours
-		setTiles(
-				blockInChunk, face,
-				SizeLimitedList.wrap(
-						new ArrayList<>(TILES_PER_FACE), TILES_PER_FACE
-				)
-		);
+		return new Vec3i(blockInChunk);
 	}
 
 	private static int getBlockIndex(Vec3i posInChunk) {
@@ -272,16 +157,15 @@ public class ChunkData {
 		}
 	}
 	
-	private static boolean isInBounds(Vec3i posInChunk) {
+	public static boolean isInBounds(Vec3i posInChunk) {
 		return
 				posInChunk.x >= 0 && posInChunk.x < BLOCKS_PER_CHUNK &&
 				posInChunk.y >= 0 && posInChunk.y < BLOCKS_PER_CHUNK &&
 				posInChunk.z >= 0 && posInChunk.z < BLOCKS_PER_CHUNK;
 	}
 
-	private boolean isBorder(Vec3i blockInChunk, BlockFace face) {
+	public boolean isBorder(Vec3i blockInChunk, BlockFace face) {
 		final int min = 0, max = BLOCKS_PER_CHUNK - 1;
-		
 		return
 				(blockInChunk.x == min && face == SOUTH ) ||
 				(blockInChunk.x == max && face == NORTH ) ||
@@ -299,32 +183,24 @@ public class ChunkData {
 		);
 	}
 	
+	public void forEachTileStack(Consumer<TileDataStack> action) {
+		forEachBlock(blockInChunk -> {
+			for (BlockFace face : BlockFace.getFaces()) {
+				TileDataStack stack = getTilesOrNull(blockInChunk, face);
+				if (stack == null) continue;
+				action.accept(stack);
+			}
+		});
+	}
+	
 	/**
-	 * Iterates over all tiles in this chunk. Tiles are referenced using their
-	 * primary block (so that the face is
-	 * {@linkplain BlockFace#isPrimary() primary}).
+	 * Iterates over all tiles in this chunk.
 	 * 
 	 * @param action the action to perform. {@code TileLocation} refers to each
 	 * tile using its primary block
 	 */
-	public void forEachTile(BiConsumer<TileLocation, TileData> action) {
-		TileLocation loc = new TileLocation();
-		
-		forEachBlock(blockInChunk -> {
-			loc.pos.set(blockInChunk.x, blockInChunk.y, blockInChunk.z);
-			
-			for (BlockFace face : BlockFace.getPrimaryFaces()) {
-				List<TileData> list = getTilesOrNull(blockInChunk, face);
-				if (list == null) continue;
-				
-				loc.face = face;
-				
-				for (loc.layer = 0; loc.layer < list.size(); ++loc.layer) {
-					TileData tile = list.get(loc.layer);
-					action.accept(loc, tile);
-				}
-			}
-		});
+	public void forEachTile(BiConsumer<TileDataStack, TileData> action) {
+		forEachTileStack(stack -> stack.forEach(tileData -> action.accept(stack, tileData)));
 	}
 	
 	public void forEachEntity(Consumer<EntityData> action) {
@@ -373,6 +249,294 @@ public class ChunkData {
 	
 	protected void beforeUnloaded() {
 		getListeners().forEach(l -> l.beforeChunkUnloaded(this));
+	}
+	
+	/**
+	 * Implementation of {@link TileDataStack} used internally by {@link ChunkData} to
+	 * actually store the tiles. This is basically an array wrapper with reporting
+	 * capabilities.
+	 * @author javapony
+	 */
+	private class TileDataStackImpl extends TileDataStack {
+		private class TileReferenceImpl implements TileReference {
+			private int index;
+			
+			public TileReferenceImpl(int index) {
+				this.index = index;
+			}
+
+			public void incrementIndex() {
+				this.index++;
+			}
+			
+			public void decrementIndex() {
+				this.index--;
+			}
+			
+			public void invalidate() {
+				this.index = 0;
+			}
+			
+			@Override
+			public TileData get() {
+				if (!isValid()) return null;
+				return TileDataStackImpl.this.get(this.index);
+			}
+			
+			@Override
+			public int getIndex() {
+				return index;
+			}
+			
+			@Override
+			public TileDataStack getStack() {
+				return TileDataStackImpl.this;
+			}
+			
+			@Override
+			public boolean isValid() {
+				return this.index >= 0;
+			}
+		}
+		
+		private final TileData[] tiles = new TileData[TILES_PER_FACE];
+		private int size = 0;
+		
+		private final TileReferenceImpl[] references = new TileReferenceImpl[tiles.length];
+		private final int[] indicesByTag = new int[tiles.length];
+		private final int[] tagsByIndex = new int[tiles.length];
+		
+		{
+			Arrays.fill(indicesByTag, -1);
+			Arrays.fill(tagsByIndex, -1);
+		}
+		
+		/*
+		 * Potentially shared
+		 */
+		private final Vec3i blockInChunk;
+		private final BlockFace face;
+		
+		public TileDataStackImpl(Vec3i blockInChunk, BlockFace face) {
+			this.blockInChunk = blockInChunk;
+			this.face = face;
+		}
+
+		@Override
+		public Vec3i getBlockInChunk(Vec3i output) {
+			if (output == null) output = new Vec3i();
+			output.set(blockInChunk.x, blockInChunk.y, blockInChunk.z);
+			return output;
+		}
+		
+		@Override
+		public BlockFace getFace() {
+			return face;
+		}
+		
+		@Override
+		public ChunkData getChunk() {
+			return ChunkData.this;
+		}
+
+		@Override
+		public int size() {
+			return size;
+		}
+		
+		@Override
+		public TileData get(int index) {
+			checkIndex(index, false);
+			
+			return tiles[index];
+		}
+		
+		@Override
+		public TileData set(int index, TileData tile) {
+			Objects.requireNonNull(tile, "tile");
+			TileData previous = get(index); // checks index
+			
+			tiles[index] = tile;
+			
+			if (references[index] != null) {
+				references[index].invalidate();
+				references[index] = null;
+			}
+
+			assert checkConsistency();
+			
+			report(previous, tile);
+			return previous;
+		}
+		
+		@Override
+		public void add(int index, TileData tile) {
+			Objects.requireNonNull(tile, "tile");
+			checkIndex(index, true);
+			
+			if (index != size()) {
+				System.arraycopy(tiles, index + 1, tiles, index + 2, size - index);
+				
+				for (int i = index; i < size; ++i) {
+					if (references[i] != null) {
+						references[i].incrementIndex();
+					}
+					
+					indicesByTag[tagsByIndex[i]]++;
+				}
+				
+				System.arraycopy(references, index + 1, references, index + 2, size - index);
+				System.arraycopy(tagsByIndex, index + 1, tagsByIndex, index + 2, size - index);
+			}
+
+			size++;
+			tiles[index] = tile;
+			references[index] = null;
+			
+			for (int tag = 0; tag < indicesByTag.length; ++tag) {
+				if (tagsByIndex[tag] == -1) {
+					indicesByTag[tag] = index;
+					tagsByIndex[index] = tag;
+					break;
+				}
+			}
+			
+			modCount++;
+			assert checkConsistency();
+			
+			report(null, tile);
+		}
+
+		@Override
+		public TileData remove(int index) {
+			TileData previous = get(index); // checks index
+			
+			if (references[index] != null) {
+				references[index].invalidate();
+			}
+
+			indicesByTag[tagsByIndex[index]] = -1;
+			
+			if (index != size() - 1) {
+				System.arraycopy(tiles, index + 1, tiles, index, size - index - 1);
+				
+				for (int i = index + 1; i < size; ++i) {
+					if (references[i] != null) {
+						references[i].decrementIndex();
+					}
+					
+					indicesByTag[tagsByIndex[i]]--;
+				}
+				
+				System.arraycopy(references, index + 1, references, index, size - index - 1);
+				System.arraycopy(tagsByIndex, index + 1, tagsByIndex, index, size - index - 1);
+			}
+			
+			size--;
+			tiles[size] = null;
+			references[size] = null;
+			tagsByIndex[size] = -1;
+			
+			modCount++;
+			assert checkConsistency();
+			
+			report(previous, null);
+			return previous;
+		}
+		
+		@Override
+		public TileReference getReference(int index) {
+			checkIndex(index, false);
+			
+			if (references[index] == null) {
+				references[index] = new TileReferenceImpl(index);
+			}
+			
+			return references[index];
+		}
+		
+		@Override
+		public int getIndexByTag(int tag) {
+			return indicesByTag[tag];
+		}
+		
+		@Override
+		public int getTagByIndex(int index) {
+			checkIndex(index, false);
+			return tagsByIndex[index];
+		}
+		
+		@Override
+		public void clear() {
+			while (!isEmpty()) {
+				removeFarthest();
+			}
+		}
+		
+		private void checkIndex(int index, boolean isSizeAllowed) {
+			if (isSizeAllowed ? (index > size()) : (index >= size()))
+				throw new IndexOutOfBoundsException("Index " + index + " is out of bounds: size is " + size);
+			
+			if (index < 0)
+				throw new IndexOutOfBoundsException("Index " + index + " is out of bounds: index cannot be negative");
+			
+			if (index >= TILES_PER_FACE)
+				throw new TileStackIsFullException("Index " + index + " is out of bounds: maximum tile stack size is " + TILES_PER_FACE);
+		}
+		
+		private void report(TileData previous, TileData current) {
+			ChunkData.this.getListeners().forEach(l -> {
+				if (previous != null) {
+					l.onChunkTilesChanged(ChunkData.this, blockInChunk, face, previous, false);
+				}
+				
+				if (current != null) {
+					l.onChunkTilesChanged(ChunkData.this, blockInChunk, face, current, true);
+				}
+				
+				l.onChunkChanged(ChunkData.this);
+			});
+		}
+		
+		private boolean checkConsistency() {
+			int index;
+			
+			for (index = 0; index < size(); ++index) {
+				if (get(index) == null)
+					throw new AssertionError("get(index) is null");
+				
+				if (references[index] != null) {
+					TileReference ref = getReference(index);
+					if (ref == null)
+						throw new AssertionError("references[index] is not null but getReference(index) is");
+					if (!ref.isValid())
+						throw new AssertionError("Reference is not valid");
+					if (ref.get() != get(index))
+						throw new AssertionError("Reference points to " + (ref.get() == null ? "null" : "wrong tile"));
+					if (ref.getIndex() != index)
+						throw new AssertionError("Reference has invalid index");
+					if (ref.getStack() != this)
+						throw new AssertionError("Reference has invalid TDS");
+				}
+				
+				if (index != indicesByTag[tagsByIndex[index]])
+					throw new AssertionError("Tag mapping is inconsistent");
+				if (index != getIndexByTag(getTagByIndex(index)))
+					throw new AssertionError("Tag methods are inconsistent with tag mapping");
+			}
+			
+			for (; index < tiles.length; ++index) {
+				if (tiles[index] != null)
+					throw new AssertionError("Leftover tile detected");
+				if (references[index] != null)
+					throw new AssertionError("Leftover reference detected");
+				if (tagsByIndex[index] != -1)
+					throw new AssertionError("Leftover tags detected");
+			}
+			
+			return true;
+		}
+		
 	}
 
 }

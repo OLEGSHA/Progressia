@@ -1,7 +1,5 @@
 package ru.windcorp.progressia.server.world;
 
-import java.util.List;
-
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.block.BlockFace;
@@ -32,7 +30,7 @@ public class TickAndUpdateUtil {
 		BlockLogic block = world.getBlock(blockInWorld);
 		if (!(block instanceof TickableBlock)) return; // also checks nulls
 		
-		BlockTickContext tickContext = getBlockTickContext(world.getServer(), blockInWorld);
+		BlockTickContext tickContext = TickContextMutable.start().withWorld(world).withBlock(blockInWorld).build();
 		tickBlock((TickableBlock) block, tickContext);
 	}
 	
@@ -48,23 +46,17 @@ public class TickAndUpdateUtil {
 		TileLogic tile = world.getTile(blockInWorld, face, layer);
 		if (!(tile instanceof TickableTile)) return;
 		
-		TileTickContext tickContext = getTileTickContext(world.getServer(), blockInWorld, face, layer);
+		TileTickContext tickContext = TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face).withLayer(layer);
 		tickTile((TickableTile) tile, tickContext);
 	}
 	
 	public static void tickTiles(WorldLogic world, Vec3i blockInWorld, BlockFace face) {
-		List<TileLogic> tiles = world.getTilesOrNull(blockInWorld, face);
-		if (tiles == null || tiles.isEmpty()) return;
-		
-		MutableTileTickContext tickContext = new MutableTileTickContext();
-		
-		for (int layer = 0; layer < tiles.size(); ++layer) {
-			TileLogic tile = tiles.get(layer);
-			if (!(tile instanceof TickableTile)) return;
-			
-			tickContext.init(world.getServer(), blockInWorld, face, layer);
-			tickTile((TickableTile) tile, tickContext);
-		}
+		TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face).build().forEachTile(context -> {
+			TileLogic tile = context.getTile();
+			if (tile instanceof TickableTile) {
+				tickTile((TickableTile) tile, context);
+			}
+		});
 	}
 	
 	public static void updateBlock(UpdateableBlock block, BlockTickContext context) {
@@ -79,7 +71,7 @@ public class TickAndUpdateUtil {
 		BlockLogic block = world.getBlock(blockInWorld);
 		if (!(block instanceof UpdateableBlock)) return; // also checks nulls
 		
-		BlockTickContext tickContext = getBlockTickContext(world.getServer(), blockInWorld);
+		BlockTickContext tickContext = TickContextMutable.start().withWorld(world).withBlock(blockInWorld).build();
 		updateBlock((UpdateableBlock) block, tickContext);
 	}
 	
@@ -95,23 +87,17 @@ public class TickAndUpdateUtil {
 		TileLogic tile = world.getTile(blockInWorld, face, layer);
 		if (!(tile instanceof UpdateableTile)) return;
 
-		TileTickContext tickContext = getTileTickContext(world.getServer(), blockInWorld, face, layer);
+		TileTickContext tickContext = TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face).withLayer(layer);
 		updateTile((UpdateableTile) tile, tickContext);
 	}
 	
 	public static void updateTiles(WorldLogic world, Vec3i blockInWorld, BlockFace face) {
-		List<TileLogic> tiles = world.getTilesOrNull(blockInWorld, face);
-		if (tiles == null || tiles.isEmpty()) return;
-		
-		MutableTileTickContext tickContext = new MutableTileTickContext();
-		
-		for (int layer = 0; layer < tiles.size(); ++layer) {
-			TileLogic tile = tiles.get(layer);
-			if (!(tile instanceof UpdateableTile)) return;
-			
-			tickContext.init(world.getServer(), blockInWorld, face, layer);
-			updateTile((UpdateableTile) tile, tickContext);
-		}
+		TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face).build().forEachTile(context -> {
+			TileLogic tile = context.getTile();
+			if (tile instanceof UpdateableTile) {
+				updateTile((UpdateableTile) tile, context);
+			}
+		});
 	}
 	
 	public static void tickEntity(EntityLogic logic, EntityData data, TickContext context) {
@@ -123,32 +109,51 @@ public class TickAndUpdateUtil {
 	}
 	
 	public static void tickEntity(EntityData data, Server server) {
-		tickEntity(EntityLogicRegistry.getInstance().get(data.getId()), data, getTickContext(server));
+		tickEntity(EntityLogicRegistry.getInstance().get(data.getId()), data, TickContextMutable.start().withServer(server).build());
 	}
 	
-	public static BlockTickContext getBlockTickContext(
-			Server server,
-			Vec3i blockInWorld
-	) {
-		MutableBlockTickContext result = new MutableBlockTickContext();
-		result.init(server, blockInWorld);
-		return result;
-	}
-	
-	public static TileTickContext getTileTickContext(
-			Server server,
-			Vec3i blockInWorld,
-			BlockFace face,
-			int layer
-	) {
-		MutableTileTickContext result = new MutableTileTickContext();
-		result.init(server, blockInWorld, face, layer);
-		return result;
-	}
-	
-	public static TickContext getTickContext(Server server) {
-		return getBlockTickContext(server, null);
-	}
+//	public static BlockTickContext getBlockTickContext(
+//			Server server,
+//			Vec3i blockInWorld
+//	) {
+//		MutableBlockTickContext result = new MutableBlockTickContext();
+//		result.init(server, blockInWorld);
+//		return result;
+//	}
+//	
+//	public static TileTickContext getTileTickContext(
+//			Server server,
+//			Vec3i blockInWorld,
+//			BlockFace face,
+//			int layer
+//	) {
+//		MutableTileTickContext result = new MutableTileTickContext();
+//		result.init(server, blockInWorld, face, layer);
+//		return result;
+//	}
+//	
+//	public static TileTickContext getTileTickContext(
+//			Server server,
+//			TileDataStack stack,
+//			int index
+//	) {
+//		MutableTileTickContext result = new MutableTileTickContext();
+//		result.init(server, stack, index);
+//		return result;
+//	}
+//	
+//	public static TileTickContext getTileTickContext(
+//			Server server,
+//			TileReference ref
+//	) {
+//		MutableTileTickContext result = new MutableTileTickContext();
+//		result.init(server, ref);
+//		return result;
+//	}
+//	
+//	public static TickContext getTickContext(Server server) {
+//		return getBlockTickContext(server, null);
+//	}
 	
 	private TickAndUpdateUtil() {}
 

@@ -1,6 +1,5 @@
 package ru.windcorp.progressia.server.world.tasks;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
@@ -8,23 +7,21 @@ import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
+import ru.windcorp.progressia.common.world.tile.TileDataStack;
 
-class AddOrRemoveTile extends CachedWorldChange {
+class AddTile extends CachedWorldChange {
 	
 	private final Vec3i blockInWorld = new Vec3i();
 	private BlockFace face;
 	private TileData tile;
 
-	private boolean shouldAdd;
-
-	public AddOrRemoveTile(Consumer<? super CachedChange> disposer) {
-		super(disposer, "Core:AddOrRemoveTile");
+	public AddTile(Consumer<? super CachedChange> disposer) {
+		super(disposer, "Core:AddTile");
 	}
 
 	public void initialize(
 			Vec3i position, BlockFace face,
-			TileData tile,
-			boolean shouldAdd
+			TileData tile
 	) {
 		if (this.tile != null)
 			throw new IllegalStateException("Payload is not null. Current: " + this.tile + "; requested: " + tile);
@@ -32,20 +29,15 @@ class AddOrRemoveTile extends CachedWorldChange {
 		this.blockInWorld.set(position.x, position.y, position.z);
 		this.face = face;
 		this.tile = tile;
-		this.shouldAdd = shouldAdd;
 	}
 	
 	@Override
 	protected void affectCommon(WorldData world) {
-		List<TileData> tiles = world
+		TileDataStack tiles = world
 				.getChunkByBlock(blockInWorld)
 				.getTiles(Coordinates.convertInWorldToInChunk(blockInWorld, null), face);
 
-		if (shouldAdd) {
-			tiles.add(tile);
-		} else {
-			tiles.remove(tile);
-		}
+		tiles.add(tile);
 	}
 	
 	@Override

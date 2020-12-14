@@ -18,7 +18,7 @@
 package ru.windcorp.progressia.client.world.cro;
 
 import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
-import static ru.windcorp.progressia.common.world.ChunkData.TILES_PER_FACE;
+import static ru.windcorp.progressia.common.world.tile.GenericTileStack.TILES_PER_FACE;
 import static ru.windcorp.progressia.common.world.block.BlockFace.BLOCK_FACE_COUNT;
 
 import java.util.ArrayList;
@@ -71,18 +71,6 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 	}
 	
 	private static final Vec3 COLOR_MULTIPLIER = new Vec3(1, 1, 1);
-	
-//	private final OpaqueCube[][][] blocks =
-//			new OpaqueCube[BLOCKS_PER_CHUNK]
-//			              [BLOCKS_PER_CHUNK]
-//			              [BLOCKS_PER_CHUNK];
-//	
-//	private final OpaqueTile[][][][][] tiles =
-//			new OpaqueTile[BLOCKS_PER_CHUNK]
-//			              [BLOCKS_PER_CHUNK]
-//			              [BLOCKS_PER_CHUNK]
-//			              [BLOCK_FACE_COUNT]
-//			              [TILES_PER_FACE];
 	
 	private final BlockInfo[][][] data = 
 			new BlockInfo[BLOCKS_PER_CHUNK]

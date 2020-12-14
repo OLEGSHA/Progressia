@@ -22,7 +22,8 @@ public class WorldAccessor {
 		
 		cache = mloc
 				.addClass(SetBlock.class, () -> new SetBlock(disposer))
-				.addClass(AddOrRemoveTile.class, () -> new AddOrRemoveTile(disposer))
+				.addClass(AddTile.class, () -> new AddTile(disposer))
+				.addClass(RemoveTile.class, () -> new RemoveTile(disposer))
 				.addClass(ChangeEntity.class, () -> new ChangeEntity(disposer))
 				
 				.addClass(BlockTriggeredUpdate.class, () -> new BlockTriggeredUpdate(disposer))
@@ -46,8 +47,8 @@ public class WorldAccessor {
 	}
 
 	public void addTile(Vec3i blockInWorld, BlockFace face, TileData tile) {
-		AddOrRemoveTile change = cache.grab(AddOrRemoveTile.class);
-		change.initialize(blockInWorld, face, tile, true);
+		AddTile change = cache.grab(AddTile.class);
+		change.initialize(blockInWorld, face, tile);
 		server.requestChange(change);
 	}
 	
@@ -55,9 +56,9 @@ public class WorldAccessor {
 		addTile(blockInWorld, face, TileDataRegistry.getInstance().get(id));
 	}
 
-	public void removeTile(Vec3i blockInWorld, BlockFace face, TileData tile) {
-		AddOrRemoveTile change = cache.grab(AddOrRemoveTile.class);
-		change.initialize(blockInWorld, face, tile, false);
+	public void removeTile(Vec3i blockInWorld, BlockFace face, int tag) {
+		RemoveTile change = cache.grab(RemoveTile.class);
+		change.initialize(blockInWorld, face, tag);
 		server.requestChange(change);
 	}
 

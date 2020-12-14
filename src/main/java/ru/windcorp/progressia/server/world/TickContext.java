@@ -8,7 +8,7 @@ import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 
 public interface TickContext {
 	
-	double getTickLength();
+	float getTickLength();
 	
 	Server getServer();
 	

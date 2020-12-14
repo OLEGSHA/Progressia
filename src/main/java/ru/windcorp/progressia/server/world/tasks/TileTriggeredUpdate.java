@@ -24,10 +24,11 @@ class TileTriggeredUpdate extends CachedEvaluation {
 		
 		WorldLogic world = server.getWorld();
 		
-		TickAndUpdateUtil.tickTiles(world, cursor, face); // Tick facemates (also self)
-		TickAndUpdateUtil.tickBlock(world, cursor); // Tick block on one side
+		TickAndUpdateUtil.updateTiles(world, cursor, face); // Update facemates (also self)
+		TickAndUpdateUtil.updateBlock(world, cursor); // Update block on one side
 		cursor.add(face.getVector());
-		TickAndUpdateUtil.tickBlock(world, cursor); // Tick block on the other side
+		TickAndUpdateUtil.updateBlock(world, cursor); // Update block on the other side
+		TickAndUpdateUtil.updateTiles(world, cursor, face.getCounter()); // Update complement
 	}
 	
 	public void init(Vec3i blockInWorld, BlockFace face) {

@@ -7,6 +7,9 @@ import java.util.function.Consumer;
 
 import org.lwjgl.glfw.GLFW;
 
+import glm.Glm;
+import glm.vec._2.Vec2;
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.audio.SoundEffect;
@@ -22,6 +25,7 @@ import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
@@ -79,15 +83,15 @@ public class TestContent {
 		
 		register(new TileData("Test:Stones"));
 		register(new TileRenderSimple("Test:Stones", getTileTexture("stones")));
-		register(new EdgeTileLogic("Test:Stones"));
+		register(new HangingTileLogic("Test:Stones"));
 		
 		register(new TileData("Test:YellowFlowers"));
 		register(new TileRenderSimple("Test:YellowFlowers", getTileTexture("yellow_flowers")));
-		register(new EdgeTileLogic("Test:YellowFlowers"));
+		register(new HangingTileLogic("Test:YellowFlowers"));
 		
 		register(new TileData("Test:Sand"));
 		register(new TileRenderSimple("Test:Sand", getTileTexture("sand")));
-		register(new EdgeTileLogic("Test:Sand"));
+		register(new HangingTileLogic("Test:Sand"));
 	}
 
 	private static void registerEntities() {
@@ -234,6 +238,93 @@ public class TestContent {
 		Vec3i blockInWorld = ((ControlPlaceBlockData) packet.getControl()).getBlockInWorld();
 		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null) return;
 		server.getWorldAccessor().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Stone"));
+	}
+
+	public static void generateChunk(ChunkData chunk) {
+		final int bpc = ChunkData.BLOCKS_PER_CHUNK;
+		
+		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
+		BlockData stone = BlockDataRegistry.getInstance().get("Test:Stone");
+		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
+	
+		TileData grass = TileDataRegistry.getInstance().get("Test:Grass");
+		TileData stones = TileDataRegistry.getInstance().get("Test:Stones");
+		TileData flowers = TileDataRegistry.getInstance().get("Test:YellowFlowers");
+		TileData sand = TileDataRegistry.getInstance().get("Test:Sand");
+	
+		Vec3i aPoint = new Vec3i(5, 0, bpc + bpc/2).sub(chunk.getPosition());
+		Vec3i pos = new Vec3i();
+		
+		for (int x = 0; x < bpc; ++x) {
+			for (int y = 0; y < bpc; ++y) {
+				for (int z = 0; z < bpc; ++z) {
+					
+					pos.set(x, y, z);
+					float f = aPoint.sub(pos, pos).length();
+					pos.set(x, y, z);
+					
+					if (f > 17) {
+						chunk.setBlock(pos, stone, false);
+					} else if (f > 14) {
+						chunk.setBlock(pos, dirt, false);
+					} else {
+						chunk.setBlock(pos, air, false);
+					}
+					
+				}
+			}
+		}
+		
+		for (int x = 0; x < bpc; ++x) {
+			for (int y = 0; y < bpc; ++y) {
+				pos.set(x, y, 0);
+				
+				for (pos.z = bpc - 1; pos.z >= 0 && chunk.getBlock(pos) == air; --pos.z);
+				
+				chunk.getTiles(pos, BlockFace.TOP).add(grass);
+				for (BlockFace face : BlockFace.getFaces()) {
+					if (face.getVector().z != 0) continue;
+					pos.add(face.getVector());
+					
+					if (!ChunkData.isInBounds(pos) || (chunk.getBlock(pos) == air)) {
+						pos.sub(face.getVector());
+						chunk.getTiles(pos, face).add(grass);
+					} else {
+						pos.sub(face.getVector());
+					}
+				}
+				
+				int hash = x*x * 19 ^ y*y * 41 ^ pos.z*pos.z * 147;
+				if (hash % 5 == 0) {
+					chunk.getTiles(pos, BlockFace.TOP).addFarthest(sand);
+				}
+				
+				hash = x*x * 13 ^ y*y * 37 ^ pos.z*pos.z * 129;
+				if (hash % 5 == 0) {
+					chunk.getTiles(pos, BlockFace.TOP).addFarthest(stones);
+				}
+				
+				hash = x*x * 17 ^ y*y * 39 ^ pos.z*pos.z * 131;
+				if (hash % 9 == 0) {
+					chunk.getTiles(pos, BlockFace.TOP).addFarthest(flowers);
+				}
+			}
+		}
+		
+		if (Glm.equals(chunk.getPosition(), Vectors.ZERO_3i)) {
+			EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
+			player.setEntityId(0x42);
+			player.setPosition(new Vec3(-6, -6, 20));
+			player.setDirection(new Vec2(
+					(float) Math.toRadians(40), (float) Math.toRadians(45)
+			));
+			chunk.getEntities().add(player);
+			
+			EntityData statie = EntityDataRegistry.getInstance().create("Test:Statie");
+			statie.setEntityId(0xDEADBEEF);
+			statie.setPosition(new Vec3(0, 15, 16));
+			chunk.getEntities().add(statie);
+		}
 	}
 
 }

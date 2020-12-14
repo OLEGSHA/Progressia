@@ -29,6 +29,7 @@ import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.test.TestContent;
 
 public class WorldData {
 
@@ -60,6 +61,7 @@ public class WorldData {
 		for (cursor.x = -(size / 2); cursor.x <= (size / 2); ++cursor.x) {
 			for (cursor.y = -(size / 2); cursor.y <= (size / 2); ++cursor.y) {
 				ChunkData chunk = new ChunkData(cursor, this);
+				TestContent.generateChunk(chunk);
 				addChunkListeners(chunk);
 				addChunk(chunk);
 			}
