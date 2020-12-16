@@ -252,7 +252,7 @@ public class TestContent {
 		TileData flowers = TileDataRegistry.getInstance().get("Test:YellowFlowers");
 		TileData sand = TileDataRegistry.getInstance().get("Test:Sand");
 	
-		Vec3i aPoint = new Vec3i(5, 0, bpc + bpc/2).sub(chunk.getPosition());
+		Vec3i aPoint = new Vec3i(5, 0, bpc + bpc/4).sub(chunk.getPosition().mul_(ChunkData.BLOCKS_PER_CHUNK));
 		Vec3i pos = new Vec3i();
 		
 		for (int x = 0; x < bpc; ++x) {
@@ -280,6 +280,7 @@ public class TestContent {
 				pos.set(x, y, 0);
 				
 				for (pos.z = bpc - 1; pos.z >= 0 && chunk.getBlock(pos) == air; --pos.z);
+				if (pos.z < 0) continue;
 				
 				chunk.getTiles(pos, BlockFace.TOP).add(grass);
 				for (BlockFace face : BlockFace.getFaces()) {

@@ -107,7 +107,7 @@ public class LayerWorld extends Layer {
 			tmp_testControls.applyPlayerControls();
 			
 			for (EntityData data : this.client.getWorld().getData().getEntities()) {
-				tmp_applyFriction(data);
+				tmp_applyFriction(data, tickLength);
 				tmp_applyGravity(data, tickLength);
 				tmp_renderCollisionModel(data);
 			}
@@ -177,9 +177,9 @@ public class LayerWorld extends Layer {
 		return new StaticModel(b);
 	}
 
-	private void tmp_applyFriction(EntityData entity) {
-		final float frictionCoeff = 1 - 1e-5f;
-		entity.getVelocity().mul(frictionCoeff);
+	private void tmp_applyFriction(EntityData entity, float tickLength) {
+		final float frictionCoeff = Units.get(1e-5f, "kg/s");
+		entity.getVelocity().mul((float) Math.exp(-frictionCoeff / entity.getCollisionMass() * tickLength));
 	}
 	
 	private static final float MC_g  = Units.get("32  m/s^2");

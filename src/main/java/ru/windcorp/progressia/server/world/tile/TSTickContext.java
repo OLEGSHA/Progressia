@@ -27,22 +27,22 @@ public interface TSTickContext extends BlockTickContext {
 		ChunkLogic chunkLogic = getChunkLogic();
 		if (chunkLogic == null) return null;
 		
-		return chunkLogic.getTilesOrNull(getBlockInWorld(), getFace());
+		return chunkLogic.getTilesOrNull(getBlockInChunk(), getFace());
 	}
 	
 	default TileLogicStack getTLS() {
-		return getChunkLogic().getTiles(getBlockInWorld(), getFace());
+		return getChunkLogic().getTiles(getBlockInChunk(), getFace());
 	}
 	
 	default TileDataStack getTDSOrNull() {
 		ChunkData chunkData = getChunkData();
 		if (chunkData == null) return null;
 		
-		return chunkData.getTilesOrNull(getBlockInWorld(), getFace());
+		return chunkData.getTilesOrNull(getBlockInChunk(), getFace());
 	}
 	
 	default TileDataStack getTDS() {
-		return getChunkData().getTiles(getBlockInWorld(), getFace());
+		return getChunkData().getTiles(getBlockInChunk(), getFace());
 	}
 	
 	/*

@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.block.BlockRelation;
@@ -19,6 +20,10 @@ public interface BlockTickContext extends ChunkTickContext {
 	 * @return the world coordinates of the block being ticked
 	 */
 	Vec3i getBlockInWorld();
+	
+	default Vec3i getBlockInChunk() {
+		return Coordinates.convertInWorldToInChunk(getBlockInWorld(), null);
+	}
 	
 	default BlockLogic getBlock() {
 		return getWorld().getBlock(getBlockInWorld());

@@ -133,6 +133,11 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		protected Role role = Role.NONE;
 		protected boolean isBeingBuilt = false;
 		
+		/**
+		 * Updated lazily
+		 */
+		protected final Vec3i blockInChunk = new Vec3i();
+		
 		/*
 		 * TickContextMutable
 		 */
@@ -274,6 +279,11 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		/*
 		 * Optimization
 		 */
+		
+		@Override
+		public Vec3i getBlockInChunk() {
+			return Coordinates.convertInWorldToInChunk(getBlockInWorld(), this.blockInChunk);
+		}
 		
 		@Override
 		public void forEachBlock(Consumer<BlockTickContext> action) {
