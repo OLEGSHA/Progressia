@@ -22,6 +22,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 import java.util.Arrays;
 
+import org.lwjgl.opengl.GL11;
 import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker;
 import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker.OpenGLDeletable;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
@@ -87,7 +88,7 @@ public class TexturePrimitive implements OpenGLDeletable {
 		if (isLoaded()) return;
 		
 		handle = pixels.load();
-		OpenGLObjectTracker.register(this);
+		OpenGLObjectTracker.register(this, GL11::glDeleteTextures);
 
 		if (handle < 0) {
 			CrashReports.report(null, "Failed to allocate texture");
@@ -95,9 +96,7 @@ public class TexturePrimitive implements OpenGLDeletable {
 	}
 
 	@Override
-	public void delete() {
-		if (isLoaded())
-			glDeleteTextures(handle);
+	public int getHandle() {
+		return handle;
 	}
-
 }

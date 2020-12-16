@@ -21,6 +21,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 import java.nio.*;
 
+import org.lwjgl.opengl.GL20;
 import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker.OpenGLDeletable;
 
 public class VertexBufferObject implements OpenGLDeletable {
@@ -47,7 +48,7 @@ public class VertexBufferObject implements OpenGLDeletable {
 	
 	public VertexBufferObject(Usage usage) {
 		handle = glGenBuffers();
-		OpenGLObjectTracker.register(this);
+		OpenGLObjectTracker.register(this, GL20::glDeleteBuffers);
 
 		this.usage = usage;
 	}
@@ -194,10 +195,4 @@ public class VertexBufferObject implements OpenGLDeletable {
 	public int getHandle() {
 		return handle;
 	}
-
-	@Override
-	public void delete() {
-		glDeleteBuffers(handle);
-	}
-
 }

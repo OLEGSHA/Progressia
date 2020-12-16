@@ -22,6 +22,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 import java.util.Locale;
 
+import org.lwjgl.opengl.GL20;
 import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker;
 import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker.OpenGLDeletable;
 import ru.windcorp.progressia.common.resource.Resource;
@@ -69,7 +70,7 @@ public class Shader implements OpenGLDeletable {
 
 	public Shader(ShaderType type, String source) {
 		handle = glCreateShader(type.getGlCode());
-		OpenGLObjectTracker.register(this);
+		OpenGLObjectTracker.register(this, GL20::glDeleteShader);
 
 		this.type = type;
 
@@ -88,11 +89,6 @@ public class Shader implements OpenGLDeletable {
 				ShaderType.guessByResourceName(resource),
 				getShaderResource(resource).readAsString()
 		);
-	}
-
-	@Override
-	public void delete() {
-		glDeleteShader(handle);
 	}
 
 	public int getHandle() {

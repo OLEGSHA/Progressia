@@ -20,6 +20,7 @@ package ru.windcorp.progressia.client.graphics.backend.shaders;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 
+import org.lwjgl.opengl.GL20;
 import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker;
 import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker.OpenGLDeletable;
 import ru.windcorp.progressia.client.graphics.backend.shaders.attributes.Attribute;
@@ -32,7 +33,7 @@ public class Program implements OpenGLDeletable {
 
 	public Program(Shader vertexShader, Shader fragmentShader) {
 		handle = glCreateProgram();
-		OpenGLObjectTracker.register(this);
+		OpenGLObjectTracker.register(this, GL20::glDeleteProgram);
 
 		glAttachShader(handle, vertexShader.getHandle());
 		glAttachShader(handle, fragmentShader.getHandle());
@@ -57,8 +58,6 @@ public class Program implements OpenGLDeletable {
 	}
 
 	@Override
-	public void delete() {
-		glDeleteProgram(handle);
-	}
+	public int getHandle() { return handle; }
 
 }
