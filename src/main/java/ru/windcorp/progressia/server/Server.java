@@ -1,8 +1,5 @@
 package ru.windcorp.progressia.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +31,6 @@ public class Server {
 	private final ClientManager clientManager = new ClientManager(this);
 	
 	private final TaskQueue taskQueue = new TaskQueue(this::isServerThread);
-	private final Collection<Consumer<Server>> repeatingTasks = Collections.synchronizedCollection(new ArrayList<>());
 	
 	private final TickingSettings tickingSettings = new TickingSettings();
 	
@@ -42,7 +38,7 @@ public class Server {
 		this.world = new WorldLogic(world, this);
 		this.serverThread = new ServerThread(this);
 		
-		invokeEveryTick(this::scheduleChunkTicks);
+		schedule(this::scheduleChunkTicks);
 	}
 	
 	/**
@@ -80,7 +76,7 @@ public class Server {
 	 * 
 	 * @param task the task to run
 	 * @see #invokeNow(Runnable)
-	 * @see #invokeEveryTick(Consumer)
+	 * @see #schedule(Consumer)
 	 */
 	public void invokeLater(Runnable task) {
 		taskQueue.invokeLater(task);
@@ -98,7 +94,7 @@ public class Server {
 	 * 
 	 * @param task the task to run
 	 * @see #invokeLater(Runnable)
-	 * @see #invokeEveryTick(Consumer)
+	 * @see #schedule(Consumer)
 	 */
 	public void invokeNow(Runnable task) {
 		taskQueue.invokeNow(task);
@@ -110,8 +106,8 @@ public class Server {
 		taskQueue.waitAndInvoke(task);
 	}
 	
-	public void invokeEveryTick(Consumer<Server> task) {
-		repeatingTasks.add(task);
+	public void schedule(Consumer<Server> task) {
+		taskQueue.schedule(() -> task.accept(this));
 	}
 	
 	public void requestChange(Change change) {
@@ -161,7 +157,6 @@ public class Server {
 	 */
 	public void tick() {
 		taskQueue.runTasks();
-		repeatingTasks.forEach(t -> t.accept(this));
 	}
 	
 	/**

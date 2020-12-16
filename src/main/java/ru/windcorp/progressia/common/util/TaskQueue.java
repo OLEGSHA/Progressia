@@ -17,6 +17,7 @@
  *******************************************************************************/
 package ru.windcorp.progressia.common.util;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -29,10 +30,20 @@ import ru.windcorp.jputil.functions.ThrowingRunnable;
 public class TaskQueue {
 	
 	private final Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
+	private final Collection<Runnable> repeating = new ConcurrentLinkedQueue<>();
+	
 	private final BooleanSupplier runNow;
 	
 	public TaskQueue(BooleanSupplier runNow) {
 		this.runNow = runNow;
+	}
+	
+	public void schedule(Runnable task) {
+		repeating.add(task);
+	}
+	
+	public void removeScheduled(Runnable task) {
+		repeating.remove(task);
 	}
 
 	public void invokeLater(Runnable task) {
@@ -105,6 +116,10 @@ public class TaskQueue {
 		while (tasks.hasNext()) {
 			tasks.next().run();
 			tasks.remove();
+		}
+		
+		for (Runnable task : repeating) {
+			task.run();
 		}
 	}
 

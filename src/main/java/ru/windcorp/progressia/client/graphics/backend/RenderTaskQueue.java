@@ -24,6 +24,14 @@ public class RenderTaskQueue {
 	
 	private static final TaskQueue HANDLER =
 			new TaskQueue(GraphicsInterface::isRenderThread);
+	
+	public static void schedule(Runnable task) {
+		HANDLER.schedule(task);
+	}
+	
+	public static void removeScheduled(Runnable task) {
+		HANDLER.removeScheduled(task);
+	}
 
 	public static void invokeLater(Runnable task) {
 		HANDLER.invokeLater(task);
