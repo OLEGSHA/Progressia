@@ -35,13 +35,13 @@ public class TestPlayerControls {
 	private static final float FLYING_SPEED = 6.0f * Units.METERS_PER_SECOND;
 	
 	// (0; 1], 1 is instant change, 0 is no control authority
-	private static final float FLYING_CONTROL_AUTHORITY = 0.05f;
+	private static final float FLYING_CONTROL_AUTHORITY = Units.get("2 1/s");
 	
 	// Horizontal and vertical max control speed when walking
 	private static final float WALKING_SPEED = 4.0f * Units.METERS_PER_SECOND;
 	
 	// (0; 1], 1 is instant change, 0 is no control authority
-	private static final float WALKING_CONTROL_AUTHORITY = 0.1f;
+	private static final float WALKING_CONTROL_AUTHORITY = Units.get("15 1/s");
 	
 	// Vertical velocity instantly add to player when they jump
 	private static final float JUMP_VELOCITY = 5f * Units.METERS_PER_SECOND;
@@ -66,28 +66,36 @@ public class TestPlayerControls {
 		
 		EntityData player = getEntity();
 		
-		Mat3 angMat = new Mat3().identity().rotateZ(player.getYaw());
-		Vec3 movement = new Vec3(movementForward, -movementRight, 0);
-		
-		if (movementForward != 0 && movementRight != 0) {
-			movement.normalize();
-		}
-		
-		angMat.mul_(movement); // bug in jglm, .mul() and mul_() are swapped
+		final float speed, authority;
 		
 		if (isFlying) {
-			movement.z = movementUp;
-			movement.mul(FLYING_SPEED);
-			movement.sub(player.getVelocity());
-			movement.mul(FLYING_CONTROL_AUTHORITY);
+			speed = FLYING_SPEED;
+			authority = FLYING_CONTROL_AUTHORITY;
 		} else {
-			movement.mul(WALKING_SPEED);
-			movement.sub(player.getVelocity());
-			movement.mul(WALKING_CONTROL_AUTHORITY);
-			movement.z = 0;
+			speed = WALKING_SPEED;
+			authority = WALKING_CONTROL_AUTHORITY;
 		}
 		
-		player.getVelocity().add(movement);
+		Mat3 angMat = new Mat3().identity().rotateZ(player.getYaw());
+		Vec3 desiredVelocity = new Vec3(movementForward, -movementRight, 0);
+		
+		if (movementForward != 0 && movementRight != 0) desiredVelocity.normalize();
+		angMat.mul_(desiredVelocity); // bug in jglm, .mul() and mul_() are swapped
+		desiredVelocity.z = movementUp;
+		desiredVelocity.mul(speed);
+		
+		Vec3 change = new Vec3()
+				.set(desiredVelocity)
+				.sub(player.getVelocity())
+				.mul((float) Math.exp(-authority * GraphicsInterface.getFrameLength()))
+				.negate()
+				.add(desiredVelocity);
+		
+		if (!isFlying) {
+			change.z = player.getVelocity().z;
+		}
+		
+		player.getVelocity().set(change);
 	}
 	
 	public void handleInput(Input input) {
@@ -233,11 +241,11 @@ public class TestPlayerControls {
 		);
 	}
 	
-	private EntityData getEntity() {
+	public EntityData getEntity() {
 		return getPlayer().getEntity();
 	}
 	
-	private LocalPlayer getPlayer() {
+	public LocalPlayer getPlayer() {
 		return ClientState.getInstance().getLocalPlayer();
 	}
 	

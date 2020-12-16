@@ -51,7 +51,7 @@ public class Label extends Component {
 	@Override
 	protected void assembleSelf(RenderTarget target) {
 		target.pushTransform(
-				new Mat4().identity().translate(getX(), getY(), -1000)
+				new Mat4().identity().translate(getX(), getY(), -1000) // TODO wtf is this magic <---
 				.scale(2)
 		);
 		

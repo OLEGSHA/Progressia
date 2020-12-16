@@ -1,5 +1,7 @@
 package ru.windcorp.progressia.client.graphics.font;
 
+import java.util.function.Supplier;
+
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
@@ -47,6 +49,12 @@ public class Font {
 			CharSequence chars, int maxWidth
 	) {
 		return typeface.assemble(chars, style, align, maxWidth, color);
+	}
+	
+	public Renderable assembleDynamic(
+			Supplier<CharSequence> supplier
+	) {
+		return typeface.assembleDynamic(supplier, color);
 	}
 
 	public int getWidth(CharSequence chars, int maxWidth) {

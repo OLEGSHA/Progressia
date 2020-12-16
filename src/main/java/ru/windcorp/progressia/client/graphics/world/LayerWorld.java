@@ -176,10 +176,11 @@ public class LayerWorld extends Layer {
 		
 		return new StaticModel(b);
 	}
+	
+	private static final float FRICTION_COEFF = Units.get("1e-5f kg/s");
 
 	private void tmp_applyFriction(EntityData entity, float tickLength) {
-		final float frictionCoeff = Units.get(1e-5f, "kg/s");
-		entity.getVelocity().mul((float) Math.exp(-frictionCoeff / entity.getCollisionMass() * tickLength));
+		entity.getVelocity().mul((float) Math.exp(-FRICTION_COEFF / entity.getCollisionMass() * tickLength));
 	}
 	
 	private static final float MC_g  = Units.get("32  m/s^2");

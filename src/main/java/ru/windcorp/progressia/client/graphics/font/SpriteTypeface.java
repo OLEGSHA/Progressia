@@ -4,21 +4,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import glm.vec._3.Vec3;
+import gnu.trove.map.TCharObjectMap;
+import gnu.trove.map.hash.TCharObjectHashMap;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.model.Face;
 import ru.windcorp.progressia.client.graphics.model.Faces;
 import ru.windcorp.progressia.client.graphics.model.Shape;
+import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
+import ru.windcorp.progressia.common.util.Vectors;
 
 public abstract class SpriteTypeface extends Typeface {
-	
+
 	private final int height;
 	private final int thickness;
 	private final Vec3 shadowOffset;
+	
+	private final TCharObjectMap<Shape> charShapes = new TCharObjectHashMap<>();
 	
 	public SpriteTypeface(String name, int height, int thinkness) {
 		super(name);
@@ -35,6 +42,11 @@ public abstract class SpriteTypeface extends Typeface {
 	
 	public int getHeight() {
 		return height;
+	}
+	
+	@Override
+	public int getLineHeight() {
+		return getHeight();
 	}
 	
 	public int getThickness() {
@@ -275,6 +287,11 @@ public abstract class SpriteTypeface extends Typeface {
 			faces.add(copy);
 		}
 	}
+	
+	@Override
+	public Renderable assembleDynamic(Supplier<CharSequence> supplier, int color) {
+		return new DynamicText(supplier, createVectorFromRGBInt(color));
+	}
 
 	@Override
 	protected long getSize(
@@ -303,6 +320,21 @@ public abstract class SpriteTypeface extends Typeface {
 		
 		return pack(resultWidth, height);
 	}
+
+	private Shape createCharShape(char c, Vec3 color) {
+		return new Shape(
+				Usage.STATIC, getProgram(),
+				Faces.createRectangle(
+						getProgram(),
+						getTexture(c),
+						color,
+						Vectors.ZERO_3,
+						new Vec3(getWidth(c), 0, 0),
+						new Vec3(0, height, 0),
+						false
+				)
+		);
+	}
 	
 	// TODO remove
 	private static Vec3 createVectorFromRGBInt(int rgb) {
@@ -311,6 +343,44 @@ public abstract class SpriteTypeface extends Typeface {
 		int b = (rgb & 0x0000FF);
 		
 		return new Vec3(r / 256f, g / 256f, b / 256f);
+	}
+	
+	private class DynamicText implements Renderable {
+		
+		private final Supplier<CharSequence> supplier;
+		private final Vec3 color;
+
+		public DynamicText(Supplier<CharSequence> supplier, Vec3 color) {
+			this.supplier = supplier;
+			this.color = color;
+		}
+
+		@Override
+		public void render(ShapeRenderHelper renderer) {
+			CharSequence text = supplier.get();
+			
+			int x = 0;
+			for (int i = 0; i < text.length(); ++i) {
+				char c = text.charAt(i);
+				
+				renderer.pushTransform().translate(x, -getInterlineBuffer(), 0);
+				Shape charShape = getShape(c);
+				charShape.render(renderer);
+				renderer.popTransform();
+				
+				x += getWidth(c);
+			}
+		}
+
+		private Shape getShape(char c) {
+			Shape shape = charShapes.get(c);
+			if (shape == null) {
+				shape = createCharShape(c, this.color);
+				charShapes.put(c, shape);
+			}
+			return shape;
+		}
+
 	}
 
 }

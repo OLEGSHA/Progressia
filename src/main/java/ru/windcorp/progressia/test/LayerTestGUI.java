@@ -19,14 +19,18 @@ package ru.windcorp.progressia.test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 import ru.windcorp.progressia.client.ClientState;
+import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.font.Font;
+import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.Panel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
+import ru.windcorp.progressia.server.ServerState;
 
 public class LayerTestGUI extends GUILayer {
 	
@@ -57,7 +61,23 @@ public class LayerTestGUI extends GUILayer {
 				() -> String.format("Gravity:    %9s (G)", TestPlayerControls.getInstance().useMinecraftGravity() ? "Minecraft" : "Realistic")
 		));
 		
-		panel.getChildren().forEach(c -> labels.add((Label) c));
+		panel.addChild(new DynamicLabel(
+				"FPSDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				() -> String.format(Locale.US, "FPS: %5.1f", GraphicsInterface.getFPS()),
+				128
+		));
+		
+		panel.addChild(new DynamicLabel(
+				"TPSDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				() -> ServerState.getInstance() == null ? "TPS: n/a" : String.format(Locale.US, "TPS: %5.1f", ServerState.getInstance().getTPS()),
+				128
+		));
+		
+		panel.getChildren().forEach(c -> {
+			if (c instanceof Label) {
+				labels.add((Label) c);
+			}
+		});
 		TestPlayerControls.getInstance().setUpdateCallback(() -> labels.forEach(Label::update));
 
 		getRoot().addChild(panel);

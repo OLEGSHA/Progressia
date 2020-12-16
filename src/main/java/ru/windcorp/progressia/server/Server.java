@@ -126,6 +126,10 @@ public class Server {
 		return this.serverThread.getTicker().getTickLength();
 	}
 	
+	public double getTPS() {
+		return this.serverThread.getTicker().getTPS();
+	}
+	
 	/**
 	 * Returns the {@link WorldAccessor} object for this server. Use the provided accessor to
 	 * request common {@link Evaluation}s and {@link Change}s.

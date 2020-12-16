@@ -1,5 +1,7 @@
 package ru.windcorp.progressia.client.graphics.font;
 
+import java.util.function.Supplier;
+
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
@@ -51,6 +53,9 @@ public abstract class Typeface extends Named {
 			float align, int maxWidth,
 			int color
 	);
+	
+	// TODO implement styling
+	public abstract Renderable assembleDynamic(Supplier<CharSequence> supplier, int color);
 
 	public int getWidth(
 			CharSequence chars, int style,
@@ -65,6 +70,8 @@ public abstract class Typeface extends Named {
 	) {
 		return getHeight(getSize(chars, style, align, maxWidth));
 	}
+	
+	public abstract int getLineHeight();
 	
 	public Vec2i getSize(
 			CharSequence chars, int style,

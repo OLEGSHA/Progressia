@@ -85,10 +85,6 @@ public class OpenGLObjectTracker {
 			this.GLDeleter = GLDeleter;
 		}
 
-		public int getHandle() {
-			return referentGLhandle;
-		}
-
 		public void delete() {
 			GLDeleter.accept(referentGLhandle);
 		}

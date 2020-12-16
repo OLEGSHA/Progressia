@@ -49,6 +49,10 @@ public class TickerCoordinator {
 	
 	private final AtomicInteger workingTickers = new AtomicInteger();
 	
+	private boolean isTickStartSet = false;
+	private long tickStart = -1;
+	private double tickLength = 1.0 / 20; // Do something about it
+	
 	private final Logger logger = LogManager.getLogger("Ticker Coordinator");
 
 	public TickerCoordinator(Server server, int tickers) {
@@ -97,8 +101,23 @@ public class TickerCoordinator {
 	}
 	
 	public double getTickLength() {
-		// TODO implement
-		return Units.SECONDS / 20;
+		return tickLength;
+	}
+	
+	public double getTPS() {
+		return 1 / tickLength;
+	}
+	
+	private void onTickStart() {
+		long now = System.currentTimeMillis();
+		
+		if (isTickStartSet) {
+			tickLength = (now - tickStart) * Units.MILLISECONDS;
+		} else {
+			isTickStartSet = true;
+		}
+			
+		tickStart = System.currentTimeMillis();
 	}
 	
 	/*
@@ -107,6 +126,7 @@ public class TickerCoordinator {
 
 	public void runOneTick() {
 		try {
+			onTickStart();
 			
 			int passes = 0;
 	
