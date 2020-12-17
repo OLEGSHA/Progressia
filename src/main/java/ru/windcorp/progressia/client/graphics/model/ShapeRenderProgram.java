@@ -36,6 +36,7 @@ import ru.windcorp.progressia.client.graphics.backend.shaders.attributes.*;
 import ru.windcorp.progressia.client.graphics.backend.shaders.uniforms.*;
 import ru.windcorp.progressia.client.graphics.texture.Sprite;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
+import ru.windcorp.progressia.common.util.Vectors;
 
 public class ShapeRenderProgram extends Program {
 	
@@ -55,9 +56,7 @@ public class ShapeRenderProgram extends Program {
 			COLOR_MULTIPLER_ATTRIBUTE_NAME = "inputColorMultiplier",
 			TEXTURE_COORDS_ATTRIBUTE_NAME  = "inputTextureCoords",
 			USE_TEXTURE_UNIFORM_NAME       = "useTexture",
-			TEXTURE_SLOT_UNIFORM_NAME      = "textureSlot",
-			TEXTURE_START_UNIFORM_NAME     = "textureStart",
-			TEXTURE_SIZE_UNIFORM_NAME      = "textureSize";
+			TEXTURE_SLOT_UNIFORM_NAME      = "textureSlot";
 	
 	private final Uniform4Matrix finalTransformUniform;
 	private final AttributeVertexArray positionsAttribute;
@@ -65,8 +64,6 @@ public class ShapeRenderProgram extends Program {
 	private final AttributeVertexArray textureCoordsAttribute;
 	private final Uniform1Int useTextureUniform;
 	private final Uniform1Int textureSlotUniform;
-	private final Uniform2Float textureStartUniform;
-	private final Uniform2Float textureSizeUniform;
 
 	public ShapeRenderProgram(
 			String[] vertexShaderResources,
@@ -98,12 +95,6 @@ public class ShapeRenderProgram extends Program {
 		
 		this.textureSlotUniform = getUniform(TEXTURE_SLOT_UNIFORM_NAME)
 				.as1Int();
-		
-		this.textureStartUniform = getUniform(TEXTURE_START_UNIFORM_NAME)
-				.as2Float();
-		
-		this.textureSizeUniform = getUniform(TEXTURE_SIZE_UNIFORM_NAME)
-				.as2Float();
 	}
 
 	private static String[] attachVertexShader(String[] others) {
@@ -188,9 +179,6 @@ public class ShapeRenderProgram extends Program {
 			sprite.getPrimitive().bind(0);
 			textureSlotUniform.set(0);
 			useTextureUniform.set(1);
-			
-			textureStartUniform.set(sprite.getStart());
-			textureSizeUniform.set(sprite.getSize());
 		} else {
 			useTextureUniform.set(0);
 		}
@@ -208,7 +196,38 @@ public class ShapeRenderProgram extends Program {
 	}
 	
 	public void preprocess(Shape shape) {
-		// To be overridden
+		for (Face face : shape.getFaces()) {
+			applySprites(face);
+		}
+	}
+	
+	private void applySprites(Face face) {
+		if (face.getTexture() == null) return;
+		
+		Vec2 v = Vectors.grab2();
+		ByteBuffer vertices = face.getVertices();
+		Sprite sprite = face.getTexture().getSprite();
+		
+		for (int i = 0; i < face.getVertexCount(); i++) {
+			int offset = vertices.position() + i * getBytesPerVertex() + (
+					3 * Float.BYTES +
+					3 * Float.BYTES
+			);
+			
+			v.set(
+					vertices.getFloat(offset + 0 * Float.BYTES),
+					vertices.getFloat(offset + 1 * Float.BYTES)
+			);
+			
+			v.mul(sprite.getSize()).add(sprite.getStart());
+			
+			vertices.putFloat(offset + 0 * Float.BYTES, v.x);
+			vertices.putFloat(offset + 1 * Float.BYTES, v.y);
+		}
+
+		face.markForVertexUpdate();
+		
+		Vectors.release(v);
 	}
 	
 	public VertexBuilder getVertexBuilder() {

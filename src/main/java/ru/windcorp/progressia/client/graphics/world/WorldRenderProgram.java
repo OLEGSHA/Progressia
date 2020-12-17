@@ -35,6 +35,7 @@ import ru.windcorp.progressia.client.graphics.model.Face;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
+import ru.windcorp.progressia.common.util.Vectors;
 
 public class WorldRenderProgram extends ShapeRenderProgram {
 	
@@ -141,10 +142,10 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 	}
 	
 	private void computeNormals(Face face) {
-		Vec3 a = new Vec3();
-		Vec3 b = new Vec3();
-		Vec3 c = new Vec3();
-		Vec3 normal = new Vec3();
+		Vec3 a = Vectors.grab3();
+		Vec3 b = Vectors.grab3();
+		Vec3 c = Vectors.grab3();
+		Vec3 normal = Vectors.grab3();
 		
 		for (int i = 0; i < face.getIndexCount(); i += 3) {
 			int indexA = face.getIndex(i + 0);
@@ -161,6 +162,11 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 			saveVertexNormal(face, indexB, normal);
 			saveVertexNormal(face, indexC, normal);
 		}
+		
+		Vectors.release(a);
+		Vectors.release(b);
+		Vectors.release(c);
+		Vectors.release(normal);
 	}
 	
 	private void computeOneNormal(
