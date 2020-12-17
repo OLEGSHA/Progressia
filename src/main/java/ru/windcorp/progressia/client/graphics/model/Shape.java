@@ -19,6 +19,7 @@ package ru.windcorp.progressia.client.graphics.model;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 
@@ -30,6 +31,8 @@ public class Shape implements Renderable {
 	private final ShapeRenderProgram program;
 	private final Face[] faces;
 	private final Usage usage;
+
+	private FaceGroup[] groups;
 	
 	private ByteBuffer vertices;
 	private ShortBuffer indices;
@@ -60,7 +63,8 @@ public class Shape implements Renderable {
 
 	private void assembleBuffers() {
 		// TODO optimize: only update faces that requested it
-		
+
+		sortFaces();
 		resizeBuffers();
 		
 		for (Face face : faces) {
@@ -71,6 +75,8 @@ public class Shape implements Renderable {
 		
 		this.vertices.flip();
 		this.indices.flip();
+
+		assembleGroups();
 		
 		needsAssembly = false;
 		needsVBOUpdate = true;
@@ -142,6 +148,51 @@ public class Shape implements Renderable {
 			}
 		} 
 	}
+
+	private void sortFaces() {
+		Arrays.sort(faces);
+	}
+
+	private void assembleGroups() {
+		int unique = countUniqueFaces();
+		this.groups = new FaceGroup[unique];
+		
+		if (faces.length == 0) return;
+		
+		int previousHandle = faces[0].getSortingIndex();
+		int start = 0;
+		int groupIndex = 0;
+		
+		for (int i = 1; i < faces.length; ++i) {
+			if (previousHandle != faces[i].getSortingIndex()) {
+				
+				groups[groupIndex] = new FaceGroup(faces, start, i);
+				start = i;
+				groupIndex++;
+				
+				previousHandle = faces[i].getSortingIndex();
+			}
+		}
+		
+		assert groupIndex == groups.length - 1;
+		groups[groupIndex] = new FaceGroup(faces, start, faces.length);
+	}
+
+	private int countUniqueFaces() {
+		if (faces.length == 0) return 0;
+		
+		int result = 1;
+		int previousHandle = faces[0].getSortingIndex();
+		
+		for (int i = 1; i < faces.length; ++i) {
+			if (previousHandle != faces[i].getSortingIndex()) {
+				result++;
+				previousHandle = faces[i].getSortingIndex();
+			}
+		}
+		
+		return result;
+	}
 	
 	void markForReassembly() {
 		needsAssembly = true;
@@ -185,6 +236,10 @@ public class Shape implements Renderable {
 	
 	public Face[] getFaces() {
 		return faces;
+	}
+	
+	public FaceGroup[] getGroups() {
+		return groups;
 	}
 	
 	public Usage getUsage() {

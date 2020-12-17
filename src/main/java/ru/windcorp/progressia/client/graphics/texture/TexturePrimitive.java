@@ -35,7 +35,10 @@ public class TexturePrimitive implements OpenGLDeletable {
 	static {
 		Arrays.fill(currentlyBound, NOT_LOADED);
 	}
+	
+	private static int nextId = 0;
 
+	private int id = nextId++;
 	private int handle = NOT_LOADED;
 	private TextureData pixels;
 
@@ -99,4 +102,9 @@ public class TexturePrimitive implements OpenGLDeletable {
 	public int getHandle() {
 		return handle;
 	}
+	
+	public int getId() {
+		return id;
+	}
+	
 }

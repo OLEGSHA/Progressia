@@ -35,7 +35,7 @@ import ru.windcorp.progressia.client.graphics.backend.shaders.Program;
 import ru.windcorp.progressia.client.graphics.backend.shaders.attributes.*;
 import ru.windcorp.progressia.client.graphics.backend.shaders.uniforms.*;
 import ru.windcorp.progressia.client.graphics.texture.Sprite;
-import ru.windcorp.progressia.client.graphics.texture.Texture;
+import ru.windcorp.progressia.client.graphics.texture.TexturePrimitive;
 import ru.windcorp.progressia.common.util.Vectors;
 
 public class ShapeRenderProgram extends Program {
@@ -117,8 +117,8 @@ public class ShapeRenderProgram extends Program {
 		
 		try {
 			enableAttributes();
-			for (Face face : shape.getFaces()) {
-				renderFace(face);
+			for (FaceGroup group : shape.getGroups()) {
+				renderFaceGroup(group);
 			}
 		} finally {
 			disableAttributes();
@@ -170,13 +170,11 @@ public class ShapeRenderProgram extends Program {
 		indices.bind(BindTarget.ELEMENT_ARRAY);
 	}
 
-	protected void renderFace(Face face) {
-		Texture texture = face.getTexture();
+	protected void renderFaceGroup(FaceGroup group) {
+		TexturePrimitive texture = group.getTexture();
 		
 		if (texture != null) {
-			Sprite sprite = texture.getSprite();
-			
-			sprite.getPrimitive().bind(0);
+			texture.bind(0);
 			textureSlotUniform.set(0);
 			useTextureUniform.set(1);
 		} else {
@@ -185,9 +183,9 @@ public class ShapeRenderProgram extends Program {
 		
 		GL11.glDrawElements(
 				GL11.GL_TRIANGLES,
-				face.getIndexCount(),
+				group.getIndexCount(),
 				GL11.GL_UNSIGNED_SHORT,
-				face.getByteOffsetOfIndices()
+				group.getByteOffsetOfIndices()
 		);
 	}
 	

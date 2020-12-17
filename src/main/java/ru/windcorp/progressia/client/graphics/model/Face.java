@@ -23,7 +23,7 @@ import java.util.Objects;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 
-public class Face {
+public class Face implements Comparable<Face> {
 	
 	private static final ShortBuffer GENERATE_SUCCESSIVE_LATER = null;
 	
@@ -238,6 +238,15 @@ public class Face {
 	
 	public void setTexture(Texture texture) {
 		this.texture = texture;
+	}
+
+	@Override
+	public int compareTo(Face o) {
+		return Integer.compare(getSortingIndex(), o.getSortingIndex());
+	}
+	
+	public int getSortingIndex() {
+		return texture == null ? -1 : texture.getSprite().getPrimitive().getId();
 	}
 
 }

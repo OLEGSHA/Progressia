@@ -55,7 +55,7 @@ public class WorldData {
 	}
 	
 	public void tmp_generate() {
-		final int size = 2;
+		final int size = 6;
 		Vec3i cursor = new Vec3i(0, 0, 0);
 		
 		for (cursor.x = -(size / 2); cursor.x <= (size / 2); ++cursor.x) {
