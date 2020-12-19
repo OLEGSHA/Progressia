@@ -39,6 +39,7 @@ public class ProgressiaLauncher {
 		CrashReports.registerProvider(new OpenALContextProvider());
 		CrashReports.registerProvider(new ArgsContextProvider());
 		CrashReports.registerProvider(new LanguageContextProvider());
+		CrashReports.registerProvider(new StackTraceProvider());
 		// Analyzers
 		CrashReports.registerAnalyzer(new OutOfMemoryAnalyzer());
 
