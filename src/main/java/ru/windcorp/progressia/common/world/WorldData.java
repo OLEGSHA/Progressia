@@ -62,7 +62,6 @@ public class WorldData {
 			for (cursor.y = -(size / 2); cursor.y <= (size / 2); ++cursor.y) {
 				ChunkData chunk = new ChunkData(cursor, this);
 				TestContent.generateChunk(chunk);
-				addChunkListeners(chunk);
 				addChunk(chunk);
 			}
 		}
@@ -72,8 +71,20 @@ public class WorldData {
 		getListeners().forEach(l -> l.getChunkListeners(this, chunk.getPosition(), chunk::addListener));
 	}
 	
-	private synchronized void addChunk(ChunkData chunk) {
-		chunksByPos.put(getChunkKey(chunk), chunk);
+	public synchronized void addChunk(ChunkData chunk) {
+		addChunkListeners(chunk);
+		
+		long key = getChunkKey(chunk);
+		
+		ChunkData previous = chunksByPos.get(key);
+		if (previous != null) {
+			throw new IllegalArgumentException(String.format(
+					"Chunk at (%d; %d; %d) already exists",
+					chunk.getPosition().x, chunk.getPosition().y, chunk.getPosition().z
+			));
+		}
+		
+		chunksByPos.put(key, chunk);
 		
 		chunk.forEachEntity(entity ->
 			entitiesById.put(entity.getEntityId(), entity)
@@ -83,16 +94,16 @@ public class WorldData {
 		getListeners().forEach(l -> l.onChunkLoaded(this, chunk));
 	}
 	
-//	private synchronized void removeChunk(ChunkData chunk) {
-//		getListeners().forEach(l -> l.beforeChunkUnloaded(this, chunk));
-//		chunk.beforeUnloaded();
-//		
-//		chunk.forEachEntity(entity ->
-//			entitiesById.remove(entity.getEntityId())
-//		);
-//		
-//		chunksByPos.remove(getChunkKey(chunk));
-//	}
+	public synchronized void removeChunk(ChunkData chunk) {
+		getListeners().forEach(l -> l.beforeChunkUnloaded(this, chunk));
+		chunk.beforeUnloaded();
+		
+		chunk.forEachEntity(entity ->
+			entitiesById.remove(entity.getEntityId())
+		);
+		
+		chunksByPos.remove(getChunkKey(chunk));
+	}
 	
 	private static long getChunkKey(ChunkData chunk) {
 		return CoordinatePacker.pack3IntsIntoLong(chunk.getPosition());

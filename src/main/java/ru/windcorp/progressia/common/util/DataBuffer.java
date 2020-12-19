@@ -21,26 +21,25 @@ public class DataBuffer {
 	
 	private int position;
 	
-	private final DataInput reader = new DataInputStream(
-			new InputStream() {
-				@Override
-				public int read() throws IOException {
-					if (position >= buffer.size()) return -1;
-					int result = buffer.getQuick(position);
-					++position;
-					return result;
-				}
-			}
-	);
+	private final InputStream inputStream = new InputStream() {
+		@Override
+		public int read() throws IOException {
+			if (DataBuffer.this.position >= buffer.size()) return -1;
+			int result = buffer.getQuick(DataBuffer.this.position);
+			++DataBuffer.this.position;
+			return result;
+		}
+	};
 	
-	private final DataOutput writer = new DataOutputStream(
-			new OutputStream() {		
-				@Override
-				public void write(int b) throws IOException {
-					buffer.add((byte) b);
-				}
-			}
-	);
+	private final OutputStream outputStream = new OutputStream() {		
+		@Override
+		public void write(int b) throws IOException {
+			DataBuffer.this.buffer.add((byte) b);
+		}
+	};
+	
+	private final DataInput reader = new DataInputStream(inputStream);
+	private final DataOutput writer = new DataOutputStream(outputStream);
 	
 	public DataBuffer(int capacity) {
 		this.buffer = new TByteArrayList(capacity);
@@ -52,6 +51,16 @@ public class DataBuffer {
 	
 	public DataBuffer(DataBuffer copyFrom) {
 		this.buffer = new TByteArrayList(copyFrom.buffer);
+	}
+	
+	public InputStream getInputStream() {
+		position = 0;
+		return inputStream;
+	}
+	
+	public OutputStream getOutputStream() {
+		buffer.resetQuick();
+		return outputStream;
 	}
 	
 	public DataInput getReader() {

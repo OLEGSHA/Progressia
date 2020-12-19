@@ -30,7 +30,7 @@ public class ClientState {
 		
 		Client client = new Client(world, channel);
 		
-		world.tmp_generate();
+//		world.tmp_generate();
 		
 		channel.connect();
 		

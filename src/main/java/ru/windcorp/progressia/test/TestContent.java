@@ -24,6 +24,7 @@ import ru.windcorp.progressia.client.world.tile.*;
 import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
+import ru.windcorp.progressia.common.io.ChunkIO;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -41,6 +42,7 @@ public class TestContent {
 	public static void registerContent() {
 		registerWorldContent();
 		regsiterControls();
+		registerMisc();
 	}
 
 	private static void registerWorldContent() {
@@ -326,6 +328,10 @@ public class TestContent {
 			statie.setPosition(new Vec3(0, 15, 16));
 			chunk.getEntities().add(statie);
 		}
+	}
+
+	private static void registerMisc() {
+		ChunkIO.registerCodec(new TestChunkCodec());
 	}
 
 }

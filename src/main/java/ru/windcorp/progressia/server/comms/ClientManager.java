@@ -1,5 +1,6 @@
 package ru.windcorp.progressia.server.comms;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,7 +11,11 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import ru.windcorp.progressia.common.comms.CommsChannel.Role;
 import ru.windcorp.progressia.common.comms.CommsChannel.State;
 import ru.windcorp.progressia.common.comms.packets.Packet;
+import ru.windcorp.progressia.common.comms.packets.PacketLoadChunk;
 import ru.windcorp.progressia.common.comms.packets.PacketSetLocalPlayer;
+import ru.windcorp.progressia.common.io.ChunkIO;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
+import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.server.Server;
 
 public class ClientManager {
@@ -34,11 +39,29 @@ public class ClientManager {
 	}
 	
 	public void addClient(Client client) {
-		clientsById.put(client.getId(), client);
-		
-		client.addListener(new DefaultServerCommsListener(this, client));
-		
-		client.sendPacket(new PacketSetLocalPlayer(0x42));
+		synchronized (client) {
+			clientsById.put(client.getId(), client);
+			
+			client.addListener(new DefaultServerCommsListener(this, client));
+			
+			for (ChunkData chunk : server.getWorld().getData().getChunks()) {
+				PacketLoadChunk packet = new PacketLoadChunk("Core:LoadChunk");
+				packet.getPosition().set(
+						chunk.getPosition().x,
+						chunk.getPosition().y,
+						chunk.getPosition().z
+				);
+				
+				try {
+					ChunkIO.save(chunk, packet.getData().getOutputStream());
+				} catch (IOException e) {
+					CrashReports.report(e, "ClientManager fjcked up. javahorse stupid");
+				}
+				client.sendPacket(packet);
+			}
+			
+			client.sendPacket(new PacketSetLocalPlayer(0x42));
+		}
 	}
 	
 	public void disconnectClient(Client client) {

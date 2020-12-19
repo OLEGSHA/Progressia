@@ -7,17 +7,15 @@ import java.util.Map;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.ChunkDataListeners;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.WorldDataListener;
-import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockFace;
-import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
+import ru.windcorp.progressia.test.TestChunkSender;
 
 public class WorldLogic {
 	
@@ -42,22 +40,8 @@ public class WorldLogic {
 			}
 		});
 		
-		data.addListener(ChunkDataListeners.createAdder(new ChunkDataListener() {
-			@Override
-			public void onChunkBlockChanged(
-					ChunkData chunk, Vec3i blockInChunk, BlockData previous, BlockData current
-			) {
-				getServer().getWorldAccessor().triggerUpdates(Coordinates.getInWorld(chunk.getPosition(), blockInChunk, null));
-			}
-			
-			@Override
-			public void onChunkTilesChanged(
-					ChunkData chunk, Vec3i blockInChunk, BlockFace face, TileData tile,
-					boolean wasAdded
-			) {
-				getServer().getWorldAccessor().triggerUpdates(Coordinates.getInWorld(chunk.getPosition(), blockInChunk, null), face);
-			}
-		}));
+		data.addListener(ChunkDataListeners.createAdder(new UpdateTriggerer(server)));
+		data.addListener(new TestChunkSender(server));
 	}
 	
 	public Server getServer() {
