@@ -6,8 +6,7 @@ public abstract class Client extends CommsChannel {
 	
 	private final int id;
 	
-	public Client(int id, Role... roles) {
-		super(roles);
+	public Client(int id) {
 		this.id = id;
 	}
 	

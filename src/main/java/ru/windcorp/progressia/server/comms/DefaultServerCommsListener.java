@@ -2,7 +2,6 @@ package ru.windcorp.progressia.server.comms;
 
 import java.io.IOException;
 
-import ru.windcorp.progressia.common.comms.CommsChannel.Role;
 import ru.windcorp.progressia.common.comms.controls.PacketControl;
 import ru.windcorp.progressia.common.comms.CommsListener;
 import ru.windcorp.progressia.common.comms.packets.Packet;
@@ -20,7 +19,7 @@ public class DefaultServerCommsListener implements CommsListener {
 
 	@Override
 	public void onPacketReceived(Packet packet) {
-		if (client.getRoles().contains(Role.GAME)) {
+		if (client instanceof ClientPlayer) {
 			if (packet instanceof PacketControl) {
 				PacketControl packetControl = (PacketControl) packet;
 				

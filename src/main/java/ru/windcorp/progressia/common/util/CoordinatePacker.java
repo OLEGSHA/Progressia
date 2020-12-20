@@ -80,6 +80,8 @@ public class CoordinatePacker {
 	}
 	
 	public static Vec3i unpack3IntsFromLong(long packed, Vec3i output) {
+		if (output == null) output = new Vec3i();
+		
 		output.set(
 				unpack3IntsFromLong(packed, 0),
 				unpack3IntsFromLong(packed, 1),
@@ -113,6 +115,8 @@ public class CoordinatePacker {
 	}
 	
 	public static Vec2i unpack2IntsFromLong(long packed, Vec2i output) {
+		if (output == null) output = new Vec2i();
+		
 		output.set(
 				unpack2IntsFromLong(packed, 0),
 				unpack2IntsFromLong(packed, 1)

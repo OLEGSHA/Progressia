@@ -2,12 +2,8 @@ package ru.windcorp.progressia.common.comms;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 import ru.windcorp.progressia.common.comms.packets.Packet;
 
@@ -36,23 +32,10 @@ public abstract class CommsChannel {
 		DISCONNECTED
 	}
 
-	public static enum Role {
-		GAME,
-		CHAT,
-		RCON
-		// TODO create role for that thingy that only connects to get server status
-	}
-
 	private State state = State.CONNECTING;
-	
-	protected final Set<Role> roles;
 	
 	private final Collection<CommsListener> listeners =
 			Collections.synchronizedCollection(new ArrayList<>());
-
-	public CommsChannel(Role... roles) {
-		this.roles = Sets.immutableEnumSet(Arrays.asList(roles));
-	}
 
 	protected abstract void doSendPacket(Packet packet) throws IOException;
 
@@ -119,10 +102,6 @@ public abstract class CommsChannel {
 
 	public synchronized State getState() {
 		return state;
-	}
-	
-	public Set<Role> getRoles() {
-		return roles;
 	}
 
 	public boolean isReady() {

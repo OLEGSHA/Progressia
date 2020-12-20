@@ -2,11 +2,11 @@ package ru.windcorp.progressia.common.world;
 
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
-public class Player {
+public class PlayerData {
 	
 	private EntityData entity;
 
-	public Player(EntityData entity) {
+	public PlayerData(EntityData entity) {
 		this.entity = entity;
 	}
 	

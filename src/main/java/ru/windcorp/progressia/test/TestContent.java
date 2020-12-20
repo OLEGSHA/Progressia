@@ -39,6 +39,10 @@ import ru.windcorp.progressia.server.world.tile.*;
 
 public class TestContent {
 	
+	public static final String PLAYER_LOGIN = "Sasha";
+	public static final long PLAYER_ENTITY_ID = 0x42;
+	public static final long STATIE_ENTITY_ID = 0xDEADBEEF;
+	
 	public static void registerContent() {
 		registerWorldContent();
 		regsiterControls();
@@ -316,7 +320,7 @@ public class TestContent {
 		
 		if (Glm.equals(chunk.getPosition(), Vectors.ZERO_3i)) {
 			EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
-			player.setEntityId(0x42);
+			player.setEntityId(PLAYER_ENTITY_ID);
 			player.setPosition(new Vec3(-6, -6, 20));
 			player.setDirection(new Vec2(
 					(float) Math.toRadians(40), (float) Math.toRadians(45)
@@ -324,7 +328,7 @@ public class TestContent {
 			chunk.getEntities().add(player);
 			
 			EntityData statie = EntityDataRegistry.getInstance().create("Test:Statie");
-			statie.setEntityId(0xDEADBEEF);
+			statie.setEntityId(STATIE_ENTITY_ID);
 			statie.setPosition(new Vec3(0, 15, 16));
 			chunk.getEntities().add(statie);
 		}

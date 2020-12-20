@@ -7,6 +7,7 @@ import ru.windcorp.progressia.client.graphics.world.LayerWorld;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.server.ServerState;
 import ru.windcorp.progressia.test.LayerTestGUI;
+import ru.windcorp.progressia.test.TestContent;
 
 public class ClientState {
 	
@@ -32,7 +33,7 @@ public class ClientState {
 		
 //		world.tmp_generate();
 		
-		channel.connect();
+		channel.connect(TestContent.PLAYER_LOGIN);
 		
 		setInstance(client);
 		

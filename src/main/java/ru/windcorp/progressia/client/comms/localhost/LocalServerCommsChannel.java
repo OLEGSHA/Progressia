@@ -10,15 +10,15 @@ public class LocalServerCommsChannel extends ServerCommsChannel {
 	private final Server server;
 	
 	public LocalServerCommsChannel(Server server) {
-		super(Role.GAME, Role.CHAT);
 		this.server = server;
 	}
 	
-	public void connect() {
+	public void connect(String login) {
 		setState(State.CONNECTED);
 		
 		this.localClient = new LocalClient(
 				server.getClientManager().grabClientId(),
+				login,
 				this
 		);
 		

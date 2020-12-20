@@ -4,8 +4,4 @@ import ru.windcorp.progressia.common.comms.CommsChannel;
 
 public abstract class ServerCommsChannel extends CommsChannel {
 
-	public ServerCommsChannel(Role... roles) {
-		super(roles);
-	}
-
 }

@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 
 import ru.windcorp.jputil.functions.ThrowingRunnable;
+import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.TaskQueue;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.server.comms.ClientManager;
@@ -29,6 +30,7 @@ public class Server {
 	private final ServerThread serverThread;
 	
 	private final ClientManager clientManager = new ClientManager(this);
+	private final PlayerManager playerManager = new PlayerManager(this);
 	
 	private final TaskQueue taskQueue = new TaskQueue(this::isServerThread);
 	
@@ -56,6 +58,10 @@ public class Server {
 	 */
 	public ClientManager getClientManager() {
 		return clientManager;
+	}
+	
+	public PlayerManager getPlayerManager() {
+		return playerManager;
 	}
 	
 	/**
@@ -147,6 +153,10 @@ public class Server {
 	 */
 	public TickingSettings getTickingSettings() {
 		return tickingSettings;
+	}
+	
+	public float getLoadDistance(Player player) {
+		return Units.get(100.0f, "m");
 	}
 
 	/**
