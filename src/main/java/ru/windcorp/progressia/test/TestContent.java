@@ -28,6 +28,7 @@ import ru.windcorp.progressia.common.io.ChunkIO;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
 import ru.windcorp.progressia.common.world.tile.*;
@@ -257,21 +258,33 @@ public class TestContent {
 		TileData stones = TileDataRegistry.getInstance().get("Test:Stones");
 		TileData flowers = TileDataRegistry.getInstance().get("Test:YellowFlowers");
 		TileData sand = TileDataRegistry.getInstance().get("Test:Sand");
-	
-		Vec3i aPoint = new Vec3i(5, 0, bpc + bpc/4).sub(chunk.getPosition().mul_(ChunkData.BLOCKS_PER_CHUNK));
+		
+		final float maxHeight = 32;
+		final float rho = 2000;
+		
+		int[][] heightMap = new int[bpc][bpc];
+		
+		for (int yic = 0; yic < heightMap.length; ++yic) {
+			int yiw = Coordinates.getInWorld(chunk.getY(), yic);
+			for (int xic = 0; xic < heightMap[yic].length; ++xic) {
+				int xiw = Coordinates.getInWorld(chunk.getX(), xic);
+				
+				int rsq = (xiw*xiw + yiw*yiw);
+				heightMap[xic][yic] = (int) (rsq / (rho + rsq) * maxHeight) - chunk.getZ()*bpc;
+			}
+		}
+		
 		Vec3i pos = new Vec3i();
 		
-		for (int x = 0; x < bpc; ++x) {
-			for (int y = 0; y < bpc; ++y) {
-				for (int z = 0; z < bpc; ++z) {
+		for (pos.x = 0; pos.x < bpc; ++pos.x) {
+			for (pos.y = 0; pos.y < bpc; ++pos.y) {
+				for (pos.z = 0; pos.z < bpc; ++pos.z) {
+
+					int layer = pos.z - heightMap[pos.x][pos.y];
 					
-					pos.set(x, y, z);
-					float f = aPoint.sub(pos, pos).length();
-					pos.set(x, y, z);
-					
-					if (f > 17) {
+					if (layer < -4) {
 						chunk.setBlock(pos, stone, false);
-					} else if (f > 14) {
+					} else if (layer < 0) {
 						chunk.setBlock(pos, dirt, false);
 					} else {
 						chunk.setBlock(pos, air, false);
@@ -283,37 +296,43 @@ public class TestContent {
 		
 		for (int x = 0; x < bpc; ++x) {
 			for (int y = 0; y < bpc; ++y) {
-				pos.set(x, y, 0);
 				
-				for (pos.z = bpc - 1; pos.z >= 0 && chunk.getBlock(pos) == air; --pos.z);
-				if (pos.z < 0) continue;
+//				int z = heightMap[x][y];
 				
-				chunk.getTiles(pos, BlockFace.TOP).add(grass);
-				for (BlockFace face : BlockFace.getFaces()) {
-					if (face.getVector().z != 0) continue;
-					pos.add(face.getVector());
+				for (int z = 0; z < bpc; ++z) {
+
+					pos.set(x, y, z);
+					int layer = pos.z - heightMap[x][y];
 					
-					if (!ChunkData.isInBounds(pos) || (chunk.getBlock(pos) == air)) {
-						pos.sub(face.getVector());
-						chunk.getTiles(pos, face).add(grass);
-					} else {
-						pos.sub(face.getVector());
+					if (layer == -1) {
+						chunk.getTiles(pos, BlockFace.TOP).add(grass);
+						for (BlockFace face : BlockFace.getFaces()) {
+							if (face.getVector().z != 0) continue;
+							pos.add(face.getVector());
+							
+							if (!ChunkData.isInBounds(pos) || (chunk.getBlock(pos) == air)) {
+								pos.sub(face.getVector());
+								chunk.getTiles(pos, face).add(grass);
+							} else {
+								pos.sub(face.getVector());
+							}
+						}
+						
+						int hash = x*x * 19 ^ y*y * 41 ^ pos.z*pos.z * 147;
+						if (hash % 5 == 0) {
+							chunk.getTiles(pos, BlockFace.TOP).addFarthest(sand);
+						}
+						
+						hash = x*x * 13 ^ y*y * 37 ^ pos.z*pos.z * 129;
+						if (hash % 5 == 0) {
+							chunk.getTiles(pos, BlockFace.TOP).addFarthest(stones);
+						}
+						
+						hash = x*x * 17 ^ y*y * 39 ^ pos.z*pos.z * 131;
+						if (hash % 9 == 0) {
+							chunk.getTiles(pos, BlockFace.TOP).addFarthest(flowers);
+						}
 					}
-				}
-				
-				int hash = x*x * 19 ^ y*y * 41 ^ pos.z*pos.z * 147;
-				if (hash % 5 == 0) {
-					chunk.getTiles(pos, BlockFace.TOP).addFarthest(sand);
-				}
-				
-				hash = x*x * 13 ^ y*y * 37 ^ pos.z*pos.z * 129;
-				if (hash % 5 == 0) {
-					chunk.getTiles(pos, BlockFace.TOP).addFarthest(stones);
-				}
-				
-				hash = x*x * 17 ^ y*y * 39 ^ pos.z*pos.z * 131;
-				if (hash % 9 == 0) {
-					chunk.getTiles(pos, BlockFace.TOP).addFarthest(flowers);
 				}
 			}
 		}
@@ -321,7 +340,7 @@ public class TestContent {
 		if (Glm.equals(chunk.getPosition(), Vectors.ZERO_3i)) {
 			EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
 			player.setEntityId(PLAYER_ENTITY_ID);
-			player.setPosition(new Vec3(-6, -6, 20));
+			player.setPosition(new Vec3(8, 8, 8));
 			player.setDirection(new Vec2(
 					(float) Math.toRadians(40), (float) Math.toRadians(45)
 			));

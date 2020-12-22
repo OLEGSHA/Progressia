@@ -5,6 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.server.world.ticking.TickerCoordinator;
 
 public class ServerThread implements Runnable {
@@ -56,7 +57,7 @@ public class ServerThread implements Runnable {
 			server.tick();
 			ticker.runOneTick();
 		} catch (Exception e) {
-			LogManager.getLogger(getClass()).error("Got an exception in server thread", e);
+			CrashReports.report(e, "Got an exception in the server thread");
 		}
 	}
 	

@@ -9,7 +9,7 @@ import ru.windcorp.progressia.common.world.PlayerData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.comms.ClientPlayer;
 
-public class Player extends PlayerData {
+public class Player extends PlayerData implements ChunkLoader {
 	
 	private final Server server;
 	private final ClientPlayer client;
@@ -28,7 +28,8 @@ public class Player extends PlayerData {
 		return client;
 	}
 
-	public void getRequestedChunks(Consumer<Vec3i> chunkConsumer) {
+	@Override
+	public void requestChunksToLoad(Consumer<Vec3i> chunkConsumer) {
 		Vec3i start = getEntity().getPosition().round_();
 		Coordinates.convertInWorldToChunk(start, start);
 		

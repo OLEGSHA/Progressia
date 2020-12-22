@@ -25,6 +25,7 @@ import glm.vec._3.i.Vec3i;
 import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.world.block.BlockData;
@@ -55,14 +56,16 @@ public class WorldData {
 	}
 	
 	public void tmp_generate() {
-		final int size = 6;
+		final int size = 10;
 		Vec3i cursor = new Vec3i(0, 0, 0);
 		
 		for (cursor.x = -(size / 2); cursor.x <= (size / 2); ++cursor.x) {
 			for (cursor.y = -(size / 2); cursor.y <= (size / 2); ++cursor.y) {
-				ChunkData chunk = new ChunkData(cursor, this);
-				TestContent.generateChunk(chunk);
-				addChunk(chunk);
+				for (cursor.z = -(size / 2); cursor.z <= (size / 2); ++cursor.z) {
+					ChunkData chunk = new ChunkData(cursor, this);
+					TestContent.generateChunk(chunk);
+					addChunk(chunk);
+				}
 			}
 		}
 	}
@@ -138,6 +141,10 @@ public class WorldData {
 	
 	public Collection<ChunkData> getChunks() {
 		return chunks;
+	}
+	
+	public TLongSet getChunkKeys() {
+		return chunksByPos.keySet();
 	}
 	
 	public EntityData getEntity(long entityId) {

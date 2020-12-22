@@ -112,8 +112,12 @@ public class Server {
 		taskQueue.waitAndInvoke(task);
 	}
 	
+	public void schedule(Runnable task) {
+		taskQueue.schedule(task);
+	}
+	
 	public void schedule(Consumer<Server> task) {
-		taskQueue.schedule(() -> task.accept(this));
+		schedule(() -> task.accept(this));
 	}
 	
 	public void requestChange(Change change) {
