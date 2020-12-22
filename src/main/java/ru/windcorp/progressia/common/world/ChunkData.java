@@ -33,12 +33,19 @@ import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.common.world.tile.TileReference;
 import ru.windcorp.progressia.common.world.tile.TileStackIsFullException;
 
-public class ChunkData {
+public class ChunkData
+implements GenericChunk<
+	ChunkData,
+	BlockData,
+	TileData,
+	TileDataStack
+> {
 	
 	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
 	
@@ -65,6 +72,12 @@ public class ChunkData {
 		this.world = world;
 	}
 	
+	@Override
+	public Vec3i getPosition() {
+		return position;
+	}
+	
+	@Override
 	public BlockData getBlock(Vec3i posInChunk) {
 		return blocks[getBlockIndex(posInChunk)];
 	}
@@ -81,6 +94,7 @@ public class ChunkData {
 		}
 	}
 	
+	@Override
 	public TileDataStack getTilesOrNull(Vec3i blockInChunk, BlockFace face) {
 		return tiles[getTileIndex(blockInChunk, face)];
 	}
@@ -98,10 +112,12 @@ public class ChunkData {
 		this.tiles[getTileIndex(blockInChunk, face)] = tiles;
 	}
 	
+	@Override
 	public boolean hasTiles(Vec3i blockInChunk, BlockFace face) {
 		return getTilesOrNull(blockInChunk, face) != null;
 	}
 	
+	@Override
 	public TileDataStack getTiles(Vec3i blockInChunk, BlockFace face) {
 		int index = getTileIndex(blockInChunk, face);
 		
@@ -205,22 +221,6 @@ public class ChunkData {
 	
 	public void forEachEntity(Consumer<EntityData> action) {
 		getEntities().forEach(action);
-	}
-
-	public int getX() {
-		return position.x;
-	}
-	
-	public int getY() {
-		return position.y;
-	}
-	
-	public int getZ() {
-		return position.z;
-	}
-	
-	public Vec3i getPosition() {
-		return position;
 	}
 	
 	public WorldData getWorld() {

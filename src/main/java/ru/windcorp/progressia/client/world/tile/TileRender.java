@@ -5,8 +5,9 @@ import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizer;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.generic.GenericTile;
 
-public class TileRender extends Namespaced {
+public class TileRender extends Namespaced implements GenericTile {
 
 	public TileRender(String id) {
 		super(id);

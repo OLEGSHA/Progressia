@@ -24,6 +24,7 @@ import ru.windcorp.progressia.client.graphics.input.bus.Input;
 public abstract class GUILayer extends AssembledFlatLayer {
 	
 	private final Component root = new Component("Root") {
+		@Override
 		protected void handleReassemblyRequest() {
 			GUILayer.this.invalidate();
 		}

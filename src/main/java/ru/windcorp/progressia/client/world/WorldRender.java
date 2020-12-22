@@ -26,15 +26,26 @@ import java.util.WeakHashMap;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.backend.FaceCulling;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
+import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.entity.EntityRenderRegistry;
 import ru.windcorp.progressia.client.world.entity.EntityRenderable;
+import ru.windcorp.progressia.client.world.tile.TileRender;
+import ru.windcorp.progressia.client.world.tile.TileRenderStack;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListeners;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.WorldDataListener;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.GenericWorld;
 
-public class WorldRender {
+public class WorldRender
+implements GenericWorld<
+	BlockRender,
+	TileRender,
+	TileRenderStack,
+	ChunkRender,
+	EntityRenderable
+> {
 	
 	private final WorldData data;
 	
@@ -67,12 +78,19 @@ public class WorldRender {
 		return chunks.get(chunkData);
 	}
 	
+	@Override
 	public ChunkRender getChunk(Vec3i pos) {
 		return chunks.get(getData().getChunk(pos));
 	}
 	
+	@Override
 	public Collection<ChunkRender> getChunks() {
 		return chunks.values();
+	}
+	
+	@Override
+	public Collection<EntityRenderable> getEntities() {
+		return entityModels.values();
 	}
 	
 	public void render(ShapeRenderHelper renderer) {

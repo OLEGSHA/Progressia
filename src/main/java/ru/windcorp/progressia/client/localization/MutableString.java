@@ -55,6 +55,7 @@ public abstract class MutableString {
 		return data;
 	}
 
+	@Override
 	public String toString() {
 		return get();
 	}

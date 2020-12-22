@@ -192,6 +192,7 @@ public class VertexBufferObject implements OpenGLDeletable {
 		return usage;
 	}
 	
+	@Override
 	public int getHandle() {
 		return handle;
 	}

@@ -1,16 +1,16 @@
-package ru.windcorp.progressia.server.world.tile;
+package ru.windcorp.progressia.client.world.tile;
 
+import ru.windcorp.progressia.client.world.ChunkRender;
 import ru.windcorp.progressia.common.world.generic.GenericTileStack;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
-import ru.windcorp.progressia.server.world.ChunkLogic;
 
-public abstract class TileLogicStack
+public abstract class TileRenderStack
 extends GenericTileStack<
-	TileLogicStack,
-	TileLogic,
-	ChunkLogic
+	TileRenderStack,
+	TileRender,
+	ChunkRender
 > {
 	
 	public abstract TileDataStack getData();
-
+	
 }

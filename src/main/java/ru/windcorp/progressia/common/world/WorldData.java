@@ -30,9 +30,19 @@ import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.GenericWorld;
+import ru.windcorp.progressia.common.world.tile.TileData;
+import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.test.TestContent;
 
-public class WorldData {
+public class WorldData
+implements GenericWorld<
+	BlockData,
+	TileData,
+	TileDataStack,
+	ChunkData,
+	EntityData
+>{
 
 	private final TLongObjectMap<ChunkData> chunksByPos =
 			new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), this);
@@ -53,6 +63,21 @@ public class WorldData {
 	
 	public WorldData() {
 		
+	}
+	
+	@Override
+	public ChunkData getChunk(Vec3i pos) {
+		return chunksByPos.get(CoordinatePacker.pack3IntsIntoLong(pos));
+	}
+	
+	@Override
+	public Collection<ChunkData> getChunks() {
+		return chunks;
+	}
+	
+	@Override
+	public Collection<EntityData> getEntities() {
+		return entities;
 	}
 	
 	public void tmp_generate() {
@@ -112,21 +137,6 @@ public class WorldData {
 		return CoordinatePacker.pack3IntsIntoLong(chunk.getPosition());
 	}
 	
-	public ChunkData getChunk(Vec3i pos) {
-		return chunksByPos.get(CoordinatePacker.pack3IntsIntoLong(pos));
-	}
-	
-	public ChunkData getChunkByBlock(Vec3i blockInWorld) {
-		return getChunk(Coordinates.convertInWorldToChunk(blockInWorld, null));
-	}
-	
-	public BlockData getBlock(Vec3i blockInWorld) {
-		ChunkData chunk = getChunkByBlock(blockInWorld);
-		if (chunk == null) return null;
-		
-		return chunk.getBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null));
-	}
-	
 	public void setBlock(Vec3i blockInWorld, BlockData block, boolean notify) {
 		ChunkData chunk = getChunkByBlock(blockInWorld);
 		if (chunk == null)
@@ -139,20 +149,12 @@ public class WorldData {
 		chunk.setBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null), block, notify);
 	}
 	
-	public Collection<ChunkData> getChunks() {
-		return chunks;
-	}
-	
 	public TLongSet getChunkKeys() {
 		return chunksByPos.keySet();
 	}
 	
 	public EntityData getEntity(long entityId) {
 		return entitiesById.get(entityId);
-	}
-	
-	public Collection<EntityData> getEntities() {
-		return entities;
 	}
 	
 	public float getTime() {

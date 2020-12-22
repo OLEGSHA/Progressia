@@ -19,9 +19,10 @@ package ru.windcorp.progressia.client.world.block;
 
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
+import ru.windcorp.progressia.common.world.generic.GenericBlock;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 
-public abstract class BlockRender extends Namespaced {
+public abstract class BlockRender extends Namespaced implements GenericBlock {
 	
 	public BlockRender(String id) {
 		super(id);

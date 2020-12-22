@@ -18,8 +18,8 @@
 package ru.windcorp.progressia.client.world.cro;
 
 import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
-import static ru.windcorp.progressia.common.world.tile.GenericTileStack.TILES_PER_FACE;
 import static ru.windcorp.progressia.common.world.block.BlockFace.BLOCK_FACE_COUNT;
+import static ru.windcorp.progressia.common.world.generic.GenericTileStack.TILES_PER_FACE;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -30,6 +30,7 @@ public class ByteBufferOutputStream extends OutputStream {
 		this.buffer = buffer;
 	}
 
+	@Override
 	public void write(int b) throws IOException {
 		try {
 			buffer.put((byte) b);
@@ -38,6 +39,7 @@ public class ByteBufferOutputStream extends OutputStream {
 		}
 	}
 
+	@Override
 	public void write(byte[] bytes, int off, int len) throws IOException {
 		try {
 			buffer.put(bytes, off, len);

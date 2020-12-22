@@ -2,13 +2,12 @@ package ru.windcorp.progressia.common.world.entity;
 
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
-import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.state.StatefulObject;
-import ru.windcorp.progressia.common.world.Coordinates;
+import ru.windcorp.progressia.common.world.generic.GenericEntity;
 
-public class EntityData extends StatefulObject implements Collideable {
+public class EntityData extends StatefulObject implements Collideable, GenericEntity {
 	
 	private final Vec3 position = new Vec3();
 	private final Vec3 velocity = new Vec3();
@@ -25,18 +24,9 @@ public class EntityData extends StatefulObject implements Collideable {
 		super(EntityDataRegistry.getInstance(), id);
 	}
 	
+	@Override
 	public Vec3 getPosition() {
 		return position;
-	}
-	
-	public Vec3i getBlockInWorld(Vec3i output) {
-		if (output == null) output = new Vec3i();
-		return position.round(output);
-	}
-	
-	public Vec3i getChunkCoords(Vec3i output) {
-		output = getBlockInWorld(output);
-		return Coordinates.convertInWorldToChunk(output, output);
 	}
 	
 	public void setPosition(Vec3 position) {

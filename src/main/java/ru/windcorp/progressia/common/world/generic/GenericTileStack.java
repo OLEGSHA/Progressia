@@ -1,4 +1,4 @@
-package ru.windcorp.progressia.common.world.tile;
+package ru.windcorp.progressia.common.world.generic;
 
 import java.util.AbstractList;
 import java.util.Objects;
@@ -6,11 +6,14 @@ import java.util.RandomAccess;
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
-public abstract class GenericTileStack<T extends Namespaced, C>
+public abstract class GenericTileStack<
+	Self extends GenericTileStack<Self, T, C>,
+	T    extends GenericTile,
+	C    extends GenericChunk<C, ?, T, Self>
+>
 extends AbstractList<T>
 implements RandomAccess {
 	
@@ -21,13 +24,12 @@ implements RandomAccess {
 	public static final int TILES_PER_FACE = 8;
 	
 	public abstract Vec3i getBlockInChunk(Vec3i output);
-	protected abstract Vec3i getChunkPos();
 	public abstract C getChunk();
 	public abstract BlockFace getFace();
 	
 	public Vec3i getBlockInWorld(Vec3i output) {
 		// This is safe
-		return Coordinates.getInWorld(getChunkPos(), getBlockInChunk(output), output);
+		return Coordinates.getInWorld(getChunk().getPosition(), getBlockInChunk(output), output);
 	}
 	
 	public boolean isFull() {

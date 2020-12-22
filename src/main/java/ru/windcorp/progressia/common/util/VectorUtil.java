@@ -22,7 +22,7 @@ public class VectorUtil {
 	public static void forEachVectorInCuboid(
 			int x0, int y0, int z0,
 			int x1, int y1, int z1,
-			Consumer<Vec3i> action
+			Consumer<? super Vec3i> action
 	) {
 		Vec3i cursor = Vectors.grab3i();
 		

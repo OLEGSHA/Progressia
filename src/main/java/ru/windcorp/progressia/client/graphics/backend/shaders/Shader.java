@@ -91,6 +91,7 @@ public class Shader implements OpenGLDeletable {
 		);
 	}
 
+	@Override
 	public int getHandle() {
 		return handle;
 	}
