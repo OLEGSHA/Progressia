@@ -25,12 +25,13 @@ import glm.vec._3.i.Vec3i;
 import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.TLongSet;
 import ru.windcorp.progressia.common.collision.CollisionModel;
-import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.ChunkMap;
+import ru.windcorp.progressia.common.world.generic.ChunkSet;
 import ru.windcorp.progressia.common.world.generic.GenericWorld;
+import ru.windcorp.progressia.common.world.generic.LongBasedChunkMap;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.test.TestContent;
@@ -44,11 +45,12 @@ implements GenericWorld<
 	EntityData
 >{
 
-	private final TLongObjectMap<ChunkData> chunksByPos =
-			new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), this);
+	private final ChunkMap<ChunkData> chunksByPos = new LongBasedChunkMap<>(
+			new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), this)
+	);
 	
 	private final Collection<ChunkData> chunks =
-			Collections.unmodifiableCollection(chunksByPos.valueCollection());
+			Collections.unmodifiableCollection(chunksByPos.values());
 	
 	private final TLongObjectMap<EntityData> entitiesById =
 			new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), this);
@@ -67,12 +69,16 @@ implements GenericWorld<
 	
 	@Override
 	public ChunkData getChunk(Vec3i pos) {
-		return chunksByPos.get(CoordinatePacker.pack3IntsIntoLong(pos));
+		return chunksByPos.get(pos);
 	}
 	
 	@Override
 	public Collection<ChunkData> getChunks() {
 		return chunks;
+	}
+	
+	public ChunkSet getLoadedChunks() {
+		return chunksByPos.keys();
 	}
 	
 	@Override
@@ -102,9 +108,7 @@ implements GenericWorld<
 	public synchronized void addChunk(ChunkData chunk) {
 		addChunkListeners(chunk);
 		
-		long key = getChunkKey(chunk);
-		
-		ChunkData previous = chunksByPos.get(key);
+		ChunkData previous = chunksByPos.get(chunk);
 		if (previous != null) {
 			throw new IllegalArgumentException(String.format(
 					"Chunk at (%d; %d; %d) already exists",
@@ -112,7 +116,7 @@ implements GenericWorld<
 			));
 		}
 		
-		chunksByPos.put(key, chunk);
+		chunksByPos.put(chunk, chunk);
 		
 		chunk.forEachEntity(entity ->
 			entitiesById.put(entity.getEntityId(), entity)
@@ -130,11 +134,7 @@ implements GenericWorld<
 			entitiesById.remove(entity.getEntityId())
 		);
 		
-		chunksByPos.remove(getChunkKey(chunk));
-	}
-	
-	private static long getChunkKey(ChunkData chunk) {
-		return CoordinatePacker.pack3IntsIntoLong(chunk.getPosition());
+		chunksByPos.remove(chunk);
 	}
 	
 	public void setBlock(Vec3i blockInWorld, BlockData block, boolean notify) {
@@ -147,10 +147,6 @@ implements GenericWorld<
 			);
 		
 		chunk.setBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null), block, notify);
-	}
-	
-	public TLongSet getChunkKeys() {
-		return chunksByPos.keySet();
 	}
 	
 	public EntityData getEntity(long entityId) {

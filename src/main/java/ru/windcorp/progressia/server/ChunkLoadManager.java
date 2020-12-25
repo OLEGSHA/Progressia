@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 import glm.vec._3.i.Vec3i;
-import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
-import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.generic.ChunkSet;
+import ru.windcorp.progressia.common.world.generic.LongBasedChunkSet;
 import ru.windcorp.progressia.test.TestContent;
 
 public class ChunkLoadManager {
@@ -18,9 +18,9 @@ public class ChunkLoadManager {
 	private final Collection<Collection<? extends ChunkLoader>> allChunkLoaders =
 			Collections.synchronizedCollection(new ArrayList<>());
 	
-	private final TLongSet requested = new TLongHashSet();
-	private final TLongSet toLoad = new TLongHashSet();
-	private final TLongSet toUnload = new TLongHashSet();
+	private final ChunkSet requested = new LongBasedChunkSet(new TLongHashSet());
+	private final ChunkSet toLoad = new LongBasedChunkSet(new TLongHashSet());
+	private final ChunkSet toUnload = new LongBasedChunkSet(new TLongHashSet());
 
 	public ChunkLoadManager(Server server) {
 		this.server = server;
@@ -42,11 +42,11 @@ public class ChunkLoadManager {
 	}
 	
 	private void gatherRequests(ChunkLoader loader) {
-		loader.requestChunksToLoad(v -> requested.add(CoordinatePacker.pack3IntsIntoLong(v)));
+		loader.requestChunksToLoad(requested::add);
 	}
 	
 	private void updateQueues() {
-		TLongSet loaded = getServer().getWorld().getData().getChunkKeys();
+		ChunkSet loaded = getServer().getWorld().getData().getLoadedChunks();
 		
 		toLoad.clear();
 		toLoad.addAll(requested);
@@ -58,17 +58,8 @@ public class ChunkLoadManager {
 	}
 
 	private void processQueues() {
-		Vec3i v = new Vec3i();
-		
-		toLoad.forEach(key -> {
-			loadChunk(CoordinatePacker.unpack3IntsFromLong(key, v));
-			return true;
-		});
-		
-		toUnload.forEach(key -> {
-			unloadChunk(CoordinatePacker.unpack3IntsFromLong(key, v));
-			return true;
-		});
+		toUnload.forEach(this::unloadChunk);
+		toLoad.forEach(this::loadChunk);
 	}
 
 	public Server getServer() {
