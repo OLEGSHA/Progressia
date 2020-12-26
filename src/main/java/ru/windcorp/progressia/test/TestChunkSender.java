@@ -3,11 +3,11 @@ package ru.windcorp.progressia.test;
 import java.io.IOException;
 
 import glm.Glm;
-import ru.windcorp.progressia.common.comms.packets.PacketLoadChunk;
-import ru.windcorp.progressia.common.comms.packets.PacketSetLocalPlayer;
 import ru.windcorp.progressia.common.io.ChunkIO;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.PacketLoadChunk;
+import ru.windcorp.progressia.common.world.PacketSetLocalPlayer;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.WorldDataListener;
 import ru.windcorp.progressia.common.world.entity.EntityData;
@@ -48,7 +48,10 @@ public class TestChunkSender implements WorldDataListener {
 		
 		if (Glm.equals(e.getChunkCoords(null), chunk.getPosition())) {
 			System.out.printf("TestChunkSender: player found in (%d; %d; %d)\n", e.getChunkCoords(null).x, e.getChunkCoords(null).y, e.getChunkCoords(null).z);
-			server.getClientManager().broadcastToAllPlayers(new PacketSetLocalPlayer(e.getEntityId()));
+			
+			PacketSetLocalPlayer packet = new PacketSetLocalPlayer();
+			packet.set(e.getEntityId());
+			server.getClientManager().broadcastToAllPlayers(packet);
 		}
 	}
 

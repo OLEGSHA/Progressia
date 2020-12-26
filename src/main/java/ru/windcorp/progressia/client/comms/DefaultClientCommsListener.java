@@ -7,9 +7,9 @@ import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.graphics.world.EntityAnchor;
 import ru.windcorp.progressia.common.comms.CommsListener;
 import ru.windcorp.progressia.common.comms.packets.Packet;
-import ru.windcorp.progressia.common.comms.packets.PacketSetLocalPlayer;
-import ru.windcorp.progressia.common.comms.packets.PacketWorldChange;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
+import ru.windcorp.progressia.common.world.PacketSetLocalPlayer;
+import ru.windcorp.progressia.common.world.PacketWorldChange;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 // TODO refactor with no mercy
@@ -34,14 +34,14 @@ public class DefaultClientCommsListener implements CommsListener {
 
 	private void setLocalPlayer(PacketSetLocalPlayer packet) {
 		EntityData entity = getClient().getWorld().getData().getEntity(
-				packet.getLocalPlayerEntityId()
+				packet.getEntityId()
 		);
 		
 		if (entity == null) {
 			CrashReports.report(
 					null,
 					"Player entity with ID %s not found",
-					new String(StringUtil.toFullHex(packet.getLocalPlayerEntityId()))
+					new String(StringUtil.toFullHex(packet.getEntityId()))
 			);
 		}
 

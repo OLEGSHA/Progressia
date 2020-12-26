@@ -1,7 +1,6 @@
 package ru.windcorp.progressia.server.comms;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.test.TestContent;
 
 public abstract class ClientPlayer extends Client {
 
@@ -16,7 +15,7 @@ public abstract class ClientPlayer extends Client {
 	}
 	
 	public boolean canSeeEntity(long entityId) {
-		return entityId == TestContent.PLAYER_ENTITY_ID;
+		return true;
 	}
 
 }

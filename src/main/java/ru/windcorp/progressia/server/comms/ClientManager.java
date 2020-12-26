@@ -11,11 +11,11 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import ru.windcorp.progressia.common.comms.CommsChannel.State;
 import ru.windcorp.progressia.common.comms.packets.Packet;
-import ru.windcorp.progressia.common.comms.packets.PacketLoadChunk;
-import ru.windcorp.progressia.common.comms.packets.PacketSetLocalPlayer;
 import ru.windcorp.progressia.common.io.ChunkIO;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.PacketLoadChunk;
+import ru.windcorp.progressia.common.world.PacketSetLocalPlayer;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.Server;
@@ -88,7 +88,9 @@ public class ClientManager {
 			client.sendPacket(packet);
 		}
 
-		client.sendPacket(new PacketSetLocalPlayer(entity.getEntityId()));
+		PacketSetLocalPlayer packet = new PacketSetLocalPlayer();
+		packet.set(entity.getEntityId());
+		client.sendPacket(packet);
 	}
 
 	public void disconnectClient(Client client) {
