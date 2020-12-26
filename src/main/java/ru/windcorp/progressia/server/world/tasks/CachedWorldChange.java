@@ -2,7 +2,9 @@ package ru.windcorp.progressia.server.world.tasks;
 
 import java.util.function.Consumer;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.comms.packets.PacketWorldChange;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.server.Server;
 
@@ -24,7 +26,21 @@ public abstract class CachedWorldChange extends CachedChange {
 	@Override
 	public void affect(Server server) {
 		affectCommon(server.getWorld().getData());
-		server.getClientManager().broadcastGamePacket(packet);
+		
+		Vec3i v = Vectors.grab3i();
+		Vec3i chunkPos = getAffectedChunk(v);
+		
+		if (chunkPos == null) {
+			server.getClientManager().broadcastToAllPlayers(packet);
+		} else {
+			server.getClientManager().broadcastLocal(packet, chunkPos);
+		}
+		
+		Vectors.release(chunkPos);
+	}
+	
+	protected Vec3i getAffectedChunk(Vec3i output) {
+		return null;
 	}
 	
 	/**

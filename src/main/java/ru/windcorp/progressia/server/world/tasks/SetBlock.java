@@ -37,6 +37,12 @@ class SetBlock extends CachedWorldChange {
 	}
 	
 	@Override
+	protected Vec3i getAffectedChunk(Vec3i output) {
+		getRelevantChunk(output);
+		return output;
+	}
+	
+	@Override
 	public void dispose() {
 		super.dispose();
 		this.block = null;

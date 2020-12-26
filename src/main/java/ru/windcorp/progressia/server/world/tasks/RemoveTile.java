@@ -40,5 +40,11 @@ class RemoveTile extends CachedWorldChange {
 	public void getRelevantChunk(Vec3i output) {
 		Coordinates.convertInWorldToChunk(blockInWorld, output);
 	}
+	
+	@Override
+	protected Vec3i getAffectedChunk(Vec3i output) {
+		getRelevantChunk(output);
+		return output;
+	}
 
 }

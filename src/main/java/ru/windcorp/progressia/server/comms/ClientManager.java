@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import glm.vec._3.i.Vec3i;
 import gnu.trove.TCollections;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -68,6 +69,10 @@ public class ClientManager {
 		getServer().getPlayerManager().getPlayers().add(player);
 		
 		for (ChunkData chunk : server.getWorld().getData().getChunks()) {
+			if (!client.canSeeChunk(chunk.getPosition())) {
+				continue;
+			}
+			
 			PacketLoadChunk packet = new PacketLoadChunk("Core:LoadChunk");
 			packet.getPosition().set(
 					chunk.getPosition().x,
@@ -91,10 +96,42 @@ public class ClientManager {
 		clientsById.remove(client.getId());
 	}
 	
-	public void broadcastGamePacket(Packet packet) {
+	/**
+	 * Sends the provided packet to all connected player clients.
+	 * @param packet the packet to broadcast
+	 */
+	public void broadcastToAllPlayers(Packet packet) {
 		getClients().forEach(c -> {
 				if (c.getState() != State.CONNECTED) return;
 				if (!(c instanceof ClientPlayer)) return;
+				c.sendPacket(packet);
+		});
+	}
+	
+	/**
+	 * Sends the provided packet to all connected player clients that can see the chunk identified by {@code chunkPos}.
+	 * @param packet the packet to broadcast
+	 * @param chunkPos the chunk coordinates of the chunk that must be visible
+	 */
+	public void broadcastLocal(Packet packet, Vec3i chunkPos) {
+		getClients().forEach(c -> {
+				if (c.getState() != State.CONNECTED) return;
+				if (!(c instanceof ClientPlayer)) return;
+				if (!((ClientPlayer) c).canSeeChunk(chunkPos)) return;
+				c.sendPacket(packet);
+		});
+	}
+	
+	/**
+	 * Sends the provided packet to all connected player clients that can see the entity identified by {@code entityId}.
+	 * @param packet the packet to broadcast
+	 * @param entityId the ID of the entity that must be visible
+	 */
+	public void broadcastLocal(Packet packet, long entityId) {
+		getClients().forEach(c -> {
+				if (c.getState() != State.CONNECTED) return;
+				if (!(c instanceof ClientPlayer)) return;
+				if (!((ClientPlayer) c).canSeeEntity(entityId)) return;
 				c.sendPacket(packet);
 		});
 	}

@@ -50,7 +50,7 @@ class ChangeEntity extends CachedChange {
 			CrashReports.report(e, "Could not write entity %s", entity);
 		}
 		
-		server.getClientManager().broadcastGamePacket(packet);
+		server.getClientManager().broadcastLocal(packet, entity.getChunkCoords(null));
 	}
 	
 	@Override

@@ -37,7 +37,7 @@ public class TestChunkSender implements WorldDataListener {
 			CrashReports.report(e, "TestChunkSender fjcked up. javahorse stupid");
 		}
 		
-		server.getClientManager().broadcastGamePacket(packet);
+		server.getClientManager().broadcastLocal(packet, chunk.getPosition());
 		
 		tmp_sendPlayerIfPossible(world, chunk);
 	}
@@ -48,7 +48,7 @@ public class TestChunkSender implements WorldDataListener {
 		
 		if (Glm.equals(e.getChunkCoords(null), chunk.getPosition())) {
 			System.out.printf("TestChunkSender: player found in (%d; %d; %d)\n", e.getChunkCoords(null).x, e.getChunkCoords(null).y, e.getChunkCoords(null).z);
-			server.getClientManager().broadcastGamePacket(new PacketSetLocalPlayer(e.getEntityId()));
+			server.getClientManager().broadcastToAllPlayers(new PacketSetLocalPlayer(e.getEntityId()));
 		}
 	}
 
