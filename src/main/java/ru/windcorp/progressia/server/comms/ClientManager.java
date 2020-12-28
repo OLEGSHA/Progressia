@@ -1,6 +1,5 @@
 package ru.windcorp.progressia.server.comms;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,10 +10,6 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import ru.windcorp.progressia.common.comms.CommsChannel.State;
 import ru.windcorp.progressia.common.comms.packets.Packet;
-import ru.windcorp.progressia.common.io.ChunkIO;
-import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.PacketLoadChunk;
 import ru.windcorp.progressia.common.world.PacketSetLocalPlayer;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.Player;
@@ -62,30 +57,16 @@ public class ClientManager {
 
 	private void addClientPlayer(ClientPlayer client) {
 		String login = client.getLogin();
-		EntityData entity = getServer().getPlayerManager().conjurePlayerEntity(login);
 		
-		Player player = new Player(entity, getServer(), client);
-		
-		getServer().getPlayerManager().getPlayers().add(player);
-		
-		for (ChunkData chunk : server.getWorld().getData().getChunks()) {
-			if (!client.canSeeChunk(chunk.getPosition())) {
-				continue;
-			}
+		EntityData entity;
+		synchronized (getServer().getWorld().getData()) {
+			entity = getServer().getPlayerManager().conjurePlayerEntity(login);
 			
-			PacketLoadChunk packet = new PacketLoadChunk("Core:LoadChunk");
-			packet.getPosition().set(
-					chunk.getPosition().x,
-					chunk.getPosition().y,
-					chunk.getPosition().z
-			);
+			Player player = new Player(entity, getServer(), client);
 			
-			try {
-				ChunkIO.save(chunk, packet.getData().getOutputStream());
-			} catch (IOException e) {
-				CrashReports.report(e, "ClientManager fjcked up. javahorse stupid");
-			}
-			client.sendPacket(packet);
+			getServer().getPlayerManager().getPlayers().add(player);
+			
+			getServer().getChunkManager().sendChunk(player, entity.getChunkCoords(null));
 		}
 
 		PacketSetLocalPlayer packet = new PacketSetLocalPlayer();
@@ -119,7 +100,7 @@ public class ClientManager {
 		getClients().forEach(c -> {
 				if (c.getState() != State.CONNECTED) return;
 				if (!(c instanceof ClientPlayer)) return;
-				if (!((ClientPlayer) c).canSeeChunk(chunkPos)) return;
+				if (!((ClientPlayer) c).isChunkVisible(chunkPos)) return;
 				c.sendPacket(packet);
 		});
 	}
@@ -133,7 +114,7 @@ public class ClientManager {
 		getClients().forEach(c -> {
 				if (c.getState() != State.CONNECTED) return;
 				if (!(c instanceof ClientPlayer)) return;
-				if (!((ClientPlayer) c).canSeeEntity(entityId)) return;
+				if (!((ClientPlayer) c).isChunkVisible(entityId)) return;
 				c.sendPacket(packet);
 		});
 	}

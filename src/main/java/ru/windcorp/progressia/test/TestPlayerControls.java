@@ -17,6 +17,7 @@ import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.FloatMathUtils;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.server.ServerState;
 
 public class TestPlayerControls {
 	
@@ -96,6 +97,13 @@ public class TestPlayerControls {
 		}
 		
 		player.getVelocity().set(change);
+		
+		// THIS IS TERRIBLE TEST
+		EntityData serverEntity = ServerState.getInstance().getWorld().getData().getEntity(TestContent.PLAYER_ENTITY_ID);
+		if (serverEntity != null) {
+			serverEntity.setPosition(player.getPosition());
+		}
+		
 	}
 	
 	public void handleInput(Input input) {

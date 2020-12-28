@@ -29,8 +29,9 @@ public class Server {
 	
 	private final ServerThread serverThread;
 	
-	private final ClientManager clientManager = new ClientManager(this);
-	private final PlayerManager playerManager = new PlayerManager(this);
+	private final ClientManager clientManager;
+	private final PlayerManager playerManager;
+	private final  ChunkManager  chunkManager;
 	
 	private final TaskQueue taskQueue = new TaskQueue(this::isServerThread);
 	
@@ -39,8 +40,13 @@ public class Server {
 	public Server(WorldData world) {
 		this.world = new WorldLogic(world, this);
 		this.serverThread = new ServerThread(this);
+
+		this.clientManager = new ClientManager(this);
+		this.playerManager = new PlayerManager(this);
+		this.chunkManager = new ChunkManager(this);
 		
 		schedule(this::scheduleChunkTicks);
+		schedule(chunkManager::tick);
 	}
 	
 	/**
@@ -62,6 +68,10 @@ public class Server {
 	
 	public PlayerManager getPlayerManager() {
 		return playerManager;
+	}
+	
+	public ChunkManager getChunkManager() {
+		return chunkManager;
 	}
 	
 	/**
@@ -160,7 +170,7 @@ public class Server {
 	}
 	
 	public float getLoadDistance(Player player) {
-		return Units.get(100.0f, "m");
+		return Units.get(10.0f, "m");
 	}
 
 	/**

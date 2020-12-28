@@ -15,7 +15,6 @@ import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogicStack;
-import ru.windcorp.progressia.test.TestChunkSender;
 
 public class WorldLogic
 implements GenericWorld<
@@ -48,7 +47,6 @@ implements GenericWorld<
 		});
 		
 		data.addListener(ChunkDataListeners.createAdder(new UpdateTriggerer(server)));
-		data.addListener(new TestChunkSender(server));
 	}
 	
 	@Override

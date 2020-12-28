@@ -2,34 +2,29 @@ package ru.windcorp.progressia.test;
 
 import java.io.IOException;
 
-import glm.Glm;
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.io.ChunkIO;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.PacketLoadChunk;
-import ru.windcorp.progressia.common.world.PacketSetLocalPlayer;
-import ru.windcorp.progressia.common.world.WorldData;
-import ru.windcorp.progressia.common.world.WorldDataListener;
-import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.PacketRevokeChunk;
+import ru.windcorp.progressia.common.world.PacketSendChunk;
 import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.comms.ClientPlayer;
 
-public class TestChunkSender implements WorldDataListener {
+public class TestChunkSender {
 	
-	private final Server server;
-	
-	public TestChunkSender(Server server) {
-		this.server = server;
-	}
-
-	@Override
-	public void onChunkLoaded(WorldData world, ChunkData chunk) {
-		PacketLoadChunk packet = new PacketLoadChunk("Core:LoadChunk");
+	public static void sendChunk(Server server, ClientPlayer receiver, Vec3i chunkPos) {
+		ChunkData chunk = server.getWorld().getData().getChunk(chunkPos);
 		
-		packet.getPosition().set(
-				chunk.getPosition().x,
-				chunk.getPosition().y,
-				chunk.getPosition().z
-		);
+		if (chunk == null) {
+			throw new IllegalStateException(String.format(
+					"Chunk (%d; %d; %d) is not loaded, cannot send",
+					chunkPos.x, chunkPos.y, chunkPos.z
+			));
+		}
+		
+		PacketSendChunk packet = new PacketSendChunk();
+		packet.getPosition().set(chunkPos.x, chunkPos.y, chunkPos.z);
 		
 		try {
 			ChunkIO.save(chunk, packet.getData().getOutputStream());
@@ -37,22 +32,13 @@ public class TestChunkSender implements WorldDataListener {
 			CrashReports.report(e, "TestChunkSender fjcked up. javahorse stupid");
 		}
 		
-		server.getClientManager().broadcastLocal(packet, chunk.getPosition());
-		
-		tmp_sendPlayerIfPossible(world, chunk);
+		receiver.sendPacket(packet);
 	}
 
-	private void tmp_sendPlayerIfPossible(WorldData world, ChunkData chunk) {
-		EntityData e = world.getEntity(TestContent.PLAYER_ENTITY_ID);
-		if (e == null) return;
-		
-		if (Glm.equals(e.getChunkCoords(null), chunk.getPosition())) {
-			System.out.printf("TestChunkSender: player found in (%d; %d; %d)\n", e.getChunkCoords(null).x, e.getChunkCoords(null).y, e.getChunkCoords(null).z);
-			
-			PacketSetLocalPlayer packet = new PacketSetLocalPlayer();
-			packet.set(e.getEntityId());
-			server.getClientManager().broadcastToAllPlayers(packet);
-		}
+	public static void revokeChunk(ClientPlayer receiver, Vec3i chunkPos) {
+		PacketRevokeChunk packet = new PacketRevokeChunk();
+		packet.set(chunkPos);
+		receiver.sendPacket(packet);
 	}
 
 }

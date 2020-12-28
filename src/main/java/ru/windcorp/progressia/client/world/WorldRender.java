@@ -49,7 +49,8 @@ implements GenericWorld<
 	
 	private final WorldData data;
 	
-	private final Map<ChunkData, ChunkRender> chunks = new HashMap<>();
+	private final Map<ChunkData, ChunkRender> chunks =
+			Collections.synchronizedMap(new HashMap<>());
 	private final Map<EntityData, EntityRenderable> entityModels =
 			Collections.synchronizedMap(new WeakHashMap<>());
 	
@@ -94,23 +95,18 @@ implements GenericWorld<
 	}
 	
 	public void render(ShapeRenderHelper renderer) {
-		for (ChunkRender chunk : getChunks()) {
-			chunk.render(renderer);
-		}
-		
+		getChunks().forEach(chunk -> chunk.render(renderer));
 		renderEntities(renderer);
 	}
 	
 	private void renderEntities(ShapeRenderHelper renderer) {
 		FaceCulling.push(false);
 		
-		for (ChunkRender chunk : getChunks()) {
-			chunk.getData().forEachEntity(entity -> {
-					renderer.pushTransform().translate(entity.getPosition());
-					getEntityRenderable(entity).render(renderer);
-					renderer.popTransform();
-			});
-		}
+		getData().forEachEntity(entity -> {
+			renderer.pushTransform().translate(entity.getPosition());
+			getEntityRenderable(entity).render(renderer);
+			renderer.popTransform();
+		});
 		
 		FaceCulling.pop();
 	}

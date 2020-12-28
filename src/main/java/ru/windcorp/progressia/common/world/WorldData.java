@@ -43,7 +43,7 @@ implements GenericWorld<
 	TileDataStack,
 	ChunkData,
 	EntityData
->{
+> {
 
 	private final ChunkMap<ChunkData> chunksByPos = new LongBasedChunkMap<>(
 			new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), this)
@@ -87,7 +87,7 @@ implements GenericWorld<
 	}
 	
 	public void tmp_generate() {
-		final int size = 10;
+		final int size = 1;
 		Vec3i cursor = new Vec3i(0, 0, 0);
 		
 		for (cursor.x = -(size / 2); cursor.x <= (size / 2); ++cursor.x) {

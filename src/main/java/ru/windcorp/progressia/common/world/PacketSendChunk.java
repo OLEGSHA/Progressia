@@ -9,12 +9,16 @@ import ru.windcorp.progressia.common.io.ChunkIO;
 import ru.windcorp.progressia.common.util.DataBuffer;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 
-public class PacketLoadChunk extends PacketChunkChange {
+public class PacketSendChunk extends PacketChunkChange {
 	
 	private final DataBuffer data = new DataBuffer();
 	private final Vec3i position = new Vec3i();
+	
+	public PacketSendChunk() {
+		this("Core:SendChunk");
+	}
 
-	public PacketLoadChunk(String id) {
+	protected PacketSendChunk(String id) {
 		super(id);
 	}
 	

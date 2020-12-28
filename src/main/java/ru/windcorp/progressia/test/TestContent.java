@@ -346,10 +346,10 @@ public class TestContent {
 			));
 			chunk.getEntities().add(player);
 			
-			EntityData statie = EntityDataRegistry.getInstance().create("Test:Statie");
-			statie.setEntityId(STATIE_ENTITY_ID);
-			statie.setPosition(new Vec3(0, 15, 16));
-			chunk.getEntities().add(statie);
+//			EntityData statie = EntityDataRegistry.getInstance().create("Test:Statie");
+//			statie.setEntityId(STATIE_ENTITY_ID);
+//			statie.setPosition(new Vec3(0, 15, 16));
+//			chunk.getEntities().add(statie);
 		}
 	}
 

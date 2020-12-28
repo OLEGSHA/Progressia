@@ -18,6 +18,8 @@ public class Player extends PlayerData implements ChunkLoader {
 		super(entity);
 		this.server = server;
 		this.client = client;
+		
+		client.setPlayer(this);
 	}
 	
 	public Server getServer() {
@@ -43,6 +45,7 @@ public class Player extends PlayerData implements ChunkLoader {
 			for (cursor.y = -iRadius; cursor.y <= +iRadius; ++cursor.y) {
 				for (cursor.z = -iRadius; cursor.z <= +iRadius; ++cursor.z) {
 					if (cursor.x * cursor.x + cursor.y * cursor.y + cursor.z * cursor.z <= radius) {
+						
 						cursor.add(start);
 						chunkConsumer.accept(cursor);
 						cursor.sub(start);

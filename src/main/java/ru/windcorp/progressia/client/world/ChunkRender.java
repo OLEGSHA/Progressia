@@ -107,15 +107,15 @@ implements GenericChunk<
 		return data;
 	}
 	
-	public void markForUpdate() {
+	public synchronized void markForUpdate() {
 		this.needsUpdate = true;
 	}
 	
-	public boolean needsUpdate() {
+	public synchronized boolean needsUpdate() {
 		return needsUpdate;
 	}
 	
-	public void render(ShapeRenderHelper renderer) {
+	public synchronized void render(ShapeRenderHelper renderer) {
 		if (model == null || needsUpdate()) {
 			buildModel();
 		}
