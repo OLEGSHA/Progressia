@@ -116,6 +116,8 @@ public abstract class NPedModel extends EntityRenderable {
 		this.body = body;
 		this.head = head;
 		this.scale = scale;
+		
+		evaluateAngles();
 	}
 
 	@Override

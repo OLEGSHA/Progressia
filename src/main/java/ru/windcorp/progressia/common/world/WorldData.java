@@ -20,11 +20,12 @@ package ru.windcorp.progressia.common.world;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
+import java.util.Objects;
 import glm.vec._3.i.Vec3i;
-import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
+import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
@@ -46,14 +47,14 @@ implements GenericWorld<
 > {
 
 	private final ChunkMap<ChunkData> chunksByPos = new LongBasedChunkMap<>(
-			new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), this)
+			TCollections.synchronizedMap(new TLongObjectHashMap<>())
 	);
 	
 	private final Collection<ChunkData> chunks =
 			Collections.unmodifiableCollection(chunksByPos.values());
 	
 	private final TLongObjectMap<EntityData> entitiesById =
-			new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), this);
+			TCollections.synchronizedMap(new TLongObjectHashMap<>());
 	
 	private final Collection<EntityData> entities =
 			Collections.unmodifiableCollection(entitiesById.valueCollection());
@@ -84,6 +85,10 @@ implements GenericWorld<
 	@Override
 	public Collection<EntityData> getEntities() {
 		return entities;
+	}
+	
+	public TLongSet getLoadedEntities() {
+		return entitiesById.keySet();
 	}
 	
 	public void tmp_generate() {
@@ -118,10 +123,6 @@ implements GenericWorld<
 		
 		chunksByPos.put(chunk, chunk);
 		
-		chunk.forEachEntity(entity ->
-			entitiesById.put(entity.getEntityId(), entity)
-		);
-		
 		chunk.onLoaded();
 		getListeners().forEach(l -> l.onChunkLoaded(this, chunk));
 	}
@@ -129,10 +130,6 @@ implements GenericWorld<
 	public synchronized void removeChunk(ChunkData chunk) {
 		getListeners().forEach(l -> l.beforeChunkUnloaded(this, chunk));
 		chunk.beforeUnloaded();
-		
-		chunk.forEachEntity(entity ->
-			entitiesById.remove(entity.getEntityId())
-		);
 		
 		chunksByPos.remove(chunk);
 	}
@@ -151,6 +148,45 @@ implements GenericWorld<
 	
 	public EntityData getEntity(long entityId) {
 		return entitiesById.get(entityId);
+	}
+	
+	public void addEntity(EntityData entity) {
+		Objects.requireNonNull(entity, "entity");
+		
+		EntityData previous = entitiesById.putIfAbsent(entity.getEntityId(), entity);
+		
+		if (previous != null) {
+			String message = "Cannot add entity " + entity + ": ";
+			
+			if (previous == entity) {
+				message += "already present";
+			} else {
+				message += "entity with the same EntityID already present (" + previous + ")";
+			}
+			
+			throw new IllegalStateException(message);
+		}
+		
+		getListeners().forEach(l -> l.onEntityAdded(this, entity));
+	}
+	
+	public void removeEntity(long entityId) {
+		synchronized (entitiesById) {
+			EntityData entity = entitiesById.get(entityId);
+			
+			if (entity == null) {
+				throw new IllegalArgumentException("Entity with EntityID " + EntityData.formatEntityId(entityId) + " not present");
+			} else {
+				removeEntity(entity);
+			}
+		}
+	}
+	
+	public void removeEntity(EntityData entity) {
+		Objects.requireNonNull(entity, "entity");
+		
+		getListeners().forEach(l -> l.beforeEntityRemoved(this, entity));
+		entitiesById.remove(entity.getEntityId());
 	}
 	
 	public float getTime() {

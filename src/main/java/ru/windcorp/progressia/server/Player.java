@@ -54,5 +54,9 @@ public class Player extends PlayerData implements ChunkLoader {
 			}
 		}
 	}
+
+	public String getLogin() {
+		return getClient().getLogin();
+	}
 	
 }

@@ -13,6 +13,8 @@ import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.GenericWorld;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
+import ru.windcorp.progressia.server.world.tasks.TickEntitiesTask;
+import ru.windcorp.progressia.server.world.ticking.Evaluation;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogicStack;
 
@@ -29,6 +31,8 @@ implements GenericWorld<
 	private final Server server;
 	
 	private final Map<ChunkData, ChunkLogic> chunks = new HashMap<>();
+	
+	private final Evaluation tickEntitiesTask = new TickEntitiesTask();
 	
 	public WorldLogic(WorldData data, Server server) {
 		this.data = data;
@@ -62,6 +66,10 @@ implements GenericWorld<
 	@Override
 	public Collection<EntityData> getEntities() {
 		return getData().getEntities();
+	}
+	
+	public Evaluation getTickEntitiesTask() {
+		return tickEntitiesTask;
 	}
 	
 	public Server getServer() {

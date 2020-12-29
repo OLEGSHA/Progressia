@@ -32,6 +32,7 @@ public class Server {
 	private final ClientManager clientManager;
 	private final PlayerManager playerManager;
 	private final  ChunkManager  chunkManager;
+	private final EntityManager entityManager;
 	
 	private final TaskQueue taskQueue = new TaskQueue(this::isServerThread);
 	
@@ -44,9 +45,11 @@ public class Server {
 		this.clientManager = new ClientManager(this);
 		this.playerManager = new PlayerManager(this);
 		this.chunkManager = new ChunkManager(this);
+		this.entityManager = new EntityManager(this);
 		
-		schedule(this::scheduleChunkTicks);
+		schedule(this::scheduleWorldTicks);
 		schedule(chunkManager::tick);
+		schedule(entityManager::tick);
 	}
 	
 	/**
@@ -197,8 +200,9 @@ public class Server {
 		serverThread.stop();
 	}
 	
-	private void scheduleChunkTicks(Server server) {
+	private void scheduleWorldTicks(Server server) {
 		server.getWorld().getChunks().forEach(chunk -> requestEvaluation(chunk.getTickTask()));
+		requestEvaluation(server.getWorld().getTickEntitiesTask());
 	}
 
 	/**

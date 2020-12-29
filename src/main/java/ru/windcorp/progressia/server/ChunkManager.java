@@ -8,10 +8,11 @@ import org.apache.logging.log4j.LogManager;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.PacketRevokeChunk;
+import ru.windcorp.progressia.common.world.PacketSendChunk;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.generic.ChunkSet;
 import ru.windcorp.progressia.common.world.generic.ChunkSets;
-import ru.windcorp.progressia.test.TestChunkSender;
 import ru.windcorp.progressia.test.TestContent;
 
 public class ChunkManager {
@@ -148,14 +149,29 @@ public class ChunkManager {
 
 	public void sendChunk(Player player, Vec3i chunkPos) {
 		LogManager.getLogger().info("Sending {} {} {}", chunkPos.x, chunkPos.y, chunkPos.z);
-		TestChunkSender.sendChunk(server, player.getClient(), chunkPos);
+		
+		ChunkData chunk = server.getWorld().getData().getChunk(chunkPos);
+		
+		if (chunk == null) {
+			throw new IllegalStateException(String.format(
+					"Chunk (%d; %d; %d) is not loaded, cannot send",
+					chunkPos.x, chunkPos.y, chunkPos.z
+			));
+		}
+		
+		PacketSendChunk packet = new PacketSendChunk();
+		packet.set(chunk);		
+		player.getClient().sendPacket(packet);
 		
 		getVision(player, true).visible.add(chunkPos);
 	}
 	
 	public void revokeChunk(Player player, Vec3i chunkPos) {
 		LogManager.getLogger().info("Revoking {} {} {}", chunkPos.x, chunkPos.y, chunkPos.z);
-		TestChunkSender.revokeChunk(player.getClient(), chunkPos);
+		
+		PacketRevokeChunk packet = new PacketRevokeChunk();
+		packet.set(chunkPos);
+		player.getClient().sendPacket(packet);
 		
 		PlayerVision vision = getVision(player, false);
 		if (vision != null) {
@@ -171,6 +187,16 @@ public class ChunkManager {
 		}
 		
 		return vision.isChunkVisible(chunkPos);
+	}
+	
+	public ChunkSet getVisibleChunks(Player player) {
+		PlayerVision vision = getVision(player, false);
+		
+		if (vision == null) {
+			return ChunkSets.empty();
+		}
+		
+		return vision.visible;
 	}
 
 	public Server getServer() {

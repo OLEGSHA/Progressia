@@ -61,7 +61,7 @@ public class TestPlayerControls {
 	private Runnable updateCallback = null;
 	
 	public void applyPlayerControls() {
-		if (ClientState.getInstance() == null || ClientState.getInstance().getLocalPlayer() == null) {
+		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
 			return;
 		}
 		
@@ -107,7 +107,7 @@ public class TestPlayerControls {
 	}
 	
 	public void handleInput(Input input) {
-		if (ClientState.getInstance() == null || ClientState.getInstance().getLocalPlayer() == null) {
+		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
 			return;
 		}
 		

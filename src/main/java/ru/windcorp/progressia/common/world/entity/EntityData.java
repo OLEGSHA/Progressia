@@ -2,6 +2,7 @@ package ru.windcorp.progressia.common.world.entity;
 
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
+import ru.windcorp.jputil.chars.StringUtil;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.state.StatefulObject;
@@ -13,6 +14,12 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 	private final Vec3 velocity = new Vec3();
 	
 	private final Vec2 direction = new Vec2();
+	
+	/**
+	 * The unique {@code long} value guaranteed to never be assigned to an entity as its entity ID.
+	 * This can safely be used as a placeholder or a sentinel value.
+	 */
+	public static final long NULL_ENTITY_ID = 0x0000_0000_0000_0000;
 	
 	private long entityId;
 	
@@ -69,6 +76,9 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 	}
 	
 	public void setEntityId(long entityId) {
+		if (entityId == NULL_ENTITY_ID) {
+			throw new IllegalArgumentException("Attempted to set entity ID to NULL_ENTITY_ID (" + entityId + ")");
+		}
 		this.entityId = entityId;
 	}
 	
@@ -126,6 +136,19 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 		);
 		
 		return output;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder(super.toString())
+				.append(" (EntityID ")
+				.append(StringUtil.toFullHex(getEntityId()))
+				.append(")")
+				.toString();
+	}
+	
+	public static String formatEntityId(long entityId) {
+		return new String(StringUtil.toFullHex(entityId));
 	}
 
 }

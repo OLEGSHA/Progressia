@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.logging.log4j.LogManager;
+
 import glm.vec._3.i.Vec3i;
 import gnu.trove.TCollections;
 import gnu.trove.map.TIntObjectMap;
@@ -41,10 +43,10 @@ public class ClientManager {
 			
 			if (client instanceof ClientChat) {
 				addClientChat((ClientChat) client);
-			}
-			
-			if (client instanceof ClientPlayer) {
-				addClientPlayer((ClientPlayer) client);
+				
+				if (client instanceof ClientPlayer) {
+					addClientPlayer((ClientPlayer) client);
+				}
 			}
 			
 			client.addListener(new DefaultServerCommsListener(this, client));
@@ -58,18 +60,12 @@ public class ClientManager {
 	private void addClientPlayer(ClientPlayer client) {
 		String login = client.getLogin();
 		
-		EntityData entity;
-		synchronized (getServer().getWorld().getData()) {
-			entity = getServer().getPlayerManager().conjurePlayerEntity(login);
-			
-			Player player = new Player(entity, getServer(), client);
-			
-			getServer().getPlayerManager().getPlayers().add(player);
-			
-			getServer().getChunkManager().sendChunk(player, entity.getChunkCoords(null));
-		}
+		EntityData entity = getServer().getPlayerManager().conjurePlayerEntity(login);
+		Player player = new Player(entity, getServer(), client);
+		getServer().getPlayerManager().getPlayers().add(player);
 
 		PacketSetLocalPlayer packet = new PacketSetLocalPlayer();
+		LogManager.getLogger().info("Sending local player ID {}", EntityData.formatEntityId(entity.getEntityId()));
 		packet.set(entity.getEntityId());
 		client.sendPacket(packet);
 	}

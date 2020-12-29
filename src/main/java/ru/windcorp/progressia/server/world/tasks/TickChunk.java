@@ -14,7 +14,6 @@ import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.ChunkLogic;
-import ru.windcorp.progressia.server.world.TickAndUpdateUtil;
 import ru.windcorp.progressia.server.world.TickContextMutable;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
@@ -55,7 +54,6 @@ public class TickChunk extends Evaluation {
 	public void evaluate(Server server) {
 		tickRegulars(server);
 		tickRandom(server);
-		tickEntities(server);
 	}
 
 	private void tickRegulars(Server server) {
@@ -163,12 +161,6 @@ public class TickChunk extends Evaluation {
 				CHUNK_VOLUME * randomTickMethods.size() *
 				server.getTickLength()
 		);
-	}
-
-	private void tickEntities(Server server) {
-		chunk.getData().forEachEntity(entity -> {
-			TickAndUpdateUtil.tickEntity(entity, server);
-		});
 	}
 
 	@Override

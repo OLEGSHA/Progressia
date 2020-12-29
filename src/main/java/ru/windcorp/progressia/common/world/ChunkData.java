@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -32,7 +31,6 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockFace;
-import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
@@ -60,9 +58,6 @@ implements GenericChunk<
 		BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK *
 		BLOCK_FACE_COUNT
 	];
-	
-	private final List<EntityData> entities =
-			Collections.synchronizedList(new ArrayList<>());
 	
 	private final Collection<ChunkDataListener> listeners =
 			Collections.synchronizedCollection(new ArrayList<>());
@@ -160,10 +155,6 @@ implements GenericChunk<
 				face.getId();
 	}
 	
-	public List<EntityData> getEntities() {
-		return entities;
-	}
-	
 	private static void checkLocalCoordinates(Vec3i posInChunk) {
 		if (!isInBounds(posInChunk)) {
 			throw new IllegalCoordinatesException(
@@ -217,10 +208,6 @@ implements GenericChunk<
 	 */
 	public void forEachTile(BiConsumer<TileDataStack, TileData> action) {
 		forEachTileStack(stack -> stack.forEach(tileData -> action.accept(stack, tileData)));
-	}
-	
-	public void forEachEntity(Consumer<EntityData> action) {
-		getEntities().forEach(action);
 	}
 	
 	public WorldData getWorld() {
