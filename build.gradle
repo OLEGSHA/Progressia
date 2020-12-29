@@ -97,12 +97,50 @@ task copyLibs(type: Copy) {
     from configurations.runtimeClasspath
 }
 
-task createPackages(type: Exec) {
-    commandLine './buildPackages.sh'
-}
+
 
 
 build.dependsOn(copyLibs)
 
 
+
+configurations {
+    packageOnly 
+    packageLibraries.extendsFrom runtimeClasspath
+    packageLibraries.extendsFrom packageOnly
+}
+
+dependencies {
+    def archs = ['natives-linux', 'natives-linux-arm64', 'natives-linux-arm32', 'natives-macos', 'natives-windows', 'natives-windows-x86']
+    
+    archs.each { arch ->
+        packageOnly "org.lwjgl:lwjgl::$arch"
+        packageOnly "org.lwjgl:lwjgl-assimp::$arch"
+        packageOnly "org.lwjgl:lwjgl-bgfx::$arch"
+        packageOnly "org.lwjgl:lwjgl-glfw::$arch"
+        packageOnly "org.lwjgl:lwjgl-nanovg::$arch"
+        packageOnly "org.lwjgl:lwjgl-nuklear::$arch"
+        packageOnly "org.lwjgl:lwjgl-openal::$arch"
+        packageOnly "org.lwjgl:lwjgl-opengl::$arch"
+        packageOnly "org.lwjgl:lwjgl-par::$arch"
+        packageOnly "org.lwjgl:lwjgl-stb::$arch"
+    }
+    
+    packageOnly "org.lwjgl:lwjgl-vulkan::natives-macos"
+}
+
+task copyLibsForPackaging(type: Copy) {
+    into "${libsDir}/lib"
+    from configurations.packageLibraries
+}
+
+task createPackages(type: Exec) {
+    commandLine './buildPackages.sh'
+}
+
+java {
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+createPackages.dependsOn(copyLibsForPackaging)
 

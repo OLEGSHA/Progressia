@@ -12,7 +12,7 @@
 
   ;Name and file
   Name "Progressia"
-  OutFile "ProgressiaTestInstaller.exe"
+  OutFile "ProgressiaInstaller.exe"
   Unicode True
 
   ;Default installation folder
