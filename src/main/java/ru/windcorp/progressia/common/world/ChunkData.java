@@ -183,7 +183,7 @@ implements GenericChunk<
 	}
 	
 	public void forEachBlock(Consumer<Vec3i> action) {
-		VectorUtil.forEachVectorInCuboid(
+		VectorUtil.iterateCuboid(
 				0, 0, 0,
 				BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK,
 				action

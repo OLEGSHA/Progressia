@@ -20,10 +20,12 @@ package ru.windcorp.progressia.client.world;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.graphics.backend.FaceCulling;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.world.block.BlockRender;
@@ -31,11 +33,14 @@ import ru.windcorp.progressia.client.world.entity.EntityRenderRegistry;
 import ru.windcorp.progressia.client.world.entity.EntityRenderable;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
+import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListeners;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.WorldDataListener;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.ChunkSet;
+import ru.windcorp.progressia.common.world.generic.ChunkSets;
 import ru.windcorp.progressia.common.world.generic.GenericWorld;
 
 public class WorldRender
@@ -46,33 +51,50 @@ implements GenericWorld<
 	ChunkRender,
 	EntityRenderable
 > {
-	
+
 	private final WorldData data;
+	private final Client client;
 	
 	private final Map<ChunkData, ChunkRender> chunks =
 			Collections.synchronizedMap(new HashMap<>());
 	private final Map<EntityData, EntityRenderable> entityModels =
 			Collections.synchronizedMap(new WeakHashMap<>());
 	
-	public WorldRender(WorldData data) {
+	private final ChunkSet chunksToUpdate = ChunkSets.newSyncHashSet();
+	
+	public WorldRender(WorldData data, Client client) {
 		this.data = data;
+		this.client = client;
 		
 		data.addListener(ChunkDataListeners.createAdder(new ChunkUpdateListener(this)));
 		data.addListener(new WorldDataListener() {
 			@Override
 			public void onChunkLoaded(WorldData world, ChunkData chunk) {
-				chunks.put(chunk, new ChunkRender(WorldRender.this, chunk));
+				addChunk(chunk);
 			}
 			
 			@Override
 			public void beforeChunkUnloaded(WorldData world, ChunkData chunk) {
-				chunks.remove(chunk);
+				removeChunk(chunk);
 			}
 		});
 	}
+
+	protected void addChunk(ChunkData chunk) {
+		chunks.put(chunk, new ChunkRender(WorldRender.this, chunk));
+		markChunkForUpdate(chunk.getPosition());
+	}
 	
+	protected void removeChunk(ChunkData chunk) {
+		chunks.remove(chunk);
+	}
+
 	public WorldData getData() {
 		return data;
+	}
+	
+	public Client getClient() {
+		return client;
 	}
 	
 	public ChunkRender getChunk(ChunkData chunkData) {
@@ -95,10 +117,67 @@ implements GenericWorld<
 	}
 	
 	public void render(ShapeRenderHelper renderer) {
+		updateChunks();
+		
 		getChunks().forEach(chunk -> chunk.render(renderer));
 		renderEntities(renderer);
 	}
 	
+	private void updateChunks() {
+		synchronized (chunksToUpdate) {
+			if (chunksToUpdate.isEmpty()) return;
+			
+			int updates = updateChunksNearLocalPlayer();
+			int maximumUpdates = getMaximumChunkUpdatesPerFrame();
+			
+			updateRandomChunks(maximumUpdates - updates);
+		}
+	}
+
+	private int updateChunksNearLocalPlayer() {
+		EntityData entity = getClient().getLocalPlayer().getEntity();
+		if (entity == null) return 0;
+		
+		int[] updates = new int[] { 0 };
+		
+		VectorUtil.iterateCuboidAround(entity.getChunkCoords(null), 3, chunkPos -> {
+			if (chunksToUpdate.contains(chunkPos)) {
+				getChunk(chunkPos).update();
+				chunksToUpdate.remove(chunkPos);
+				
+				updates[0]++;
+			}
+		});
+		
+		return updates[0];
+	}
+	
+	private void updateRandomChunks(int allowedUpdates) {
+		if (allowedUpdates <= 0) return;
+		
+		for (Iterator<Vec3i> it = chunksToUpdate.iterator(); it.hasNext();) {
+			Vec3i chunkPos = it.next();
+			ChunkRender chunk = getChunk(chunkPos);
+			
+			if (chunk != null) {
+				chunk.update();
+				allowedUpdates--;
+			}
+			
+			it.remove();
+			
+			if (allowedUpdates <= 0) return;
+		}
+	}
+
+	private int getMaximumChunkUpdatesPerFrame() {
+		return 1;
+	}
+	
+	public int getPendingChunkUpdates() {
+		return chunksToUpdate.size();
+	}
+
 	private void renderEntities(ShapeRenderHelper renderer) {
 		FaceCulling.push(false);
 		
@@ -121,6 +200,12 @@ implements GenericWorld<
 	private static EntityRenderable createEntityRenderable(EntityData entity) {
 		return EntityRenderRegistry.getInstance().get(entity.getId())
 				.createRenderable(entity);
+	}
+	
+	public void markChunkForUpdate(Vec3i chunkPos) {
+		if (getData().getChunk(chunkPos) != null) {
+			chunksToUpdate.add(chunkPos);
+		}
 	}
 
 }

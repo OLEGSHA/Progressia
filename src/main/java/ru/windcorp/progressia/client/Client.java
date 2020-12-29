@@ -19,7 +19,7 @@ public class Client {
 	private final ServerCommsChannel comms;
 	
 	public Client(WorldData world, ServerCommsChannel comms) {
-		this.world = new WorldRender(world);
+		this.world = new WorldRender(world, this);
 		this.comms = comms;
 		
 		comms.addListener(new DefaultClientCommsListener(this));

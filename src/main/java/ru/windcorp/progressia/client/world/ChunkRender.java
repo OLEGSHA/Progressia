@@ -59,7 +59,6 @@ implements GenericChunk<
 	private final WorldRender world;
 	private final ChunkData data;
 
-	private boolean needsUpdate;
 	private Model model = null;
 	
 	private final Map<TileDataStack, TileRenderStackImpl> tileRenderLists =
@@ -108,16 +107,12 @@ implements GenericChunk<
 	}
 	
 	public synchronized void markForUpdate() {
-		this.needsUpdate = true;
-	}
-	
-	public synchronized boolean needsUpdate() {
-		return needsUpdate;
+		getWorld().markChunkForUpdate(getPosition());
 	}
 	
 	public synchronized void render(ShapeRenderHelper renderer) {
-		if (model == null || needsUpdate()) {
-			buildModel();
+		if (model == null) {
+			return;
 		}
 		
 		renderer.pushTransform().translate(
@@ -131,7 +126,7 @@ implements GenericChunk<
 		renderer.popTransform();
 	}
 
-	private void buildModel() {
+	public synchronized void update() {
 		Collection<ChunkRenderOptimizer> optimizers =
 				ChunkRenderOptimizers.getAllSuppliers().stream()
 				.map(ChunkRenderOptimizerSupplier::createOptimizer)
@@ -159,7 +154,6 @@ implements GenericChunk<
 				.forEach(builder::addPart);
 		
 		model = new StaticModel(builder);
-		needsUpdate = false;
 	}
 
 	private void buildBlock(

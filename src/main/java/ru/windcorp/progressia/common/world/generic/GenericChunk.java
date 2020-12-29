@@ -55,7 +55,7 @@ public interface GenericChunk<
 	}
 	
 	default void forEachBiC(Consumer<? super Vec3i> action) {
-		VectorUtil.forEachVectorInCuboid(
+		VectorUtil.iterateCuboid(
 				0,                0,                0,
 				BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK,
 				action
@@ -63,7 +63,7 @@ public interface GenericChunk<
 	}
 	
 	default void forEachBiW(Consumer<? super Vec3i> action) {
-		VectorUtil.forEachVectorInCuboid(
+		VectorUtil.iterateCuboid(
 				Coordinates.getInWorld(getX(), 0),
 				Coordinates.getInWorld(getY(), 0),
 				Coordinates.getInWorld(getZ(), 0),

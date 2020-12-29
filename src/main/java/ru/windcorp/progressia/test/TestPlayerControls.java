@@ -29,8 +29,8 @@ public class TestPlayerControls {
 	
 	private TestPlayerControls() {}
 	
-	private static final double MODE_SWITCH_MAX_DELAY = 100 * Units.MILLISECONDS;
-	private static final double MIN_JUMP_DELAY = 200 * Units.MILLISECONDS;
+	private static final double MODE_SWITCH_MAX_DELAY = 300 * Units.MILLISECONDS;
+	private static final double MIN_JUMP_DELAY = 400 * Units.MILLISECONDS;
 
 	// Horizontal and vertical max control speed when flying
 	private static final float FLYING_SPEED = 6.0f * Units.METERS_PER_SECOND;
