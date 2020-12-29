@@ -97,4 +97,12 @@ task copyLibs(type: Copy) {
     from configurations.runtimeClasspath
 }
 
+task createPackages(type: Exec) {
+    commandLine './buildPackages.sh'
+}
+
+
 build.dependsOn(copyLibs)
+
+
+
