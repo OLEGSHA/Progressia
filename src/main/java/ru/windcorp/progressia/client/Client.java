@@ -1,7 +1,5 @@
 package ru.windcorp.progressia.client;
 
-import org.apache.logging.log4j.LogManager;
-
 import ru.windcorp.progressia.client.comms.DefaultClientCommsListener;
 import ru.windcorp.progressia.client.comms.ServerCommsChannel;
 import ru.windcorp.progressia.client.graphics.world.Camera;
@@ -48,8 +46,6 @@ public class Client {
 	}
 
 	public void onLocalPlayerEntityChanged(EntityData entity, EntityData lastKnownEntity) {
-		LogManager.getLogger().info("LocalPlayer entity changed from {} to {}", lastKnownEntity, entity);
-		
 		if (entity == null) {
 			getCamera().setAnchor(null);
 			return;

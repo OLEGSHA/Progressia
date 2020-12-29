@@ -118,9 +118,7 @@ public interface GenericWorld<
 	 */
 	
 	default void forEachEntity(Consumer<? super E> action) {
-		synchronized (this) { // TODO HORRIBLY MUTILATE THE CORPSE OF TROVE4J so that gnu.trove.impl.sync.SynchronizedCollection.forEach is synchronized
-			getEntities().forEach(action);
-		}
+		getEntities().forEach(action);
 	}
 	
 	default void forEachEntityIn(Vec3i min, Vec3i max, Consumer<? super E> action) {

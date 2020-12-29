@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.apache.logging.log4j.LogManager;
-
 import glm.vec._3.i.Vec3i;
 import gnu.trove.TCollections;
 import gnu.trove.iterator.TLongIterator;
@@ -132,8 +130,6 @@ public class EntityManager {
 			);
 		}
 		
-		LogManager.getLogger().info("Sending {}", entity);
-
 		PacketSendEntity packet = new PacketSendEntity();
 		packet.set(entity);
 		player.getClient().sendPacket(packet);
@@ -142,8 +138,6 @@ public class EntityManager {
 	}
 	
 	public void revokeEntity(Player player, long entityId) {
-		LogManager.getLogger().info("Revoking {}", new String(StringUtil.toFullHex(entityId)));
-		
 		PacketRevokeEntity packet = new PacketRevokeEntity();
 		packet.set(entityId);
 		player.getClient().sendPacket(packet);

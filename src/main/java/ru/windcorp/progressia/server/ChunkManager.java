@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.apache.logging.log4j.LogManager;
-
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.PacketRevokeChunk;
@@ -119,8 +117,6 @@ public class ChunkManager {
 	}
 	
 	public void loadChunk(Vec3i chunkPos) {
-		
-		LogManager.getLogger().info("Loading {} {} {}", chunkPos.x, chunkPos.y, chunkPos.z);
 
 		WorldData world = getServer().getWorld().getData();
 		
@@ -131,8 +127,6 @@ public class ChunkManager {
 	}
 	
 	public void unloadChunk(Vec3i chunkPos) {
-		
-		LogManager.getLogger().info("Unloading {} {} {}", chunkPos.x, chunkPos.y, chunkPos.z);
 		
 		WorldData world = getServer().getWorld().getData();
 		
@@ -148,8 +142,6 @@ public class ChunkManager {
 	}
 
 	public void sendChunk(Player player, Vec3i chunkPos) {
-		LogManager.getLogger().info("Sending {} {} {}", chunkPos.x, chunkPos.y, chunkPos.z);
-		
 		ChunkData chunk = server.getWorld().getData().getChunk(chunkPos);
 		
 		if (chunk == null) {
@@ -167,8 +159,6 @@ public class ChunkManager {
 	}
 	
 	public void revokeChunk(Player player, Vec3i chunkPos) {
-		LogManager.getLogger().info("Revoking {} {} {}", chunkPos.x, chunkPos.y, chunkPos.z);
-		
 		PacketRevokeChunk packet = new PacketRevokeChunk();
 		packet.set(chunkPos);
 		player.getClient().sendPacket(packet);

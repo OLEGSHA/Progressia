@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.function.Consumer;
+
 import glm.vec._3.i.Vec3i;
 import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
@@ -35,7 +37,6 @@ import ru.windcorp.progressia.common.world.generic.GenericWorld;
 import ru.windcorp.progressia.common.world.generic.LongBasedChunkMap;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
-import ru.windcorp.progressia.test.TestContent;
 
 public class WorldData
 implements GenericWorld<
@@ -87,23 +88,16 @@ implements GenericWorld<
 		return entities;
 	}
 	
-	public TLongSet getLoadedEntities() {
-		return entitiesById.keySet();
+	@Override
+	public void forEachEntity(Consumer<? super EntityData> action) {
+		synchronized (entitiesById) { // TODO HORRIBLY MUTILATE THE CORPSE OF TROVE4J so that gnu.trove.impl.sync.SynchronizedCollection.forEach is synchronized
+			getEntities().forEach(action);
+		}
 	}
 	
-	public void tmp_generate() {
-		final int size = 1;
-		Vec3i cursor = new Vec3i(0, 0, 0);
-		
-		for (cursor.x = -(size / 2); cursor.x <= (size / 2); ++cursor.x) {
-			for (cursor.y = -(size / 2); cursor.y <= (size / 2); ++cursor.y) {
-				for (cursor.z = -(size / 2); cursor.z <= (size / 2); ++cursor.z) {
-					ChunkData chunk = new ChunkData(cursor, this);
-					TestContent.generateChunk(chunk);
-					addChunk(chunk);
-				}
-			}
-		}
+	
+	public TLongSet getLoadedEntities() {
+		return entitiesById.keySet();
 	}
 	
 	private void addChunkListeners(ChunkData chunk) {
