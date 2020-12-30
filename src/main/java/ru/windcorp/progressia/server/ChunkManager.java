@@ -12,6 +12,7 @@ import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.generic.ChunkSet;
 import ru.windcorp.progressia.common.world.generic.ChunkSets;
 import ru.windcorp.progressia.test.TestContent;
+import ru.windcorp.progressia.test.TestWorldDiskIO;
 
 public class ChunkManager {
 	
@@ -120,8 +121,12 @@ public class ChunkManager {
 
 		WorldData world = getServer().getWorld().getData();
 		
-		ChunkData chunk = new ChunkData(chunkPos, world);
-		TestContent.generateChunk(chunk);
+		ChunkData chunk = TestWorldDiskIO.tryToLoad(chunkPos, world);
+		if (chunk == null) {
+			chunk = new ChunkData(chunkPos, world);
+			TestContent.generateChunk(chunk);
+		}
+		
 		world.addChunk(chunk);
 		
 	}
@@ -137,7 +142,10 @@ public class ChunkManager {
 					chunkPos.x, chunkPos.y, chunkPos.z
 			));
 		}
+		
 		world.removeChunk(chunk);
+		
+		TestWorldDiskIO.saveChunk(chunk);
 		
 	}
 
