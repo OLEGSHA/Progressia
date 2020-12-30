@@ -80,30 +80,6 @@ dependencies {
 
 // LWJGL END
 
-jar {
-    manifest {
-        attributes(
-        	"Main-Class": "ru.windcorp.progressia.client.ProgressiaClientMain",
-        	"Class-Path": configurations.runtimeClasspath.collect { "lib/" + it.getName() }.join(' ')
-        )
-    }
-}
-
-/*
- * Copies runtime dependencies to a prespecified location so they can be packaged properly.
- */
-task copyLibs(type: Copy) {
-    into "${libsDir}/lib"
-    from configurations.runtimeClasspath
-}
-
-
-
-
-build.dependsOn(copyLibs)
-
-
-
 configurations {
     packageOnly 
     packageLibraries.extendsFrom runtimeClasspath
@@ -129,6 +105,25 @@ dependencies {
     packageOnly "org.lwjgl:lwjgl-vulkan::natives-macos"
 }
 
+jar {
+    manifest {
+        attributes(
+        	"Main-Class": "ru.windcorp.progressia.client.ProgressiaClientMain",
+        	"Class-Path": configurations.packageLibraries.collect { "lib/" + it.getName() }.join(' ')
+        )
+    }
+}
+
+/*
+ * Copies runtime dependencies to a prespecified location so they can be packaged properly.
+ */
+task copyLibs(type: Copy) {
+    into "${libsDir}/lib"
+    from configurations.runtimeClasspath
+}
+
+build.dependsOn(copyLibs)
+
 task copyLibsForPackaging(type: Copy) {
     into "${libsDir}/lib"
     from configurations.packageLibraries
@@ -139,8 +134,13 @@ task createPackages(type: Exec) {
 }
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-createPackages.dependsOn(copyLibsForPackaging)
+compileJava {
+    options.compilerArgs.addAll(['--release', '8'])
+}
 
+createPackages.dependsOn(build)
+createPackages.dependsOn(copyLibsForPackaging)
