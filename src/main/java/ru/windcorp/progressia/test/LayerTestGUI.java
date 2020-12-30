@@ -73,6 +73,12 @@ public class LayerTestGUI extends GUILayer {
 				128
 		));
 		
+		panel.addChild(new DynamicLabel(
+				"ChunkUpdatesDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				() -> "Pending updates: " + Integer.toString(ClientState.getInstance().getWorld().getPendingChunkUpdates()),
+				128
+		));
+		
 		panel.getChildren().forEach(c -> {
 			if (c instanceof Label) {
 				labels.add((Label) c);

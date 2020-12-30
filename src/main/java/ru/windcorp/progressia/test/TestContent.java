@@ -7,16 +7,12 @@ import java.util.function.Consumer;
 
 import org.lwjgl.glfw.GLFW;
 
-import glm.Glm;
-import glm.vec._2.Vec2;
-import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.audio.SoundEffect;
 import ru.windcorp.progressia.client.comms.controls.*;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
-import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.graphics.world.Selection;
 import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.entity.*;
@@ -26,7 +22,6 @@ import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.io.ChunkIO;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.*;
@@ -214,12 +209,9 @@ public class TestContent {
 	
 	private static Selection getSelection() {
 		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
-		if (client == null) return null;
+		if (client == null || !client.isReady()) return null;
 		
-		LocalPlayer player = client.getLocalPlayer();
-		if (player == null) return null;
-		
-		return player.getSelection();
+		return client.getLocalPlayer().getSelection();
 	}
 	
 	private static void onBlockBreakTrigger(ControlData control) {
@@ -335,21 +327,6 @@ public class TestContent {
 					}
 				}
 			}
-		}
-		
-		if (Glm.equals(chunk.getPosition(), Vectors.ZERO_3i)) {
-			EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
-			player.setEntityId(PLAYER_ENTITY_ID);
-			player.setPosition(new Vec3(8, 8, 8));
-			player.setDirection(new Vec2(
-					(float) Math.toRadians(40), (float) Math.toRadians(45)
-			));
-			chunk.getEntities().add(player);
-			
-			EntityData statie = EntityDataRegistry.getInstance().create("Test:Statie");
-			statie.setEntityId(STATIE_ENTITY_ID);
-			statie.setPosition(new Vec3(0, 15, 16));
-			chunk.getEntities().add(statie);
 		}
 	}
 

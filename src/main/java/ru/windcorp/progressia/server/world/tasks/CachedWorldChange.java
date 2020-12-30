@@ -2,35 +2,49 @@ package ru.windcorp.progressia.server.world.tasks;
 
 import java.util.function.Consumer;
 
-import ru.windcorp.progressia.common.comms.packets.PacketWorldChange;
-import ru.windcorp.progressia.common.world.WorldData;
+import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.PacketWorldChange;
 import ru.windcorp.progressia.server.Server;
 
-public abstract class CachedWorldChange extends CachedChange {
+public abstract class CachedWorldChange<P extends PacketWorldChange> extends CachedChange {
 	
-	private final PacketWorldChange packet;
+	private final P packet;
 
-	public CachedWorldChange(Consumer<? super CachedChange> disposer, String packetId) {
+	public CachedWorldChange(Consumer<? super CachedChange> disposer, P packet) {
 		super(disposer);
-		
-		this.packet = new PacketWorldChange(packetId) {
-			@Override
-			public void apply(WorldData world) {
-				affectCommon(world);
-			}
-		};
+		this.packet = packet;
 	}
 
 	@Override
 	public void affect(Server server) {
-		affectCommon(server.getWorld().getData());
-		server.getClientManager().broadcastGamePacket(packet);
+		affectLocal(server);
+		sendPacket(server);
+	}
+
+	protected void affectLocal(Server server) {
+		packet.apply(server.getWorld().getData());
 	}
 	
-	/**
-	 * Invoked by both Change and Packet.
-	 * @param world the world to affect
-	 */
-	protected abstract void affectCommon(WorldData world);
+	protected void sendPacket(Server server) {
+		Vec3i v = Vectors.grab3i();
+		Vec3i chunkPos = getAffectedChunk(v);
+		
+		if (chunkPos == null) {
+			server.getClientManager().broadcastToAllPlayers(packet);
+		} else {
+			server.getClientManager().broadcastLocal(packet, chunkPos);
+		}
+		
+		Vectors.release(chunkPos);
+	}
+
+	protected Vec3i getAffectedChunk(Vec3i output) {
+		return null;
+	}
+	
+	public P getPacket() {
+		return packet;
+	}
 
 }

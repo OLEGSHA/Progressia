@@ -44,6 +44,7 @@ public class SizeLimitedList<E> extends ForwardingList<E> {
 		return standardAddAll(index, elements);
 	}
 
+	@Override
 	public boolean add(E e) {
 		checkMaxSize();
 		return delegate().add(e);

@@ -19,10 +19,10 @@ public class VectorUtil {
 		X, Y, Z, W;
 	}
 	
-	public static void forEachVectorInCuboid(
+	public static void iterateCuboid(
 			int x0, int y0, int z0,
 			int x1, int y1, int z1,
-			Consumer<Vec3i> action
+			Consumer<? super Vec3i> action
 	) {
 		Vec3i cursor = Vectors.grab3i();
 		
@@ -36,6 +36,57 @@ public class VectorUtil {
 		}
 		
 		Vectors.release(cursor);
+	}
+	
+	public static void iterateCuboid(
+			Vec3i vMin, Vec3i vMax,
+			Consumer<? super Vec3i> action
+	) {
+		iterateCuboid(vMin.x, vMin.y, vMin.z, vMax.x, vMax.y, vMax.z, action);
+	}
+	
+	public static void iterateCuboidAround(
+			int cx, int cy, int cz,
+			int dx, int dy, int dz,
+			Consumer<? super Vec3i> action
+	) {
+		if (dx < 0) throw new IllegalArgumentException("dx " + dx + " is negative");
+		if (dy < 0) throw new IllegalArgumentException("dy " + dx + " is negative");
+		if (dz < 0) throw new IllegalArgumentException("dz " + dx + " is negative");
+		
+		if (dx % 2 == 0) throw new IllegalArgumentException("dx " + dx + " is even, only odd accepted");
+		if (dy % 2 == 0) throw new IllegalArgumentException("dy " + dy + " is even, only odd accepted");
+		if (dz % 2 == 0) throw new IllegalArgumentException("dz " + dz + " is even, only odd accepted");
+		
+		dx /= 2;
+		dy /= 2;
+		dz /= 2;
+		
+		iterateCuboid(cx - dx, cy - dy, cz - dz, cx + dx + 1, cy + dy + 1, cz + dz + 1, action);
+	}
+	
+	public static void iterateCuboidAround(
+			Vec3i center,
+			Vec3i diameters,
+			Consumer<? super Vec3i> action
+	) {
+		iterateCuboidAround(center.x, center.y, center.z, diameters.x, diameters.y, diameters.z, action);
+	}
+	
+	public static void iterateCuboidAround(
+			int cx, int cy, int cz,
+			int diameter,
+			Consumer<? super Vec3i> action
+	) {
+		iterateCuboidAround(cx, cy, cz, diameter, diameter, diameter, action);
+	}
+	
+	public static void iterateCuboidAround(
+			Vec3i center,
+			int diameter,
+			Consumer<? super Vec3i> action
+	) {
+		iterateCuboidAround(center.x, center.y, center.z, diameter, action);
 	}
 	
 	public static void applyMat4(Vec3 in, Mat4 mat, Vec3 out) {

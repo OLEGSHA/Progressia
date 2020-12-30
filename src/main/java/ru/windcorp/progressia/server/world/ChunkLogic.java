@@ -11,14 +11,12 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockFace;
-import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.common.world.tile.TileReference;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.BlockLogicRegistry;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
-import ru.windcorp.progressia.server.world.entity.EntityLogic;
-import ru.windcorp.progressia.server.world.entity.EntityLogicRegistry;
 import ru.windcorp.progressia.server.world.tasks.TickChunk;
 import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
 import ru.windcorp.progressia.server.world.tile.TickableTile;
@@ -26,7 +24,12 @@ import ru.windcorp.progressia.server.world.tile.TileLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogicRegistry;
 import ru.windcorp.progressia.server.world.tile.TileLogicStack;
 
-public class ChunkLogic {
+public class ChunkLogic implements GenericChunk<
+	ChunkLogic,
+	BlockLogic,
+	TileLogic,
+	TileLogicStack
+> {
 	
 	private final WorldLogic world;
 	private final ChunkData data;
@@ -43,31 +46,36 @@ public class ChunkLogic {
 		this.world = world;
 		this.data = data;
 		
-		generateTickLists();
+		tmp_generateTickLists();
 	}
 	
-	private void generateTickLists() {
-		ChunkTickContext context = TickContextMutable.start().withChunk(this).build();
-		
-		context.forEachBlock(bctxt -> {
-			BlockLogic block = bctxt.getBlock();
-			
-			if (!(block instanceof TickableBlock)) return;
-			
-			if (((TickableBlock) block).getTickingPolicy(bctxt) == TickingPolicy.REGULAR) {
-				tickingBlocks.add(Coordinates.convertInWorldToInChunk(bctxt.getBlockInWorld(), null));
-			}
-			
-			bctxt.forEachFace(fctxt -> fctxt.forEachTile(tctxt -> {
-				TileLogic tile = tctxt.getTile();
-				
-				if (!(tile instanceof TickableTile)) return;
-				
-				if (((TickableTile) tile).getTickingPolicy(tctxt) == TickingPolicy.REGULAR) {
-					tickingTiles.add(tctxt.getReference());
-				}
-			}));
-		});
+	@Override
+	public Vec3i getPosition() {
+		return getData().getPosition();
+	}
+	
+	@Override
+	public BlockLogic getBlock(Vec3i blockInChunk) {
+		return BlockLogicRegistry.getInstance().get(
+				getData().getBlock(blockInChunk).getId()
+		);
+	}
+	
+	@Override
+	public TileLogicStack getTiles(Vec3i blockInChunk, BlockFace face) {
+		return getTileStackWrapper(getData().getTiles(blockInChunk, face));
+	}
+	
+	@Override
+	public boolean hasTiles(Vec3i blockInChunk, BlockFace face) {
+		return getData().hasTiles(blockInChunk, face);
+	}
+	
+	private TileLogicStack getTileStackWrapper(TileDataStack tileDataList) {
+		return tileLogicLists.computeIfAbsent(
+				tileDataList,
+				TileLogicStackImpl::new
+		);
 	}
 
 	public WorldLogic getWorld() {
@@ -76,10 +84,6 @@ public class ChunkLogic {
 	
 	public ChunkData getData() {
 		return data;
-	}
-	
-	public Vec3i getPosition() {
-		return getData().getPosition();
 	}
 	
 	public boolean hasTickingBlocks() {
@@ -105,38 +109,6 @@ public class ChunkLogic {
 		});
 	}
 	
-	public void forEachEntity(BiConsumer<EntityLogic, EntityData> action) {
-		getData().forEachEntity(data -> {
-			action.accept(
-					EntityLogicRegistry.getInstance().get(data.getId()),
-					data
-			);
-		});
-	}
-	
-	public BlockLogic getBlock(Vec3i blockInChunk) {
-		return BlockLogicRegistry.getInstance().get(
-				getData().getBlock(blockInChunk).getId()
-		);
-	}
-	
-	public TileLogicStack getTiles(Vec3i blockInChunk, BlockFace face) {
-		return getTileStackWrapper(getData().getTiles(blockInChunk, face));
-	}
-	
-	public TileLogicStack getTilesOrNull(Vec3i blockInChunk, BlockFace face) {
-		TileDataStack tiles = getData().getTilesOrNull(blockInChunk, face);
-		if (tiles == null) return null;
-		return getTileStackWrapper(tiles);
-	}
-	
-	private TileLogicStack getTileStackWrapper(TileDataStack tileDataList) {
-		return tileLogicLists.computeIfAbsent(
-				tileDataList,
-				TileLogicStackImpl::new
-		);
-	}
-	
 	public TickChunk getTickTask() {
 		return tickTask;
 	}
@@ -152,11 +124,6 @@ public class ChunkLogic {
 		@Override
 		public Vec3i getBlockInChunk(Vec3i output) {
 			return parent.getBlockInChunk(output);
-		}
-
-		@Override
-		public Vec3i getChunkPos() {
-			return ChunkLogic.this.getPosition();
 		}
 
 		@Override
@@ -184,6 +151,30 @@ public class ChunkLogic {
 			return parent;
 		}
 		
+	}
+	
+	private void tmp_generateTickLists() {
+		ChunkTickContext context = TickContextMutable.start().withChunk(this).build();
+		
+		context.forEachBlock(bctxt -> {
+			BlockLogic block = bctxt.getBlock();
+			
+			if (!(block instanceof TickableBlock)) return;
+			
+			if (((TickableBlock) block).getTickingPolicy(bctxt) == TickingPolicy.REGULAR) {
+				tickingBlocks.add(Coordinates.convertInWorldToInChunk(bctxt.getBlockInWorld(), null));
+			}
+			
+			bctxt.forEachFace(fctxt -> fctxt.forEachTile(tctxt -> {
+				TileLogic tile = tctxt.getTile();
+				
+				if (!(tile instanceof TickableTile)) return;
+				
+				if (((TickableTile) tile).getTickingPolicy(tctxt) == TickingPolicy.REGULAR) {
+					tickingTiles.add(tctxt.getReference());
+				}
+			}));
+		});
 	}
 
 }

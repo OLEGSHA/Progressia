@@ -1,6 +1,6 @@
-package ru.windcorp.progressia.common.comms.packets;
+package ru.windcorp.progressia.common.world;
 
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.comms.packets.Packet;
 
 public abstract class PacketWorldChange extends Packet {
 

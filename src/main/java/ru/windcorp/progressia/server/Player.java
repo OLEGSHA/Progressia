@@ -18,6 +18,8 @@ public class Player extends PlayerData implements ChunkLoader {
 		super(entity);
 		this.server = server;
 		this.client = client;
+		
+		client.setPlayer(this);
 	}
 	
 	public Server getServer() {
@@ -34,22 +36,28 @@ public class Player extends PlayerData implements ChunkLoader {
 		Coordinates.convertInWorldToChunk(start, start);
 		
 		Vec3i cursor = new Vec3i();
-		float radius = getServer().getLoadDistance(this);
-		float radiusSq = radius / Units.get(16.0f, "m");
-		radiusSq *= radiusSq;
+		float radius = getServer().getLoadDistance(this) / Units.get(16.0f, "m");
+		
+		float radiusSq = radius * radius;
 		int iRadius = (int) Math.ceil(radius);
 		
 		for (cursor.x = -iRadius; cursor.x <= +iRadius; ++cursor.x) {
 			for (cursor.y = -iRadius; cursor.y <= +iRadius; ++cursor.y) {
 				for (cursor.z = -iRadius; cursor.z <= +iRadius; ++cursor.z) {
-					if (cursor.x * cursor.x + cursor.y * cursor.y + cursor.z * cursor.z <= radius) {
+					if (cursor.x * cursor.x + cursor.y * cursor.y + cursor.z * cursor.z <= radiusSq) {
+						
 						cursor.add(start);
 						chunkConsumer.accept(cursor);
 						cursor.sub(start);
+						
 					}
 				}
 			}
 		}
+	}
+
+	public String getLogin() {
+		return getClient().getLogin();
 	}
 	
 }

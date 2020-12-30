@@ -1,11 +1,8 @@
 package ru.windcorp.progressia.server.world.tasks;
 
-import java.io.IOException;
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.state.IOContext;
-import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.entity.PacketEntityChange;
 import ru.windcorp.progressia.server.Server;
@@ -31,26 +28,15 @@ class ChangeEntity extends CachedChange {
 		this.entity = entity;
 		this.change = change;
 
-		packet.setEntityId(entity.getEntityId());
-		try {
-			entity.write(packet.getWriter(), IOContext.COMMS); // TODO wtf is this... (see whole file)
-		} catch (IOException e) {
-			CrashReports.report(e, "Could not write entity %s", entity);
-		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void affect(Server server) {
 		((StateChange<EntityData>) change).change(entity);
-
-		try {
-			entity.write(packet.getWriter(), IOContext.COMMS); // ...and this doing at the same time? - javapony at 1 AM
-		} catch (IOException e) {
-			CrashReports.report(e, "Could not write entity %s", entity);
-		}
+		packet.set(entity);
 		
-		server.getClientManager().broadcastGamePacket(packet);
+		server.getClientManager().broadcastLocal(packet, entity.getEntityId());
 	}
 	
 	@Override

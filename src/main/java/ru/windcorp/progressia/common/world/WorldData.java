@@ -20,28 +20,42 @@ package ru.windcorp.progressia.common.world;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
-import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
+import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import ru.windcorp.progressia.common.collision.CollisionModel;
-import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.test.TestContent;
+import ru.windcorp.progressia.common.world.generic.ChunkMap;
+import ru.windcorp.progressia.common.world.generic.ChunkSet;
+import ru.windcorp.progressia.common.world.generic.GenericWorld;
+import ru.windcorp.progressia.common.world.generic.LongBasedChunkMap;
+import ru.windcorp.progressia.common.world.tile.TileData;
+import ru.windcorp.progressia.common.world.tile.TileDataStack;
 
-public class WorldData {
+public class WorldData
+implements GenericWorld<
+	BlockData,
+	TileData,
+	TileDataStack,
+	ChunkData,
+	EntityData
+> {
 
-	private final TLongObjectMap<ChunkData> chunksByPos =
-			new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), this);
+	private final ChunkMap<ChunkData> chunksByPos = new LongBasedChunkMap<>(
+			TCollections.synchronizedMap(new TLongObjectHashMap<>())
+	);
 	
 	private final Collection<ChunkData> chunks =
-			Collections.unmodifiableCollection(chunksByPos.valueCollection());
+			Collections.unmodifiableCollection(chunksByPos.values());
 	
 	private final TLongObjectMap<EntityData> entitiesById =
-			new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), this);
+			TCollections.synchronizedMap(new TLongObjectHashMap<>());
 	
 	private final Collection<EntityData> entities =
 			Collections.unmodifiableCollection(entitiesById.valueCollection());
@@ -55,19 +69,35 @@ public class WorldData {
 		
 	}
 	
-	public void tmp_generate() {
-		final int size = 10;
-		Vec3i cursor = new Vec3i(0, 0, 0);
-		
-		for (cursor.x = -(size / 2); cursor.x <= (size / 2); ++cursor.x) {
-			for (cursor.y = -(size / 2); cursor.y <= (size / 2); ++cursor.y) {
-				for (cursor.z = -(size / 2); cursor.z <= (size / 2); ++cursor.z) {
-					ChunkData chunk = new ChunkData(cursor, this);
-					TestContent.generateChunk(chunk);
-					addChunk(chunk);
-				}
-			}
+	@Override
+	public ChunkData getChunk(Vec3i pos) {
+		return chunksByPos.get(pos);
+	}
+	
+	@Override
+	public Collection<ChunkData> getChunks() {
+		return chunks;
+	}
+	
+	public ChunkSet getLoadedChunks() {
+		return chunksByPos.keys();
+	}
+	
+	@Override
+	public Collection<EntityData> getEntities() {
+		return entities;
+	}
+	
+	@Override
+	public void forEachEntity(Consumer<? super EntityData> action) {
+		synchronized (entitiesById) { // TODO HORRIBLY MUTILATE THE CORPSE OF TROVE4J so that gnu.trove.impl.sync.SynchronizedCollection.forEach is synchronized
+			getEntities().forEach(action);
 		}
+	}
+	
+	
+	public TLongSet getLoadedEntities() {
+		return entitiesById.keySet();
 	}
 	
 	private void addChunkListeners(ChunkData chunk) {
@@ -77,9 +107,7 @@ public class WorldData {
 	public synchronized void addChunk(ChunkData chunk) {
 		addChunkListeners(chunk);
 		
-		long key = getChunkKey(chunk);
-		
-		ChunkData previous = chunksByPos.get(key);
+		ChunkData previous = chunksByPos.get(chunk);
 		if (previous != null) {
 			throw new IllegalArgumentException(String.format(
 					"Chunk at (%d; %d; %d) already exists",
@@ -87,11 +115,7 @@ public class WorldData {
 			));
 		}
 		
-		chunksByPos.put(key, chunk);
-		
-		chunk.forEachEntity(entity ->
-			entitiesById.put(entity.getEntityId(), entity)
-		);
+		chunksByPos.put(chunk, chunk);
 		
 		chunk.onLoaded();
 		getListeners().forEach(l -> l.onChunkLoaded(this, chunk));
@@ -101,30 +125,7 @@ public class WorldData {
 		getListeners().forEach(l -> l.beforeChunkUnloaded(this, chunk));
 		chunk.beforeUnloaded();
 		
-		chunk.forEachEntity(entity ->
-			entitiesById.remove(entity.getEntityId())
-		);
-		
-		chunksByPos.remove(getChunkKey(chunk));
-	}
-	
-	private static long getChunkKey(ChunkData chunk) {
-		return CoordinatePacker.pack3IntsIntoLong(chunk.getPosition());
-	}
-	
-	public ChunkData getChunk(Vec3i pos) {
-		return chunksByPos.get(CoordinatePacker.pack3IntsIntoLong(pos));
-	}
-	
-	public ChunkData getChunkByBlock(Vec3i blockInWorld) {
-		return getChunk(Coordinates.convertInWorldToChunk(blockInWorld, null));
-	}
-	
-	public BlockData getBlock(Vec3i blockInWorld) {
-		ChunkData chunk = getChunkByBlock(blockInWorld);
-		if (chunk == null) return null;
-		
-		return chunk.getBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null));
+		chunksByPos.remove(chunk);
 	}
 	
 	public void setBlock(Vec3i blockInWorld, BlockData block, boolean notify) {
@@ -139,20 +140,47 @@ public class WorldData {
 		chunk.setBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null), block, notify);
 	}
 	
-	public Collection<ChunkData> getChunks() {
-		return chunks;
-	}
-	
-	public TLongSet getChunkKeys() {
-		return chunksByPos.keySet();
-	}
-	
 	public EntityData getEntity(long entityId) {
 		return entitiesById.get(entityId);
 	}
 	
-	public Collection<EntityData> getEntities() {
-		return entities;
+	public void addEntity(EntityData entity) {
+		Objects.requireNonNull(entity, "entity");
+		
+		EntityData previous = entitiesById.putIfAbsent(entity.getEntityId(), entity);
+		
+		if (previous != null) {
+			String message = "Cannot add entity " + entity + ": ";
+			
+			if (previous == entity) {
+				message += "already present";
+			} else {
+				message += "entity with the same EntityID already present (" + previous + ")";
+			}
+			
+			throw new IllegalStateException(message);
+		}
+		
+		getListeners().forEach(l -> l.onEntityAdded(this, entity));
+	}
+	
+	public void removeEntity(long entityId) {
+		synchronized (entitiesById) {
+			EntityData entity = entitiesById.get(entityId);
+			
+			if (entity == null) {
+				throw new IllegalArgumentException("Entity with EntityID " + EntityData.formatEntityId(entityId) + " not present");
+			} else {
+				removeEntity(entity);
+			}
+		}
+	}
+	
+	public void removeEntity(EntityData entity) {
+		Objects.requireNonNull(entity, "entity");
+		
+		getListeners().forEach(l -> l.beforeEntityRemoved(this, entity));
+		entitiesById.remove(entity.getEntityId());
 	}
 	
 	public float getTime() {

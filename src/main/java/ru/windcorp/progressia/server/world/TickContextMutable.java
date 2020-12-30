@@ -8,7 +8,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockFace;
-import ru.windcorp.progressia.common.world.tile.GenericTileStack;
+import ru.windcorp.progressia.common.world.generic.GenericTileStack;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.common.world.tile.TileReference;
 import ru.windcorp.progressia.server.Server;
@@ -87,7 +87,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		public static interface World extends Builder {
 			Chunk withChunk(Vec3i chunk);
 			Block withBlock(Vec3i blockInWorld);
-			TileStack withTS(GenericTileStack<?, ?> tileStack);
+			TileStack withTS(GenericTileStack<?, ?, ?> tileStack);
 			
 			default Builder.Chunk withChunk(ChunkData chunk) {
 				Objects.requireNonNull(chunk, "chunk");
@@ -237,7 +237,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		}
 		
 		@Override
-		public TileStack withTS(GenericTileStack<?, ?> tileStack) {
+		public TileStack withTS(GenericTileStack<?, ?, ?> tileStack) {
 			Objects.requireNonNull(tileStack, "tileStack");
 			
 			return withBlock(tileStack.getBlockInWorld(this.blockInWorld)).withFace(tileStack.getFace());

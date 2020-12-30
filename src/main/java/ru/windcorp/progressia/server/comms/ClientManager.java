@@ -1,20 +1,18 @@
 package ru.windcorp.progressia.server.comms;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.logging.log4j.LogManager;
+
+import glm.vec._3.i.Vec3i;
 import gnu.trove.TCollections;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import ru.windcorp.progressia.common.comms.CommsChannel.State;
 import ru.windcorp.progressia.common.comms.packets.Packet;
-import ru.windcorp.progressia.common.comms.packets.PacketLoadChunk;
-import ru.windcorp.progressia.common.comms.packets.PacketSetLocalPlayer;
-import ru.windcorp.progressia.common.io.ChunkIO;
-import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.PacketSetLocalPlayer;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.Server;
@@ -45,10 +43,10 @@ public class ClientManager {
 			
 			if (client instanceof ClientChat) {
 				addClientChat((ClientChat) client);
-			}
-			
-			if (client instanceof ClientPlayer) {
-				addClientPlayer((ClientPlayer) client);
+				
+				if (client instanceof ClientPlayer) {
+					addClientPlayer((ClientPlayer) client);
+				}
 			}
 			
 			client.addListener(new DefaultServerCommsListener(this, client));
@@ -61,29 +59,15 @@ public class ClientManager {
 
 	private void addClientPlayer(ClientPlayer client) {
 		String login = client.getLogin();
+		
 		EntityData entity = getServer().getPlayerManager().conjurePlayerEntity(login);
-		
 		Player player = new Player(entity, getServer(), client);
-		
 		getServer().getPlayerManager().getPlayers().add(player);
-		
-		for (ChunkData chunk : server.getWorld().getData().getChunks()) {
-			PacketLoadChunk packet = new PacketLoadChunk("Core:LoadChunk");
-			packet.getPosition().set(
-					chunk.getPosition().x,
-					chunk.getPosition().y,
-					chunk.getPosition().z
-			);
-			
-			try {
-				ChunkIO.save(chunk, packet.getData().getOutputStream());
-			} catch (IOException e) {
-				CrashReports.report(e, "ClientManager fjcked up. javahorse stupid");
-			}
-			client.sendPacket(packet);
-		}
 
-		client.sendPacket(new PacketSetLocalPlayer(entity.getEntityId()));
+		PacketSetLocalPlayer packet = new PacketSetLocalPlayer();
+		LogManager.getLogger().info("Sending local player ID {}", EntityData.formatEntityId(entity.getEntityId()));
+		packet.set(entity.getEntityId());
+		client.sendPacket(packet);
 	}
 
 	public void disconnectClient(Client client) {
@@ -91,10 +75,42 @@ public class ClientManager {
 		clientsById.remove(client.getId());
 	}
 	
-	public void broadcastGamePacket(Packet packet) {
+	/**
+	 * Sends the provided packet to all connected player clients.
+	 * @param packet the packet to broadcast
+	 */
+	public void broadcastToAllPlayers(Packet packet) {
 		getClients().forEach(c -> {
 				if (c.getState() != State.CONNECTED) return;
 				if (!(c instanceof ClientPlayer)) return;
+				c.sendPacket(packet);
+		});
+	}
+	
+	/**
+	 * Sends the provided packet to all connected player clients that can see the chunk identified by {@code chunkPos}.
+	 * @param packet the packet to broadcast
+	 * @param chunkPos the chunk coordinates of the chunk that must be visible
+	 */
+	public void broadcastLocal(Packet packet, Vec3i chunkPos) {
+		getClients().forEach(c -> {
+				if (c.getState() != State.CONNECTED) return;
+				if (!(c instanceof ClientPlayer)) return;
+				if (!((ClientPlayer) c).isChunkVisible(chunkPos)) return;
+				c.sendPacket(packet);
+		});
+	}
+	
+	/**
+	 * Sends the provided packet to all connected player clients that can see the entity identified by {@code entityId}.
+	 * @param packet the packet to broadcast
+	 * @param entityId the ID of the entity that must be visible
+	 */
+	public void broadcastLocal(Packet packet, long entityId) {
+		getClients().forEach(c -> {
+				if (c.getState() != State.CONNECTED) return;
+				if (!(c instanceof ClientPlayer)) return;
+				if (!((ClientPlayer) c).isChunkVisible(entityId)) return;
 				c.sendPacket(packet);
 		});
 	}

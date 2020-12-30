@@ -3,6 +3,7 @@ package ru.windcorp.progressia.common.world;
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public interface WorldDataListener {
 	
@@ -30,5 +31,19 @@ public interface WorldDataListener {
 	 * @param chunk the chunk that is going to be unloaded
 	 */
 	default void beforeChunkUnloaded(WorldData world, ChunkData chunk) {}
+	
+	/**
+	 * Invoked whenever an {@link EntityData} has been added.
+	 * @param world the world instance
+	 * @param entity the entity that has been added
+	 */
+	default void onEntityAdded(WorldData world, EntityData entity) {}
+	
+	/**
+	 * Invoked whenever an {@link EntityData} is about to be removed.
+	 * @param world the world instance
+	 * @param entity the entity that is going to be removed
+	 */
+	default void beforeEntityRemoved(WorldData world, EntityData entity) {}
 
 }

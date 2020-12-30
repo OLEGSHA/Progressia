@@ -112,49 +112,6 @@ public class TickAndUpdateUtil {
 		tickEntity(EntityLogicRegistry.getInstance().get(data.getId()), data, TickContextMutable.start().withServer(server).build());
 	}
 	
-//	public static BlockTickContext getBlockTickContext(
-//			Server server,
-//			Vec3i blockInWorld
-//	) {
-//		MutableBlockTickContext result = new MutableBlockTickContext();
-//		result.init(server, blockInWorld);
-//		return result;
-//	}
-//	
-//	public static TileTickContext getTileTickContext(
-//			Server server,
-//			Vec3i blockInWorld,
-//			BlockFace face,
-//			int layer
-//	) {
-//		MutableTileTickContext result = new MutableTileTickContext();
-//		result.init(server, blockInWorld, face, layer);
-//		return result;
-//	}
-//	
-//	public static TileTickContext getTileTickContext(
-//			Server server,
-//			TileDataStack stack,
-//			int index
-//	) {
-//		MutableTileTickContext result = new MutableTileTickContext();
-//		result.init(server, stack, index);
-//		return result;
-//	}
-//	
-//	public static TileTickContext getTileTickContext(
-//			Server server,
-//			TileReference ref
-//	) {
-//		MutableTileTickContext result = new MutableTileTickContext();
-//		result.init(server, ref);
-//		return result;
-//	}
-//	
-//	public static TickContext getTickContext(Server server) {
-//		return getBlockTickContext(server, null);
-//	}
-	
 	private TickAndUpdateUtil() {}
 
 }

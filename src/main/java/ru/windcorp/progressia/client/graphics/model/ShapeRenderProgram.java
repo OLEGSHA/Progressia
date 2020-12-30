@@ -264,6 +264,7 @@ public class ShapeRenderProgram extends Program {
 		
 		private final List<Vertex> vertices = new ArrayList<>();
 		
+		@Override
 		public VertexBuilder addVertex(
 				float x, float y, float z,
 				float r, float g, float b,
@@ -278,6 +279,7 @@ public class ShapeRenderProgram extends Program {
 			return this;
 		}
 		
+		@Override
 		public VertexBuilder addVertex(
 				Vec3 position,
 				Vec3 colorMultiplier,
@@ -292,6 +294,7 @@ public class ShapeRenderProgram extends Program {
 			return this;
 		}
 		
+		@Override
 		public ByteBuffer assemble() {
 			ByteBuffer result = BufferUtils.createByteBuffer(
 					DEFAULT_BYTES_PER_VERTEX * vertices.size()

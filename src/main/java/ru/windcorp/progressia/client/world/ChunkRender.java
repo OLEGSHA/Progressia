@@ -18,8 +18,11 @@
 package ru.windcorp.progressia.client.world;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
 import glm.mat._4.Mat4;
@@ -38,21 +41,61 @@ import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSupplier;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizers;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.client.world.tile.TileRenderRegistry;
+import ru.windcorp.progressia.client.world.tile.TileRenderStack;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.tile.TileData;
+import ru.windcorp.progressia.common.world.tile.TileDataStack;
 
-public class ChunkRender {
+public class ChunkRender
+implements GenericChunk<
+	ChunkRender,
+	BlockRender,
+	TileRender,
+	TileRenderStack
+> {
 
 	private final WorldRender world;
 	private final ChunkData data;
 
-	private boolean needsUpdate;
 	private Model model = null;
+	
+	private final Map<TileDataStack, TileRenderStackImpl> tileRenderLists =
+			Collections.synchronizedMap(new WeakHashMap<>());
 	
 	public ChunkRender(WorldRender world, ChunkData data) {
 		this.world = world;
 		this.data = data;
+	}
+	
+	@Override
+	public Vec3i getPosition() {
+		return getData().getPosition();
+	}
+	
+	@Override
+	public BlockRender getBlock(Vec3i posInChunk) {
+		return BlockRenderRegistry.getInstance().get(
+				getData().getBlock(posInChunk).getId()
+		);
+	}
+	
+	@Override
+	public TileRenderStack getTiles(Vec3i blockInChunk, BlockFace face) {
+		return getTileStackWrapper(getData().getTiles(blockInChunk, face));
+	}
+	
+	@Override
+	public boolean hasTiles(Vec3i blockInChunk, BlockFace face) {
+		return getData().hasTiles(blockInChunk, face);
+	}
+	
+	private TileRenderStack getTileStackWrapper(TileDataStack tileDataList) {
+		return tileRenderLists.computeIfAbsent(
+				tileDataList,
+				TileRenderStackImpl::new
+		);
 	}
 	
 	public WorldRender getWorld() {
@@ -63,23 +106,13 @@ public class ChunkRender {
 		return data;
 	}
 	
-	public void markForUpdate() {
-		this.needsUpdate = true;
+	public synchronized void markForUpdate() {
+		getWorld().markChunkForUpdate(getPosition());
 	}
 	
-	public boolean needsUpdate() {
-		return needsUpdate;
-	}
-	
-	public BlockRender getBlock(Vec3i posInChunk) {
-		return BlockRenderRegistry.getInstance().get(
-				getData().getBlock(posInChunk).getId()
-		);
-	}
-	
-	public void render(ShapeRenderHelper renderer) {
-		if (model == null || needsUpdate()) {
-			buildModel();
+	public synchronized void render(ShapeRenderHelper renderer) {
+		if (model == null) {
+			return;
 		}
 		
 		renderer.pushTransform().translate(
@@ -93,7 +126,7 @@ public class ChunkRender {
 		renderer.popTransform();
 	}
 
-	private void buildModel() {
+	public synchronized void update() {
 		Collection<ChunkRenderOptimizer> optimizers =
 				ChunkRenderOptimizers.getAllSuppliers().stream()
 				.map(ChunkRenderOptimizerSupplier::createOptimizer)
@@ -121,7 +154,6 @@ public class ChunkRender {
 				.forEach(builder::addPart);
 		
 		model = new StaticModel(builder);
-		needsUpdate = false;
 	}
 
 	private void buildBlock(
@@ -231,6 +263,46 @@ public class ChunkRender {
 				tile.createRenderable(face),
 				new Mat4().identity().translate(pos)
 		);
+	}
+	
+	private class TileRenderStackImpl extends TileRenderStack {
+		
+		private final TileDataStack parent;
+
+		public TileRenderStackImpl(TileDataStack parent) {
+			this.parent = parent;
+		}
+
+		@Override
+		public Vec3i getBlockInChunk(Vec3i output) {
+			return parent.getBlockInChunk(output);
+		}
+
+		@Override
+		public ChunkRender getChunk() {
+			return ChunkRender.this;
+		}
+
+		@Override
+		public BlockFace getFace() {
+			return parent.getFace();
+		}
+
+		@Override
+		public TileRender get(int index) {
+			return TileRenderRegistry.getInstance().get(parent.get(index).getId());
+		}
+
+		@Override
+		public int size() {
+			return parent.size();
+		}
+		
+		@Override
+		public TileDataStack getData() {
+			return parent;
+		}
+		
 	}
 
 }

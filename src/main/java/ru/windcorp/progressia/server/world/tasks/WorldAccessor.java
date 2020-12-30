@@ -38,7 +38,7 @@ public class WorldAccessor {
 
 	public void setBlock(Vec3i blockInWorld, BlockData block) {
 		SetBlock change = cache.grab(SetBlock.class);
-		change.initialize(blockInWorld, block);
+		change.getPacket().set(block, blockInWorld);
 		server.requestChange(change);
 	}
 	
@@ -48,7 +48,7 @@ public class WorldAccessor {
 
 	public void addTile(Vec3i blockInWorld, BlockFace face, TileData tile) {
 		AddTile change = cache.grab(AddTile.class);
-		change.initialize(blockInWorld, face, tile);
+		change.getPacket().set(tile, blockInWorld, face);
 		server.requestChange(change);
 	}
 	
@@ -58,7 +58,7 @@ public class WorldAccessor {
 
 	public void removeTile(Vec3i blockInWorld, BlockFace face, int tag) {
 		RemoveTile change = cache.grab(RemoveTile.class);
-		change.initialize(blockInWorld, face, tag);
+		change.getPacket().set(blockInWorld, face, tag);
 		server.requestChange(change);
 	}
 

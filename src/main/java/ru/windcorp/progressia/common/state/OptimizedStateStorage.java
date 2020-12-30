@@ -8,10 +8,12 @@ public class OptimizedStateStorage extends StateStorage {
 		this.ints = new int[sizes.getInts()];
 	}
 
+	@Override
 	public int getInt(int index) {
 		return ints[index];
 	}
 
+	@Override
 	public void setInt(int index, int value) {
 		ints[index] = value;
 	}

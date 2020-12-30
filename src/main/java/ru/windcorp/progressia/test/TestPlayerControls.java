@@ -17,6 +17,7 @@ import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.FloatMathUtils;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.server.ServerState;
 
 public class TestPlayerControls {
 	
@@ -28,8 +29,8 @@ public class TestPlayerControls {
 	
 	private TestPlayerControls() {}
 	
-	private static final double MODE_SWITCH_MAX_DELAY = 100 * Units.MILLISECONDS;
-	private static final double MIN_JUMP_DELAY = 200 * Units.MILLISECONDS;
+	private static final double MODE_SWITCH_MAX_DELAY = 300 * Units.MILLISECONDS;
+	private static final double MIN_JUMP_DELAY = 400 * Units.MILLISECONDS;
 
 	// Horizontal and vertical max control speed when flying
 	private static final float FLYING_SPEED = 6.0f * Units.METERS_PER_SECOND;
@@ -60,7 +61,7 @@ public class TestPlayerControls {
 	private Runnable updateCallback = null;
 	
 	public void applyPlayerControls() {
-		if (ClientState.getInstance() == null || ClientState.getInstance().getLocalPlayer() == null) {
+		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
 			return;
 		}
 		
@@ -96,10 +97,17 @@ public class TestPlayerControls {
 		}
 		
 		player.getVelocity().set(change);
+		
+		// THIS IS TERRIBLE TEST
+		EntityData serverEntity = ServerState.getInstance().getWorld().getData().getEntity(TestContent.PLAYER_ENTITY_ID);
+		if (serverEntity != null) {
+			serverEntity.setPosition(player.getPosition());
+		}
+		
 	}
 	
 	public void handleInput(Input input) {
-		if (ClientState.getInstance() == null || ClientState.getInstance().getLocalPlayer() == null) {
+		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
 			return;
 		}
 		

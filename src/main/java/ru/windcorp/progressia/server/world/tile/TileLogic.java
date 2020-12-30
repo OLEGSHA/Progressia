@@ -2,8 +2,9 @@ package ru.windcorp.progressia.server.world.tile;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.generic.GenericTile;
 
-public class TileLogic extends Namespaced {
+public class TileLogic extends Namespaced implements GenericTile {
 
 	public TileLogic(String id) {
 		super(id);

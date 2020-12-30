@@ -1,10 +1,15 @@
 package ru.windcorp.progressia.common.world.tile;
 
-import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.BlockData;
+import ru.windcorp.progressia.common.world.generic.GenericTileStack;
 
-public abstract class TileDataStack extends GenericTileStack<TileData, ChunkData> {
+public abstract class TileDataStack
+extends GenericTileStack<
+	TileDataStack,
+	TileData,
+	ChunkData
+> {
 	
 	/**
 	 * Inserts the specified tile at the specified position in this stack.
@@ -20,6 +25,16 @@ public abstract class TileDataStack extends GenericTileStack<TileData, ChunkData
 	 */
 	@Override
 	public abstract void add(int index, TileData tile);
+	
+	/**
+	 * Adds the specified tile at the end of this stack assigning it the provided tag.
+	 * This method is useful for copying stacks when preserving tags is necessary.
+	 * @param tile the tile to add
+	 * @param tag the tag to assign the new tile
+	 * @throws IllegalArgumentException if this stack already contains a tile with the
+	 * provided tag
+	 */
+	public abstract void load(TileData tile, int tag);
 
 	/**
 	 * Replaces the tile at the specified position in this stack with the specified tile.
@@ -53,15 +68,6 @@ public abstract class TileDataStack extends GenericTileStack<TileData, ChunkData
 	public abstract int getIndexByTag(int tag);
 	
 	public abstract int getTagByIndex(int index);
-	
-	/*
-	 * Implementation
-	 */
-	
-	@Override
-	public Vec3i getChunkPos() {
-		return getChunk().getPosition();
-	}
 	
 	/*
 	 * Aliases and overloads

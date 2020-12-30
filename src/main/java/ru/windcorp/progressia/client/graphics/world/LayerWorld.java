@@ -75,7 +75,9 @@ public class LayerWorld extends Layer {
 			renderWorld();
 		}
 		
-		if (client.getLocalPlayer() != null) {
+		client.getLocalPlayer().getEntity();
+		
+		if (client.isReady()) {
 			client.getLocalPlayer().update(client.getWorld());
 		}
 	}
@@ -139,10 +141,9 @@ public class LayerWorld extends Layer {
 	private static final Renderable SELECTION_BOX = tmp_createSelectionBox();
 
 	private void tmp_drawSelectionBox() {
-		LocalPlayer player = client.getLocalPlayer();
-		if (player == null) return;
+		if (!client.isReady()) return;
 		
-		Vec3i selection = player.getSelection().getBlock();
+		Vec3i selection = client.getLocalPlayer().getSelection().getBlock();
 		if (selection == null) return;
 		
 		helper.pushTransform().translate(selection.x, selection.y, selection.z);

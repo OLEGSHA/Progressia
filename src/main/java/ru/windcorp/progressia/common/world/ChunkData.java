@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -32,13 +31,19 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockFace;
-import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.common.world.tile.TileReference;
 import ru.windcorp.progressia.common.world.tile.TileStackIsFullException;
 
-public class ChunkData {
+public class ChunkData
+implements GenericChunk<
+	ChunkData,
+	BlockData,
+	TileData,
+	TileDataStack
+> {
 	
 	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
 	
@@ -54,9 +59,6 @@ public class ChunkData {
 		BLOCK_FACE_COUNT
 	];
 	
-	private final List<EntityData> entities =
-			Collections.synchronizedList(new ArrayList<>());
-	
 	private final Collection<ChunkDataListener> listeners =
 			Collections.synchronizedCollection(new ArrayList<>());
 	
@@ -65,6 +67,12 @@ public class ChunkData {
 		this.world = world;
 	}
 	
+	@Override
+	public Vec3i getPosition() {
+		return position;
+	}
+	
+	@Override
 	public BlockData getBlock(Vec3i posInChunk) {
 		return blocks[getBlockIndex(posInChunk)];
 	}
@@ -81,6 +89,7 @@ public class ChunkData {
 		}
 	}
 	
+	@Override
 	public TileDataStack getTilesOrNull(Vec3i blockInChunk, BlockFace face) {
 		return tiles[getTileIndex(blockInChunk, face)];
 	}
@@ -98,10 +107,12 @@ public class ChunkData {
 		this.tiles[getTileIndex(blockInChunk, face)] = tiles;
 	}
 	
+	@Override
 	public boolean hasTiles(Vec3i blockInChunk, BlockFace face) {
 		return getTilesOrNull(blockInChunk, face) != null;
 	}
 	
+	@Override
 	public TileDataStack getTiles(Vec3i blockInChunk, BlockFace face) {
 		int index = getTileIndex(blockInChunk, face);
 		
@@ -144,10 +155,6 @@ public class ChunkData {
 				face.getId();
 	}
 	
-	public List<EntityData> getEntities() {
-		return entities;
-	}
-	
 	private static void checkLocalCoordinates(Vec3i posInChunk) {
 		if (!isInBounds(posInChunk)) {
 			throw new IllegalCoordinatesException(
@@ -176,7 +183,7 @@ public class ChunkData {
 	}
 	
 	public void forEachBlock(Consumer<Vec3i> action) {
-		VectorUtil.forEachVectorInCuboid(
+		VectorUtil.iterateCuboid(
 				0, 0, 0,
 				BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK,
 				action
@@ -201,26 +208,6 @@ public class ChunkData {
 	 */
 	public void forEachTile(BiConsumer<TileDataStack, TileData> action) {
 		forEachTileStack(stack -> stack.forEach(tileData -> action.accept(stack, tileData)));
-	}
-	
-	public void forEachEntity(Consumer<EntityData> action) {
-		getEntities().forEach(action);
-	}
-
-	public int getX() {
-		return position.x;
-	}
-	
-	public int getY() {
-		return position.y;
-	}
-	
-	public int getZ() {
-		return position.z;
-	}
-	
-	public Vec3i getPosition() {
-		return position;
 	}
 	
 	public WorldData getWorld() {
@@ -405,6 +392,24 @@ public class ChunkData {
 			assert checkConsistency();
 			
 			report(null, tile);
+		}
+		
+		@Override
+		public void load(TileData tile, int tag) {
+			addFarthest(tile);
+			
+			int assignedTag = getIndexByTag(tag);
+			
+			if (assignedTag == tag) return;
+			if (assignedTag == -1) {
+				throw new IllegalArgumentException("Tag " + tag + " already used by tile at index " + getIndexByTag(tag));
+			}
+			
+			indicesByTag[tagsByIndex[size() - 1]] = -1;
+			tagsByIndex[size() - 1] = tag;
+			indicesByTag[tag] = size() - 1;
+			
+			assert checkConsistency();
 		}
 
 		@Override

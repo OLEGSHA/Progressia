@@ -25,7 +25,7 @@ public class DataBuffer {
 		@Override
 		public int read() throws IOException {
 			if (DataBuffer.this.position >= buffer.size()) return -1;
-			int result = buffer.getQuick(DataBuffer.this.position);
+			int result = buffer.getQuick(DataBuffer.this.position) & 0xFF;
 			++DataBuffer.this.position;
 			return result;
 		}
