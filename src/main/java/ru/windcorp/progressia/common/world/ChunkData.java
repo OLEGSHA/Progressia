@@ -393,6 +393,24 @@ implements GenericChunk<
 			
 			report(null, tile);
 		}
+		
+		@Override
+		public void load(TileData tile, int tag) {
+			addFarthest(tile);
+			
+			int assignedTag = getIndexByTag(tag);
+			
+			if (assignedTag == tag) return;
+			if (assignedTag == -1) {
+				throw new IllegalArgumentException("Tag " + tag + " already used by tile at index " + getIndexByTag(tag));
+			}
+			
+			indicesByTag[tagsByIndex[size() - 1]] = -1;
+			tagsByIndex[size() - 1] = tag;
+			indicesByTag[tag] = size() - 1;
+			
+			assert checkConsistency();
+		}
 
 		@Override
 		public TileData remove(int index) {
