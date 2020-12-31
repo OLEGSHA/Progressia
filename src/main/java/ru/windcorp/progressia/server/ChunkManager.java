@@ -11,7 +11,6 @@ import ru.windcorp.progressia.common.world.PacketSendChunk;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.generic.ChunkSet;
 import ru.windcorp.progressia.common.world.generic.ChunkSets;
-import ru.windcorp.progressia.test.TestContent;
 import ru.windcorp.progressia.test.TestWorldDiskIO;
 
 public class ChunkManager {
@@ -123,8 +122,7 @@ public class ChunkManager {
 		
 		ChunkData chunk = TestWorldDiskIO.tryToLoad(chunkPos, world);
 		if (chunk == null) {
-			chunk = new ChunkData(chunkPos, world);
-			TestContent.generateChunk(chunk);
+			chunk = getServer().getWorld().generate(chunkPos);
 		}
 		
 		world.addChunk(chunk);

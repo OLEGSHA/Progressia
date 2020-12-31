@@ -3,6 +3,7 @@ package ru.windcorp.progressia.server.world;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -13,6 +14,7 @@ import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.GenericWorld;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
+import ru.windcorp.progressia.server.world.generation.WorldGenerator;
 import ru.windcorp.progressia.server.world.tasks.TickEntitiesTask;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
@@ -30,13 +32,16 @@ implements GenericWorld<
 	private final WorldData data;
 	private final Server server;
 	
+	private final WorldGenerator generator;
+	
 	private final Map<ChunkData, ChunkLogic> chunks = new HashMap<>();
 	
 	private final Evaluation tickEntitiesTask = new TickEntitiesTask();
 	
-	public WorldLogic(WorldData data, Server server) {
+	public WorldLogic(WorldData data, Server server, Function<WorldLogic, WorldGenerator> worldGeneratorConstructor) {
 		this.data = data;
 		this.server = server;
+		this.generator = worldGeneratorConstructor.apply(this);
 		
 		data.addListener(new WorldDataListener() {
 			@Override
@@ -78,6 +83,14 @@ implements GenericWorld<
 	
 	public WorldData getData() {
 		return data;
+	}
+	
+	public WorldGenerator getGenerator() {
+		return generator;
+	}
+	
+	public ChunkData generate(Vec3i chunkPos) {
+		return getGenerator().generate(chunkPos, getData());
 	}
 	
 	public ChunkLogic getChunk(ChunkData chunkData) {
