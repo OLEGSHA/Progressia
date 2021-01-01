@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.io.ChunkIO;
+import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.DataBuffer;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 
@@ -26,7 +27,7 @@ public class PacketSendChunk extends PacketChunkChange {
 		this.position.set(chunk.getX(), chunk.getY(), chunk.getZ());
 		
 		try {
-			ChunkIO.save(chunk, this.data.getOutputStream());
+			ChunkIO.save(chunk, this.data.getWriter(), IOContext.COMMS);
 		} catch (IOException e) {
 			// Impossible
 		}
@@ -50,7 +51,7 @@ public class PacketSendChunk extends PacketChunkChange {
 	@Override
 	public void apply(WorldData world) {
 		try {
-			world.addChunk(ChunkIO.load(world, position, data.getInputStream()));
+			world.addChunk(ChunkIO.load(world, position, data.getReader(), IOContext.COMMS));
 		} catch (DecodingException | IOException e) {
 			CrashReports.report(e, "Could not load chunk");
 		}

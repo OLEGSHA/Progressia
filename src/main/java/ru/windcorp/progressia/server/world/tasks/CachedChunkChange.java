@@ -15,5 +15,11 @@ public abstract class CachedChunkChange<P extends PacketChunkChange> extends Cac
 	public void getRelevantChunk(Vec3i output) {
 		getPacket().getAffectedChunk(output);
 	}
+	
+	@Override
+	protected Vec3i getAffectedChunk(Vec3i output) {
+		getPacket().getAffectedChunk(output);
+		return output;
+	}
 
 }

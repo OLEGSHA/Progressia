@@ -1,10 +1,11 @@
 package ru.windcorp.progressia.common.io;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
@@ -27,10 +28,10 @@ public abstract class ChunkCodec extends Namespaced {
 		return signature;
 	}
 
-	public abstract ChunkData decode(WorldData world, Vec3i position, InputStream data) throws DecodingException, IOException;
+	public abstract ChunkData decode(WorldData world, Vec3i position, DataInputStream input, IOContext context) throws DecodingException, IOException;
 	
-	public abstract boolean shouldEncode(ChunkData chunk);
+	public abstract boolean shouldEncode(ChunkData chunk, IOContext context);
 	
-	public abstract void encode(ChunkData chunk, OutputStream output) throws IOException;
+	public abstract void encode(ChunkData chunk, DataOutputStream output, IOContext context) throws IOException;
 
 }

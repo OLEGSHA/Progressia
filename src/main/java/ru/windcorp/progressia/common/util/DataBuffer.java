@@ -38,8 +38,8 @@ public class DataBuffer {
 		}
 	};
 	
-	private final DataInput reader = new DataInputStream(inputStream);
-	private final DataOutput writer = new DataOutputStream(outputStream);
+	private final DataInputStream reader = new DataInputStream(inputStream);
+	private final DataOutputStream writer = new DataOutputStream(outputStream);
 	
 	public DataBuffer(int capacity) {
 		this.buffer = new TByteArrayList(capacity);
@@ -53,24 +53,22 @@ public class DataBuffer {
 		this.buffer = new TByteArrayList(copyFrom.buffer);
 	}
 	
-	public InputStream getInputStream() {
-		position = 0;
-		return inputStream;
-	}
-	
-	public OutputStream getOutputStream() {
-		buffer.resetQuick();
-		return outputStream;
-	}
-	
-	public DataInput getReader() {
+	public DataInputStream getReader() {
 		position = 0;
 		return reader;
 	}
 	
-	public DataOutput getWriter() {
+	public InputStream getInputStream() {
+		return getReader();
+	}
+	
+	public DataOutputStream getWriter() {
 		buffer.resetQuick();
 		return writer;
+	}
+	
+	public OutputStream getOutputStream() {
+		return getWriter();
 	}
 
 	public int getSize() {

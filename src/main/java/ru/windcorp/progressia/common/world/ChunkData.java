@@ -59,6 +59,8 @@ implements GenericChunk<
 		BLOCK_FACE_COUNT
 	];
 	
+	private Object generationHint = null;
+	
 	private final Collection<ChunkDataListener> listeners =
 			Collections.synchronizedCollection(new ArrayList<>());
 	
@@ -236,6 +238,14 @@ implements GenericChunk<
 	
 	protected void beforeUnloaded() {
 		getListeners().forEach(l -> l.beforeChunkUnloaded(this));
+	}
+	
+	public Object getGenerationHint() {
+		return generationHint;
+	}
+	
+	public void setGenerationHint(Object generationHint) {
+		this.generationHint = generationHint;
 	}
 	
 	/**

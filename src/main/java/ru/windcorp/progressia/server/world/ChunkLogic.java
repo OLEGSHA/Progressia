@@ -86,6 +86,10 @@ public class ChunkLogic implements GenericChunk<
 		return data;
 	}
 	
+	public boolean isReady() {
+		return getWorld().getGenerator().isChunkReady(getData().getGenerationHint());
+	}
+	
 	public boolean hasTickingBlocks() {
 		return !tickingBlocks.isEmpty();
 	}

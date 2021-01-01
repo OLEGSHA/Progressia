@@ -1,9 +1,9 @@
 package ru.windcorp.progressia.common.io;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +11,7 @@ import java.util.List;
 import glm.vec._3.i.Vec3i;
 import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
+import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
@@ -21,7 +22,7 @@ public class ChunkIO {
 	private static final TByteObjectMap<ChunkCodec> CODECS_BY_ID = new TByteObjectHashMap<>();
 	private static final List<ChunkCodec> CODECS_BY_PRIORITY = new ArrayList<>();
 	
-	public static ChunkData load(WorldData world, Vec3i position, InputStream data)
+	public static ChunkData load(WorldData world, Vec3i position, DataInputStream data, IOContext context)
 			throws DecodingException, IOException
 	{
 		if (CODECS_BY_ID.isEmpty()) throw new IllegalStateException("No codecs registered");
@@ -35,7 +36,7 @@ public class ChunkIO {
 		}
 		
 		try {
-			return codec.decode(world, position, data);
+			return codec.decode(world, position, data, context);
 		} catch (IOException | DecodingException e) {
 			throw e;
 		} catch (Throwable t) {
@@ -47,14 +48,14 @@ public class ChunkIO {
 		}
 	}
 	
-	public static void save(ChunkData chunk, OutputStream output)
+	public static void save(ChunkData chunk, DataOutputStream output, IOContext context)
 			throws IOException
 	{
-		ChunkCodec codec = getCodec(chunk);
+		ChunkCodec codec = getCodec(chunk, context);
 		
 		try {
 			output.write(codec.getSignature());
-			codec.encode(chunk, output);
+			codec.encode(chunk, output, context);
 		} catch (IOException e) {
 			throw e;
 		} catch (Throwable t) {
@@ -70,9 +71,9 @@ public class ChunkIO {
 		return CODECS_BY_ID.get(signature);
 	}
 	
-	public static ChunkCodec getCodec(ChunkData chunk) {
+	public static ChunkCodec getCodec(ChunkData chunk, IOContext context) {
 		for (ChunkCodec codec : CODECS_BY_PRIORITY) {
-			if (codec.shouldEncode(chunk)) {
+			if (codec.shouldEncode(chunk, context)) {
 				return codec;
 			}
 		}
@@ -82,7 +83,7 @@ public class ChunkIO {
 	}
 
 	/**
-	 * Sorted is order of decreasing priority 
+	 * Sorted in order of decreasing priority 
 	 * @return
 	 */
 	public static List<ChunkCodec> getCodecs() {

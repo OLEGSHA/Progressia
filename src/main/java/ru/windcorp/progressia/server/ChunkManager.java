@@ -33,9 +33,12 @@ public class ChunkManager {
 		
 		public void updateQueues(Player player) {
 			toSend.clear();
-			toSend.addAll(requested);
-			toSend.removeAll(visible);
-			toSend.retainAll(loaded);
+			
+			requested.forEachIn(server.getWorld(), chunk -> {
+				if (!chunk.isReady()) return;
+				if (visible.contains(chunk)) return;
+				toSend.add(chunk);
+			});
 			
 			toRevoke.clear();
 			toRevoke.addAll(visible);
@@ -120,12 +123,12 @@ public class ChunkManager {
 
 		WorldData world = getServer().getWorld().getData();
 		
-		ChunkData chunk = TestWorldDiskIO.tryToLoad(chunkPos, world);
-		if (chunk == null) {
-			chunk = getServer().getWorld().generate(chunkPos);
+		ChunkData chunk = TestWorldDiskIO.tryToLoad(chunkPos, world, getServer());
+		if (chunk != null) {
+			world.addChunk(chunk); 
+		} else {
+			getServer().getWorld().generate(chunkPos);
 		}
-		
-		world.addChunk(chunk);
 		
 	}
 	
@@ -143,7 +146,7 @@ public class ChunkManager {
 		
 		world.removeChunk(chunk);
 		
-		TestWorldDiskIO.saveChunk(chunk);
+		TestWorldDiskIO.saveChunk(chunk, getServer());
 		
 	}
 

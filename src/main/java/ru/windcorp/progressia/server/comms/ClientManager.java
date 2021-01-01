@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.logging.log4j.LogManager;
-
 import glm.vec._3.i.Vec3i;
 import gnu.trove.TCollections;
 import gnu.trove.map.TIntObjectMap;
@@ -65,7 +63,6 @@ public class ClientManager {
 		getServer().getPlayerManager().getPlayers().add(player);
 
 		PacketSetLocalPlayer packet = new PacketSetLocalPlayer();
-		LogManager.getLogger().info("Sending local player ID {}", EntityData.formatEntityId(entity.getEntityId()));
 		packet.set(entity.getEntityId());
 		client.sendPacket(packet);
 	}

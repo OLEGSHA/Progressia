@@ -101,8 +101,8 @@ public interface GenericWorld<
 		return stack.get(layer);
 	}
 	
-	default boolean isChunkLoaded(Vec3i pos) {
-		return getChunk(pos) != null;
+	default boolean isChunkLoaded(Vec3i chunkPos) {
+		return getChunk(chunkPos) != null;
 	}
 	
 	default boolean isBlockLoaded(Vec3i blockInWorld) {

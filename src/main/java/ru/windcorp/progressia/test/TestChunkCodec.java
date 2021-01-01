@@ -5,8 +5,6 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +15,7 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import ru.windcorp.jputil.functions.ThrowingConsumer;
 import ru.windcorp.progressia.common.io.ChunkCodec;
+import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.WorldData;
@@ -57,7 +56,7 @@ public class TestChunkCodec extends ChunkCodec {
 	}
 
 	@Override
-	public boolean shouldEncode(ChunkData chunk) {
+	public boolean shouldEncode(ChunkData chunk, IOContext context) {
 		return true;
 	}
 	
@@ -66,9 +65,7 @@ public class TestChunkCodec extends ChunkCodec {
 	 */
 
 	@Override
-	public ChunkData decode(WorldData world, Vec3i position, InputStream inputStream) throws DecodingException, IOException {
-		DataInput input = new DataInputStream(inputStream);
-		
+	public ChunkData decode(WorldData world, Vec3i position, DataInputStream input, IOContext context) throws DecodingException, IOException {
 		BlockData[] blockPalette = readBlockPalette(input);
 		TileData[] tilePalette = readTilePalette(input);
 
@@ -136,10 +133,7 @@ public class TestChunkCodec extends ChunkCodec {
 	 */
 
 	@Override
-	public void encode(ChunkData chunk, OutputStream outputStream) throws IOException {
-		
-		DataOutput output = new DataOutputStream(outputStream);
-		
+	public void encode(ChunkData chunk, DataOutputStream output, IOContext context) throws IOException {
 		Palette<BlockData> blockPalette = createBlockPalette(chunk);
 		Palette<TileData> tilePalette = createTilePalette(chunk);
 		
