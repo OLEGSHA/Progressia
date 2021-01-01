@@ -11,7 +11,7 @@ public class StackTraceProvider implements ContextProvider  {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         for (int i = 4; i < stackTraceBuffer.length; i++) {
-            sb.append(stackTraceBuffer[i].toString()).append("\n");
+            sb.append('\t').append(stackTraceBuffer[i].toString()).append("\n");
         }
 
         output.put("Reported from " + Thread.currentThread().getName(), sb.toString());

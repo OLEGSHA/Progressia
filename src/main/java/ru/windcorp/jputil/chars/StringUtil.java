@@ -690,6 +690,34 @@ public class StringUtil {
 		return padToRight(src, length, ' ');
 	}
 	
+	public static String center(String src, int length) {
+        return center(src, length, ' ');
+    }
+
+    public static String center(String src, int length, char filler) {
+    	if (length <= 0) {
+			throw new IllegalArgumentException("length must be positive (" + length + ")");
+		}
+    	
+        if (src == null || length <= src.length()) {
+            return src;
+        }
+        
+        char[] result = new char[length];
+
+        int leftPaddingLength = (length - src.length()) / 2;
+        
+        Arrays.fill(result, 0, leftPaddingLength, filler);
+        
+        for (int i = 0; i < src.length(); ++i) {
+        	result[i + leftPaddingLength] = src.charAt(i);
+        }
+        
+        Arrays.fill(result, leftPaddingLength + src.length(), result.length, filler);
+        
+        return new String(result);
+    }
+	
 	public static int countWords(String src) {
 		int i = 0;
 		boolean isWord = false;
