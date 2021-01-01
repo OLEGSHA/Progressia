@@ -80,7 +80,7 @@ public class Shader implements OpenGLDeletable {
 		if (glGetShaderi(handle, GL_COMPILE_STATUS) == GL_FALSE) {
 			System.out.println("***************** ERROR ******************");
 			System.out.println(source);
-			CrashReports.report(null, "Bad shader:\n %s", glGetShaderInfoLog(handle));
+			throw CrashReports.report(null, "Bad shader:\n %s", glGetShaderInfoLog(handle));
 		}
 	}
 

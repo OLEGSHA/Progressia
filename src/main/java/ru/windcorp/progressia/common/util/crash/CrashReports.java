@@ -30,17 +30,33 @@ public class CrashReports {
     private static final Collection<Analyzer> ANALYZERS = Collections.synchronizedCollection(new ArrayList<>());
 
     private static final Logger LOGGER = LogManager.getLogger("crash");
+    
+    public static ReportedException report(Throwable throwable, String messageFormat, Object... args) {
+        if (throwable instanceof ReportedException) return  (ReportedException) throwable;
+
+        return new ReportedException(throwable, messageFormat, args);
+    }
+
+    public static RuntimeException crash(Throwable throwable, String messageFormat, Object... args) {
+        if (throwable instanceof ReportedException) {
+            throw crash((ReportedException) throwable);
+        } else {
+            throw crash(report(throwable, messageFormat, args));
+        }
+    }
 
     /**
      * <em>This method never returns.</em>
      * <p>
      * TODO document
      *
-     * @param throwable
-     * @param messageFormat
-     * @param args
+     * @param reportException
      */
-    public static void report(Throwable throwable, String messageFormat, Object... args) {
+    public static RuntimeException crash(ReportedException reportException) {
+        Throwable throwable = reportException.getCause();
+        String messageFormat = reportException.getMessageFormat();
+        Object[] args = reportException.getArgs();
+
         StringBuilder output = new StringBuilder();
 
         try {
@@ -76,6 +92,7 @@ public class CrashReports {
         export(output.toString());
 
         System.exit(0);
+        return reportException;
     }
 
     private static void appendContextProviders(StringBuilder output) {
@@ -233,6 +250,27 @@ public class CrashReports {
     private static void addSeparator(StringBuilder sb) {
         sb.append(StringUtil.sequence('-', 80)).append("\n");
     }
+
+    public static class ReportedException extends RuntimeException {
+
+        private String messageFormat;
+        private Object[] args;
+
+        public ReportedException(Throwable throwable, String messageFormat, Object... args){
+            super(throwable);
+            this.messageFormat = messageFormat;
+            this.args = args;
+        }
+
+        public String getMessageFormat() {
+            return messageFormat;
+        }
+
+        public Object[] getArgs() {
+            return args;
+        }
+    }
+
 }
 
 class StringUtilsTemp {

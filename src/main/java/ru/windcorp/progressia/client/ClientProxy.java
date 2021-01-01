@@ -40,7 +40,7 @@ public class ClientProxy implements Proxy {
 			RenderTaskQueue.waitAndInvoke(WorldRenderProgram::init);
 			RenderTaskQueue.waitAndInvoke(() -> Typefaces.setDefault(GNUUnifontLoader.load(ResourceManager.getResource("assets/unifont-13.0.03.hex.gz"))));
 		} catch (InterruptedException e) {
-			CrashReports.report(e, "ClientProxy failed");
+			throw CrashReports.report(e, "ClientProxy failed");
 		}
 		
 		TestContent.registerContent();

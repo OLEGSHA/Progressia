@@ -44,7 +44,7 @@ public class ProgressiaLauncher {
 		CrashReports.registerAnalyzer(new OutOfMemoryAnalyzer());
 
 		Thread.setDefaultUncaughtExceptionHandler((Thread thread, Throwable t)-> {
-			CrashReports.report(t,"Uncaught exception in thread %s", thread.getName());
+			CrashReports.crash(t, "Uncaught exception in thread %s", thread.getName());
 		});
 	}
 

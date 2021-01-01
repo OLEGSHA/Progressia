@@ -35,7 +35,7 @@ public class DefaultClientCommsListener implements CommsListener {
 
 	@Override
 	public void onIOError(IOException reason) {
-		CrashReports.report(reason, "An IOException has occurred in communications");
+		throw CrashReports.report(reason, "An IOException has occurred in communications");
 		// TODO implement
 	}
 

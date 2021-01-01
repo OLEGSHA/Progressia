@@ -81,8 +81,7 @@ public class Parser {
 			}
 
 		} catch (IOException | EscapeException e) {
-			CrashReports.report(e, "Could not parse language file %s", filePath);
-			return null;
+			throw CrashReports.report(e, "Could not parse language file %s", filePath);
 		}
 		return parsedData;
 	}

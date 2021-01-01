@@ -304,7 +304,7 @@ public class Units {
 		try {
 			registerUnits(Units.class);
 		} catch (IllegalAccessException e) {
-			CrashReports.report(e, "Could not register units declared in {}", Units.class.getName());
+			throw CrashReports.report(e, "Could not register units declared in {}", Units.class.getName());
 		}
 	}
 

@@ -34,7 +34,7 @@ public class PacketSendEntity extends PacketWorldChange {
 		try {
 			entity.write(this.buffer.getWriter(), IOContext.COMMS);
 		} catch (IOException e) {
-			CrashReports.report(e, "Could not write an entity into an internal buffer");
+			throw CrashReports.report(e, "Could not write an entity into an internal buffer");
 		}
 	}
 
@@ -61,7 +61,7 @@ public class PacketSendEntity extends PacketWorldChange {
 		try {
 			entity.read(this.buffer.getReader(), IOContext.COMMS);
 		} catch (IOException e) {
-			CrashReports.report(e, "Could not read an entity from an internal buffer");
+			throw CrashReports.report(e, "Could not read an entity from an internal buffer");
 		}
 		
 		world.addEntity(entity);

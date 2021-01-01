@@ -49,7 +49,7 @@ public class PacketEntityChange extends PacketWorldChange {
 		try {
 			entity.write(this.buffer.getWriter(), IOContext.COMMS);
 		} catch (IOException e) {
-			CrashReports.report(e, "Entity could not be written");
+			throw CrashReports.report(e, "Entity could not be written");
 		}
 	}
 	
@@ -71,13 +71,13 @@ public class PacketEntityChange extends PacketWorldChange {
 		EntityData entity = world.getEntity(getEntityId());
 
 		if (entity == null) {
-			CrashReports.report(null, "Entity with ID %d not found", getEntityId());
+			throw CrashReports.report(null, "Entity with ID %d not found", getEntityId());
 		}
 
 		try {
 			entity.read(getReader(), IOContext.COMMS);
 		} catch (IOException e) {
-			CrashReports.report(e, "Entity could not be read");
+			throw CrashReports.report(e, "Entity could not be read");
 		}
 	}
 

@@ -51,8 +51,7 @@ public class Resource extends Named {
 		try (Reader reader = getReader()) {
 			return CharStreams.toString(reader);
 		} catch (IOException e) {
-			CrashReports.report(e, "Could not read resource %s as text", this);
-			return null;
+			throw CrashReports.report(e, "Could not read resource %s as text", this);
 		}
 	}
 
@@ -61,8 +60,7 @@ public class Resource extends Named {
 		try (InputStream stream = getInputStream()) {
 			byteArray = ByteStreams.toByteArray(stream);
 		} catch (IOException e) {
-			CrashReports.report(e, "Could not read resource %s as bytes", this);
-			return null;
+			throw CrashReports.report(e, "Could not read resource %s as bytes", this);
 		}
 
 		if (output == null || output.remaining() < byteArray.length) {

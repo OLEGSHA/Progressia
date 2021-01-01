@@ -57,8 +57,7 @@ public class GNUUnifontLoader {
 			return createStream(reader).map(GNUUnifontLoader::parse).map(GNUUnifontLoader::addToAtlas)
 					.collect(Collectors.collectingAndThen(createMapper(), GNUUnifont::new));
 		} catch (IOException | UncheckedIOException e) {
-			CrashReports.report(e, "Could not load GNUUnifont");
-			return null;
+			throw CrashReports.report(e, "Could not load GNUUnifont");
 		}
 	}
 
@@ -93,8 +92,7 @@ public class GNUUnifontLoader {
 			return new ParsedGlyph(c, editor);
 		
 		} catch (IOException e) {
-			CrashReports.report(e, "Could not load GNUUnifont: could not load character \"%s\"", declar);
-			return null;
+			throw CrashReports.report(e, "Could not load GNUUnifont: could not load character \"%s\"", declar);
 		}
 	}
 

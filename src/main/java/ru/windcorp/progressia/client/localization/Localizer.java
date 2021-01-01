@@ -43,7 +43,7 @@ public class Localizer {
 			data = new Parser(langFolder + this.language + ".lang").parse();
 			pokeListeners(language);
 		} else {
-			CrashReports.report(null, "Language not found: %s", language);
+			throw CrashReports.report(null, "Language not found: %s", language);
 		}
 	}
 
