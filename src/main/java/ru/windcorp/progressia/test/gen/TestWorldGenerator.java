@@ -12,6 +12,7 @@ import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.WorldDataListener;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.block.BlockFace;
@@ -24,6 +25,13 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 	
 	public TestWorldGenerator(WorldLogic world) {
 		super("Test:WorldGenerator", Boolean.class);
+		
+		world.getData().addListener(new WorldDataListener() {
+			@Override
+			public void onChunkLoaded(WorldData world, ChunkData chunk) {
+				findAndPopulate(chunk.getPosition(), world);
+			}
+		});
 	}
 	
 	@Override
@@ -45,7 +53,6 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 	public ChunkData generate(Vec3i chunkPos, WorldData world) {
 		ChunkData chunk = generateUnpopulated(chunkPos, world);
 		world.addChunk(chunk);
-		findAndPopulate(chunkPos, world);
 		return chunk;
 	}
 
