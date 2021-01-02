@@ -30,7 +30,7 @@ public class PlayerManager {
 		this.players.add(player);
 	}
 	
-	private static final Vec3i SPAWN = new Vec3i(8, 8, 20);
+	private static final Vec3i SPAWN = new Vec3i(8, 8, 900);
 	
 	public EntityData conjurePlayerEntity(String login) {
 		// TODO Live up to the name

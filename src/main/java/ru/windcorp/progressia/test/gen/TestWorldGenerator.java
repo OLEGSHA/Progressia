@@ -23,8 +23,11 @@ import ru.windcorp.progressia.server.world.generation.AbstractWorldGenerator;
 
 public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 	
+	private final TestTerrainGenerator terrainGen;
+	
 	public TestWorldGenerator(WorldLogic world) {
 		super("Test:WorldGenerator", Boolean.class);
+		this.terrainGen = new TestTerrainGenerator(this, world);
 		
 		world.getData().addListener(new WorldDataListener() {
 			@Override
@@ -66,28 +69,26 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		BlockData stone = BlockDataRegistry.getInstance().get("Test:Stone");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 		
-		final float maxHeight = 32;
-		final float rho = 2000;
+		double[][] heightMap = new double[bpc][bpc];
+		double[][] gradMap = new double[bpc][bpc];
 		
-		int[][] heightMap = new int[bpc][bpc];
+		int startX = Coordinates.getInWorld(chunk.getX(), 0);
+		int startY = Coordinates.getInWorld(chunk.getY(), 0);
+		int startZ = Coordinates.getInWorld(chunk.getZ(), 0);
 		
-		for (int yic = 0; yic < heightMap.length; ++yic) {
-			int yiw = Coordinates.getInWorld(chunk.getY(), yic);
-			for (int xic = 0; xic < heightMap[yic].length; ++xic) {
-				int xiw = Coordinates.getInWorld(chunk.getX(), xic);
-				
-				int rsq = (xiw*xiw + yiw*yiw);
-				heightMap[xic][yic] = (int) (rsq / (rho + rsq) * maxHeight) - chunk.getZ()*bpc;
-			}
-		}
+		terrainGen.compute(startX, startY, heightMap, gradMap);
 		
 		VectorUtil.iterateCuboid(0, 0, 0, bpc, bpc, bpc, pos -> {
-			int layer = pos.z - heightMap[pos.x][pos.y];
+			double layer = pos.z - heightMap[pos.x][pos.y] + startZ;
 			
 			if (layer < -4) {
 				chunk.setBlock(pos, stone, false);
 			} else if (layer < 0) {
-				chunk.setBlock(pos, dirt, false);
+				if (gradMap[pos.x][pos.y] > 0.3) {
+					chunk.setBlock(pos, stone, false);
+				} else {
+					chunk.setBlock(pos, dirt, false);
+				}
 			} else {
 				chunk.setBlock(pos, air, false);
 			}
@@ -140,6 +141,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		assert chunk != null : "Something went wrong when populating chunk at (" + chunkPos.x + "; " + chunkPos.y + "; " + chunkPos.z + ")";
 		
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
+		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
 		
 		Vec3i biw = new Vec3i();
 		
@@ -159,7 +161,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 				if (biw.z == maxZ) continue;
 				if (biw.z < minZ) continue;
 				
-				addTiles(chunk, biw, world, random);
+				addTiles(chunk, biw, world, random, world.getBlock(biw) == dirt);
 				
 			}
 		}
@@ -167,9 +169,9 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		chunk.setGenerationHint(true);
 	}
 	
-	private void addTiles(ChunkData chunk, Vec3i biw, WorldData world, Random random) {
-		addGrass(chunk, biw, world, random);
-		addDecor(chunk, biw, world, random);
+	private void addTiles(ChunkData chunk, Vec3i biw, WorldData world, Random random, boolean isDirt) {
+		if (isDirt) addGrass(chunk, biw, world, random);
+		addDecor(chunk, biw, world, random, isDirt);
 	}
 
 	private void addGrass(ChunkData chunk, Vec3i biw, WorldData world, Random random) {
@@ -191,23 +193,31 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		}
 	}
 
-	private void addDecor(ChunkData chunk, Vec3i biw, WorldData world, Random random) {
-		if (random.nextInt(8) == 0) {
-			world.getTiles(biw, BlockFace.TOP).addFarthest(
-					TileDataRegistry.getInstance().get("Test:Sand")
-			);
-		}
-		
-		if (random.nextInt(8) == 0) {
-			world.getTiles(biw, BlockFace.TOP).addFarthest(
-					TileDataRegistry.getInstance().get("Test:Stones")
-			);
-		}
-		
-		if (random.nextInt(8) == 0) {
-			world.getTiles(biw, BlockFace.TOP).addFarthest(
-					TileDataRegistry.getInstance().get("Test:YellowFlowers")
-			);
+	private void addDecor(ChunkData chunk, Vec3i biw, WorldData world, Random random, boolean isDirt) {
+		if (isDirt) {
+			if (random.nextInt(8) == 0) {
+				world.getTiles(biw, BlockFace.TOP).addFarthest(
+						TileDataRegistry.getInstance().get("Test:Sand")
+				);
+			}
+			
+			if (random.nextInt(8) == 0) {
+				world.getTiles(biw, BlockFace.TOP).addFarthest(
+						TileDataRegistry.getInstance().get("Test:Stones")
+				);
+			}
+			
+			if (random.nextInt(8) == 0) {
+				world.getTiles(biw, BlockFace.TOP).addFarthest(
+						TileDataRegistry.getInstance().get("Test:YellowFlowers")
+				);
+			}
+		} else {
+			if (random.nextInt(2) == 0) {
+				world.getTiles(biw, BlockFace.TOP).addFarthest(
+						TileDataRegistry.getInstance().get("Test:Stones")
+				);
+			}
 		}
 	}
 

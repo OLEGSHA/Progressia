@@ -42,5 +42,5 @@ plugins {
 * Google Guava
 * Trove4j
 * java-graphics/glm - GLM ported to Java. _Maven Central contains an outdated version, a custom repository used instead_
-* Apache Commons Math (_not currently used_)
+* OpenSimplex2
 * log4j

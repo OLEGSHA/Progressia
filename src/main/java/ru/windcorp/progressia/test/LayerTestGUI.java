@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
+import glm.vec._3.Vec3;
+import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.font.Font;
@@ -78,6 +80,12 @@ public class LayerTestGUI extends GUILayer {
 		panel.addChild(new DynamicLabel(
 				"ChunkUpdatesDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
 				() -> "Pending updates: " + Integer.toString(ClientState.getInstance().getWorld().getPendingChunkUpdates()),
+				128
+		));
+		
+		panel.addChild(new DynamicLabel(
+				"PosDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				LayerTestGUI::getPos,
 				128
 		));
 		
@@ -149,6 +157,14 @@ public class LayerTestGUI extends GUILayer {
 		if (server == null) return "TPS: n/a";
 		
 		return String.format(Locale.US, "TPS: %5.1f", TPS_RECORD.update(server.getTPS()));
+	}
+	
+	private static String getPos() {
+		Client client = ClientState.getInstance();
+		if (client == null) return "Pos: n/a";
+		
+		Vec3 pos = client.getCamera().getLastAnchorPosition();
+		return String.format(Locale.US, "Pos: %+7.1f %+7.1f %+7.1f", pos.x, pos.y, pos.z);
 	}
 	
 //	private static class DebugComponent extends Component {
