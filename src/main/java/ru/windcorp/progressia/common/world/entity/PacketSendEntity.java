@@ -1,4 +1,4 @@
-package ru.windcorp.progressia.server;
+package ru.windcorp.progressia.common.world.entity;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -10,8 +10,6 @@ import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.PacketWorldChange;
 import ru.windcorp.progressia.common.world.WorldData;
-import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
 
 public class PacketSendEntity extends PacketWorldChange {
 	

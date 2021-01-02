@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.Units;
+import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.PlayerData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
@@ -36,7 +37,7 @@ public class Player extends PlayerData implements ChunkLoader {
 		Coordinates.convertInWorldToChunk(start, start);
 		
 		Vec3i cursor = new Vec3i();
-		float radius = getServer().getLoadDistance(this) / Units.get(16.0f, "m");
+		float radius = getServer().getLoadDistance(this) / Units.get(ChunkData.BLOCKS_PER_CHUNK, "m");
 		
 		float radiusSq = radius * radius;
 		int iRadius = (int) Math.ceil(radius);
@@ -44,7 +45,7 @@ public class Player extends PlayerData implements ChunkLoader {
 		for (cursor.x = -iRadius; cursor.x <= +iRadius; ++cursor.x) {
 			for (cursor.y = -iRadius; cursor.y <= +iRadius; ++cursor.y) {
 				for (cursor.z = -iRadius; cursor.z <= +iRadius; ++cursor.z) {
-					if (cursor.x * cursor.x + cursor.y * cursor.y + cursor.z * cursor.z <= radiusSq) {
+					if (cursor.x * cursor.x + cursor.y * cursor.y + (cursor.z * 2) * (cursor.z * 2) <= radiusSq) {
 						
 						cursor.add(start);
 						chunkConsumer.accept(cursor);

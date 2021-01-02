@@ -174,7 +174,7 @@ public class Server {
 	}
 	
 	public float getLoadDistance(Player player) {
-		return Units.get(100.0f, "m");
+		return Units.get(150.0f, "m");
 	}
 
 	/**

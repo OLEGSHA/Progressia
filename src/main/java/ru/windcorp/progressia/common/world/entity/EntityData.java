@@ -1,10 +1,15 @@
 package ru.windcorp.progressia.common.world.entity;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import ru.windcorp.jputil.chars.StringUtil;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.CollisionModel;
+import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.state.StatefulObject;
 import ru.windcorp.progressia.common.world.generic.GenericEntity;
 
@@ -149,6 +154,52 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 	
 	public static String formatEntityId(long entityId) {
 		return new String(StringUtil.toFullHex(entityId));
+	}
+	
+	/*
+	 * tmp
+	 */
+	
+	@Override
+	public void write(DataOutput output, IOContext context) throws IOException {
+		output.writeFloat(getPosition().x);
+		output.writeFloat(getPosition().y);
+		output.writeFloat(getPosition().z);
+		
+		output.writeFloat(getVelocity().x);
+		output.writeFloat(getVelocity().y);
+		output.writeFloat(getVelocity().z);
+		
+		output.writeFloat(getDirection().x);
+		output.writeFloat(getDirection().y);
+		
+		super.write(output, context);
+	}
+	
+	@Override
+	public void read(DataInput input, IOContext context) throws IOException {
+		Vec3 position = new Vec3(
+				input.readFloat(),
+				input.readFloat(),
+				input.readFloat()
+		);
+		
+		Vec3 velocity = new Vec3(
+				input.readFloat(),
+				input.readFloat(),
+				input.readFloat()
+		);
+		
+		Vec2 direction = new Vec2(
+				input.readFloat(),
+				input.readFloat()
+		);
+
+		setPosition(position);
+		setVelocity(velocity);
+		setDirection(direction);
+		
+		super.read(input, context);
 	}
 
 }

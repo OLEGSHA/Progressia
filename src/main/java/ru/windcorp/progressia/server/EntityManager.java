@@ -13,6 +13,7 @@ import ru.windcorp.jputil.chars.StringUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.entity.PacketRevokeEntity;
+import ru.windcorp.progressia.common.world.entity.PacketSendEntity;
 import ru.windcorp.progressia.common.world.generic.ChunkSet;
 
 public class EntityManager {
