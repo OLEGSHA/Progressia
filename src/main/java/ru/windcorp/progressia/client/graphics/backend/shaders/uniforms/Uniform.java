@@ -27,7 +27,7 @@ public class Uniform {
 
 	public Uniform(int handle, Program program) {
 		if (handle < 0) {
-			CrashReports.report(null, "Bad handle: %d", handle);
+			throw CrashReports.report(null, "Bad handle: %d", handle);
 		}
 
 		this.handle = handle;

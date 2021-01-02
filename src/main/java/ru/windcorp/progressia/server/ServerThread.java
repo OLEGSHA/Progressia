@@ -57,7 +57,7 @@ public class ServerThread implements Runnable {
 			server.tick();
 			ticker.runOneTick();
 		} catch (Throwable e) {
-			CrashReports.report(e, "Got a throwable in the server thread");
+			CrashReports.crash(e, "Got a throwable in the server thread");
 		}
 	}
 	

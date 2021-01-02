@@ -22,7 +22,7 @@ public class TickAndUpdateUtil {
 		try {
 			block.tick(context);
 		} catch (Exception e) {
-			CrashReports.report(e, "Could not tick block {}", block);
+			throw CrashReports.report(e, "Could not tick block {}", block);
 		}
 	}
 	
@@ -38,7 +38,7 @@ public class TickAndUpdateUtil {
 		try {
 			tile.tick(context);
 		} catch (Exception e) {
-			CrashReports.report(e, "Could not tick tile {}", tile);
+			throw CrashReports.report(e, "Could not tick tile {}", tile);
 		}
 	}
 	
@@ -63,7 +63,7 @@ public class TickAndUpdateUtil {
 		try {
 			block.update(context);
 		} catch (Exception e) {
-			CrashReports.report(e, "Could not update block {}", block);
+			throw CrashReports.report(e, "Could not update block {}", block);
 		}
 	}
 	
@@ -79,7 +79,7 @@ public class TickAndUpdateUtil {
 		try {
 			tile.update(context);
 		} catch (Exception e) {
-			CrashReports.report(e, "Could not update tile {}", tile);
+			throw CrashReports.report(e, "Could not update tile {}", tile);
 		}
 	}
 	
@@ -104,7 +104,7 @@ public class TickAndUpdateUtil {
 		try {
 			logic.tick(data, context);
 		} catch (Exception e) {
-			CrashReports.report(e, "Could not tick entity {}", logic);
+			throw CrashReports.report(e, "Could not tick entity {}", logic);
 		}
 	}
 	

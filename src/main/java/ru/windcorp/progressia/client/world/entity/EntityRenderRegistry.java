@@ -29,8 +29,7 @@ public class EntityRenderRegistry extends NamespacedInstanceRegistry<EntityRende
 					).getData()
 			);
 		} catch (IOException e) {
-			CrashReports.report(e, "Could not load entity texture %s", name);
-			return null;
+			throw CrashReports.report(e, "Could not load entity texture %s", name);
 		}
 	}
 

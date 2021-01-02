@@ -18,10 +18,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * A utility for reporting critical problems, gathering system context and terminating the application consequently (crashing).
+ * Do not hesitate to use {@link #report(Throwable, String, Object...)} at every other line.
+ * 
+ * @author serega404
+ */
 public class CrashReports {
-
-    private CrashReports() {
-    }
 
     private static final Path CRASH_REPORTS_PATH = Paths.get("crash-reports");
 
@@ -30,17 +33,70 @@ public class CrashReports {
     private static final Collection<Analyzer> ANALYZERS = Collections.synchronizedCollection(new ArrayList<>());
 
     private static final Logger LOGGER = LogManager.getLogger("crash");
+    
+    /**
+     * Creates a {@link ReportedException} that describes the provided problem so the program can crash later.
+     * This method is intended to be used like so:
+     * 
+     * <pre>
+     * try {
+     *     doSomethingDifficult(x);
+     * } catch (CouldntMakeItException e) {
+     *     throw CrashReports.report(e, "We couldn't make it at x = %d", x);
+     * }
+     * </pre>
+     * 
+     * <p>Such usage ensures that the report will be dealt with at the top of the call stack
+     * (at least in methods that have a properly set up
+     * {@linkplain #crash(Throwable, String, Object...) crash handler}). Not throwing the returned
+     * exception is pointless; using this in a thread without a crash handler will not produce a crash.
+     * 
+     * <p>Avoid inserting variable information into {@code messageFormat} directly; use
+     * {@linkplain Formatter#summary format string} syntax and {@code args}. Different Strings
+     * in {@code messageFormat} may be interpreted as unrelated problems by {@linkplain Analyzer crash analyzers}.
+     * 
+     * @param throwable a {@link Throwable} that caused the problem, if any; {@code null} otherwise
+     * @param messageFormat a human-readable description of the problem displayed in the crash report
+     * @param args an array of arguments for formatting {@code messageFormat}
+     * @return an exception containing the provided information that must be thrown
+     */
+    public static ReportedException report(Throwable throwable, String messageFormat, Object... args) {
+        if (throwable instanceof ReportedException) return (ReportedException) throwable;
+
+        return new ReportedException(throwable, messageFormat, args);
+    }
 
     /**
-     * <em>This method never returns.</em>
-     * <p>
-     * TODO document
-     *
-     * @param throwable
-     * @param messageFormat
-     * @param args
+     * Crashes the program due to the supplied problem.
+     * 
+     * <p><em>Use {@link #report(Throwable, String, Object...)} unless you are creating a catch-all handler for a
+     * thread.</em>
+     * 
+     * <p>This method recovers information about the problem by casting {@code throwable} to {@link ReportedException},
+     * or, failing that, uses the provided arguments as the information instead. It then constructs a full crash
+     * report, exports it and terminates the program by invoking {@link System#exit(int)}.
+     * 
+     * <p>Such behavior can be dangerous or lead to unwanted consequences in the middle of the call stack, so it is
+     * necessary to invoke this method as high on the call stack as possible, usually in a {@code catch} clause
+     * of a {@code try} statement enveloping the thread's main method(s).
+     * 
+     * @param throwable a {@link ReportedException} or another {@link Throwable} that caused the problem, if any;
+     * {@code null} otherwise
+     * @param messageFormat a human-readable description of the problem used when {@code throwable} is not a
+     * {@link ReportedException}. See {@link #report(Throwable, String, Object...)} for details.
+     * @param args an array of arguments for formatting {@code messageFormat}
+     * @return {@code null}, although this method never returns normally. Provided for convenience.
      */
-    public static void report(Throwable throwable, String messageFormat, Object... args) {
+    public static RuntimeException crash(Throwable throwable, String messageFormat, Object... args) {
+    	if (throwable instanceof ReportedException) {
+    		ReportedException reportedException = (ReportedException) throwable;
+    		
+    		// Discard provided arguments
+    		throwable = reportedException.getCause();
+            messageFormat = reportedException.getMessageFormat();
+            args = reportedException.getArgs();
+    	}
+
         StringBuilder output = new StringBuilder();
 
         try {
@@ -76,6 +132,7 @@ public class CrashReports {
         export(output.toString());
 
         System.exit(0);
+        return null;
     }
 
     private static void appendContextProviders(StringBuilder output) {
@@ -94,7 +151,7 @@ public class CrashReports {
                 provider.provideContext(buf);
 
                 if (!buf.isEmpty()) {
-                    output.append(StringUtilsTemp.center(provider.getName(), 80)).append("\n");
+                    output.append(StringUtil.center(provider.getName(), 80)).append("\n");
                     for (Map.Entry<String, String> entry : buf.entrySet()) {
                         output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
                     }
@@ -122,7 +179,7 @@ public class CrashReports {
         Analyzer[] localAnalyzersCopy = ANALYZERS.toArray(new Analyzer[ANALYZERS.size()]);
 
         if (localAnalyzersCopy.length > 0) {
-            output.append(StringUtilsTemp.center("Analyzers", 80)).append("\n");
+            output.append(StringUtil.center("Analyzers", 80)).append("\n");
         }
 
         for (Analyzer analyzer : localAnalyzersCopy) {
@@ -222,36 +279,73 @@ public class CrashReports {
         }
     }
 
+    private static void addSeparator(StringBuilder sb) {
+        sb.append(StringUtil.sequence('-', 80)).append("\n");
+    }
+
+    /**
+     * Registers the provided {@link ContextProvider} so it is consulted in the case of a crash.
+     * @param provider the provider to register
+     */
     public static void registerProvider(ContextProvider provider) {
         PROVIDERS.add(provider);
     }
 
+    /**
+     * Registers the provided {@link Analyzer} so it is consulted in the case of a crash.
+     * @param analyzer the analyzer to register
+     */
     public static void registerAnalyzer(Analyzer analyzer) {
         ANALYZERS.add(analyzer);
     }
 
-    private static void addSeparator(StringBuilder sb) {
-        sb.append(StringUtil.sequence('-', 80)).append("\n");
-    }
-}
+    /**
+     * A wrapper used by {@link CrashReports} to transfer problem details from the place of
+     * occurrence to the handler at the top of the stack. Rethrow if caught
+     * (unless using {@link CrashReports#report(Throwable, String, Object...)}, which does
+     * so automatically).
+     * 
+     * @author serega404
+     */
+    public static class ReportedException extends RuntimeException {
 
-class StringUtilsTemp {
-    public static String center(String s, int size) {
-        return center(s, size, ' ');
-    }
+		private static final long serialVersionUID = 223720835231091533L;
+		
+		private final String messageFormat;
+        private final Object[] args;
 
-    public static String center(String s, int size, char pad) {
-        if (s == null || size <= s.length())
-            return s;
-
-        StringBuilder sb = new StringBuilder(size);
-        for (int i = 0; i < (size - s.length()) / 2; i++) {
-            sb.append(pad);
+        /**
+         * Constructs a {@link ReportedException}.
+         * @param throwable the reported {@link Throwable} or {@code null}
+         * @param messageFormat the reported message format.
+         * <em>This is not the message of the constructed Exception</em>.
+         * @param args the reported message format arguments
+         */
+        public ReportedException(Throwable throwable, String messageFormat, Object... args) {
+            super(throwable);
+            this.messageFormat = messageFormat;
+            this.args = args;
         }
-        sb.append(s);
-        while (sb.length() < size) {
-            sb.append(pad);
+
+        /**
+         * Returns the reported message format.
+         * @return message format
+         */
+        public String getMessageFormat() {
+            return messageFormat;
         }
-        return sb.toString();
+
+        /**
+         * Returns the reported message format arguments.
+         * @return message format arguments
+         */
+        public Object[] getArgs() {
+            return args;
+        }
     }
+
+    private CrashReports() {
+    	
+    }
+
 }

@@ -44,8 +44,7 @@ public class PlayerManager {
 			EntityData entity = spawnPlayerEntity(login);
 			return entity;
 		} else {
-			CrashReports.report(null, "Unknown login %s, javahorse stupid", login);
-			return null;
+			throw CrashReports.report(null, "Unknown login %s, javahorse stupid", login);
 		}
 	}
 	

@@ -40,11 +40,10 @@ public class ChunkIO {
 		} catch (IOException | DecodingException e) {
 			throw e;
 		} catch (Throwable t) {
-			CrashReports.report(
+			throw CrashReports.report(
 					t, "Codec %s has failed to decode chunk (%d; %d; %d)",
 					codec.getId(), position.x, position.y, position.z
 			);
-			return null;
 		}
 	}
 	
@@ -59,7 +58,7 @@ public class ChunkIO {
 		} catch (IOException e) {
 			throw e;
 		} catch (Throwable t) {
-			CrashReports.report(
+			throw CrashReports.report(
 					t, "Codec %s has failed to encode chunk (%d; %d; %d)",
 					codec.getId(), chunk.getPosition().x, chunk.getPosition().y, chunk.getPosition().z
 			);

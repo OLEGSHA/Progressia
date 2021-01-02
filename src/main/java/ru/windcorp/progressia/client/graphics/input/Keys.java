@@ -77,7 +77,7 @@ public class Keys {
 			}
 
 		} catch (IllegalAccessException e) {
-			CrashReports.report(e, "Cannot access GLFW constants");
+			throw CrashReports.report(e, "Cannot access GLFW constants");
 		}
 	}
 
@@ -94,7 +94,7 @@ public class Keys {
 		}
 
 		if (CODES_TO_NAMES.containsKey(value)) {
-			CrashReports.report(null, "Duplicate keys: %s and %s both map to %d(0x%s)",
+			throw CrashReports.report(null, "Duplicate keys: %s and %s both map to %d(0x%s)",
 					CODES_TO_NAMES.get(value), name, value, Integer.toHexString(value));
 		}
 

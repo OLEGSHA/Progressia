@@ -260,8 +260,8 @@ public class TickerCoordinator {
 		if (t instanceof ConcurrentModificationException) {
 			logger.debug("javahorse kill urself");
 		}
-		
-		CrashReports.report(
+
+		throw CrashReports.crash(
 				t,
 				"Something has gone horribly wrong in server ticker code "
 				+ "(thread %s) and it is (probably) not related to mods or devils.",

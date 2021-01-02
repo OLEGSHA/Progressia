@@ -30,6 +30,8 @@ import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.Panel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
+import ru.windcorp.progressia.common.Units;
+import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.ServerState;
 
 public class LayerTestGUI extends GUILayer {
@@ -63,13 +65,13 @@ public class LayerTestGUI extends GUILayer {
 		
 		panel.addChild(new DynamicLabel(
 				"FPSDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
-				() -> String.format(Locale.US, "FPS: %5.1f", GraphicsInterface.getFPS()),
+				LayerTestGUI::getFPS,
 				128
 		));
 		
 		panel.addChild(new DynamicLabel(
 				"TPSDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
-				() -> ServerState.getInstance() == null ? "TPS: n/a" : String.format(Locale.US, "TPS: %5.1f", ServerState.getInstance().getTPS()),
+				LayerTestGUI::getTPS,
 				128
 		));
 		
@@ -87,6 +89,66 @@ public class LayerTestGUI extends GUILayer {
 		TestPlayerControls.getInstance().setUpdateCallback(() -> labels.forEach(Label::update));
 
 		getRoot().addChild(panel);
+	}
+	
+	private static class Averager {
+		
+		private static final int DISPLAY_INERTIA = 32;
+		private static final double UPDATE_INTERVAL = Units.get(50.0, "ms");
+		
+		private final double[] values = new double[DISPLAY_INERTIA];
+		private int size;
+		private int head;
+		
+		private long lastUpdate;
+		
+		public void add(double value) {
+			if (size == values.length) {
+				values[head] = value;
+				head++;
+				if (head == values.length) head = 0;
+			} else {
+				values[size] = value;
+				size++;
+			}
+		}
+		
+		public double average() {
+			double product = 1;
+			
+			if (size == values.length) {
+				for (double d : values) product *= d;
+			} else {
+				for (int i = 0; i < size; ++i) product *= values[i];
+			}
+			
+			return Math.pow(product, 1.0 / size);
+		}
+		
+		public double update(double value) {
+			long now = (long) (GraphicsInterface.getTime() / UPDATE_INTERVAL);
+			if (lastUpdate != now) {
+				lastUpdate = now;
+				add(value);
+			}
+			
+			return average();
+		}
+		
+	}
+	
+	private static final Averager FPS_RECORD = new Averager();
+	private static final Averager TPS_RECORD = new Averager();
+	
+	private static String getFPS() {
+		return String.format(Locale.US, "FPS: %5.1f", FPS_RECORD.update(GraphicsInterface.getFPS()));
+	}
+	
+	private static String getTPS() {
+		Server server = ServerState.getInstance();
+		if (server == null) return "TPS: n/a";
+		
+		return String.format(Locale.US, "TPS: %5.1f", TPS_RECORD.update(server.getTPS()));
 	}
 	
 //	private static class DebugComponent extends Component {

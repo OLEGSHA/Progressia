@@ -53,7 +53,7 @@ public class PacketSendChunk extends PacketChunkChange {
 		try {
 			world.addChunk(ChunkIO.load(world, position, data.getReader(), IOContext.COMMS));
 		} catch (DecodingException | IOException e) {
-			CrashReports.report(e, "Could not load chunk");
+			throw CrashReports.report(e, "Could not load chunk");
 		}
 	}
 	

@@ -139,7 +139,9 @@ java {
 }
 
 compileJava {
-    options.compilerArgs.addAll(['--release', '8'])
+    if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
+        options.compilerArgs.addAll(['--release', '8'])
+    }
 }
 
 createPackages.dependsOn(build)

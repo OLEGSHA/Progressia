@@ -157,8 +157,7 @@ public class Atlases {
 
 			return loadSprite(data.getData(), group);
 		} catch (IOException e) {
-			CrashReports.report(e, "Could not load sprite %s into atlas group %s", resource, group);
-			return null;
+			throw CrashReports.report(e, "Could not load sprite %s into atlas group %s", resource, group);
 		}
 	}
 
@@ -174,7 +173,7 @@ public class Atlases {
 			Atlas newAtlas = new Atlas(group);
 
 			if (!newAtlas.canAddSprite(data)) {
-				CrashReports.report(null, "Could not fit texture into atlas of size %d", newAtlas.getSize());
+				throw CrashReports.report(null, "Could not fit texture into atlas of size %d", newAtlas.getSize());
 			}
 
 			atlases.add(newAtlas);
