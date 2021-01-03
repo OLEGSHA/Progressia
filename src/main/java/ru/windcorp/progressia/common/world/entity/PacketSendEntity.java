@@ -8,13 +8,11 @@ import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.DataBuffer;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.PacketWorldChange;
 import ru.windcorp.progressia.common.world.WorldData;
 
-public class PacketSendEntity extends PacketWorldChange {
+public class PacketSendEntity extends PacketAffectEntity {
 	
-	private String id;
-	private long entityId;
+	private String entityTypeId;
 	private final DataBuffer buffer = new DataBuffer();
 	
 	public PacketSendEntity() {
@@ -25,9 +23,23 @@ public class PacketSendEntity extends PacketWorldChange {
 		super(id);
 	}
 	
+	/**
+	 * Returns the text ID of the entity added by this packet.
+	 * @return text ID
+	 * @see #getEntityId()
+	 */
+	public String getEntityTypeId() {
+		return entityTypeId;
+	}
+	
+	public DataBuffer getBuffer() {
+		return buffer;
+	}
+	
 	public void set(EntityData entity) {
-		this.id = entity.getId();
-		this.entityId = entity.getEntityId();
+		super.set(entity.getEntityId());
+		
+		this.entityTypeId = entity.getId();
 		
 		try {
 			entity.write(this.buffer.getWriter(), IOContext.COMMS);
@@ -38,26 +50,28 @@ public class PacketSendEntity extends PacketWorldChange {
 
 	@Override
 	public void read(DataInput input) throws IOException, DecodingException {
-		this.id = input.readUTF();
-		this.entityId = input.readLong();
+		super.read(input);
+		
+		this.entityTypeId = input.readUTF();
 		this.buffer.fill(input, input.readInt());
 	}
 
 	@Override
 	public void write(DataOutput output) throws IOException {
-		output.writeUTF(this.id);
-		output.writeLong(this.entityId);
+		super.write(output);
+		
+		output.writeUTF(this.entityTypeId);
 		output.writeInt(this.buffer.getSize());
 		this.buffer.flush(output);
 	}
 	
 	@Override
 	public void apply(WorldData world) {
-		EntityData entity = EntityDataRegistry.getInstance().create(this.id);
+		EntityData entity = EntityDataRegistry.getInstance().create(getEntityTypeId());
 		
-		entity.setEntityId(this.entityId);
+		entity.setEntityId(getEntityId());
 		try {
-			entity.read(this.buffer.getReader(), IOContext.COMMS);
+			entity.read(getBuffer().getReader(), IOContext.COMMS);
 		} catch (IOException e) {
 			throw CrashReports.report(e, "Could not read an entity from an internal buffer");
 		}

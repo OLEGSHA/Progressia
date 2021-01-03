@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import glm.vec._3.i.Vec3i;
 
-public class PacketRevokeChunk extends PacketChunkChange {
+public class PacketRevokeChunk extends PacketAffectChunk {
 	
 	private final Vec3i position = new Vec3i();
 	

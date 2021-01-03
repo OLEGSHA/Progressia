@@ -3,7 +3,9 @@ package ru.windcorp.progressia.server.world.ticking;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +16,9 @@ import com.google.common.collect.ImmutableList;
 
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
+import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.ChunkDataListener;
+import ru.windcorp.progressia.common.world.ChunkDataListeners;
 import ru.windcorp.progressia.server.Server;
 
 /**
@@ -28,7 +33,7 @@ public class TickerCoordinator {
 	private final Server server;
 	
 	// Synchronized manually
-	private final Collection<Change> pendingChanges = new ArrayList<>(INITIAL_QUEUE_SIZE);
+	private final Collection<Change> pendingChanges = new HashSet<>(INITIAL_QUEUE_SIZE);
 	// Synchronized manually
 	private final Collection<Evaluation> pendingEvaluations = new ArrayList<>(INITIAL_QUEUE_SIZE);
 	
@@ -49,6 +54,8 @@ public class TickerCoordinator {
 	
 	private final AtomicInteger workingTickers = new AtomicInteger();
 	
+	private final AtomicBoolean canChange = new AtomicBoolean(true);
+	
 	private boolean isTickStartSet = false;
 	private long tickStart = -1;
 	private double tickLength = 1.0 / 20; // Do something about it
@@ -66,6 +73,15 @@ public class TickerCoordinator {
 		
 		this.tickers = ImmutableList.copyOf(tickerCollection);
 		this.threads = Collections2.transform(this.tickers, Ticker::getThread); // Immutable because it is a view
+		
+		server.getWorld().getData().addListener(ChunkDataListeners.createAdder(new ChunkDataListener() {
+			@Override
+			public void onChunkChanged(ChunkData chunk) {
+				if (!canChange.get()) {
+					throw CrashReports.report(null, "A change has been detected during evaluation phase");
+				}
+			}
+		}));
 	}
 	
 	/*
@@ -157,7 +173,9 @@ public class TickerCoordinator {
 	}
 	
 	private synchronized void runOnePass() throws InterruptedException {
+		canChange.set(false);
 		runPassStage(pendingEvaluations, "EVALUATION");
+		canChange.set(true);
 		runPassStage(pendingChanges, "CHANGE");
 	}
 

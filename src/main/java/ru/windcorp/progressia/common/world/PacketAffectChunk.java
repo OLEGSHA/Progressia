@@ -2,9 +2,9 @@ package ru.windcorp.progressia.common.world;
 
 import glm.vec._3.i.Vec3i;
 
-public abstract class PacketChunkChange extends PacketWorldChange {
+public abstract class PacketAffectChunk extends PacketAffectWorld {
 
-	public PacketChunkChange(String id) {
+	public PacketAffectChunk(String id) {
 		super(id);
 	}
 

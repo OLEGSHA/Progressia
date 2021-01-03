@@ -2,9 +2,9 @@ package ru.windcorp.progressia.common.world;
 
 import ru.windcorp.progressia.common.comms.packets.Packet;
 
-public abstract class PacketWorldChange extends Packet {
+public abstract class PacketAffectWorld extends Packet {
 
-	public PacketWorldChange(String id) {
+	public PacketAffectWorld(String id) {
 		super(id);
 	}
 	

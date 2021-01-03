@@ -4,10 +4,10 @@ import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.PacketWorldChange;
+import ru.windcorp.progressia.common.world.PacketAffectWorld;
 import ru.windcorp.progressia.server.Server;
 
-public abstract class CachedWorldChange<P extends PacketWorldChange> extends CachedChange {
+public abstract class CachedWorldChange<P extends PacketAffectWorld> extends CachedChange {
 	
 	private final P packet;
 

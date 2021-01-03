@@ -23,5 +23,17 @@ public abstract class Change extends TickerTask {
 	void run(Server server) {
 		affect(server);
 	}
+	
+	@Override
+	public int hashCode() {
+		// Use instance hash code by default
+		return super.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		// Use instance-based equals() by default
+		return super.equals(obj);
+	}
 
 }

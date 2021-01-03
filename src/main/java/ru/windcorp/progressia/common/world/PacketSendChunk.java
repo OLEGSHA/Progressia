@@ -10,7 +10,7 @@ import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.DataBuffer;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 
-public class PacketSendChunk extends PacketChunkChange {
+public class PacketSendChunk extends PacketAffectChunk {
 	
 	private final DataBuffer data = new DataBuffer();
 	private final Vec3i position = new Vec3i();

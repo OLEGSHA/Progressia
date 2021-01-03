@@ -7,7 +7,7 @@ import ru.windcorp.progressia.common.comms.CommsListener;
 import ru.windcorp.progressia.common.comms.packets.Packet;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.PacketSetLocalPlayer;
-import ru.windcorp.progressia.common.world.PacketWorldChange;
+import ru.windcorp.progressia.common.world.PacketAffectWorld;
 
 // TODO refactor with no mercy
 public class DefaultClientCommsListener implements CommsListener {
@@ -20,8 +20,8 @@ public class DefaultClientCommsListener implements CommsListener {
 
 	@Override
 	public void onPacketReceived(Packet packet) {
-		if (packet instanceof PacketWorldChange) {
-			((PacketWorldChange) packet).apply(
+		if (packet instanceof PacketAffectWorld) {
+			((PacketAffectWorld) packet).apply(
 					getClient().getWorld().getData()
 			);
 		} else if (packet instanceof PacketSetLocalPlayer) {

@@ -22,7 +22,7 @@ public class TickAndUpdateUtil {
 		try {
 			block.tick(context);
 		} catch (Exception e) {
-			throw CrashReports.report(e, "Could not tick block {}", block);
+			throw CrashReports.report(e, "Could not tick block %s", block);
 		}
 	}
 	
@@ -38,7 +38,7 @@ public class TickAndUpdateUtil {
 		try {
 			tile.tick(context);
 		} catch (Exception e) {
-			throw CrashReports.report(e, "Could not tick tile {}", tile);
+			throw CrashReports.report(e, "Could not tick tile %s", tile);
 		}
 	}
 	

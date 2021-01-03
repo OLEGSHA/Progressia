@@ -3,9 +3,9 @@ package ru.windcorp.progressia.server.world.tasks;
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.PacketChunkChange;
+import ru.windcorp.progressia.common.world.PacketAffectChunk;
 
-public abstract class CachedChunkChange<P extends PacketChunkChange> extends CachedWorldChange<P> {
+public abstract class CachedChunkChange<P extends PacketAffectChunk> extends CachedWorldChange<P> {
 
 	public CachedChunkChange(Consumer<? super CachedChange> disposer, P packet) {
 		super(disposer, packet);

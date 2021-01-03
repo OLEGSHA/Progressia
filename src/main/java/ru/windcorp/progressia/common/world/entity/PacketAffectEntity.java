@@ -5,36 +5,38 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import ru.windcorp.progressia.common.world.DecodingException;
+import ru.windcorp.progressia.common.world.PacketAffectWorld;
 import ru.windcorp.progressia.common.world.WorldData;
 
-public class PacketRevokeEntity extends PacketAffectEntity {
+public class PacketAffectEntity extends PacketAffectWorld {
 	
-	public PacketRevokeEntity() {
-		this("Core:RevokeEntity");
-	}
+	private long entityId;
 
-	protected PacketRevokeEntity(String id) {
+	public PacketAffectEntity(String id) {
 		super(id);
 	}
 	
-	@Override
+	public long getEntityId() {
+		return entityId;
+	}
+	
 	public void set(long entityId) {
-		super.set(entityId);
+		this.entityId = entityId;
 	}
 	
 	@Override
 	public void read(DataInput input) throws IOException, DecodingException {
-		super.read(input);
+		this.entityId = input.readLong();
 	}
 	
 	@Override
 	public void write(DataOutput output) throws IOException {
-		super.write(output);
+		output.writeLong(this.entityId);
 	}
 
 	@Override
 	public void apply(WorldData world) {
-		world.removeEntity(getEntityId());
+		world.removeEntity(this.entityId);
 	}
 
 }

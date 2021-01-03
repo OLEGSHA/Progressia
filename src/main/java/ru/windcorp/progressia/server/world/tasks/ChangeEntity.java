@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.common.world.entity.PacketEntityChange;
+import ru.windcorp.progressia.common.world.entity.PacketChangeEntity;
 import ru.windcorp.progressia.server.Server;
 
 class ChangeEntity extends CachedChange {
@@ -12,7 +12,7 @@ class ChangeEntity extends CachedChange {
 	private EntityData entity;
 	private StateChange<?> change;
 
-	private final PacketEntityChange packet = new PacketEntityChange();
+	private final PacketChangeEntity packet = new PacketChangeEntity();
 
 	public ChangeEntity(Consumer<? super CachedChange> disposer) {
 		super(disposer);
@@ -54,6 +54,17 @@ class ChangeEntity extends CachedChange {
 		super.dispose();
 		this.entity = null;
 		this.change = null;
+	}
+	
+	@Override
+	public int hashCode() {
+		return System.identityHashCode(entity);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ChangeEntity)) return false;
+		return ((ChangeEntity) obj).entity == entity;
 	}
 
 }
