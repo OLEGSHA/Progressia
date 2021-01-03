@@ -20,10 +20,10 @@ package ru.windcorp.progressia.client.world;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.graphics.backend.FaceCulling;
@@ -34,6 +34,7 @@ import ru.windcorp.progressia.client.world.entity.EntityRenderable;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
 import ru.windcorp.progressia.common.util.VectorUtil;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListeners;
 import ru.windcorp.progressia.common.world.WorldData;
@@ -128,9 +129,9 @@ implements GenericWorld<
 			if (chunksToUpdate.isEmpty()) return;
 			
 			int updates = updateChunksNearLocalPlayer();
-			int maximumUpdates = getMaximumChunkUpdatesPerFrame();
+			if (updates > 0 || chunksToUpdate.isEmpty()) return;
 			
-			updateRandomChunks(maximumUpdates - updates);
+			updateRandomChunk();
 		}
 	}
 
@@ -152,26 +153,36 @@ implements GenericWorld<
 		return updates[0];
 	}
 	
-	private void updateRandomChunks(int allowedUpdates) {
-		if (allowedUpdates <= 0) return;
+	private void updateRandomChunk() {
+		EntityData entity = getClient().getLocalPlayer().getEntity();
 		
-		for (Iterator<Vec3i> it = chunksToUpdate.iterator(); it.hasNext();) {
-			Vec3i chunkPos = it.next();
+		Vec3 playerPos = entity == null ? Vectors.ZERO_3 : entity.getPosition();
+		
+		ChunkRender nearest = null;
+		float nearestDistSq = Float.POSITIVE_INFINITY;
+		
+		Vec3 v = Vectors.grab3();
+		
+		for (Vec3i chunkPos : chunksToUpdate) {
 			ChunkRender chunk = getChunk(chunkPos);
 			
-			if (chunk != null) {
-				chunk.update();
-				allowedUpdates--;
-			}
-			
-			it.remove();
-			
-			if (allowedUpdates <= 0) return;
-		}
-	}
+			if (chunk == null) continue;
 
-	private int getMaximumChunkUpdatesPerFrame() {
-		return 1;
+			v.set(chunk.getMinX(), chunk.getMinY(), chunk.getMinZ()).sub(playerPos);
+			float distSq = v.x * v.x + v.y * v.y + v.z * v.z;
+			
+			if (nearest == null || distSq < nearestDistSq) {
+				nearest = chunk;
+				nearestDistSq = distSq;
+			} 
+		}
+		
+		if (nearest != null) {
+			nearest.update();
+			chunksToUpdate.remove(nearest.getPosition());
+		}
+		
+		Vectors.release(v);
 	}
 	
 	public int getPendingChunkUpdates() {

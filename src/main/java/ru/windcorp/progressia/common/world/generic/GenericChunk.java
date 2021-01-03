@@ -27,12 +27,36 @@ public interface GenericChunk<
 		return getPosition().x;
 	}
 	
+	default int getMinX() {
+		return Coordinates.getInWorld(getX(), 0);
+	}
+	
+	default int getMaxX() {
+		return Coordinates.getInWorld(getX(), BLOCKS_PER_CHUNK - 1);
+	}
+	
 	default int getY() {
 		return getPosition().y;
 	}
 	
+	default int getMinY() {
+		return Coordinates.getInWorld(getY(), 0);
+	}
+	
+	default int getMaxY() {
+		return Coordinates.getInWorld(getY(), BLOCKS_PER_CHUNK - 1);
+	}
+	
 	default int getZ() {
 		return getPosition().z;
+	}
+	
+	default int getMinZ() {
+		return Coordinates.getInWorld(getZ(), 0);
+	}
+	
+	default int getMaxZ() {
+		return Coordinates.getInWorld(getZ(), BLOCKS_PER_CHUNK - 1);
 	}
 	
 	default boolean containsBiC(Vec3i blockInChunk) {
