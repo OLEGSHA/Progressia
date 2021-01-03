@@ -20,6 +20,7 @@ package ru.windcorp.progressia.client.world;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -142,12 +143,14 @@ implements GenericWorld<
 		int[] updates = new int[] { 0 };
 		
 		VectorUtil.iterateCuboidAround(entity.getChunkCoords(null), 3, chunkPos -> {
-			if (chunksToUpdate.contains(chunkPos)) {
-				getChunk(chunkPos).update();
-				chunksToUpdate.remove(chunkPos);
-				
-				updates[0]++;
-			}
+			if (!chunksToUpdate.contains(chunkPos)) return;
+			
+			ChunkRender chunk = getChunk(chunkPos);
+			if (chunk == null) return;
+			
+			chunk.update();
+			chunksToUpdate.remove(chunkPos);
+			updates[0]++;
 		});
 		
 		return updates[0];
@@ -163,10 +166,14 @@ implements GenericWorld<
 		
 		Vec3 v = Vectors.grab3();
 		
-		for (Vec3i chunkPos : chunksToUpdate) {
+		for (Iterator<Vec3i> it = chunksToUpdate.iterator(); it.hasNext();) {
+			Vec3i chunkPos = it.next();
 			ChunkRender chunk = getChunk(chunkPos);
 			
-			if (chunk == null) continue;
+			if (chunk == null) {
+				it.remove();
+				continue;
+			}
 
 			v.set(chunk.getMinX(), chunk.getMinY(), chunk.getMinZ()).sub(playerPos);
 			float distSq = v.x * v.x + v.y * v.y + v.z * v.z;
@@ -174,7 +181,7 @@ implements GenericWorld<
 			if (nearest == null || distSq < nearestDistSq) {
 				nearest = chunk;
 				nearestDistSq = distSq;
-			} 
+			}
 		}
 		
 		if (nearest != null) {

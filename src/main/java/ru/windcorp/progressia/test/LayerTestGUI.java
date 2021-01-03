@@ -164,7 +164,11 @@ public class LayerTestGUI extends GUILayer {
 		if (client == null) return "Pos: n/a";
 		
 		Vec3 pos = client.getCamera().getLastAnchorPosition();
-		return String.format(Locale.US, "Pos: %+7.1f %+7.1f %+7.1f", pos.x, pos.y, pos.z);
+		if (Float.isNaN(pos.x)) {
+			return "Pos: entity n/a";
+		} else {
+			return String.format(Locale.US, "Pos: %+7.1f %+7.1f %+7.1f", pos.x, pos.y, pos.z);
+		}
 	}
 	
 //	private static class DebugComponent extends Component {
