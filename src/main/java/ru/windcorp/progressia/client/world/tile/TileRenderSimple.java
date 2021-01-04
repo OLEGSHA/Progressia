@@ -14,10 +14,16 @@ import ru.windcorp.progressia.common.world.block.BlockFace;
 public class TileRenderSimple extends TileRender implements OpaqueTile {
 	
 	private final Texture texture;
+	private final boolean opaque;
 	
-	public TileRenderSimple(String id, Texture texture) {
+	public TileRenderSimple(String id, Texture texture, boolean opaque) {
 		super(id);
 		this.texture = texture;
+		this.opaque = opaque;
+	}
+	
+	public TileRenderSimple(String id, Texture texture) {
+		this(id, texture, false);
 	}
 
 	@Override
@@ -27,7 +33,7 @@ public class TileRenderSimple extends TileRender implements OpaqueTile {
 	
 	@Override
 	public boolean isOpaque(BlockFace face) {
-		return false;
+		return opaque;
 	}
 	
 	@Override

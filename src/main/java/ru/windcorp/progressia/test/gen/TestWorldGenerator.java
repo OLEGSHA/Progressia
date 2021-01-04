@@ -64,10 +64,18 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		chunk.setGenerationHint(false);
 		
 		final int bpc = ChunkData.BLOCKS_PER_CHUNK;
+		Random random = new Random(chunkPos.x + chunkPos.y + chunkPos.z);
 		
 		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
 		BlockData stone = BlockDataRegistry.getInstance().get("Test:Stone");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
+		
+		BlockData[] granites = new BlockData[] {
+				BlockDataRegistry.getInstance().get("Test:GraniteGravel"),
+				BlockDataRegistry.getInstance().get("Test:GraniteGravel"),
+				BlockDataRegistry.getInstance().get("Test:GraniteCracked"),
+				BlockDataRegistry.getInstance().get("Test:GraniteMonolith")
+		};
 		
 		double[][] heightMap = new double[bpc][bpc];
 		double[][] gradMap = new double[bpc][bpc];
@@ -84,8 +92,9 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 			if (layer < -4) {
 				chunk.setBlock(pos, stone, false);
 			} else if (layer < 0) {
-				if (gradMap[pos.x][pos.y] > 0.3) {
-					chunk.setBlock(pos, stone, false);
+				if (gradMap[pos.x][pos.y] > 0.5) {
+					BlockData granite = granites[random.nextInt(4)];
+					chunk.setBlock(pos, granite, false);
 				} else {
 					chunk.setBlock(pos, dirt, false);
 				}
@@ -145,12 +154,18 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		
 		Vec3i biw = new Vec3i();
 		
-		int minX = Coordinates.getInWorld(chunkPos.x, 0);
-		int maxX = Coordinates.getInWorld(chunkPos.x + 1, 0);
-		int minY = Coordinates.getInWorld(chunkPos.y, 0);
-		int maxY = Coordinates.getInWorld(chunkPos.y + 1, 0);
-		int minZ = Coordinates.getInWorld(chunkPos.z, 0);
-		int maxZ = Coordinates.getInWorld(chunkPos.z + 1, 0);
+		int minX = chunk.getMinX();
+		int maxX = chunk.getMaxX() + 1;
+		int minY = chunk.getMinY();
+		int maxY = chunk.getMaxY() + 1;
+		int minZ = chunk.getMinZ();
+		int maxZ = chunk.getMaxZ() + 1;
+
+		final int bpc = ChunkData.BLOCKS_PER_CHUNK;
+		double[][] heightMap = new double[bpc][bpc];
+		double[][] gradMap = new double[bpc][bpc];
+		
+		terrainGen.compute(minX, minY, heightMap, gradMap);
 		
 		for (biw.x = minX; biw.x < maxX; ++biw.x) {
 			for (biw.y = minY; biw.y < maxY; ++biw.y) {
@@ -161,7 +176,10 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 				if (biw.z == maxZ) continue;
 				if (biw.z < minZ) continue;
 				
-				addTiles(chunk, biw, world, random, world.getBlock(biw) == dirt);
+				int xic = Coordinates.convertInWorldToInChunk(biw.x);
+				int yic = Coordinates.convertInWorldToInChunk(biw.y);
+				
+				addTiles(chunk, biw, world, random, world.getBlock(biw) == dirt, heightMap[xic][yic], gradMap[xic][yic]);
 				
 			}
 		}
@@ -169,9 +187,10 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		chunk.setGenerationHint(true);
 	}
 	
-	private void addTiles(ChunkData chunk, Vec3i biw, WorldData world, Random random, boolean isDirt) {
+	private void addTiles(ChunkData chunk, Vec3i biw, WorldData world, Random random, boolean isDirt, double height, double grad) {
 		if (isDirt) addGrass(chunk, biw, world, random);
 		addDecor(chunk, biw, world, random, isDirt);
+		addSnow(chunk, biw, world, random, isDirt, height + 1000, grad);
 	}
 
 	private void addGrass(ChunkData chunk, Vec3i biw, WorldData world, Random random) {
@@ -219,6 +238,96 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 				);
 			}
 		}
+	}
+
+	private void addSnow(
+			ChunkData chunk, Vec3i biw, WorldData world,
+			Random random,
+			boolean isDirt, double height, double grad
+	) {
+		if (height < 1500) return;
+
+		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
+
+		double quarterChance = computeSnowQuarterChance(height, grad);
+		double halfChance = computeSnowHalfChance(height, grad);
+		double opaqueChance = computeSnowOpaqueChance(height, grad);
+		
+		for (BlockFace face : BlockFace.getFaces()) {
+			if (face == BlockFace.BOTTOM) continue;
+			
+			if (face.getVector().z == 0) {
+				biw.add(face.getVector());
+				BlockData neighbour = world.getBlock(biw);
+				biw.sub(face.getVector());
+				
+				if (neighbour != air) continue;
+			}
+			
+			TileData tile;
+			
+			double maxValue = height > 3000 ? 3 : (1 + 2 * ((height - 1500) / 1500));
+			double value = random.nextDouble() * maxValue;
+			if (value < quarterChance) {
+				tile = TileDataRegistry.getInstance().get("Test:SnowQuarter");
+			} else if ((value -= quarterChance) < halfChance) {
+				tile = TileDataRegistry.getInstance().get("Test:SnowHalf");
+			} else if ((value -= halfChance) < opaqueChance) {
+				tile = TileDataRegistry.getInstance().get("Test:SnowOpaque");
+			} else {
+				tile = null;
+			}
+			
+			if (tile != null) {
+				world.getTiles(biw, face).addFarthest(tile);
+			}
+		}
+	}
+	
+	private double computeSnowQuarterChance(double height, double grad) {
+		double heightCoeff;
+		
+		if (height < 1500) heightCoeff = 0;
+		else if (height < 2000) heightCoeff = (height - 1500) / 500;
+		else heightCoeff = 1;
+		
+		if (heightCoeff < 1e-4) return 0;
+		
+		double gradCoeff = computeSnowGradCoeff(height, grad);
+		return heightCoeff * gradCoeff;
+	}
+
+	private double computeSnowHalfChance(double height, double grad) {
+		double heightCoeff;
+		
+		if (height < 2000) heightCoeff = 0;
+		else if (height < 2500) heightCoeff = (height - 2000) / 500;
+		else heightCoeff = 1;
+		
+		if (heightCoeff < 1e-4) return 0;
+		
+		double gradCoeff = computeSnowGradCoeff(height, grad);
+		return heightCoeff * gradCoeff;
+	}
+
+	private double computeSnowOpaqueChance(double height, double grad) {
+		double heightCoeff;
+		
+		if (height < 2500) heightCoeff = 0;
+		else if (height < 3000) heightCoeff = (height - 2500) / 500;
+		else heightCoeff = 1;
+		
+		if (heightCoeff < 1e-4) return 0;
+		
+		double gradCoeff = computeSnowGradCoeff(height, grad);
+		return heightCoeff * gradCoeff;
+	}
+
+	private double computeSnowGradCoeff(double height, double grad) {
+		final double a = -0.00466666666666667;
+		final double b = 12.66666666666667;
+		double characteristicGrad = 1 / (a * height + b);
+		return Math.exp(-grad / characteristicGrad);
 	}
 
 }

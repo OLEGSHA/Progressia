@@ -68,6 +68,14 @@ public class TestContent {
 		register(new BlockRenderOpaqueCube("Test:Stone", getBlockTexture("stone")));
 		register(new BlockLogic("Test:Stone"));
 
+		for (String type : new String[] {"Monolith", "Cracked", "Gravel"}) {
+			String id = "Test:Granite" + type;
+			
+			register(new BlockData(id));
+			register(new BlockRenderOpaqueCube(id, getBlockTexture("granite_" + type.toLowerCase())));
+			register(new BlockLogic(id));
+		}
+
 		register(new BlockData("Test:Compass"));
 		register(new BlockRenderOpaqueCube("Test:Compass", getBlockTexture("compass")));
 		register(new BlockLogic("Test:Compass"));
@@ -93,6 +101,18 @@ public class TestContent {
 		register(new TileData("Test:Sand"));
 		register(new TileRenderSimple("Test:Sand", getTileTexture("sand")));
 		register(new HangingTileLogic("Test:Sand"));
+		
+		register(new TileData("Test:SnowOpaque"));
+		register(new TileRenderSimple("Test:SnowOpaque", getTileTexture("snow_opaque"), true));
+		register(new HangingTileLogic("Test:SnowOpaque"));
+		
+		register(new TileData("Test:SnowHalf"));
+		register(new TileRenderSimple("Test:SnowHalf", getTileTexture("snow_half")));
+		register(new HangingTileLogic("Test:SnowHalf"));
+		
+		register(new TileData("Test:SnowQuarter"));
+		register(new TileRenderSimple("Test:SnowQuarter", getTileTexture("snow_quarter")));
+		register(new HangingTileLogic("Test:SnowQuarter"));
 	}
 
 	private static void registerEntities() {

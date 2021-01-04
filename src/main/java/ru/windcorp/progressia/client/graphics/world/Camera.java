@@ -118,7 +118,7 @@ public class Camera {
 		Glm.perspective(
 				computeFovY(),
 				GraphicsInterface.getAspectRatio(),
-				0.01f, 10000.0f,
+				0.01f, 150.0f,
 				helper.pushViewTransform()
 		).mul(previous);
 	}
