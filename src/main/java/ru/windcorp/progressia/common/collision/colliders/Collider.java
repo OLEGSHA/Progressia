@@ -30,7 +30,7 @@ public class Collider {
 	 * Your faithful student,<br />
 	 * Kostyl.
 	 */
-	private static final float TIME_STEP_COEFFICIENT_FOR_CURRENTLY_COLLIDING_BODIES = 1e-1f; 
+	private static final float TIME_STEP_COEFFICIENT_FOR_CURRENTLY_COLLIDING_BODIES = 1f/*1e-1f*/;
 	
 	public static void performCollisions(
 			List<? extends Collideable> colls,
@@ -291,6 +291,8 @@ public class Collider {
 		collision.a.changeVelocityOnCollision(du_a);
 		collision.b.changeVelocityOnCollision(du_b);
 		
+		separate(collision, n, m_a, m_b);
+		
 		// JGML is still to fuck
 		Vectors.release(n);
 		Vectors.release(v_a);
@@ -300,6 +302,23 @@ public class Collider {
 		Vectors.release(u_bt);
 		Vectors.release(du_a);
 		Vectors.release(du_b);
+	}
+	
+	private static void separate(
+			Collision collision,
+			Vec3 normal, float aRelativeMass, float bRelativeMass
+	) {
+		final float margin = 1e-4f;
+
+		Vec3 displacement = Vectors.grab3();
+
+		displacement.set(normal).mul(margin).mul(bRelativeMass);
+		collision.a.moveAsCollideable(displacement);
+
+		displacement.set(normal).mul(margin).mul(aRelativeMass).negate();
+		collision.b.moveAsCollideable(displacement);
+
+		Vectors.release(displacement);
 	}
 
 	private static void advanceTime(
