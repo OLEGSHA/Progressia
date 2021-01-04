@@ -22,7 +22,6 @@ import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.io.ChunkIO;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
-import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
 import ru.windcorp.progressia.common.world.tile.*;
@@ -75,14 +74,6 @@ public class TestContent {
 			register(new BlockRenderOpaqueCube(id, getBlockTexture("granite_" + type.toLowerCase())));
 			register(new BlockLogic(id));
 		}
-
-		register(new BlockData("Test:Compass"));
-		register(new BlockRenderOpaqueCube("Test:Compass", getBlockTexture("compass")));
-		register(new BlockLogic("Test:Compass"));
-		
-		register(new BlockData("Test:Glass"));
-		register(new BlockRenderTransparentCube("Test:Glass", getBlockTexture("glass_clear")));
-		register(new BlockLogic("Test:Glass"));
 	}
 
 	private static void registerTiles() {
@@ -130,27 +121,6 @@ public class TestContent {
 		ControlDataRegistry data = ControlDataRegistry.getInstance();
 		ControlTriggerRegistry triggers = ControlTriggerRegistry.getInstance();
 		ControlLogicRegistry logic = ControlLogicRegistry.getInstance();
-		
-		data.register("Test:Switch000", ControlData::new);
-		triggers.register(ControlTriggers.of(
-				"Test:Switch000",
-				KeyEvent.class,
-				KeyMatcher.of(GLFW.GLFW_KEY_H).matcher()
-		));
-		logic.register(ControlLogic.of("Test:Switch000", (server, packet, client) -> {
-			Vec3i z000 = new Vec3i(0, 0, 0);
-			
-			ChunkData chunk = server.getWorld().getChunk(z000).getData();
-			
-			BlockData block;
-			if (chunk.getBlock(z000).getId().equals("Test:Stone")) {
-				block = BlockDataRegistry.getInstance().get("Test:Glass");
-			} else {
-				block = BlockDataRegistry.getInstance().get("Test:Stone");
-			}
-			
-			server.getWorldAccessor().setBlock(z000, block);
-		}));
 		
 		data.register("Test:BreakBlock", ControlBreakBlockData::new);
 		triggers.register(ControlTriggers.of(
