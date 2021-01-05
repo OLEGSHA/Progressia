@@ -8,10 +8,12 @@ import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._2.i.Vec2i;
 import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import gnu.trove.map.TCharObjectMap;
 import gnu.trove.map.hash.TCharObjectHashMap;
 import gnu.trove.stack.TIntStack;
 import gnu.trove.stack.array.TIntArrayStack;
+import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.model.Face;
 import ru.windcorp.progressia.client.graphics.model.Faces;
@@ -115,7 +117,7 @@ public abstract class SpriteTypeface extends Typeface {
 		return output.set(resultWidth, height);
 	}
 
-	private Shape createCharShape(char c, Vec3 color) {
+	private Shape createCharShape(char c, Vec4 color) {
 		return new Shape(
 				Usage.STATIC, getProgram(),
 				Faces.createRectangle(
@@ -130,25 +132,16 @@ public abstract class SpriteTypeface extends Typeface {
 		);
 	}
 	
-	// TODO remove
-	private static Vec3 createVectorFromRGBInt(int rgb) {
-		int r = (rgb & 0xFF0000) >> 16;
-		int g = (rgb & 0x00FF00) >> 8;
-		int b = (rgb & 0x0000FF);
-		
-		return new Vec3(r / 256f, g / 256f, b / 256f);
-	}
-	
 	private class DynamicText implements Renderable, Drawer {
 		
 		private final Supplier<CharSequence> supplier;
 		private final int style;
 		private final float align;
 		private final float maxWidth;
-		private final Vec3 color;
+		private final Vec4 color;
 		
 		private final Renderable unitLine = new Shape(Usage.STATIC, getProgram(), Faces.createRectangle(
-				getProgram(), null, Vectors.UNIT_3, Vectors.ZERO_3, new Vec3(1, 0, 0), new Vec3(0, 1, 0), false
+				getProgram(), null, Vectors.UNIT_4, Vectors.ZERO_3, new Vec3(1, 0, 0), new Vec3(0, 1, 0), false
 		));
 		
 		private class DynamicWorkspace extends Workspace {
@@ -165,7 +158,7 @@ public abstract class SpriteTypeface extends Typeface {
 
 		public DynamicText(
 				Supplier<CharSequence> supplier,
-				int style, float align, float maxWidth, Vec3 color
+				int style, float align, float maxWidth, Vec4 color
 		) {
 			this.supplier = supplier;
 			this.style = style;
@@ -200,14 +193,14 @@ public abstract class SpriteTypeface extends Typeface {
 		 */
 		
 		@Override
-		public void drawChar(char c, Vec3 color, Mat4 transform) {
+		public void drawChar(char c, Vec4 color, Mat4 transform) {
 			workspace.renderer.pushTransform().mul(transform);
 			getShape(c).render(workspace.renderer);
 			workspace.renderer.popTransform();
 		}
 		
 		@Override
-		public void drawRectangle(Vec2 size, Vec3 color, Mat4 transform) {
+		public void drawRectangle(Vec2 size, Vec4 color, Mat4 transform) {
 			workspace.renderer.pushTransform().mul(transform).scale(size.x, size.y, 1);
 			unitLine.render(workspace.renderer);
 			workspace.renderer.popTransform();
@@ -234,7 +227,7 @@ public abstract class SpriteTypeface extends Typeface {
 		public final SDWorkspace workspace = new SDWorkspace();
 
 		@Override
-		public void drawChar(char c, Vec3 color, Mat4 transform) {
+		public void drawChar(char c, Vec4 color, Mat4 transform) {
 			workspace.origin.set(0, 0, 0);
 			workspace.width.set(getWidth(c), 0, 0);
 			workspace.height.set(0, getHeight(), 0);
@@ -243,7 +236,7 @@ public abstract class SpriteTypeface extends Typeface {
 		}
 
 		@Override
-		public void drawRectangle(Vec2 size, Vec3 color, Mat4 transform) {
+		public void drawRectangle(Vec2 size, Vec4 color, Mat4 transform) {
 			workspace.origin.set(0, 0, 0);
 			workspace.width.set(size.x, 0, 0);
 			workspace.height.set(0, size.y, 0);
@@ -251,7 +244,7 @@ public abstract class SpriteTypeface extends Typeface {
 			drawFace(null, color, transform);
 		}
 		
-		private void drawFace(Texture texture, Vec3 color, Mat4 transform) {
+		private void drawFace(Texture texture, Vec4 color, Mat4 transform) {
 			
 			workspace.width.add(workspace.origin);
 			workspace.height.add(workspace.origin);
@@ -281,15 +274,15 @@ public abstract class SpriteTypeface extends Typeface {
 	}
 	
 	@Override
-	public Renderable assemble(CharSequence chars, int style, float align, float maxWidth, int color) {
+	public Renderable assembleStatic(CharSequence text, int style, float align, float maxWidth, Vec4 color) {
 		StaticDrawer drawer = new StaticDrawer();
-		draw(chars, drawer, drawer.workspace, style, align, maxWidth, createVectorFromRGBInt(color));
+		draw(text, drawer, drawer.workspace, style, align, maxWidth, color);
 		return drawer.assemble();
 	}
 	
 	@Override
-	public Renderable assembleDynamic(Supplier<CharSequence> supplier, int style, float align, float maxWidth, int color) {
-		return new DynamicText(supplier, style, align, maxWidth, createVectorFromRGBInt(color));
+	public Renderable assembleDynamic(Supplier<CharSequence> supplier, int style, float align, float maxWidth, Vec4 color) {
+		return new DynamicText(supplier, style, align, maxWidth, color);
 	}
 	
 	/*
@@ -309,7 +302,7 @@ public abstract class SpriteTypeface extends Typeface {
 		private float maxWidth;
 		
 		private final TIntStack styles = new TIntArrayStack(16);
-		private final StashingStack<Vec3> colors = new StashingStack<>(16, Vec3::new);
+		private final StashingStack<Vec4> colors = new StashingStack<>(16, Vec4::new);
 		
 		private final Vec2 pos = new Vec2();
 		
@@ -332,10 +325,10 @@ public abstract class SpriteTypeface extends Typeface {
 			return current;
 		}
 		
-		private Vec3 pushColor() {
+		private Vec4 pushColor() {
 			if (colors.isEmpty()) return colors.push();
 			
-			Vec3 previous = colors.peek();
+			Vec4 previous = colors.peek();
 			return colors.push().set(previous);
 		}
 		
@@ -371,13 +364,13 @@ public abstract class SpriteTypeface extends Typeface {
 	}
 	
 	protected interface Drawer {
-		void drawChar(char c, Vec3 color, Mat4 transform);
-		void drawRectangle(Vec2 size, Vec3 color, Mat4 transform);
+		void drawChar(char c, Vec4 color, Mat4 transform);
+		void drawRectangle(Vec2 size, Vec4 color, Mat4 transform);
 	}
 	
 	protected void draw(
 			CharSequence text, Drawer drawer, Workspace workspace,
-			int style, float align, float maxWidth, Vec3 color
+			int style, float align, float maxWidth, Vec4 color
 	) {
 		workspace.text = text;
 		workspace.toIndex = text.length();
@@ -387,7 +380,7 @@ public abstract class SpriteTypeface extends Typeface {
 		getSize(text, style, align, maxWidth, workspace.totalSize);
 		
 		workspace.styles.push(style);
-		workspace.colors.push().set(color.x, color.y, color.z);
+		workspace.colors.push().set(color);
 		
 		drawSpan(drawer, workspace);
 
@@ -447,14 +440,14 @@ public abstract class SpriteTypeface extends Typeface {
 
 			workspace.pushStyle(~Style.SHADOW);
 			
-			workspace.pushColor().mul(getShadowColorMultiplier());
+			drawLine(drawer, workspace); // TODO figure out why placing this line after drawing shadow reverses order of display (should be the opposite)
+			workspace.pos.x = xToRestore;
+			
+			Colors.multiplyRGB(workspace.pushColor(), getShadowColorMultiplier());
 			workspace.pushTransform().translate(getShadowOffset());
 			drawLine(drawer, workspace);
-			workspace.pos.x = xToRestore;
 			workspace.colors.pop();
 			workspace.transforms.pop();
-			
-			drawLine(drawer, workspace);
 			
 			workspace.styles.pop();
 			

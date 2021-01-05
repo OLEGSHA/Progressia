@@ -1,6 +1,7 @@
 package ru.windcorp.progressia.client.world.tile;
 
 import glm.vec._3.Vec3;
+import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.model.Faces;
 import ru.windcorp.progressia.client.graphics.model.Shape;
@@ -42,7 +43,7 @@ public class TileRenderGrass extends TileRender implements OpaqueTile {
 		return new Shape(
 				Usage.STATIC, WorldRenderProgram.getDefault(),
 				Faces.createBlockFace(
-						program, getTexture(face), new Vec3(1, 1, 1),
+						program, getTexture(face), Colors.WHITE,
 						new Vec3(0, 0, 0), face, false
 				)
 		);

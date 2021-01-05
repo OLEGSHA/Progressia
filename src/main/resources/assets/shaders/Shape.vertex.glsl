@@ -2,8 +2,8 @@
 
 attribute vec3 inputPositions;
 
-attribute vec3 inputColorMultiplier;
-varying vec3 varyingColorMultiplier;
+attribute vec4 inputColorMultiplier;
+varying vec4 varyingColorMultiplier;
 
 attribute vec2 inputTextureCoords;
 varying vec2 varyingTextureCoords;

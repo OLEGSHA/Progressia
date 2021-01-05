@@ -2,11 +2,11 @@ package ru.windcorp.progressia.client;
 
 import ru.windcorp.progressia.client.comms.localhost.LocalServerCommsChannel;
 import ru.windcorp.progressia.client.graphics.GUI;
-import ru.windcorp.progressia.client.graphics.flat.LayerTestUI;
 import ru.windcorp.progressia.client.graphics.world.LayerWorld;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.server.ServerState;
 import ru.windcorp.progressia.test.LayerTestGUI;
+import ru.windcorp.progressia.test.LayerTestUI;
 import ru.windcorp.progressia.test.TestContent;
 
 public class ClientState {
@@ -30,8 +30,6 @@ public class ClientState {
 		);
 		
 		Client client = new Client(world, channel);
-		
-//		world.tmp_generate();
 		
 		channel.connect(TestContent.PLAYER_LOGIN);
 		

@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.model.Face;
 import ru.windcorp.progressia.client.graphics.model.Faces;
@@ -69,8 +70,6 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 		final OpaqueTile[] tiles = new OpaqueTile[TILES_PER_FACE];
 		int tileCount = 0;
 	}
-	
-	private static final Vec3 COLOR_MULTIPLIER = new Vec3(1, 1, 1);
 	
 	private final BlockInfo[][][] data = 
 			new BlockInfo[BLOCKS_PER_CHUNK]
@@ -209,7 +208,7 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 		output.accept(Faces.createBlockFace(
 				WorldRenderProgram.getDefault(),
 				texture,
-				COLOR_MULTIPLIER,
+				Colors.WHITE,
 				new Vec3(cursor),
 				face,
 				false

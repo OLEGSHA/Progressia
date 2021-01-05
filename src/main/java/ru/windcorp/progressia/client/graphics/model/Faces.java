@@ -21,6 +21,7 @@ import java.nio.ShortBuffer;
 
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram.VertexBuilder;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.common.world.block.BlockFace;
@@ -32,7 +33,7 @@ public class Faces {
 	public static Face createRectangle(
 			ShapeRenderProgram program,
 			Texture texture,
-			Vec3 colorMultiplier,
+			Vec4 colorMultiplier,
 			Vec3 origin,
 			Vec3 width,
 			Vec3 height,
@@ -76,7 +77,7 @@ public class Faces {
 	public static Face createBlockFace(
 			ShapeRenderProgram program,
 			Texture texture,
-			Vec3 colorMultiplier,
+			Vec4 colorMultiplier,
 			Vec3 blockCenter,
 			BlockFace face,
 			boolean inner

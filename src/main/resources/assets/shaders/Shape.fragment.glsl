@@ -1,6 +1,6 @@
 #version 120
 
-varying vec3 varyingColorMultiplier;
+varying vec4 varyingColorMultiplier;
 varying vec2 varyingTextureCoords;
 
 uniform sampler2D textureSlot;
@@ -16,11 +16,11 @@ void applyTexture() {
 }
 
 void applyColorMultiplier() {
-	gl_FragColor *= vec4(varyingColorMultiplier, 1.0);
+	gl_FragColor *= varyingColorMultiplier;
 }
 
 void applyAlpha() {
-	if (gl_FragColor.w < 0.01) {
+	if (gl_FragColor.w < (1 / 256.0)) {
 		discard;
 	}
 }

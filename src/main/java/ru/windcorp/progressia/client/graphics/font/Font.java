@@ -3,6 +3,7 @@ package ru.windcorp.progressia.client.graphics.font;
 import java.util.function.Supplier;
 
 import glm.vec._2.i.Vec2i;
+import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 
@@ -12,13 +13,17 @@ public class Font {
 	
 	private final int style;
 	private final float align;
-	private final int color;
+	private final Vec4 color;
 	
-	public Font(Typeface typeface, int style, float align, int color) {
+	public Font(Typeface typeface, int style, float align, Vec4 color) {
 		this.typeface = typeface;
 		this.style = style;
 		this.align = align;
 		this.color = color;
+	}
+	
+	public Font(Typeface typeface, int style, float align, int color) {
+		this(typeface, style, align, Colors.toVector(color));
 	}
 	
 	public Font(Typeface typeface) {
@@ -41,14 +46,14 @@ public class Font {
 		return align;
 	}
 	
-	public int getColor() {
+	public Vec4 getColor() {
 		return color;
 	}
 	
 	public Renderable assemble(
 			CharSequence chars, float maxWidth
 	) {
-		return typeface.assemble(chars, style, align, maxWidth, color);
+		return typeface.assembleStatic(chars, style, align, maxWidth, color);
 	}
 	
 	public Renderable assembleDynamic(
@@ -125,6 +130,10 @@ public class Font {
 	
 	public Font withAlign(float align) {
 		return new Font(getTypeface(), getStyle(), align, getColor());
+	}
+	
+	public Font withColor(Vec4 color) {
+		return new Font(getTypeface(), getStyle(), getAlign(), color);
 	}
 	
 	public Font withColor(int color) {

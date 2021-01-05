@@ -46,45 +46,45 @@ public class LayerTestGUI extends GUILayer {
 		Collection<Label> labels = new ArrayList<>();
 		
 		panel.addChild(new Label(
-				"IsFlyingDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				"IsFlyingDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
 				() -> String.format("Flying:         %5s (Space bar x2)", TestPlayerControls.getInstance().isFlying())
 		));
 		
 		panel.addChild(new Label(
-				"IsMouseCapturedDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				"IsMouseCapturedDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
 				() -> String.format("Mouse captured: %5s (esc)", TestPlayerControls.getInstance().isMouseCaptured())
 		));
 		
 		panel.addChild(new Label(
-				"CameraModeDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				"CameraModeDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
 				() -> String.format("Camera mode:    %5d (F5)", ClientState.getInstance().getCamera().getCurrentModeIndex())
 		));
 		
 		panel.addChild(new Label(
-				"GravityModeDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				"GravityModeDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
 				() -> String.format("Gravity:    %9s (G)", TestPlayerControls.getInstance().useMinecraftGravity() ? "Minecraft" : "Realistic")
 		));
 		
 		panel.addChild(new DynamicLabel(
-				"FPSDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				"FPSDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
 				LayerTestGUI::getFPS,
 				128
 		));
 		
 		panel.addChild(new DynamicLabel(
-				"TPSDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				"TPSDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
 				LayerTestGUI::getTPS,
 				128
 		));
 		
 		panel.addChild(new DynamicLabel(
-				"ChunkUpdatesDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				"ChunkUpdatesDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
 				() -> "Pending updates: " + Integer.toString(ClientState.getInstance().getWorld().getPendingChunkUpdates()),
 				128
 		));
 		
 		panel.addChild(new DynamicLabel(
-				"PosDisplay", new Font().withColor(0x37A3E6).deriveShadow(),
+				"PosDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
 				LayerTestGUI::getPos,
 				128
 		));

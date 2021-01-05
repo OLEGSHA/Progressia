@@ -15,16 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package ru.windcorp.progressia.client.graphics.flat;
+package ru.windcorp.progressia.test;
 
 import org.lwjgl.glfw.GLFW;
 
 import com.google.common.eventbus.Subscribe;
 
 import glm.mat._4.Mat4;
+import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
+import ru.windcorp.progressia.client.graphics.flat.AssembledFlatLayer;
+import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.model.LambdaModel;
@@ -48,9 +51,9 @@ public class LayerTestUI extends AssembledFlatLayer {
 
 	@Override
 	protected void assemble(RenderTarget target) {
-		final int boxColor = flag ? 0xEE8888 : 0xEEEE88;
-		final int borderColor = flag ? 0xAA4444 : 0xAAAA44;
-		final int boxShadowColor = flag ? 0x440000 : 0x444400;
+		final int boxColor = flag ? 0xFFEE8888 : 0xFFEEEE88;
+		final int borderColor = flag ? 0xFFAA4444 : 0xFFAAAA44;
+		final int boxShadowColor = flag ? 0xFF440000 : 0xFF444400;
 		
 		int x = (getWidth() - WIDTH) / 2;
 		int y = 2*BORDER;
@@ -73,7 +76,7 @@ public class LayerTestUI extends AssembledFlatLayer {
 		
 		target.addCustomRenderer(new LambdaModel(LambdaModel.lambdaBuilder()
 				.addDynamicPart(
-						target.createRectagle(0, 0, texSize, texSize, 0xFFFFFF, compassFg),
+						target.createRectagle(0, 0, texSize, texSize, Colors.WHITE, compassFg),
 						mat ->
 								mat.translate(texSize/2, texSize/2, 0)
 								.rotateZ(getCompassRotation())
@@ -101,8 +104,8 @@ public class LayerTestUI extends AssembledFlatLayer {
 		final int length = 15;
 		final int thickness = 5;
 		final int borderSize = 1;
-		final int borderColor = Colors.BLACK;
-		final int fillColor = Colors.WHITE;
+		final Vec4 borderColor = Colors.BLACK;
+		final Vec4 fillColor = Colors.WHITE;
 		
 		target.fill(
 				cx - length - thickness / 2,
@@ -139,7 +142,6 @@ public class LayerTestUI extends AssembledFlatLayer {
 	
 	@Override
 	protected void handleInput(Input input) {
-		// TODO Auto-generated method stub
 		
 	}
 

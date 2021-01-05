@@ -3,6 +3,7 @@ package ru.windcorp.progressia.client.graphics.font;
 import java.util.function.Supplier;
 
 import glm.vec._2.i.Vec2i;
+import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.common.util.Named;
 import ru.windcorp.progressia.common.util.Vectors;
@@ -48,13 +49,15 @@ public abstract class Typeface extends Named {
 		super(name);
 	}
 
-	public abstract Renderable assemble(
-			CharSequence chars, int style,
-			float align, float maxWidth,
-			int color
+	public abstract Renderable assembleStatic(
+			CharSequence chars,
+			int style, float align, float maxWidth, Vec4 color
 	);
 	
-	public abstract Renderable assembleDynamic(Supplier<CharSequence> supplier, int style, float align, float maxWidth, int color);
+	public abstract Renderable assembleDynamic(
+			Supplier<CharSequence> supplier,
+			int style, float align, float maxWidth, Vec4 color
+	);
 
 	public int getWidth(
 			CharSequence chars, int style,

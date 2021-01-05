@@ -17,34 +17,43 @@
  *******************************************************************************/
 package ru.windcorp.progressia.client.graphics;
 
-import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 
 public class Colors {
 	
-	public static final int
-			WHITE         = 0xFFFFFF,
-			BLACK         = 0x000000,
-			
-			GRAY_4        = 0x444444,
-			GRAY          = 0x888888,
-			GRAY_A        = 0xAAAAAA,
-			
-			DEBUG_RED     = 0xFF0000,
-			DEBUG_GREEN   = 0x00FF00,
-			DEBUG_BLUE    = 0x0000FF,
-			
-			DEBUG_CYAN    = 0x00FFFF,
-			DEBUG_MAGENTA = 0xFF00FF,
-			DEBUG_YELLOW  = 0xFFFF00;
+	public static final Vec4
+			WHITE         = toVector(0xFFFFFFFF),
+			BLACK         = toVector(0xFF000000),
+
+			GRAY_4        = toVector(0xFF444444),
+			GRAY          = toVector(0xFF888888),
+			GRAY_A        = toVector(0xFFAAAAAA),
+
+			DEBUG_RED     = toVector(0xFFFF0000),
+			DEBUG_GREEN   = toVector(0xFF00FF00),
+			DEBUG_BLUE    = toVector(0xFF0000FF),
+			DEBUG_CYAN    = toVector(0xFF00FFFF),
+			DEBUG_MAGENTA = toVector(0xFFFF00FF),
+			DEBUG_YELLOW  = toVector(0xFFFFFF00);
 	
-	public static Vec3 toVector(int rgb) {
-		return toVector(rgb, new Vec3());
+	public static Vec4 toVector(int argb) {
+		return toVector(argb, new Vec4());
 	}
 	
-	public static Vec3 toVector(int rgb, Vec3 output) {
-		output.x = ((rgb & 0xFF0000) >> 16) / 256f;
-		output.y = ((rgb & 0x00FF00) >> 8 ) / 256f;
-		output.z = ((rgb & 0x0000FF)      ) / 256f;
+	public static Vec4 multiplyRGB(Vec4 color, float multiplier) {
+		return color.mul(multiplier, multiplier, multiplier, 1);
+	}
+	
+	public static Vec4 multiplyRGB(Vec4 color, float multiplier, Vec4 output) {
+		if (output == null) output = new Vec4();
+		return color.mul(multiplier, multiplier, multiplier, 1, output);
+	}
+	
+	public static Vec4 toVector(int argb, Vec4 output) {
+		output.w = ((argb & 0xFF000000) >>> 24) / 256f; // Alpha
+		output.x = ((argb & 0x00FF0000) >>> 16) / 256f; // Red
+		output.y = ((argb & 0x0000FF00) >>>  8) / 256f; // Green
+		output.z = ((argb & 0x000000FF)       ) / 256f; // Blue
 		
 		return output;
 	}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import glm.vec._3.Vec3;
+import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.model.Face;
@@ -99,11 +100,9 @@ public class TestEntityRenderJavapony extends EntityRender {
 		WorldRenderProgram program = WorldRenderProgram.getDefault();
 		List<Face> faces = new ArrayList<>();
 		
-		final Vec3 color = new Vec3(1, 1, 1);
-		
 		// F BODY
 		faces.add(Faces.createRectangle(
-				program, texture.get(80, 16, 32, 32), color,
+				program, texture.get(80, 16, 32, 32), Colors.WHITE,
 				new Vec3(+16, -16, -16),
 				new Vec3(0, +32, 0), new Vec3(0, 0, +32),
 				false
@@ -111,7 +110,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// NECK BASE
 		faces.add(Faces.createRectangle(
-				program, texture.get(80, 48, 32, 16), color,
+				program, texture.get(80, 48, 32, 16), Colors.WHITE,
 				new Vec3(+16, -16, +16),
 				new Vec3(0, +32, 0), new Vec3(-16, 0, 0),
 				false
@@ -119,7 +118,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// T BODY (BACK)
 		faces.add(Faces.createRectangle(
-				program, texture.get(128, 0, 32, 48), color,
+				program, texture.get(128, 0, 32, 48), Colors.WHITE,
 				new Vec3(0, -16, +16),
 				new Vec3(0, +32, 0), new Vec3(-48, 0, 0),
 				false
@@ -127,7 +126,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// BOTTOM B (upper)
 		faces.add(Faces.createRectangle(
-				program, texture.get(144, 48, 32, 16), color,
+				program, texture.get(144, 48, 32, 16), Colors.WHITE,
 				new Vec3(-48, -16, 0),
 				new Vec3(0, 32, 0), new Vec3(0, 0, 16),
 				true
@@ -135,7 +134,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// BOTTOM B (lower)
 		faces.add(Faces.createRectangle(
-				program, texture.get(144, 48, 32, 16), color,
+				program, texture.get(144, 48, 32, 16), Colors.WHITE,
 				new Vec3(-48, -16, -16),
 				new Vec3(0, 32, 0), new Vec3(0, 0, 16),
 				true
@@ -143,7 +142,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// BOTTOM B (stomach)
 		faces.add(Faces.createRectangle(
-				program, texture.get(144, 48, 32, 16), color,
+				program, texture.get(144, 48, 32, 16), Colors.WHITE,
 				new Vec3(-48, -16, -16),
 				new Vec3(0, 32, 0), new Vec3(16, 0, 0),
 				false
@@ -151,7 +150,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// STOMACH
 		faces.add(Faces.createRectangle(
-				program, texture.get(224, 96, 32, 32), color,
+				program, texture.get(224, 96, 32, 32), Colors.WHITE,
 				new Vec3(-32, -16, -16),
 				new Vec3(0, 32, 0), new Vec3(32, 0, 0),
 				false
@@ -159,7 +158,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// BOTTOM F
 		faces.add(Faces.createRectangle(
-				program, texture.get(112, 48, 32, 16), color,
+				program, texture.get(112, 48, 32, 16), Colors.WHITE,
 				new Vec3(+16, -16, -16),
 				new Vec3(0, 32, 0), new Vec3(-16, 0, 0),
 				true
@@ -167,7 +166,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// BODY L
 		faces.add(Faces.createRectangle(
-				program, texture.get(112, 16, 16, 32), color,
+				program, texture.get(112, 16, 16, 32), Colors.WHITE,
 				new Vec3(+16, +16, -16),
 				new Vec3(-16, 0, 0), new Vec3(0, 0, +32),
 				false
@@ -175,7 +174,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// BODY SIDES (left)
 		faces.add(Faces.createRectangle(
-				program, texture.get(96, 96, 32, 32), color,
+				program, texture.get(96, 96, 32, 32), Colors.WHITE,
 				new Vec3(0, +16, -16),
 				new Vec3(-32, 0, 0), new Vec3(0, 0, +32),
 				false
@@ -183,7 +182,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// QT MARK (left)
 		faces.add(Faces.createRectangle(
-				program, texture.get(16, 96, 16, 32), color,
+				program, texture.get(16, 96, 16, 32), Colors.WHITE,
 				new Vec3(-32, +16, -16),
 				new Vec3(-16, 0, 0), new Vec3(0, 0, +32),
 				false
@@ -191,7 +190,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// BODY R
 		faces.add(Faces.createRectangle(
-				program, texture.get(64, 16, 16, 32), color,
+				program, texture.get(64, 16, 16, 32), Colors.WHITE,
 				new Vec3(0, -16, -16),
 				new Vec3(+16, 0, 0), new Vec3(0, 0, +32),
 				false
@@ -199,7 +198,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// BODY SIDES (right)
 		faces.add(Faces.createRectangle(
-				program, texture.get(96, 96, 32, 32), color,
+				program, texture.get(96, 96, 32, 32), Colors.WHITE,
 				new Vec3(0, -16, -16),
 				new Vec3(-32, 0, 0), new Vec3(0, 0, +32),
 				true
@@ -207,7 +206,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		
 		// QT MARK (right)
 		faces.add(Faces.createRectangle(
-				program, texture.get(16, 96, 16, 32), color,
+				program, texture.get(16, 96, 16, 32), Colors.WHITE,
 				new Vec3(-32, -16, -16),
 				new Vec3(-16, 0, 0), new Vec3(0, 0, +32),
 				true

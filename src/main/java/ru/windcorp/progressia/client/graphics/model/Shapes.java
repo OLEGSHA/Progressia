@@ -20,6 +20,7 @@ package ru.windcorp.progressia.client.graphics.model;
 import java.util.Map;
 
 import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.common.world.block.BlockFace;
@@ -35,7 +36,7 @@ public class Shapes {
 			Vec3 height,
 			Vec3 depth,
 			
-			Vec3 colorMultiplier,
+			Vec4 colorMultiplier,
 			
 			Texture topTexture,
 			Texture bottomTexture,
@@ -120,7 +121,7 @@ public class Shapes {
 		private final Vec3 width  = new Vec3(0, 1, 0);
 		private final Vec3 height = new Vec3(0, 0, 1);
 		
-		private final Vec3 colorMultiplier = new Vec3(1, 1, 1);
+		private final Vec4 colorMultiplier = new Vec4(1, 1, 1, 1);
 		
 		private final Texture topTexture;
 		private final Texture bottomTexture;
@@ -178,13 +179,18 @@ public class Shapes {
 			return this;
 		}
 		
-		public PppBuilder setColorMultiplier(Vec3 colorMultiplier) {
+		public PppBuilder setColorMultiplier(Vec4 colorMultiplier) {
 			this.colorMultiplier.set(colorMultiplier);
 			return this;
 		}
 		
 		public PppBuilder setColorMultiplier(float r, float g, float b) {
-			this.colorMultiplier.set(r, g, b);
+			this.colorMultiplier.set(r, g, b, 1);
+			return this;
+		}
+		
+		public PppBuilder setColorMultiplier(float r, float g, float b, float a) {
+			this.colorMultiplier.set(r, g, b, a);
 			return this;
 		}
 		

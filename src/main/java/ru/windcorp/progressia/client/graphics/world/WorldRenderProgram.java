@@ -28,6 +28,7 @@ import com.google.common.collect.ObjectArrays;
 
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.backend.VertexBufferObject;
 import ru.windcorp.progressia.client.graphics.backend.shaders.attributes.*;
 import ru.windcorp.progressia.client.graphics.backend.shaders.uniforms.*;
@@ -54,7 +55,7 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 	
 	private static final int DEFAULT_BYTES_PER_VERTEX =
 			3 * Float.BYTES + // Position
-			3 * Float.BYTES + // Color multiplier
+			4 * Float.BYTES + // Color multiplier
 			2 * Float.BYTES + // Texture coordinates
 			3 * Float.BYTES;  // Normals
 	
@@ -194,7 +195,7 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 		ByteBuffer vertices = face.getVertices();
 		int offset = vertices.position() + index * getBytesPerVertex() + (
 				3 * Float.BYTES +
-				3 * Float.BYTES +
+				4 * Float.BYTES +
 				2 * Float.BYTES
 		);
 		
@@ -216,10 +217,10 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 		
 		private static class Vertex {
 			final Vec3 position;
-			final Vec3 colorMultiplier;
+			final Vec4 colorMultiplier;
 			final Vec2 textureCoords;
 			
-			Vertex(Vec3 position, Vec3 colorMultiplier, Vec2 textureCoords) {
+			Vertex(Vec3 position, Vec4 colorMultiplier, Vec2 textureCoords) {
 				this.position = position;
 				this.colorMultiplier = colorMultiplier;
 				this.textureCoords = textureCoords;
@@ -236,7 +237,22 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 		) {
 			vertices.add(new Vertex(
 					new Vec3(x, y, z),
-					new Vec3(r, g, b),
+					new Vec4(r, g, b, 1),
+					new Vec2(tx, ty)
+			));
+			
+			return this;
+		}
+		
+		@Override
+		public VertexBuilder addVertex(
+				float x, float y, float z,
+				float r, float g, float b, float a,
+				float tx, float ty
+		) {
+			vertices.add(new Vertex(
+					new Vec3(x, y, z),
+					new Vec4(r, g, b, a),
 					new Vec2(tx, ty)
 			));
 			
@@ -246,12 +262,12 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 		@Override
 		public VertexBuilder addVertex(
 				Vec3 position,
-				Vec3 colorMultiplier,
+				Vec4 colorMultiplier,
 				Vec2 textureCoords
 		) {
 			vertices.add(new Vertex(
 					new Vec3(position),
-					new Vec3(colorMultiplier),
+					new Vec4(colorMultiplier),
 					new Vec2(textureCoords)
 			));
 			
@@ -272,6 +288,7 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 					.putFloat(v.colorMultiplier.x)
 					.putFloat(v.colorMultiplier.y)
 					.putFloat(v.colorMultiplier.z)
+					.putFloat(v.colorMultiplier.w)
 					.putFloat(v.textureCoords.x)
 					.putFloat(v.textureCoords.y)
 					.putFloat(Float.NaN)

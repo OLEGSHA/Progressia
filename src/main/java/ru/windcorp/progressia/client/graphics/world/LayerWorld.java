@@ -23,6 +23,7 @@ import java.util.List;
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
+import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.comms.controls.InputBasedControls;
@@ -157,7 +158,7 @@ public class LayerWorld extends Layer {
 		
 		final float f = 1e-2f;
 		final float scale = 1 - f/2;
-		final Vec3 color = new Vec3(1, 1, 1).mul(0);
+		final Vec4 color = new Vec4(1, 1, 1, 1).mul(0);
 		
 		for (float phi = 0; phi < 2*FloatMathUtils.PI_F; phi += FloatMathUtils.PI_F/2) {
 			Mat4 rot = new Mat4().identity().rotateZ(phi).scale(scale);

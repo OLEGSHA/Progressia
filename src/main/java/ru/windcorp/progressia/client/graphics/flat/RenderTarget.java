@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.model.Face;
@@ -190,11 +191,18 @@ public class RenderTarget {
 	
 	public void drawTexture(
 			int x, int y, int width, int height,
-			int color, Texture texture
+			Vec4 color, Texture texture
 	) {
 		addFaceToCurrentClip(
 				createRectagleFace(x, y, width, height, color, texture)
 		);
+	}
+	
+	public void drawTexture(
+			int x, int y, int width, int height,
+			int color, Texture texture
+	) {
+		drawTexture(x, y, width, height, Colors.toVector(color), texture);
 	}
 	
 	public void drawTexture(
@@ -206,12 +214,19 @@ public class RenderTarget {
 	
 	public void fill(
 			int x, int y, int width, int height,
-			int color
+			Vec4 color
 	) {
 		drawTexture(x, y, width, height, color, null);
 	}
 	
-	public void fill(int color) {
+	public void fill(
+			int x, int y, int width, int height,
+			int color
+	) {
+		fill(x, y, width, height, Colors.toVector(color));
+	}
+	
+	public void fill(Vec4 color) {
 		fill(
 				Integer.MIN_VALUE / 2, Integer.MIN_VALUE / 2,
 				Integer.MAX_VALUE, Integer.MAX_VALUE,
@@ -219,15 +234,19 @@ public class RenderTarget {
 		);
 	}
 	
+	public void fill(int color) {
+		fill(Colors.toVector(color));
+	}
+	
 	public Face createRectagleFace(
-			int x, int y, int width, int height, int color, Texture texture
+			int x, int y, int width, int height, Vec4 color, Texture texture
 	) {
 		float depth = this.depth--;
 		
 		return Faces.createRectangle(
 				FlatRenderProgram.getDefault(),
 				texture,
-				Colors.toVector(color),
+				color,
 				new Vec3(x, y, depth),
 				new Vec3(width, 0, 0),
 				new Vec3(0, height, 0),
@@ -235,13 +254,25 @@ public class RenderTarget {
 		);
 	}
 	
-	public Shape createRectagle(
+	public Face createRectagleFace(
 			int x, int y, int width, int height, int color, Texture texture
+	) {
+		return createRectagleFace(x, y, width, height, Colors.toVector(color), texture);
+	}
+	
+	public Shape createRectagle(
+			int x, int y, int width, int height, Vec4 color, Texture texture
 	) {
 		return new Shape(
 				Usage.STATIC, FlatRenderProgram.getDefault(),
 				createRectagleFace(x, y, width, height, color, texture)
 		);
+	}
+	
+	public Shape createRectagle(
+			int x, int y, int width, int height, int color, Texture texture
+	) {
+		return createRectagle(x, y, width, height, Colors.toVector(color), texture);
 	}
 	
 }
