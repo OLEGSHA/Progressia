@@ -1,5 +1,7 @@
 package ru.windcorp.progressia.client.graphics.font;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.function.Supplier;
 
 import glm.mat._4.Mat4;
@@ -11,6 +13,7 @@ import gnu.trove.map.hash.TCharObjectHashMap;
 import gnu.trove.stack.TIntStack;
 import gnu.trove.stack.array.TIntArrayStack;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
+import ru.windcorp.progressia.client.graphics.model.Face;
 import ru.windcorp.progressia.client.graphics.model.Faces;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
@@ -18,6 +21,7 @@ import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.common.util.StashingStack;
+import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 
 public abstract class SpriteTypeface extends Typeface {
@@ -215,9 +219,72 @@ public abstract class SpriteTypeface extends Typeface {
 	 * Assembly
 	 */
 	
+	private class StaticDrawer implements Drawer {
+		
+		private class SDWorkspace extends SpriteTypeface.Workspace {
+			
+			private final Collection<Face> faces = new ArrayList<>();
+			
+			private final Vec3 origin = new Vec3();
+			private final Vec3 width = new Vec3();
+			private final Vec3 height = new Vec3();
+			
+		}
+		
+		public final SDWorkspace workspace = new SDWorkspace();
+
+		@Override
+		public void drawChar(char c, Vec3 color, Mat4 transform) {
+			workspace.origin.set(0, 0, 0);
+			workspace.width.set(getWidth(c), 0, 0);
+			workspace.height.set(0, getHeight(), 0);
+			
+			drawFace(getTexture(c), color, transform);
+		}
+
+		@Override
+		public void drawRectangle(Vec2 size, Vec3 color, Mat4 transform) {
+			workspace.origin.set(0, 0, 0);
+			workspace.width.set(size.x, 0, 0);
+			workspace.height.set(0, size.y, 0);
+			
+			drawFace(null, color, transform);
+		}
+		
+		private void drawFace(Texture texture, Vec3 color, Mat4 transform) {
+			
+			workspace.width.add(workspace.origin);
+			workspace.height.add(workspace.origin);
+			
+			VectorUtil.applyMat4(workspace.origin, transform);
+			VectorUtil.applyMat4(workspace.width, transform);
+			VectorUtil.applyMat4(workspace.height, transform);
+			
+			workspace.width.sub(workspace.origin);
+			workspace.height.sub(workspace.origin);
+			
+			workspace.faces.add(Faces.createRectangle(
+					getProgram(),
+					texture, color,
+					workspace.origin, workspace.width, workspace.height,
+					false
+			));
+		}
+		
+		public Renderable assemble() {
+			return new Shape(
+					Usage.STATIC, getProgram(),
+					workspace.faces.toArray(new Face[workspace.faces.size()])
+			);
+		}
+		
+	}
+	
 	@Override
 	public Renderable assemble(CharSequence chars, int style, float align, float maxWidth, int color) {
-		return assembleDynamic(() -> chars, style, align, maxWidth, color);
+		StaticDrawer drawer = new StaticDrawer();
+		draw(chars, drawer, drawer.workspace, style, align, maxWidth, createVectorFromRGBInt(color));
+		return drawer.assemble();
 	}
 	
 	@Override
