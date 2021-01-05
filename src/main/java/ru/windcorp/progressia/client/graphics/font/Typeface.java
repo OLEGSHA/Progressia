@@ -4,8 +4,8 @@ import java.util.function.Supplier;
 
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
-import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.util.Named;
+import ru.windcorp.progressia.common.util.Vectors;
 
 public abstract class Typeface extends Named {
 	
@@ -50,59 +50,39 @@ public abstract class Typeface extends Named {
 
 	public abstract Renderable assemble(
 			CharSequence chars, int style,
-			float align, int maxWidth,
+			float align, float maxWidth,
 			int color
 	);
 	
-	// TODO implement styling
-	public abstract Renderable assembleDynamic(Supplier<CharSequence> supplier, int color);
+	public abstract Renderable assembleDynamic(Supplier<CharSequence> supplier, int style, float align, float maxWidth, int color);
 
 	public int getWidth(
 			CharSequence chars, int style,
-			float align, int maxWidth
+			float align, float maxWidth
 	) {
-		return getWidth(getSize(chars, style, align, maxWidth));
+		Vec2i v = Vectors.grab2i();
+		v = getSize(chars, style, align, maxWidth, v);
+		Vectors.release(v);
+		return v.x;
 	}
 	
 	public int getHeight(
 			CharSequence chars, int style,
-			float align, int maxWidth
+			float align, float maxWidth
 	) {
-		return getHeight(getSize(chars, style, align, maxWidth));
+		Vec2i v = Vectors.grab2i();
+		v = getSize(chars, style, align, maxWidth, v);
+		Vectors.release(v);
+		return v.y;
 	}
 	
 	public abstract int getLineHeight();
 	
-	public Vec2i getSize(
+	public abstract Vec2i getSize(
 			CharSequence chars, int style,
-			float align, int maxWidth,
+			float align, float maxWidth,
 			Vec2i result
-	) {
-		if (result == null) {
-			result = new Vec2i();
-		}
-		
-		long packed = getSize(chars, style, align, maxWidth);
-		result.set(getWidth(packed), getHeight(packed));
-		return result;
-	}
-	
-	protected abstract long getSize(
-			CharSequence chars, int style,
-			float align, int maxWidth
 	);
-	
-	protected static long pack(int width, int height) {
-		return CoordinatePacker.pack2IntsIntoLong(width, height);
-	}
-	
-	protected static int getWidth(long packed) {
-		return CoordinatePacker.unpack2IntsFromLong(packed, 0);
-	}
-	
-	protected static int getHeight(long packed) {
-		return CoordinatePacker.unpack2IntsFromLong(packed, 1);
-	}
 	
 	public abstract boolean supports(char c);
 

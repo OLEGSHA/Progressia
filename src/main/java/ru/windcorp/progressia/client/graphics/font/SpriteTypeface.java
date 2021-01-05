@@ -1,22 +1,23 @@
 package ru.windcorp.progressia.client.graphics.font;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import glm.mat._4.Mat4;
+import glm.vec._2.Vec2;
+import glm.vec._2.i.Vec2i;
 import glm.vec._3.Vec3;
 import gnu.trove.map.TCharObjectMap;
 import gnu.trove.map.hash.TCharObjectHashMap;
+import gnu.trove.stack.TIntStack;
+import gnu.trove.stack.array.TIntArrayStack;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
-import ru.windcorp.progressia.client.graphics.model.Face;
 import ru.windcorp.progressia.client.graphics.model.Faces;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
+import ru.windcorp.progressia.common.util.StashingStack;
 import ru.windcorp.progressia.common.util.Vectors;
 
 public abstract class SpriteTypeface extends Typeface {
@@ -65,6 +66,10 @@ public abstract class SpriteTypeface extends Typeface {
 		return getThickness();
 	}
 	
+	public float getDecorativeLineThickness() {
+		return getThickness();
+	}
+	
 	public Vec3 getShadowOffset() {
 		return shadowOffset;
 	}
@@ -76,228 +81,13 @@ public abstract class SpriteTypeface extends Typeface {
 	public abstract ShapeRenderProgram getProgram();
 
 	@Override
-	public Renderable assemble(
+	public Vec2i getSize(
 			CharSequence chars, int style,
-			float align, int maxWidth,
-			int color
+			float align, float maxWidth,
+			Vec2i output
 	) {
-		ArrayList<Face> faces = new ArrayList<>();
+		if (output == null) output = new Vec2i();
 		
-		long packedSize = getSize(chars, style, align, maxWidth);
-		int resultWidth = getWidth(packedSize);
-		int resultHeight = getHeight(packedSize);
-		
-		int currentWidth = Style.isBold(style) ? getThickness() : 0;
-		int y = resultHeight - getHeight();
-		
-		int start = 0;
-		for (int i = 0; i < chars.length(); ++i) {
-			char c = chars.charAt(i);
-			
-			if (c == '\n' || currentWidth + getWidth(c) > maxWidth) {
-				
-				assembleLine(
-						chars.subSequence(start, i),
-						currentWidth, resultWidth, y,
-						faces::add,
-						style, align, color
-				);
-				
-				y -= getHeight() + getInterlineBuffer();
-				
-				currentWidth = Style.isBold(style) ? getThickness() : 0;
-				
-				if (c == '\n') {
-					start = i + 1; // Skip c
-				} else {
-					start = i;     // Don't skip c
-				}
-			}
-			
-			if (c != '\n') {
-				currentWidth += getWidth(c);
-			}
-		}
-		
-		assembleLine(
-				chars.subSequence(start, chars.length()),
-				currentWidth, resultWidth, y,
-				faces::add,
-				style, align, color
-		);
-		
-		return new Shape(
-				Usage.STATIC, getProgram(),
-				faces.toArray(new Face[faces.size()])
-		);
-	}
-	
-	private class FaceSpec {
-		final Texture texture;
-		final Vec3 color;
-		
-		final Vec3 origin;
-		final Vec3 width;
-		final Vec3 height;
-		
-		FaceSpec(
-				Texture texture, Vec3 color,
-				Vec3 origin, Vec3 width, Vec3 height
-		) {
-			this.texture = texture;
-			this.color = new Vec3(color);
-			this.origin = new Vec3(origin);
-			this.width = new Vec3(width);
-			this.height = new Vec3(height);
-		}
-		
-		Face createFace() {
-			return Faces.createRectangle(
-					getProgram(),
-					texture, color, origin, width, height, false
-			);
-		}
-		
-		FaceSpec copy() {
-			return new FaceSpec(texture, color, origin, width, height);
-		}
-	}
-
-	private void assembleLine(
-			CharSequence line,
-			int currentWidth, int resultWidth, int y,
-			Consumer<Face> output,
-			int style, float align, int colorInt
-	) {
-		List<FaceSpec> faces = new ArrayList<>(line.length() * 2 + 2);
-		
-		float startX = getStartX(currentWidth, resultWidth, align);
-		Vec3 color = createVectorFromRGBInt(colorInt);
-		
-		specifyCharacters(line, startX, y, color, faces::add);
-		
-		if (Style.isBold(style)) {
-			specifyBold(faces);
-		}
-		
-		if (Style.isUnderlined(style)) {
-			specifyUnderline(faces::add, startX, y, currentWidth, color);
-		}
-		
-		if (Style.isStrikethru(style)) {
-			specifyStrikethru(faces::add, startX, y, currentWidth, color);
-		}
-		
-		if (Style.isItalic(style)) {
-			specifyItalic(faces, y);
-		}
-		
-		if (Style.hasShadow(style)) {
-			specifyShadow(faces);
-		}
-		
-		faces.stream().map(FaceSpec::createFace).forEach(output);
-	}
-
-	private float getStartX(int currentWidth, int resultWidth, float align) {
-		return align * (resultWidth - currentWidth);
-	}
-
-	private void specifyCharacters(
-			CharSequence line,
-			float startX, float y,
-			Vec3 color,
-			Consumer<FaceSpec> output
-	) {
-		Vec3 caret = new Vec3(startX, y, 0);
-		Vec3 width = new Vec3(0);
-		Vec3 height = new Vec3(0, getHeight(), 0);
-		
-		for (int i = 0; i < line.length(); ++i) {
-			char c = line.charAt(i);
-			
-			Texture texture = getTexture(c);
-			float charWidth = getWidth(c);
-			
-			width.x = charWidth;
-			
-			output.accept(new FaceSpec(texture, color, caret, width, height));
-			
-			caret.x += charWidth;
-		}
-	}
-
-	private void specifyBold(List<FaceSpec> faces) {
-		int size = faces.size();
-		
-		for (int i = 0; i < size; ++i) {
-			FaceSpec copy = faces.get(i).copy();
-			copy.origin.x += getBoldOffset();
-			faces.add(copy);
-		}
-	}
-
-	private void specifyUnderline(
-			Consumer<FaceSpec> output,
-			float startX, int y, int currentWidth,
-			Vec3 color
-	) {
-		output.accept(new FaceSpec(
-				null,
-				color,
-				new Vec3(startX, y, 0),
-				new Vec3(currentWidth, 0, 0),
-				new Vec3(0, getThickness(), 0)
-		));
-	}
-
-	private void specifyStrikethru(
-			Consumer<FaceSpec> output,
-			float startX, int y, int currentWidth,
-			Vec3 color
-	) {
-		float startY = y + (getHeight() - getThickness()) / 2f;
-		
-		output.accept(new FaceSpec(
-				null,
-				color,
-				new Vec3(startX, startY, 0),
-				new Vec3(currentWidth, 0, 0),
-				new Vec3(0, getThickness(), 0)
-		));
-	}
-
-	private void specifyItalic(Collection<FaceSpec> faces, int y) {
-		for (FaceSpec fs : faces) {
-			fs.height.x += getItalicsSlant() * fs.height.y;
-			fs.origin.x += getItalicsSlant() * (fs.origin.y - y);
-		}
-	}
-
-	private void specifyShadow(List<FaceSpec> faces) {
-		int size = faces.size();
-		
-		for (int i = 0; i < size; ++i) {
-			FaceSpec copy = faces.get(i).copy();
-			
-			copy.origin.add(getShadowOffset());
-			copy.origin.z = 1;
-			copy.color.mul(0.5f);
-			
-			faces.add(copy);
-		}
-	}
-	
-	@Override
-	public Renderable assembleDynamic(Supplier<CharSequence> supplier, int color) {
-		return new DynamicText(supplier, createVectorFromRGBInt(color));
-	}
-
-	@Override
-	protected long getSize(
-			CharSequence chars, int style,
-			float align, int maxWidth
-	) {
 		int resultWidth = 0;
 		int currentWidth = Style.isBold(style) ? getThickness() : 0;
 		int height = getHeight();
@@ -318,7 +108,7 @@ public abstract class SpriteTypeface extends Typeface {
 		
 		if (resultWidth < currentWidth) resultWidth = currentWidth;
 		
-		return pack(resultWidth, height);
+		return output.set(resultWidth, height);
 	}
 
 	private Shape createCharShape(char c, Vec3 color) {
@@ -330,7 +120,7 @@ public abstract class SpriteTypeface extends Typeface {
 						color,
 						Vectors.ZERO_3,
 						new Vec3(getWidth(c), 0, 0),
-						new Vec3(0, height, 0),
+						new Vec3(0, getHeight(), 0),
 						false
 				)
 		);
@@ -345,13 +135,38 @@ public abstract class SpriteTypeface extends Typeface {
 		return new Vec3(r / 256f, g / 256f, b / 256f);
 	}
 	
-	private class DynamicText implements Renderable {
+	private class DynamicText implements Renderable, Drawer {
 		
 		private final Supplier<CharSequence> supplier;
+		private final int style;
+		private final float align;
+		private final float maxWidth;
 		private final Vec3 color;
+		
+		private final Renderable unitLine = new Shape(Usage.STATIC, getProgram(), Faces.createRectangle(
+				getProgram(), null, Vectors.UNIT_3, Vectors.ZERO_3, new Vec3(1, 0, 0), new Vec3(0, 1, 0), false
+		));
+		
+		private class DynamicWorkspace extends Workspace {
+			private ShapeRenderHelper renderer;
+			
+			@Override
+			public void reset() {
+				super.reset();
+				renderer = null;
+			}
+		}
+		
+		private final DynamicWorkspace workspace = new DynamicWorkspace();
 
-		public DynamicText(Supplier<CharSequence> supplier, Vec3 color) {
+		public DynamicText(
+				Supplier<CharSequence> supplier,
+				int style, float align, float maxWidth, Vec3 color
+		) {
 			this.supplier = supplier;
+			this.style = style;
+			this.align = align;
+			this.maxWidth = maxWidth;
 			this.color = color;
 		}
 
@@ -359,17 +174,12 @@ public abstract class SpriteTypeface extends Typeface {
 		public void render(ShapeRenderHelper renderer) {
 			CharSequence text = supplier.get();
 			
-			int x = 0;
-			for (int i = 0; i < text.length(); ++i) {
-				char c = text.charAt(i);
-				
-				renderer.pushTransform().translate(x, -getInterlineBuffer(), 0);
-				Shape charShape = getShape(c);
-				charShape.render(renderer);
-				renderer.popTransform();
-				
-				x += getWidth(c);
-			}
+			renderer.pushTransform().translate(0, +getInterlineBuffer(), 0);
+			
+			workspace.renderer = renderer;
+			draw(text, this, workspace, style, align, maxWidth, color);
+			
+			renderer.popTransform();
 		}
 
 		private Shape getShape(char c) {
@@ -380,7 +190,275 @@ public abstract class SpriteTypeface extends Typeface {
 			}
 			return shape;
 		}
+		
+		/*
+		 * Drawer methods
+		 */
+		
+		@Override
+		public void drawChar(char c, Vec3 color, Mat4 transform) {
+			workspace.renderer.pushTransform().mul(transform);
+			getShape(c).render(workspace.renderer);
+			workspace.renderer.popTransform();
+		}
+		
+		@Override
+		public void drawRectangle(Vec2 size, Vec3 color, Mat4 transform) {
+			workspace.renderer.pushTransform().mul(transform).scale(size.x, size.y, 1);
+			unitLine.render(workspace.renderer);
+			workspace.renderer.popTransform();
+		}
 
+	}
+	
+	/*
+	 * Assembly
+	 */
+	
+	@Override
+	public Renderable assemble(CharSequence chars, int style, float align, float maxWidth, int color) {
+		return assembleDynamic(() -> chars, style, align, maxWidth, color);
+	}
+	
+	@Override
+	public Renderable assembleDynamic(Supplier<CharSequence> supplier, int style, float align, float maxWidth, int color) {
+		return new DynamicText(supplier, style, align, maxWidth, createVectorFromRGBInt(color));
+	}
+	
+	/*
+	 * Drawing algorithm
+	 */
+	
+	protected static class Workspace {
+		private CharSequence text;
+		private int fromIndex;
+		private int toIndex;
+		
+		private final Vec2i totalSize = new Vec2i();
+		
+		private float currentWidth;
+		
+		private float align;
+		private float maxWidth;
+		
+		private final TIntStack styles = new TIntArrayStack(16);
+		private final StashingStack<Vec3> colors = new StashingStack<>(16, Vec3::new);
+		
+		private final Vec2 pos = new Vec2();
+		
+		private final StashingStack<Mat4> transforms = new StashingStack<>(16, Mat4::new);
+		
+		public Workspace() {
+			reset();
+		}
+		
+		private int pushStyle(int diff) {
+			int current = styles.peek();
+			
+			if ((diff & 0x10000000) != 0) {
+				current &= diff;
+			} else {
+				current |= diff;
+			}
+			
+			styles.push(current);
+			return current;
+		}
+		
+		private Vec3 pushColor() {
+			if (colors.isEmpty()) return colors.push();
+			
+			Vec3 previous = colors.peek();
+			return colors.push().set(previous);
+		}
+		
+		private Mat4 pushTransform() {
+			if (transforms.isEmpty()) return transforms.push();
+			
+			Mat4 previous = transforms.peek();
+			return transforms.push().set(previous);
+		}
+		
+		private Mat4 pushDrawerTransform() {
+			Mat4 previous = transforms.peek();
+			return transforms.push().identity().translate(pos.x, pos.y, 0).mul(previous);
+		}
+		
+		public void reset() {
+			text = null;
+			fromIndex = 0;
+			toIndex = 0;
+			align = Float.NaN;
+			maxWidth = -1;
+			
+			totalSize.set(0, 0);
+			
+			styles.clear();
+			colors.removeAll();
+			
+			pos.set(0, 0);
+			
+			transforms.removeAll();
+			transforms.push().identity();
+		}
+	}
+	
+	protected interface Drawer {
+		void drawChar(char c, Vec3 color, Mat4 transform);
+		void drawRectangle(Vec2 size, Vec3 color, Mat4 transform);
+	}
+	
+	protected void draw(
+			CharSequence text, Drawer drawer, Workspace workspace,
+			int style, float align, float maxWidth, Vec3 color
+	) {
+		workspace.text = text;
+		workspace.toIndex = text.length();
+		workspace.align = align;
+		workspace.maxWidth = maxWidth;
+		
+		getSize(text, style, align, maxWidth, workspace.totalSize);
+		
+		workspace.styles.push(style);
+		workspace.colors.push().set(color.x, color.y, color.z);
+		
+		drawSpan(drawer, workspace);
+
+		workspace.reset();
+	}
+	
+	private void drawSpan(Drawer drawer, Workspace workspace) {
+		workspace.currentWidth = getBoldOffset();
+		workspace.pos.y = workspace.totalSize.y - getHeight();
+		
+		int from = workspace.fromIndex;
+		int to = workspace.toIndex;
+		
+		for (int i = from; i < to; ++i) {
+			char c = workspace.text.charAt(i);
+			float charWidth = getWidth(c);
+			
+			if (c == '\n' || workspace.currentWidth + charWidth > workspace.maxWidth) {
+				
+				workspace.pos.x = getStartX(workspace);
+				workspace.toIndex = i;
+				drawLine(drawer, workspace);
+				
+				workspace.pos.y -= getHeight() + getInterlineBuffer();
+				workspace.currentWidth = getThickness();
+				
+				workspace.fromIndex = i;
+				if (c == '\n') workspace.fromIndex++; // Skip c
+			}
+			
+			if (c != '\n') workspace.currentWidth += charWidth;
+		}
+
+		workspace.pos.x = getStartX(workspace);
+		workspace.toIndex = to;
+		drawLine(drawer, workspace);
+		
+		workspace.currentWidth = Float.NaN;
+		workspace.fromIndex = from;
+	}
+	
+	private float getStartX(Workspace w) {
+		return w.align * (w.totalSize.x - w.currentWidth);
+	}
+	
+	private void drawLine(Drawer drawer, Workspace workspace) {
+		int style = workspace.styles.peek();
+		
+		// workspace.pos.x will be restored to this value iff drawLine is invoked multiple times
+		float xToRestore = workspace.pos.x;
+		
+		if (style == Style.PLAIN) {
+			
+			drawPlainLine(drawer, workspace);
+			
+		} else if (Style.hasShadow(style)) {
+
+			workspace.pushStyle(~Style.SHADOW);
+			
+			workspace.pushColor().mul(getShadowColorMultiplier());
+			workspace.pushTransform().translate(getShadowOffset());
+			drawLine(drawer, workspace);
+			workspace.pos.x = xToRestore;
+			workspace.colors.pop();
+			workspace.transforms.pop();
+			
+			drawLine(drawer, workspace);
+			
+			workspace.styles.pop();
+			
+		} else if (Style.isBold(style)) {
+			
+			workspace.pushStyle(~Style.BOLD);
+			
+			workspace.pushTransform().translate(getBoldOffset(), 0, 0);
+			drawLine(drawer, workspace);
+			workspace.pos.x = xToRestore;
+			workspace.transforms.pop();
+			
+			drawLine(drawer, workspace);
+			
+			workspace.styles.pop();
+			
+		} else if (Style.isItalic(style)) {
+			
+			workspace.pushStyle(~Style.ITALIC);
+			// Push shear of Oy along Ox
+			workspace.pushTransform().m10 = getItalicsSlant();
+			
+			drawLine(drawer, workspace);
+			
+			workspace.transforms.pop();
+			workspace.styles.pop();
+			
+		} else if (Style.isStrikethru(style)) {
+			
+			workspace.pushStyle(~Style.STRIKETHRU);
+			drawDecorativeLine(drawer, workspace, (getHeight() - getThickness()) / 2f);
+			drawLine(drawer, workspace);
+			workspace.styles.pop();
+			
+		} else if (Style.isUnderlined(style)) {
+			
+			workspace.pushStyle(~Style.UNDERLINED);
+			drawDecorativeLine(drawer, workspace, 0);
+			drawLine(drawer, workspace);
+			workspace.styles.pop();
+			
+		} else {
+			throw new IllegalArgumentException(
+					"Style contains unknown flags " + Integer.toBinaryString((style & ~(
+							Style.BOLD | Style.ITALIC | Style.SHADOW | Style.STRIKETHRU | Style.UNDERLINED
+					)))
+			);
+		}
+	}
+
+	private void drawDecorativeLine(Drawer drawer, Workspace workspace, float height) {
+		Vec2 size = Vectors.grab2();
+		
+		size.x = workspace.currentWidth;
+		size.y = getDecorativeLineThickness();
+		
+		drawer.drawRectangle(size, workspace.colors.getHead(), workspace.pushDrawerTransform().translate(0, height, 0));
+		workspace.transforms.pop();
+		
+		Vectors.release(size);
+	}
+
+	private void drawPlainLine(Drawer drawer, Workspace workspace) {
+		for (int index = workspace.fromIndex; index < workspace.toIndex; ++index) {
+			char c = workspace.text.charAt(index);
+			
+			drawer.drawChar(c, workspace.colors.getHead(), workspace.pushDrawerTransform());
+			workspace.transforms.pop();
+			
+			workspace.pos.x += getWidth(c);
+		}
 	}
 
 }

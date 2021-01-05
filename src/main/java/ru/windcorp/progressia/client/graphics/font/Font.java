@@ -46,26 +46,26 @@ public class Font {
 	}
 	
 	public Renderable assemble(
-			CharSequence chars, int maxWidth
+			CharSequence chars, float maxWidth
 	) {
 		return typeface.assemble(chars, style, align, maxWidth, color);
 	}
 	
 	public Renderable assembleDynamic(
-			Supplier<CharSequence> supplier
+			Supplier<CharSequence> supplier, float maxWidth
 	) {
-		return typeface.assembleDynamic(supplier, color);
+		return typeface.assembleDynamic(supplier, style, align, maxWidth, color);
 	}
 
-	public int getWidth(CharSequence chars, int maxWidth) {
+	public int getWidth(CharSequence chars, float maxWidth) {
 		return typeface.getWidth(chars, style, align, maxWidth);
 	}
 
-	public int getHeight(CharSequence chars, int maxWidth) {
+	public int getHeight(CharSequence chars, float maxWidth) {
 		return typeface.getHeight(chars, style, align, maxWidth);
 	}
 
-	public Vec2i getSize(CharSequence chars, int maxWidth, Vec2i result) {
+	public Vec2i getSize(CharSequence chars, float maxWidth, Vec2i result) {
 		return typeface.getSize(chars, style, align, maxWidth, result);
 	}
 

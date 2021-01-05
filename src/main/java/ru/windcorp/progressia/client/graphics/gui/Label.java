@@ -14,6 +14,8 @@ public class Label extends Component {
 	private Vec2i currentSize;
 	private Supplier<String> contents;
 	
+	private float maxWidth = Float.POSITIVE_INFINITY;
+	
 	public Label(String name, Font font, Supplier<String> contents) {
 		super(name);
 		this.font = font;
@@ -27,7 +29,7 @@ public class Label extends Component {
 
 	public void update() {
 		currentText = contents.get();
-		currentSize = font.getSize(currentText, Integer.MAX_VALUE, null).mul(2);
+		currentSize = font.getSize(currentText, maxWidth, null).mul(2);
 		requestReassembly();
 	}
 	
@@ -55,7 +57,7 @@ public class Label extends Component {
 				.scale(2)
 		);
 		
-		target.addCustomRenderer(font.assemble(currentText, Integer.MAX_VALUE));
+		target.addCustomRenderer(font.assemble(currentText, maxWidth));
 		
 		target.popTransform();
 	}
