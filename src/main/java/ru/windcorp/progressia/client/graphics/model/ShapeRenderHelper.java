@@ -18,18 +18,26 @@
 package ru.windcorp.progressia.client.graphics.model;
 
 import glm.mat._4.Mat4;
+import glm.vec._4.Vec4;
+import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.common.util.StashingStack;
 
 public class ShapeRenderHelper {
 	
 	protected static final int TRANSFORM_STACK_SIZE = 64;
+	protected static final int COLOR_MULTIPLIER_STACK_SIZE = TRANSFORM_STACK_SIZE;
 	
 	protected final StashingStack<Mat4> transformStack = new StashingStack<>(
 			TRANSFORM_STACK_SIZE, Mat4::new
 	);
 	
+	protected final StashingStack<Vec4> colorMultiplierStack = new StashingStack<>(
+			COLOR_MULTIPLIER_STACK_SIZE, Vec4::new
+	);
+	
 	{
 		transformStack.push().identity();
+		colorMultiplierStack.push().set(Colors.WHITE);
 	}
 	
 	public Mat4 pushTransform() {
@@ -48,10 +56,29 @@ public class ShapeRenderHelper {
 	public Mat4 getFinalTransform() {
 		return getTransform();
 	}
+
+	public Vec4 pushColorMultiplier() {
+		Vec4 previous = colorMultiplierStack.getHead();
+		return colorMultiplierStack.push().set(previous);
+	}
+	
+	public void popColorMultiplier() {
+		colorMultiplierStack.removeHead();
+	}
+	
+	public Vec4 getColorMultiplier() {
+		return colorMultiplierStack.getHead();
+	}
+	
+	public Vec4 getFinalColorMultiplier() {
+		return getColorMultiplier();
+	}
 	
 	public void reset() {
 		transformStack.removeAll();
 		transformStack.push().identity();
+		colorMultiplierStack.removeAll();
+		colorMultiplierStack.push().set(Colors.WHITE);
 	}
 
 }

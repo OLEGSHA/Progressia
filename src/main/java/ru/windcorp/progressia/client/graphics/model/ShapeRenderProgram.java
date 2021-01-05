@@ -52,15 +52,17 @@ public class ShapeRenderProgram extends Program {
 			"Shape.fragment.glsl";
 	
 	private static final String
-			FINAL_TRANSFORM_UNIFORM_NAME   = "finalTransform",
-			POSITIONS_ATTRIBUTE_NAME       = "inputPositions",
-			COLOR_MULTIPLER_ATTRIBUTE_NAME = "inputColorMultiplier",
-			TEXTURE_COORDS_ATTRIBUTE_NAME  = "inputTextureCoords",
-			USE_TEXTURE_UNIFORM_NAME       = "useTexture",
-			TEXTURE_SLOT_UNIFORM_NAME      = "textureSlot";
+			FINAL_TRANSFORM_UNIFORM_NAME             = "finalTransform",
+			POSITIONS_ATTRIBUTE_NAME                 = "inputPositions",
+			UNIFORM_COLOR_MULTIPLER_ATTRIBUTE_NAME   = "uniformColorMultiplier",
+			ATTRIBUTE_COLOR_MULTIPLER_ATTRIBUTE_NAME = "inputColorMultiplier",
+			TEXTURE_COORDS_ATTRIBUTE_NAME            = "inputTextureCoords",
+			USE_TEXTURE_UNIFORM_NAME                 = "useTexture",
+			TEXTURE_SLOT_UNIFORM_NAME                = "textureSlot";
 	
 	private final Uniform4Matrix finalTransformUniform;
 	private final AttributeVertexArray positionsAttribute;
+	private final Uniform4Float colorsUniform;
 	private final AttributeVertexArray colorsAttribute;
 	private final AttributeVertexArray textureCoordsAttribute;
 	private final Uniform1Int useTextureUniform;
@@ -85,8 +87,11 @@ public class ShapeRenderProgram extends Program {
 		this.positionsAttribute =
 				getAttribute(POSITIONS_ATTRIBUTE_NAME).asVertexArray();
 		
+		this.colorsUniform =
+				getUniform(UNIFORM_COLOR_MULTIPLER_ATTRIBUTE_NAME).as4Float();
+		
 		this.colorsAttribute =
-				getAttribute(COLOR_MULTIPLER_ATTRIBUTE_NAME).asVertexArray();
+				getAttribute(ATTRIBUTE_COLOR_MULTIPLER_ATTRIBUTE_NAME).asVertexArray();
 		
 		this.textureCoordsAttribute =
 				getAttribute(TEXTURE_COORDS_ATTRIBUTE_NAME).asVertexArray();
@@ -140,6 +145,7 @@ public class ShapeRenderProgram extends Program {
 
 	protected void configure(ShapeRenderHelper helper) {
 		finalTransformUniform.set(helper.getFinalTransform());
+		colorsUniform.set(helper.getFinalColorMultiplier());
 	}
 
 	protected int bindVertices(VertexBufferObject vertices) {

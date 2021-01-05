@@ -1,5 +1,7 @@
 #version 120
 
+uniform vec4 uniformColorMultiplier;
+
 varying vec4 varyingColorMultiplier;
 varying vec2 varyingTextureCoords;
 
@@ -17,6 +19,7 @@ void applyTexture() {
 
 void applyColorMultiplier() {
 	gl_FragColor *= varyingColorMultiplier;
+	gl_FragColor *= uniformColorMultiplier;
 }
 
 void applyAlpha() {

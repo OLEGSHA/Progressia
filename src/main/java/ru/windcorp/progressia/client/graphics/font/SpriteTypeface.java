@@ -117,13 +117,13 @@ public abstract class SpriteTypeface extends Typeface {
 		return output.set(resultWidth, height);
 	}
 
-	private Shape createCharShape(char c, Vec4 color) {
+	private Shape createCharShape(char c) {
 		return new Shape(
 				Usage.STATIC, getProgram(),
 				Faces.createRectangle(
 						getProgram(),
 						getTexture(c),
-						color,
+						Colors.WHITE,
 						Vectors.ZERO_3,
 						new Vec3(getWidth(c), 0, 0),
 						new Vec3(0, getHeight(), 0),
@@ -182,7 +182,7 @@ public abstract class SpriteTypeface extends Typeface {
 		private Shape getShape(char c) {
 			Shape shape = charShapes.get(c);
 			if (shape == null) {
-				shape = createCharShape(c, this.color);
+				shape = createCharShape(c);
 				charShapes.put(c, shape);
 			}
 			return shape;
@@ -195,14 +195,18 @@ public abstract class SpriteTypeface extends Typeface {
 		@Override
 		public void drawChar(char c, Vec4 color, Mat4 transform) {
 			workspace.renderer.pushTransform().mul(transform);
+			workspace.renderer.pushColorMultiplier().mul(color);
 			getShape(c).render(workspace.renderer);
+			workspace.renderer.popColorMultiplier();
 			workspace.renderer.popTransform();
 		}
 		
 		@Override
 		public void drawRectangle(Vec2 size, Vec4 color, Mat4 transform) {
 			workspace.renderer.pushTransform().mul(transform).scale(size.x, size.y, 1);
+			workspace.renderer.pushColorMultiplier().mul(color);
 			unitLine.render(workspace.renderer);
+			workspace.renderer.popColorMultiplier();
 			workspace.renderer.popTransform();
 		}
 
