@@ -5,4 +5,5 @@ Priority: optional
 Architecture: all
 Essential: no
 Maintainer: Test
+Depends: default-jdk
 Description: Test package
