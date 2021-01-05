@@ -190,7 +190,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 	private void addTiles(ChunkData chunk, Vec3i biw, WorldData world, Random random, boolean isDirt, double height, double grad) {
 		if (isDirt) addGrass(chunk, biw, world, random);
 		addDecor(chunk, biw, world, random, isDirt);
-		addSnow(chunk, biw, world, random, isDirt, height + 1000, grad);
+		addSnow(chunk, biw, world, random, isDirt, height, grad);
 	}
 
 	private void addGrass(ChunkData chunk, Vec3i biw, WorldData world, Random random) {
