@@ -9,14 +9,18 @@ import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
+import ru.windcorp.progressia.client.graphics.backend.InputTracker;
 import ru.windcorp.progressia.client.graphics.input.CursorMoveEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
+import ru.windcorp.progressia.client.graphics.input.WheelScrollEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.FloatMathUtils;
+import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.ServerState;
 
 public class TestPlayerControls {
@@ -57,6 +61,10 @@ public class TestPlayerControls {
 	
 	private boolean captureMouse = true;
 	private boolean useMinecraftGravity = false;
+	
+	private int selectedBlock = 0;
+	private int selectedTile = 0;
+	private boolean isBlockSelected = true;
 	
 	private Runnable updateCallback = null;
 	
@@ -116,6 +124,9 @@ public class TestPlayerControls {
 		} else if (event instanceof CursorMoveEvent) {
 			onMouseMoved((CursorMoveEvent) event);
 			input.consume();
+		} else if (event instanceof WheelScrollEvent) {
+			onWheelScroll((WheelScrollEvent) event);
+			input.consume();
 		}
 	}
 
@@ -157,6 +168,11 @@ public class TestPlayerControls {
 		case GLFW.GLFW_KEY_G:
 			if (!event.isPress()) return false;
 			handleGravitySwitch();
+			break;
+			
+		case GLFW.GLFW_MOUSE_BUTTON_3:
+			if (!event.isPress()) return false;
+			switchPlacingMode();
 			break;
 			
 		default:
@@ -256,6 +272,45 @@ public class TestPlayerControls {
 				dir.y, -FloatMathUtils.PI_F/2, +FloatMathUtils.PI_F/2
 		);
 	}
+
+	private void onWheelScroll(WheelScrollEvent event) {
+		if (event.hasHorizontalMovement()) {
+			switchPlacingMode();
+		}
+		if (InputTracker.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)) {
+			switchPlacingMode();
+			return;
+		}
+		
+		if (isBlockSelected) {
+			selectedBlock += event.isUp() ? +1 : -1;
+			
+			int size = TestContent.PLACEABLE_BLOCKS.size();
+			
+			if (selectedBlock < 0) {
+				selectedBlock = size - 1;
+			} else if (selectedBlock >= size) {
+				selectedBlock = 0;
+			}
+		} else {
+			selectedTile += event.isUp() ? +1 : -1;
+			
+			int size = TestContent.PLACEABLE_TILES.size();
+			
+			if (selectedTile < 0) {
+				selectedTile = size - 1;
+			} else if (selectedTile >= size) {
+				selectedTile = 0;
+			}
+		}
+		
+		updateGUI();
+	}
+
+	private void switchPlacingMode() {
+		isBlockSelected = !isBlockSelected;
+		updateGUI();
+	}
 	
 	public EntityData getEntity() {
 		return getPlayer().getEntity();
@@ -285,6 +340,18 @@ public class TestPlayerControls {
 	
 	public boolean useMinecraftGravity() {
 		return useMinecraftGravity;
+	}
+	
+	public BlockData getSelectedBlock() {
+		return TestContent.PLACEABLE_BLOCKS.get(selectedBlock);
+	}
+	
+	public TileData getSelectedTile() {
+		return TestContent.PLACEABLE_TILES.get(selectedTile);
+	}
+	
+	public boolean isBlockSelected() {
+		return isBlockSelected;
 	}
 	
 }

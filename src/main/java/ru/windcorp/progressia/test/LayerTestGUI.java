@@ -22,8 +22,10 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 import glm.vec._3.Vec3;
+import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.ClientState;
+import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
@@ -45,50 +47,74 @@ public class LayerTestGUI extends GUILayer {
 		Panel panel = new Panel("ControlDisplays", new LayoutVertical(5));
 		
 		Collection<Label> labels = new ArrayList<>();
+		Vec4 color = Colors.WHITE;
+		Font font = new Font().withColor(color).deriveShadow();
 		
 		panel.addChild(new Label(
-				"IsFlyingDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
+				"IsFlyingDisplay", font,
 				() -> String.format("Flying:         %5s (Space bar x2)", TestPlayerControls.getInstance().isFlying())
 		));
 		
 		panel.addChild(new Label(
-				"IsMouseCapturedDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
+				"IsMouseCapturedDisplay", font,
 				() -> String.format("Mouse captured: %5s (esc)", TestPlayerControls.getInstance().isMouseCaptured())
 		));
 		
 		panel.addChild(new Label(
-				"CameraModeDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
+				"CameraModeDisplay", font,
 				() -> String.format("Camera mode:    %5d (F5)", ClientState.getInstance().getCamera().getCurrentModeIndex())
 		));
 		
 		panel.addChild(new Label(
-				"GravityModeDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
+				"GravityModeDisplay", font,
 				() -> String.format("Gravity:    %9s (G)", TestPlayerControls.getInstance().useMinecraftGravity() ? "Minecraft" : "Realistic")
 		));
 		
 		panel.addChild(new DynamicLabel(
-				"FPSDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
+				"FPSDisplay", font,
 				DynamicStrings.builder().add("FPS: ").addDyn(() -> FPS_RECORD.update(GraphicsInterface.getFPS()), 5, 1).buildSupplier(),
 				128
 		));
 		
 		panel.addChild(new DynamicLabel(
-				"TPSDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
+				"TPSDisplay", font,
 				LayerTestGUI::getTPS,
 				128
 		));
 		
 		panel.addChild(new DynamicLabel(
-				"ChunkUpdatesDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
+				"ChunkUpdatesDisplay", font,
 				DynamicStrings.builder().addConst("Pending updates: ").addDyn(ClientState.getInstance().getWorld()::getPendingChunkUpdates).buildSupplier(),
 				128
 		));
 		
 		panel.addChild(new DynamicLabel(
-				"PosDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
+				"PosDisplay", font,
 				LayerTestGUI::getPos,
 				128
 		));
+		
+		panel.addChild(new Label(
+				"SelectedBlockDisplay", font,
+				() -> String.format(
+						"%s Block: %s",
+						TestPlayerControls.getInstance().isBlockSelected() ? ">" : " ",
+						TestPlayerControls.getInstance().getSelectedBlock().getId()
+				)
+		));
+		panel.addChild(new Label(
+				"SelectedTileDisplay", font,
+				() -> String.format(
+						"%s Tile:  %s",
+						TestPlayerControls.getInstance().isBlockSelected() ? " " : ">",
+						TestPlayerControls.getInstance().getSelectedTile().getId()
+				)
+		));
+		panel.addChild(new Label(
+				"SelectedTileDisplay", font,
+				"(Blocks ↔ Tiles: Shift + Mouse Wheel)"
+		));
+		
 		
 		panel.getChildren().forEach(c -> {
 			if (c instanceof Label) {
