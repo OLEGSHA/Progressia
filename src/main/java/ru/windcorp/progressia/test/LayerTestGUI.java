@@ -19,7 +19,7 @@ package ru.windcorp.progressia.test;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Locale;
+import java.util.function.Supplier;
 
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.Client;
@@ -33,6 +33,7 @@ import ru.windcorp.progressia.client.graphics.gui.Panel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.common.Units;
+import ru.windcorp.progressia.common.util.dynstr.DynamicStrings;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.ServerState;
 
@@ -67,7 +68,7 @@ public class LayerTestGUI extends GUILayer {
 		
 		panel.addChild(new DynamicLabel(
 				"FPSDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
-				LayerTestGUI::getFPS,
+				DynamicStrings.builder().add("FPS: ").addDyn(() -> FPS_RECORD.update(GraphicsInterface.getFPS()), 5, 1).buildSupplier(),
 				128
 		));
 		
@@ -79,7 +80,7 @@ public class LayerTestGUI extends GUILayer {
 		
 		panel.addChild(new DynamicLabel(
 				"ChunkUpdatesDisplay", new Font().withColor(0xFF37A3E6).deriveShadow(),
-				() -> "Pending updates: " + Integer.toString(ClientState.getInstance().getWorld().getPendingChunkUpdates()),
+				DynamicStrings.builder().addConst("Pending updates: ").addDyn(ClientState.getInstance().getWorld()::getPendingChunkUpdates).buildSupplier(),
 				128
 		));
 		
@@ -148,26 +149,34 @@ public class LayerTestGUI extends GUILayer {
 	private static final Averager FPS_RECORD = new Averager();
 	private static final Averager TPS_RECORD = new Averager();
 	
-	private static String getFPS() {
-		return String.format(Locale.US, "FPS: %5.1f", FPS_RECORD.update(GraphicsInterface.getFPS()));
-	}
+	private static final Supplier<CharSequence> TPS_STRING = DynamicStrings.builder()
+			.add("TPS: ")
+			.addDyn(() -> TPS_RECORD.update(ServerState.getInstance().getTPS()), 5, 1)
+			.buildSupplier();
 	
-	private static String getTPS() {
+	private static final Supplier<CharSequence> POS_STRING = DynamicStrings.builder()
+			.add("Pos: ")
+			.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().x, 7, 1)
+			.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().y, 7, 1)
+			.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().z, 7, 1)
+			.buildSupplier();
+	
+	private static CharSequence getTPS() {
 		Server server = ServerState.getInstance();
 		if (server == null) return "TPS: n/a";
 		
-		return String.format(Locale.US, "TPS: %5.1f", TPS_RECORD.update(server.getTPS()));
+		return TPS_STRING.get();
 	}
 	
-	private static String getPos() {
+	private static CharSequence getPos() {
 		Client client = ClientState.getInstance();
-		if (client == null) return "Pos: n/a";
+		if (client == null) return "Pos:  client n/a";
 		
 		Vec3 pos = client.getCamera().getLastAnchorPosition();
 		if (Float.isNaN(pos.x)) {
 			return "Pos: entity n/a";
 		} else {
-			return String.format(Locale.US, "Pos: %+7.1f %+7.1f %+7.1f", pos.x, pos.y, pos.z);
+			return POS_STRING.get();
 		}
 	}
 	
