@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import glm.vec._2.Vec2;
-import glm.vec._3.Vec3;
-import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
@@ -30,8 +28,6 @@ public class PlayerManager {
 		this.players.add(player);
 	}
 	
-	private static final Vec3i SPAWN = new Vec3i(8, 8, 900);
-	
 	public EntityData conjurePlayerEntity(String login) {
 		// TODO Live up to the name
 		if (TestContent.PLAYER_LOGIN.equals(login)) {
@@ -46,7 +42,7 @@ public class PlayerManager {
 		EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
 		
 		player.setEntityId(TestContent.PLAYER_ENTITY_ID);
-		player.setPosition(new Vec3(SPAWN.x, SPAWN.y, SPAWN.z));
+		player.setPosition(TestContent.SPAWN);
 		player.setDirection(new Vec2(
 				Math.toRadians(40), Math.toRadians(10)
 		));

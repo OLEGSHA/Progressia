@@ -30,7 +30,7 @@ public class TestPlayerControls {
 	private TestPlayerControls() {}
 	
 	private static final double MODE_SWITCH_MAX_DELAY = 300 * Units.MILLISECONDS;
-	private static final double MIN_JUMP_DELAY = 400 * Units.MILLISECONDS;
+	private static final double MIN_JUMP_DELAY = 300 * Units.MILLISECONDS;
 
 	// Horizontal and vertical max control speed when flying
 	private static final float FLYING_SPEED = 6.0f * Units.METERS_PER_SECOND;
@@ -107,10 +107,6 @@ public class TestPlayerControls {
 	}
 	
 	public void handleInput(Input input) {
-		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
-			return;
-		}
-		
 		InputEvent event = input.getEvent();
 		
 		if (event instanceof KeyEvent) {
@@ -193,6 +189,10 @@ public class TestPlayerControls {
 	}
 
 	private void jump() {
+		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
+			return;
+		}
+		
 		getEntity().getVelocity().add(0, 0, JUMP_VELOCITY * (useMinecraftGravity ? 2 : 1));
 	}
 
@@ -214,6 +214,10 @@ public class TestPlayerControls {
 	}
 	
 	private void handleCameraMode() {
+		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
+			return;
+		}
+		
 		if (ClientState.getInstance().getCamera().hasAnchor()) {
 			ClientState.getInstance().getCamera().selectNextMode();
 			updateGUI();
@@ -227,6 +231,10 @@ public class TestPlayerControls {
 
 	private void onMouseMoved(CursorMoveEvent event) {
 		if (!captureMouse) return;
+
+		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
+			return;
+		}
 		
 		final float yawScale = -0.002f;
 		final float pitchScale = yawScale;

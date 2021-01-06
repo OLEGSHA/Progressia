@@ -158,7 +158,7 @@ public class LayerWorld extends Layer {
 		
 		final float f = 1e-2f;
 		final float scale = 1 - f/2;
-		final Vec4 color = new Vec4(1, 1, 1, 1).mul(0);
+		final Vec4 color = new Vec4(0, 0, 0, 1);
 		
 		for (float phi = 0; phi < 2*FloatMathUtils.PI_F; phi += FloatMathUtils.PI_F/2) {
 			Mat4 rot = new Mat4().identity().rotateZ(phi).scale(scale);
