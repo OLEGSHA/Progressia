@@ -40,6 +40,7 @@ import ru.windcorp.progressia.client.graphics.input.bus.InputBus;
 import ru.windcorp.progressia.client.graphics.input.bus.InputListener;
 import ru.windcorp.progressia.common.util.Named;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
+import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
 
 public class Component extends Named {
 
@@ -455,7 +456,7 @@ public class Component extends Named {
 
 	public void addListener(Object listener) {
 		if (eventBus == null) {
-			eventBus = new EventBus(getName());
+			eventBus = ReportingEventBus.create(getName());
 		}
 
 		eventBus.register(listener);

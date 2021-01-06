@@ -22,10 +22,11 @@ import org.lwjgl.glfw.GLFW;
 import com.google.common.eventbus.EventBus;
 
 import ru.windcorp.progressia.client.graphics.input.*;
+import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
 
 public class InputHandler {
 	
-	private static final EventBus INPUT_EVENT_BUS = new EventBus("Input");
+	private static final EventBus INPUT_EVENT_BUS = ReportingEventBus.create("Input");
 
 	// KeyEvent
 	
