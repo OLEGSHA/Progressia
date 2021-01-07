@@ -16,7 +16,8 @@ public abstract class Typeface extends Named {
 				ITALIC     = 1 << 1,
 				UNDERLINED = 1 << 2,
 				STRIKETHRU = 1 << 3,
-				SHADOW     = 1 << 4;
+				SHADOW     = 1 << 4,
+				OUTLINED   = 1 << 5;
 		
 		public static final int PLAIN = 0;
 		
@@ -38,6 +39,10 @@ public abstract class Typeface extends Named {
 		
 		public static boolean hasShadow(int style) {
 			return (style & SHADOW) != 0;
+		}
+		
+		public static boolean isOutlined(int style) {
+			return (style & OUTLINED) != 0;
 		}
 	}
 	

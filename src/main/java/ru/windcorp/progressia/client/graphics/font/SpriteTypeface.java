@@ -430,6 +430,10 @@ public abstract class SpriteTypeface extends Typeface {
 		return w.align * (w.totalSize.x - w.currentWidth);
 	}
 	
+	private static final float[][] OUTLINE_DIRECTIONS = new float[][] {
+		{0, 1}, {1, 0}, {-1, 0}, {0, -1}
+	};
+	
 	private void drawLine(Drawer drawer, Workspace workspace) {
 		int style = workspace.styles.peek();
 		
@@ -439,6 +443,29 @@ public abstract class SpriteTypeface extends Typeface {
 		if (style == Style.PLAIN) {
 			
 			drawPlainLine(drawer, workspace);
+			
+		} else if (Style.isOutlined(style)) {
+
+			workspace.pushStyle(~Style.OUTLINED);
+			
+			drawLine(drawer, workspace); // TODO figure out why placing this line after drawing outline reverses order of display (should be the opposite)
+			workspace.pos.x = xToRestore;
+			
+			Colors.multiplyRGB(workspace.pushColor(), getShadowColorMultiplier());
+			
+			for (int i = 0; i < OUTLINE_DIRECTIONS.length; ++i) {
+				float[] direction = OUTLINE_DIRECTIONS[i];
+				
+				workspace.pushTransform().translate(direction[0] * getThickness(), direction[1] * getThickness(), 0);
+				drawLine(drawer, workspace);
+				workspace.transforms.pop();
+				
+				if (i != OUTLINE_DIRECTIONS.length - 1) workspace.pos.x = xToRestore;
+			}
+			
+			workspace.colors.pop();
+			
+			workspace.styles.pop();
 			
 		} else if (Style.hasShadow(style)) {
 

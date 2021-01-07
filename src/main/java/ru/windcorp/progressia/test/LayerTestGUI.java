@@ -48,7 +48,17 @@ public class LayerTestGUI extends GUILayer {
 		
 		Collection<Label> labels = new ArrayList<>();
 		Vec4 color = Colors.WHITE;
-		Font font = new Font().withColor(color).deriveShadow();
+		Font font = new Font().withColor(color).deriveOutlined();
+		Font aboutFont = font.withColor(0xFF37A3E6).deriveBold();
+		
+		panel.addChild(new Label(
+				"About", aboutFont,
+				"\u041F\u0440\u043E\u0433\u0440\u0435\u0441\u0441\u0438\u044F / Progressia"
+		));
+		panel.addChild(new Label(
+				"About", font,
+				"Version: pre-TechDemo"
+		));
 		
 		panel.addChild(new Label(
 				"IsFlyingDisplay", font,
@@ -111,8 +121,8 @@ public class LayerTestGUI extends GUILayer {
 				)
 		));
 		panel.addChild(new Label(
-				"SelectedTileDisplay", font,
-				"(Blocks ↔ Tiles: Shift + Mouse Wheel)"
+				"PlacementModeDisplay", font,
+				"(Blocks \u2B04 Tiles: Ctrl + Mouse Wheel)"
 		));
 		
 		

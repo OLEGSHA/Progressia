@@ -101,27 +101,27 @@ public class TestContent {
 		register(new TestTileLogicGrass("Test:Grass"));
 		
 		register(new TileData("Test:Stones"));
-		register(new TileRenderSimple("Test:Stones", getTileTexture("stones")));
+		register(new TileRenderTransparentSurface("Test:Stones", getTileTexture("stones")));
 		register(new HangingTileLogic("Test:Stones"));
 		
 		register(new TileData("Test:YellowFlowers"));
-		register(new TileRenderSimple("Test:YellowFlowers", getTileTexture("yellow_flowers")));
+		register(new TileRenderTransparentSurface("Test:YellowFlowers", getTileTexture("yellow_flowers")));
 		register(new HangingTileLogic("Test:YellowFlowers"));
 		
 		register(new TileData("Test:Sand"));
-		register(new TileRenderSimple("Test:Sand", getTileTexture("sand")));
+		register(new TileRenderTransparentSurface("Test:Sand", getTileTexture("sand")));
 		register(new HangingTileLogic("Test:Sand"));
 		
 		register(new TileData("Test:SnowOpaque"));
-		register(new TileRenderSimple("Test:SnowOpaque", getTileTexture("snow_opaque"), true));
+		register(new TileRenderOpaqueSurface("Test:SnowOpaque", getTileTexture("snow_opaque")));
 		register(new HangingTileLogic("Test:SnowOpaque"));
 		
 		register(new TileData("Test:SnowHalf"));
-		register(new TileRenderSimple("Test:SnowHalf", getTileTexture("snow_half")));
+		register(new TileRenderTransparentSurface("Test:SnowHalf", getTileTexture("snow_half")));
 		register(new HangingTileLogic("Test:SnowHalf"));
 		
 		register(new TileData("Test:SnowQuarter"));
-		register(new TileRenderSimple("Test:SnowQuarter", getTileTexture("snow_quarter")));
+		register(new TileRenderTransparentSurface("Test:SnowQuarter", getTileTexture("snow_quarter")));
 		register(new HangingTileLogic("Test:SnowQuarter"));
 		
 		TileDataRegistry.getInstance().values().forEach(PLACEABLE_TILES::add);

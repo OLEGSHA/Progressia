@@ -9,10 +9,10 @@ import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
-import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerCube.OpaqueTile;
+import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerCube.OpaqueSurface;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
-public class TileRenderGrass extends TileRender implements OpaqueTile {
+public class TileRenderGrass extends TileRender implements OpaqueSurface {
 	
 	private final Texture topTexture;
 	private final Texture sideTexture;

@@ -9,32 +9,21 @@ import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
-import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerCube.OpaqueTile;
+import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerCube.OpaqueSurface;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
-public class TileRenderSimple extends TileRender implements OpaqueTile {
+public abstract class TileRenderSurface extends TileRender implements OpaqueSurface {
 	
 	private final Texture texture;
-	private final boolean opaque;
 	
-	public TileRenderSimple(String id, Texture texture, boolean opaque) {
+	public TileRenderSurface(String id, Texture texture) {
 		super(id);
 		this.texture = texture;
-		this.opaque = opaque;
-	}
-	
-	public TileRenderSimple(String id, Texture texture) {
-		this(id, texture, false);
 	}
 
 	@Override
 	public Texture getTexture(BlockFace face) {
 		return texture;
-	}
-	
-	@Override
-	public boolean isOpaque(BlockFace face) {
-		return opaque;
 	}
 	
 	@Override

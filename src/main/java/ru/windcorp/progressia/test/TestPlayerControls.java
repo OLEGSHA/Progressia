@@ -277,7 +277,7 @@ public class TestPlayerControls {
 		if (event.hasHorizontalMovement()) {
 			switchPlacingMode();
 		}
-		if (InputTracker.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)) {
+		if (InputTracker.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL)) {
 			switchPlacingMode();
 			return;
 		}

@@ -47,7 +47,7 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 		public boolean isBlockOpaque();
 	}
 	
-	public static interface OpaqueTile {
+	public static interface OpaqueSurface {
 		public Texture getTexture(BlockFace face);
 		public boolean isOpaque(BlockFace face);
 	}
@@ -67,7 +67,7 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 		static final int NO_OPAQUE_TILES = -1;
 		
 		int topOpaqueTile = NO_OPAQUE_TILES;
-		final OpaqueTile[] tiles = new OpaqueTile[TILES_PER_FACE];
+		final OpaqueSurface[] tiles = new OpaqueSurface[TILES_PER_FACE];
 		int tileCount = 0;
 	}
 	
@@ -100,8 +100,8 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 	
 	@Override
 	public void processTile(TileRender tile, Vec3i pos, BlockFace face) {
-		if (!(tile instanceof OpaqueTile)) return;
-		OpaqueTile opaqueTile = (OpaqueTile) tile;
+		if (!(tile instanceof OpaqueSurface)) return;
+		OpaqueSurface opaqueTile = (OpaqueSurface) tile;
 		addTile(pos, face, opaqueTile);
 	}
 
@@ -109,7 +109,7 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 		getBlock(pos).block = cube;
 	}
 	
-	private void addTile(Vec3i pos, BlockFace face, OpaqueTile opaqueTile) {
+	private void addTile(Vec3i pos, BlockFace face, OpaqueSurface opaqueTile) {
 		FaceInfo faceInfo = getFace(pos, face);
 		
 		int index = faceInfo.tileCount;

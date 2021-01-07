@@ -45,7 +45,7 @@ public class LayerTestUI extends AssembledFlatLayer {
 	
 	private boolean flag = false;
 
-	private static final int WIDTH = 512 + 256;
+	private static final int WIDTH = 80;
 	private static final int HEIGHT = 80;
 	private static final int BORDER = 5;
 
@@ -55,7 +55,7 @@ public class LayerTestUI extends AssembledFlatLayer {
 		final int borderColor = flag ? 0xFFAA4444 : 0xFFAAAA44;
 		final int boxShadowColor = flag ? 0xFF440000 : 0xFF444400;
 		
-		int x = (getWidth() - WIDTH) / 2;
+		int x = 2*BORDER;
 		int y = 2*BORDER;
 
 		target.fill(x + BORDER, y - BORDER, WIDTH, HEIGHT, boxShadowColor);
@@ -102,8 +102,8 @@ public class LayerTestUI extends AssembledFlatLayer {
 		int cy = getHeight() / 2;
 		
 		final int length = 15;
-		final int thickness = 5;
-		final int borderSize = 1;
+		final int thickness = 6;
+		final int borderSize = 2;
 		final Vec4 borderColor = Colors.BLACK;
 		final Vec4 fillColor = Colors.WHITE;
 		

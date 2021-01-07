@@ -108,6 +108,10 @@ public class Font {
 		return withStyle(getStyle() | Typeface.Style.SHADOW);
 	}
 	
+	public Font deriveOutlined() {
+		return withStyle(getStyle() | Typeface.Style.OUTLINED);
+	}
+	
 	public Font deriveNotBold() {
 		return withStyle(getStyle() & ~Typeface.Style.BOLD);
 	}
@@ -126,6 +130,10 @@ public class Font {
 	
 	public Font deriveNotShadow() {
 		return withStyle(getStyle() & ~Typeface.Style.SHADOW);
+	}
+	
+	public Font deriveNotOutlined() {
+		return withStyle(getStyle() & ~Typeface.Style.OUTLINED);
 	}
 	
 	public Font withAlign(float align) {
