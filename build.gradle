@@ -211,7 +211,7 @@ task specifyLocalManifest {
 	}
 }
 
-build.dependsOn specifyLocalManifest
+jar.dependsOn specifyLocalManifest
 
 /*
  * Library export
