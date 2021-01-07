@@ -151,7 +151,7 @@ public class TestContent {
 				KeyEvent.class,
 				TestContent::onBlockBreakTrigger,
 				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_LEFT).matcher(),
-				i -> getSelection().exists()
+				i -> isAnythingSelected()
 		));
 		logic.register(ControlLogic.of("Test:BreakBlock", TestContent::onBlockBreakReceived));
 		
@@ -161,7 +161,7 @@ public class TestContent {
 				KeyEvent.class,
 				TestContent::onBlockPlaceTrigger,
 				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
-				i -> getSelection().exists() && TestPlayerControls.getInstance().isBlockSelected()
+				i -> isAnythingSelected() && TestPlayerControls.getInstance().isBlockSelected()
 		));
 		logic.register(ControlLogic.of("Test:PlaceBlock", TestContent::onBlockPlaceReceived));
 		
@@ -171,7 +171,7 @@ public class TestContent {
 				KeyEvent.class,
 				TestContent::onTilePlaceTrigger,
 				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
-				i -> getSelection().exists() && !TestPlayerControls.getInstance().isBlockSelected()
+				i -> isAnythingSelected() && !TestPlayerControls.getInstance().isBlockSelected()
 		));
 		logic.register(ControlLogic.of("Test:PlaceTile", TestContent::onTilePlaceReceived));
 	}
@@ -234,6 +234,13 @@ public class TestContent {
 		if (client == null || !client.isReady()) return null;
 		
 		return client.getLocalPlayer().getSelection();
+	}
+	
+	private static boolean isAnythingSelected() {
+		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
+		if (client == null || !client.isReady()) return false;
+		
+		return client.getLocalPlayer().getSelection().exists();
 	}
 	
 	private static void onBlockBreakTrigger(ControlData control) {
