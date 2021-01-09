@@ -119,7 +119,11 @@ dependencies {
 	implementation "org.lwjgl:lwjgl-opengl"
 	implementation "org.lwjgl:lwjgl-stb"
 	
-	// Not adding runtimeOnly native libraries because natives are handled by addNativeDependencies
+	runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
 }
 
 // LWJGL END
@@ -132,7 +136,7 @@ dependencies {
  * Additional native libraries specification
  */
 
-project.ext.platforms = new ArrayList<>()
+project.ext.platforms = new HashSet<>()
 
 task addNativeDependencies {
 	doFirst {
@@ -150,6 +154,8 @@ task addNativeDependencies {
 			println "Adding LWJGL native dependencies for platforms:\n\t" + archs.join("\n\t")
 		}
 		
+		if (project.ext.lwjglNatives.isEmpty()) println "WTF"
+		
 		dependencies {
 			archs.each { arch ->
 		        runtimeOnly "org.lwjgl:lwjgl::$arch"
@@ -164,33 +170,45 @@ task addNativeDependencies {
 
 compileJava.mustRunAfter addNativeDependencies // Make sure runtimeOnly has not been resolved
 
-task requireLinuxDependencies {
+task requestLinuxDependencies {
     description 'Adds linux, linux-arm64 and linux-arm32 native libraries to built artifacts.'
 	doFirst {
 		project.ext.platforms.addAll(['natives-linux', 'natives-linux-arm64', 'natives-linux-arm32'])
 	}
 }
-task requireWindowsDependencies {
+task requestWindowsDependencies {
     description 'Adds windows and windows-x86 native libraries to built artifacts.'
 	doFirst {
 		project.ext.platforms.addAll(['natives-windows', 'natives-windows-x86'])
 	}
 }
-task requireMacOSDependencies {
+task requestMacOSDependencies {
     description 'Adds macos native libraries to built artifacts.'
 	doFirst {
 		project.ext.platforms.addAll(['natives-macos'])
 	}
 }
 
-def dependencySpecificationTasks = tasks.findAll { task -> task.name.startsWith('require') && task.name.endsWith('Dependencies') }
+def dependencySpecificationTasks = tasks.findAll { task -> task.name.startsWith('request') && task.name.endsWith('Dependencies') }
 
-task requireCrossPlatformDependencies {
+task requestCrossPlatformDependencies {
     description 'Adds native libraries for all available platforms to built artifacts.'
 	dependsOn dependencySpecificationTasks
 }
 
 addNativeDependencies.mustRunAfter dependencySpecificationTasks
+
+/*
+ * Determines if the provided dependency should be packaged
+ */
+def isDependencyRequested(String dep) {
+	if (dep.endsWith(".jar")) {
+		dep = dep.substring(0, dep.length() - ".jar".length())
+	}
+	
+	return !dep.contains("natives-") ||
+			project.ext.platforms.contains(dep.substring(dep.indexOf("natives-"), dep.length()))
+}
 
 /*
  * Manifest specification
@@ -200,11 +218,25 @@ task specifyLocalManifest {
 	dependsOn addNativeDependencies // Make sure all native dependencies are specified
 
 	doFirst {
+		def classPath = []
+		
+		configurations.runtimeClasspath.each {
+			if (isDependencyRequested(it.getName())) {
+				classPath.add("lib/" + it.getName())
+			} else {
+				println "\tRemoving from JAR classpath (not requested):  " + it.getName()
+			}
+		}
+		
+		if (classPath.size() == configurations.runtimeClasspath.size()) {
+			println "Nothing removed from JAR classpath"
+		}
+	
 		jar {
 		    manifest {
 		        attributes(
 		        	"Main-Class": "ru.windcorp.progressia.client.ProgressiaClientMain",
-		        	"Class-Path": configurations.runtimeClasspath.collect { "lib/" + it.getName() } .join(' ')
+		        	"Class-Path": configurations.runtimeClasspath.collect { "lib/" + it.getName() } .findAll { isDependencyRequested(it) } .join(' ')
 		        )
 		    }
 		}
@@ -217,14 +249,15 @@ jar.dependsOn specifyLocalManifest
  * Library export
  */
  
-task copyLibs(type: Copy) {
+task exportLibs(type: Sync) {
 	mustRunAfter addNativeDependencies
 
     into libsDirectory.get().getAsFile().getPath() + "/lib"
+    exclude { !isDependencyRequested(it.getName()) }
     from configurations.runtimeClasspath
 }
 
-build.dependsOn(copyLibs)
+jar.dependsOn(exportLibs)
 
 /*
  * Packaging
@@ -235,7 +268,7 @@ task packageDebian(type: Exec) {
     group 'Progressia'
     
     dependsOn build
-    dependsOn requireLinuxDependencies
+    dependsOn requestLinuxDependencies
     
     commandLine './buildPackages.sh', 'debian'
     
@@ -249,7 +282,7 @@ task packageWindows(type: Exec) {
     group 'Progressia'
     
     dependsOn build
-    dependsOn requireWindowsDependencies
+    dependsOn requestWindowsDependencies
     
     commandLine './buildPackages.sh', 'windows'
     
@@ -262,7 +295,7 @@ task buildCrossPlatform {
     description 'Builds the project including native libraries for all available platforms.'
     group 'Progressia'
     
-    dependsOn requireCrossPlatformDependencies
+    dependsOn requestCrossPlatformDependencies
     dependsOn build
     
     doLast {

@@ -63,6 +63,8 @@ buildDebianPackage() {
         echoerr "Could not clean up after packaging Debian package"
         exitCode=2
     }
+    
+    exit "$exitCode"
 }
 
 buildWindowsInstaller() {
