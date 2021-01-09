@@ -13,9 +13,9 @@ public abstract class Task
 	
 	private boolean done = false;
 	
-	ArrayList<Task> requiredTasks = new ArrayList<Task>();
+	ArrayList<Task> requiredTasks = new ArrayList<>();
 
-	public Task(String id) {
+	protected Task(String id) {
 		super(id);
 	}
 
@@ -23,17 +23,17 @@ public abstract class Task
 	public void run() {
 		if (!canRun()) {
 			
-			ArrayList<Task> UndoneTasks = new ArrayList<Task>();
+			ArrayList<Task> undoneTasks = new ArrayList<>();
 			for (Task j : requiredTasks) {
 				if (!j.isDone()) {
-					UndoneTasks.add(j);
+					undoneTasks.add(j);
 				}
 			}
 			
 			
-			throw CrashReports.report(null,
+			throw CrashReports.report(new Throwable(),
 					"The following required Tasks are not done:\n%s",
-					StringUtil.iterableToString(UndoneTasks, "\n"));
+					StringUtil.iterableToString(undoneTasks, "\n"));
 		}
 		
 		perform();
@@ -45,8 +45,8 @@ public abstract class Task
 	protected abstract void perform();
 	
 	public void addRequiredTask(Task task) {
-		if (task.getId() == this.getId()) {
-			throw CrashReports.report(null, 
+		if (task.equals(this)) {
+			throw CrashReports.report(new Throwable(), 
 					"It is impossible for the Task (%s) to require itself.", 
 					this.getId());
 		}
