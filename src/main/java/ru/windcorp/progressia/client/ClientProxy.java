@@ -18,6 +18,7 @@
 package ru.windcorp.progressia.client;
 
 import ru.windcorp.progressia.Proxy;
+import ru.windcorp.progressia.client.audio.AudioSystem;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.RenderTaskQueue;
 import ru.windcorp.progressia.client.graphics.flat.FlatRenderProgram;
@@ -46,6 +47,8 @@ public class ClientProxy implements Proxy {
 		TestContent.registerContent();
 		
 		Atlases.loadAllAtlases();
+		
+		AudioSystem.initialize();
 		
 		ServerState.startServer();
 		ClientState.connectToLocalServer();

@@ -1,13 +1,11 @@
 package ru.windcorp.progressia.common.util;
 
-import org.apache.commons.math3.util.FastMath;
-
 public class FloatMathUtils {
 	
 	public static final float PI_F = (float) Math.PI;
 	
 	public static float floor(float x) {
-		return (float) FastMath.floor(x);
+		return (float) Math.floor(x);
 	}
 	
 	public static float normalizeAngle(float a) {

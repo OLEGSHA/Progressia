@@ -2,14 +2,11 @@ package ru.windcorp.progressia.common.util.crash;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.StringBuilderWriter;
 
 import ru.windcorp.jputil.chars.StringUtil;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -88,6 +85,8 @@ public class CrashReports {
      * @return {@code null}, although this method never returns normally. Provided for convenience.
      */
     public static RuntimeException crash(Throwable throwable, String messageFormat, Object... args) {
+    	final StackTraceElement[] reportStackTrace;
+    	
     	if (throwable instanceof ReportedException) {
     		ReportedException reportedException = (ReportedException) throwable;
     		
@@ -95,6 +94,10 @@ public class CrashReports {
     		throwable = reportedException.getCause();
             messageFormat = reportedException.getMessageFormat();
             args = reportedException.getArgs();
+            
+            reportStackTrace = reportedException.getStackTrace();
+    	} else {
+    		reportStackTrace = getCurrentStackTrace();
     	}
 
         StringBuilder output = new StringBuilder();
@@ -127,7 +130,9 @@ public class CrashReports {
 
         appendMessageFormat(output, messageFormat, args);
 
-        appendStackTrace(output, throwable);
+        appendStackTrace(output, reportStackTrace, "Reported at:");
+        output.append('\n');
+        appendThrowable(output, throwable);
 
         export(output.toString());
 
@@ -135,7 +140,14 @@ public class CrashReports {
         return null;
     }
 
-    private static void appendContextProviders(StringBuilder output) {
+    private static StackTraceElement[] getCurrentStackTrace() {
+    	StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+    	final int trim = 3;
+    	
+    	return Arrays.copyOfRange(stackTrace, trim, stackTrace.length);
+	}
+
+	private static void appendContextProviders(StringBuilder output) {
 
         // Do a local copy to avoid deadlocks -OLEGSHA
         ContextProvider[] localProvidersCopy = PROVIDERS.toArray(new ContextProvider[PROVIDERS.size()]);
@@ -225,22 +237,22 @@ public class CrashReports {
         addSeparator(output);
     }
 
-    private static void appendStackTrace(StringBuilder output, Throwable throwable) {
-        output.append("Stacktrace: \n");
-
+    private static void appendThrowable(StringBuilder output, Throwable throwable) {
         if (throwable == null) {
-            output.append("no Throwable provided").append("\n");
+            output.append("No Throwable provided").append("\n");
             return;
         }
-
-        // Formatting to a human-readable string
-        Writer sink = new StringBuilderWriter(output);
-        try {
-            throwable.printStackTrace(new PrintWriter(sink));
-        } catch (Exception e) {
-            // PLAK
+        
+        output.append("Reported Throwable:\n");
+        appendStackTrace(output, throwable.getStackTrace(), throwable.toString());
+    }
+    
+    private static void appendStackTrace(StringBuilder output, StackTraceElement[] stackTrace, String header) {
+    	output.append(header).append('\n');
+    	
+    	for (StackTraceElement element : stackTrace) {
+            output.append('\t').append(element).append('\n');
         }
-        output.append("\n");
     }
 
     private static void export(String report) {
