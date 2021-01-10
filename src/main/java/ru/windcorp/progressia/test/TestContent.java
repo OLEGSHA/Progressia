@@ -108,15 +108,15 @@ public class TestContent {
 		register(new BlockRenderOpaqueCube("Test:Concrete", getBlockTexture("ConcreteBlock")));
 		register(new BlockLogic("Test:Concrete"));
 		
-		register(new BlockData("Test:Wood"));
-		register(new BlockRenderOpaqueCube("Test:Wood", 
-				getBlockTexture("Wood"), 
-				getBlockTexture("Wood"), 
-				getBlockTexture("WoodSize"), 
-				getBlockTexture("WoodSize"), 
-				getBlockTexture("WoodSize"), 
-				getBlockTexture("WoodSize")));
-		register(new BlockLogic("Test:Wood"));
+		register(new BlockData("Test:Log"));
+		register(new BlockRenderOpaqueCube("Test:Log", 
+				getBlockTexture("LogTop"), 
+				getBlockTexture("LogTop"), 
+				getBlockTexture("LogSide"), 
+				getBlockTexture("LogSide"), 
+				getBlockTexture("LogSide"), 
+				getBlockTexture("LogSide")));
+		register(new BlockLogic("Test:Log"));
 		
 		register(new BlockData("Test:WoodenPlank"));
 		register(new BlockRenderOpaqueCube("Test:WoodenPlank", getBlockTexture("WoodenPlank")));
@@ -159,9 +159,9 @@ public class TestContent {
 		register(new TileRenderTransparentSurface("Test:SnowQuarter", getTileTexture("SnowQuarter")));
 		register(new HangingTileLogic("Test:SnowQuarter"));
 		
-		register(new TileData("Test:Time"));
-		register(new TileRenderTransparentSurface("Test:Time", getTileTexture("Time")));
-		register(new HangingTileLogic("Test:Time"));
+		register(new TileData("Test:Clock"));
+		register(new TileRenderTransparentSurface("Test:Clock", getTileTexture("Clock")));
+		register(new HangingTileLogic("Test:Clock"));
 		
 		register(new TileData("Test:CeilingTile1"));
 		register(new TileRenderOpaqueSurface("Test:CeilingTile1", getTileTexture("CeilingTile1")));
