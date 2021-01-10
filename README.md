@@ -36,8 +36,8 @@ On GNU/Linux and MacOS:
 
 On Windows:
 
-1. Download and unpack the repository
-3. Run `gradlew.bat buildLocal` in the same directory that contains `gradle.build` file
+1. `git clone https://github.com/OLEGSHA/Progressia.git`
+2. `gradlew.bat buildLocal`
 
 Alternatively use Linux/MacOS steps in a Bash shell.
 
