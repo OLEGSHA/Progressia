@@ -64,7 +64,12 @@ public class LayerTestGUI extends GUILayer {
 				"IsFlyingDisplay", font,
 				() -> String.format("Flying:         %5s (Space bar x2)", TestPlayerControls.getInstance().isFlying())
 		));
-		
+
+		panel.addChild(new Label(
+				"IsSprintDisplay", font,
+				() -> String.format("Sprint:         %5s (W x2)", TestPlayerControls.getInstance().isSprint())
+		));
+
 		panel.addChild(new Label(
 				"IsMouseCapturedDisplay", font,
 				() -> String.format("Mouse captured: %5s (esc)", TestPlayerControls.getInstance().isMouseCaptured())
