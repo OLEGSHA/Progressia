@@ -1,6 +1,7 @@
 package ru.windcorp.progressia.common.modules;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.windcorp.jputil.chars.StringUtil;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
@@ -13,7 +14,7 @@ public abstract class Task
 	
 	private boolean done = false;
 	
-	ArrayList<Task> requiredTasks = new ArrayList<>();
+	List<Task> requiredTasks = new ArrayList<>();
 
 	protected Task(String id) {
 		super(id);
@@ -30,7 +31,6 @@ public abstract class Task
 				}
 			}
 			
-			
 			throw CrashReports.report(new Throwable(),
 					"The following required Tasks are not done:\n%s",
 					StringUtil.iterableToString(undoneTasks, "\n"));
@@ -44,23 +44,18 @@ public abstract class Task
 	// This method will be invoked by Run()
 	protected abstract void perform();
 	
-	public void addRequiredTask(Task task) {
-		if (task.equals(this)) {
-			throw CrashReports.report(new Throwable(), 
-					"It is impossible for the Task (%s) to require itself.", 
-					this.getId());
-		}
-		requiredTasks.add(task);
-	}
-	
 	public boolean isDone() {
 		return done;
 	}
 	
 	public boolean canRun() {
-		for (Task j : requiredTasks) {
-			if (!j.isDone()) return false;
+		for (Task t : requiredTasks) {
+			if (!t.isDone()) return false;
 		}
 		return true;
+	}
+	
+	public List<Task> getRequiredTasks() {
+		return requiredTasks;
 	}
 }
