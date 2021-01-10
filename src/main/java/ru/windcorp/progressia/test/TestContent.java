@@ -98,7 +98,7 @@ public class TestContent {
 		
 		register(new BlockData("Test:Glass"));
 		register(new BlockRenderTransparentCube("Test:Glass", getBlockTexture("Glass")));
-		register(new BlockLogic("Test:Glass"));
+		register(new TestBlockLogicGlass("Test:Glass"));
 		
 		register(new BlockData("Test:Sand"));
 		register(new BlockRenderOpaqueCube("Test:Sand", getBlockTexture("Sand")));
