@@ -16,7 +16,12 @@ bin
 # Ignore MacOS
 **/.DS_Store
 .idea/
-run/
+
+# Ignore the dedicated working directory
+run/*
+
+# ... Except the dummy file inside to make sure that the directory exists
+!run/.dummy
 
 # Ignore package building artifacts
 build_packages/*
