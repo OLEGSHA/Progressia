@@ -17,7 +17,7 @@ note that JDK is not the same as a JRE (Java Runtime Environment), the software 
 you may be able to run Progressia but not compile it.
 
 To check whether you have the correct JDK installed please run
-	`javac --version`.
+	`javac -version`.
 If this command fails or outputs version 1.7 or lower, then you need to (re-)install JDK. (javac is the Java
 Compiler.)
 
