@@ -251,7 +251,7 @@ public class CrashReports {
     	output.append(header).append('\n');
     	
     	for (StackTraceElement element : stackTrace) {
-            output.append('\t').append(element).append('\n');
+            output.append("        ").append(element).append('\n');
         }
     }
 

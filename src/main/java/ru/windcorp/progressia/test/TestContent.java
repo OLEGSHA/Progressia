@@ -73,56 +73,139 @@ public class TestContent {
 		placeableBlacklist.add("Test:Air");
 
 		register(new BlockData("Test:Dirt"));
-		register(new BlockRenderOpaqueCube("Test:Dirt", getBlockTexture("dirt")));
+		register(new BlockRenderOpaqueCube("Test:Dirt", getBlockTexture("Dirt")));
 		register(new BlockLogic("Test:Dirt"));
 
 		register(new BlockData("Test:Stone"));
-		register(new BlockRenderOpaqueCube("Test:Stone", getBlockTexture("stone")));
+		register(new BlockRenderOpaqueCube("Test:Stone", getBlockTexture("Stone")));
 		register(new BlockLogic("Test:Stone"));
 
 		for (String type : new String[] {"Monolith", "Cracked", "Gravel"}) {
 			String id = "Test:Granite" + type;
 			
 			register(new BlockData(id));
-			register(new BlockRenderOpaqueCube(id, getBlockTexture("granite_" + type.toLowerCase())));
+			register(new BlockRenderOpaqueCube(id, getBlockTexture("Granite" + type)));
 			register(new BlockLogic(id));
 		}
+		
+		register(new BlockData("Test:Brick"));
+		register(new BlockRenderOpaqueCube("Test:Brick", getBlockTexture("Brick")));
+		register(new BlockLogic("Test:Brick"));
+		
+		register(new BlockData("Test:BrickWhite"));
+		register(new BlockRenderOpaqueCube("Test:BrickWhite", getBlockTexture("BrickWhite")));
+		register(new BlockLogic("Test:BrickWhite"));
+		
+		register(new BlockData("Test:Glass"));
+		register(new BlockRenderTransparentCube("Test:Glass", getBlockTexture("Glass")));
+		register(new TestBlockLogicGlass("Test:Glass"));
+		
+		register(new BlockData("Test:Sand"));
+		register(new BlockRenderOpaqueCube("Test:Sand", getBlockTexture("Sand")));
+		register(new BlockLogic("Test:Sand"));
+		
+		register(new BlockData("Test:Concrete"));
+		register(new BlockRenderOpaqueCube("Test:Concrete", getBlockTexture("ConcreteBlock")));
+		register(new BlockLogic("Test:Concrete"));
+		
+		register(new BlockData("Test:Log"));
+		register(new BlockRenderOpaqueCube("Test:Log", 
+				getBlockTexture("LogTop"), 
+				getBlockTexture("LogTop"), 
+				getBlockTexture("LogSide"), 
+				getBlockTexture("LogSide"), 
+				getBlockTexture("LogSide"), 
+				getBlockTexture("LogSide")));
+		register(new BlockLogic("Test:Log"));
+		
+		register(new BlockData("Test:WoodenPlank"));
+		register(new BlockRenderOpaqueCube("Test:WoodenPlank", getBlockTexture("WoodenPlank")));
+		register(new BlockLogic("Test:WoodenPlank"));
 		
 		BlockDataRegistry.getInstance().values().forEach(PLACEABLE_BLOCKS::add);
 		PLACEABLE_BLOCKS.removeIf(b -> placeableBlacklist.contains(b.getId()));
 		PLACEABLE_BLOCKS.sort(Comparator.comparing(BlockData::getId));
+		
 	}
 
 	private static void registerTiles() {
 		Set<String> placeableBlacklist = new HashSet<>();
 		
 		register(new TileData("Test:Grass"));
-		register(new TileRenderGrass("Test:Grass", getTileTexture("grass_top"), getTileTexture("grass_side")));
+		register(new TileRenderGrass("Test:Grass", getTileTexture("GrassTop"), getTileTexture("GrassSide")));
 		register(new TestTileLogicGrass("Test:Grass"));
 		
 		register(new TileData("Test:Stones"));
-		register(new TileRenderTransparentSurface("Test:Stones", getTileTexture("stones")));
+		register(new TileRenderTransparentSurface("Test:Stones", getTileTexture("Stones")));
 		register(new HangingTileLogic("Test:Stones"));
 		
 		register(new TileData("Test:YellowFlowers"));
-		register(new TileRenderTransparentSurface("Test:YellowFlowers", getTileTexture("yellow_flowers")));
+		register(new TileRenderTransparentSurface("Test:YellowFlowers", getTileTexture("YellowFlowers")));
 		register(new HangingTileLogic("Test:YellowFlowers"));
 		
 		register(new TileData("Test:Sand"));
-		register(new TileRenderTransparentSurface("Test:Sand", getTileTexture("sand")));
+		register(new TileRenderTransparentSurface("Test:Sand", getTileTexture("Sand")));
 		register(new HangingTileLogic("Test:Sand"));
 		
 		register(new TileData("Test:SnowOpaque"));
-		register(new TileRenderOpaqueSurface("Test:SnowOpaque", getTileTexture("snow_opaque")));
+		register(new TileRenderOpaqueSurface("Test:SnowOpaque", getTileTexture("SnowOpaque")));
 		register(new HangingTileLogic("Test:SnowOpaque"));
 		
 		register(new TileData("Test:SnowHalf"));
-		register(new TileRenderTransparentSurface("Test:SnowHalf", getTileTexture("snow_half")));
+		register(new TileRenderTransparentSurface("Test:SnowHalf", getTileTexture("SnowHalf")));
 		register(new HangingTileLogic("Test:SnowHalf"));
 		
 		register(new TileData("Test:SnowQuarter"));
-		register(new TileRenderTransparentSurface("Test:SnowQuarter", getTileTexture("snow_quarter")));
+		register(new TileRenderTransparentSurface("Test:SnowQuarter", getTileTexture("SnowQuarter")));
 		register(new HangingTileLogic("Test:SnowQuarter"));
+		
+		register(new TileData("Test:Clock"));
+		register(new TileRenderTransparentSurface("Test:Clock", getTileTexture("Clock")));
+		register(new HangingTileLogic("Test:Clock"));
+		
+		register(new TileData("Test:CeilingTile1"));
+		register(new TileRenderOpaqueSurface("Test:CeilingTile1", getTileTexture("CeilingTile1")));
+		register(new HangingTileLogic("Test:CeilingTile1"));
+		
+		register(new TileData("Test:CeilingTile2"));
+		register(new TileRenderOpaqueSurface("Test:CeilingTile2", getTileTexture("CeilingTile2")));
+		register(new HangingTileLogic("Test:CeilingTile2"));
+		
+		register(new TileData("Test:WoodenPlank"));
+		register(new TileRenderOpaqueSurface("Test:WoodenPlank", getTileTexture("WoodenPlank")));
+		register(new HangingTileLogic("Test:WoodenPlank"));
+		
+		register(new TileData("Test:ParquetFloor"));
+		register(new TileRenderOpaqueSurface("Test:ParquetFloor", getTileTexture("ParquetFloor")));
+		register(new HangingTileLogic("Test:ParquetFloor"));
+		
+		register(new TileData("Test:Wallpaper"));
+		register(new TileRenderOpaqueSurface("Test:Wallpaper", getTileTexture("Wallpaper")));
+		register(new HangingTileLogic("Test:Wallpaper"));
+		
+		register(new TileData("Test:WhitePaint"));
+		register(new TileRenderOpaqueSurface("Test:WhitePaint", getTileTexture("WhitePaint")));
+		register(new HangingTileLogic("Test:WhitePaint"));
+		
+		register(new TileData("Test:RoughPaint"));
+		register(new TileRenderOpaqueSurface("Test:RoughPaint", getTileTexture("RoughPaint")));
+		register(new HangingTileLogic("Test:RoughPaint"));
+		
+		register(new TileData("Test:DecorativeBricks"));
+		register(new TileRenderOpaqueSurface("Test:DecorativeBricks", getTileTexture("DecorativeBricks")));
+		register(new HangingTileLogic("Test:DecorativeBricks"));
+		
+		register(new TileData("Test:Painting"));
+		register(new TileRenderTransparentSurface("Test:Painting", getTileTexture("Painting")));
+		register(new HangingTileLogic("Test:Painting"));
+		
+		register(new TileData("Test:TilesLarge"));
+		register(new TileRenderOpaqueSurface("Test:TilesLarge", getTileTexture("TilesLarge")));
+		register(new HangingTileLogic("Test:TilesLarge"));
+		
+		register(new TileData("Test:TilesSmall"));
+		register(new TileRenderOpaqueSurface("Test:TilesSmall", getTileTexture("TilesSmall")));
+		register(new HangingTileLogic("Test:TilesSmall"));
 		
 		TileDataRegistry.getInstance().values().forEach(PLACEABLE_TILES::add);
 		PLACEABLE_TILES.removeIf(b -> placeableBlacklist.contains(b.getId()));

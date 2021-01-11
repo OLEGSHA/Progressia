@@ -27,7 +27,7 @@ public class TestWorldDiskIO {
 	private static final Path SAVE_DIR = Paths.get("tmp_world");
 	private static final Logger LOG = LogManager.getLogger("TestWorldDiskIO");
 	
-	private static final boolean ENABLE = true;
+	private static final boolean ENABLE = false;
 
 	public static void saveChunk(ChunkData chunk, Server server) {
 		if (!ENABLE) return;
