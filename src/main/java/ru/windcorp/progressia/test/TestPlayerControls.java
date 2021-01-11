@@ -38,25 +38,25 @@ public class TestPlayerControls {
     private static final double MIN_JUMP_DELAY = 300 * Units.MILLISECONDS;
 
     // Horizontal and vertical max control speed when flying
-    private static final float FLYING_SPEED = 6.0f * Units.METERS_PER_SECOND;
+    private static final float FLYING_SPEED = Units.get("6 m/s");
 
     // (0; 1], 1 is instant change, 0 is no control authority
     private static final float FLYING_CONTROL_AUTHORITY = Units.get("2 1/s");
 
-    // Horizontal and vertical max control speed when walking
-    private static final float WALKING_SPEED = 4.0f * Units.METERS_PER_SECOND;
+    // Horizontal max control speed when walking
+    private static final float WALKING_SPEED = Units.get("4 m/s");
 
-    // Horizontal and vertical max control speed when run
-    private static final float RUN_SPEED = 6.0f * Units.METERS_PER_SECOND;
+    // Horizontal max control speed when sprinting
+    private static final float SPRINTING_SPEED = Units.get("6 m/s");
 
     // (0; 1], 1 is instant change, 0 is no control authority
     private static final float WALKING_CONTROL_AUTHORITY = Units.get("15 1/s");
 
-    // Vertical velocity instantly add to player when they jump
+    // Vertical velocity instantly added to player when they jump
     private static final float JUMP_VELOCITY = 5f * Units.METERS_PER_SECOND;
 
     private boolean isFlying = true;
-    private boolean isSprint = false;
+    private boolean isSprinting = false;
 
     private int movementForward = 0;
     private int movementRight = 0;
@@ -86,11 +86,8 @@ public class TestPlayerControls {
         if (isFlying) {
             speed = FLYING_SPEED;
             authority = FLYING_CONTROL_AUTHORITY;
-        } else if (isSprint) {
-            speed = RUN_SPEED;
-            authority = WALKING_CONTROL_AUTHORITY;
         } else {
-            speed = WALKING_SPEED;
+            speed = isSprinting ? SPRINTING_SPEED : WALKING_SPEED;
             authority = WALKING_CONTROL_AUTHORITY;
         }
 
@@ -195,7 +192,7 @@ public class TestPlayerControls {
         double timeSinceLastSpacePress = GraphicsInterface.getTime() - lastSpacePress;
 
         if (isPressed && timeSinceLastSpacePress < MODE_SWITCH_MAX_DELAY) {
-            isSprint = false;
+            isSprinting = false;
             isFlying = !isFlying;
             updateGUI();
             movementUp = +1;
@@ -217,14 +214,14 @@ public class TestPlayerControls {
         double timeSinceLastSpacePress = GraphicsInterface.getTime() - lastSprintPress;
 
         if (event.isPress() && timeSinceLastSpacePress < MODE_SPRINT_SWITCH_MAX_DELAY && !isFlying) {
-            isSprint = !isSprint;
+            isSprinting = !isSprinting;
             updateGUI();
         }
 
         lastSprintPress = GraphicsInterface.getTime();
 
-        if (isSprint && event.isRelease()) {
-            isSprint = false;
+        if (isSprinting && event.isRelease()) {
+            isSprinting = false;
             updateGUI();
         }
     }
@@ -359,8 +356,8 @@ public class TestPlayerControls {
         return isFlying;
     }
 
-    public boolean isSprint() {
-        return isSprint;
+    public boolean isSprinting() {
+        return isSprinting;
     }
 
     public boolean isMouseCaptured() {

@@ -66,8 +66,8 @@ public class LayerTestGUI extends GUILayer {
 		));
 
 		panel.addChild(new Label(
-				"IsSprintDisplay", font,
-				() -> String.format("Sprint:         %5s (W x2)", TestPlayerControls.getInstance().isSprint())
+				"IsSprintingDisplay", font,
+				() -> String.format("Sprinting:      %5s (W x2)", TestPlayerControls.getInstance().isSprinting())
 		));
 
 		panel.addChild(new Label(
