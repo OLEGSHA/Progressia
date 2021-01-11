@@ -183,6 +183,30 @@ public class TestContent {
 		register(new TileRenderOpaqueSurface("Test:Wallpaper", getTileTexture("Wallpaper")));
 		register(new HangingTileLogic("Test:Wallpaper"));
 		
+		register(new TileData("Test:WhitePaint"));
+		register(new TileRenderOpaqueSurface("Test:WhitePaint", getTileTexture("WhitePaint")));
+		register(new HangingTileLogic("Test:WhitePaint"));
+		
+		register(new TileData("Test:RoughPaint"));
+		register(new TileRenderOpaqueSurface("Test:RoughPaint", getTileTexture("RoughPaint")));
+		register(new HangingTileLogic("Test:RoughPaint"));
+		
+		register(new TileData("Test:DecorativeBricks"));
+		register(new TileRenderOpaqueSurface("Test:DecorativeBricks", getTileTexture("DecorativeBricks")));
+		register(new HangingTileLogic("Test:DecorativeBricks"));
+		
+		register(new TileData("Test:Painting"));
+		register(new TileRenderTransparentSurface("Test:Painting", getTileTexture("Painting")));
+		register(new HangingTileLogic("Test:Painting"));
+		
+		register(new TileData("Test:TilesLarge"));
+		register(new TileRenderOpaqueSurface("Test:TilesLarge", getTileTexture("TilesLarge")));
+		register(new HangingTileLogic("Test:TilesLarge"));
+		
+		register(new TileData("Test:TilesSmall"));
+		register(new TileRenderOpaqueSurface("Test:TilesSmall", getTileTexture("TilesSmall")));
+		register(new HangingTileLogic("Test:TilesSmall"));
+		
 		TileDataRegistry.getInstance().values().forEach(PLACEABLE_TILES::add);
 		PLACEABLE_TILES.removeIf(b -> placeableBlacklist.contains(b.getId()));
 		PLACEABLE_TILES.sort(Comparator.comparing(TileData::getId));
