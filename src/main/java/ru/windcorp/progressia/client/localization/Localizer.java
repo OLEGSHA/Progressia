@@ -56,6 +56,10 @@ public class Localizer {
 	}
 
 	public synchronized String getValue(String key) {
+		if (data == null) {
+			throw new IllegalStateException("Localizer not yet initialized");
+		}
+		
 		if (data.containsKey(key)) {
 			return data.get(key);
 		} else if (fallBackData.containsKey(key)) {

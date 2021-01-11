@@ -2,11 +2,14 @@ package ru.windcorp.progressia.common.util.crash;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.util.StringBuilderWriter;
 
 import ru.windcorp.jputil.chars.StringUtil;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -244,14 +247,22 @@ public class CrashReports {
         }
         
         output.append("Reported Throwable:\n");
-        appendStackTrace(output, throwable.getStackTrace(), throwable.toString());
+        
+        // Formatting to a human-readable string
+        Writer sink = new StringBuilderWriter(output);
+        try {
+            throwable.printStackTrace(new PrintWriter(sink));
+        } catch (Exception e) {
+            // PLAK
+        }
+        output.append('\n');
     }
     
     private static void appendStackTrace(StringBuilder output, StackTraceElement[] stackTrace, String header) {
     	output.append(header).append('\n');
     	
     	for (StackTraceElement element : stackTrace) {
-            output.append("        ").append(element).append('\n');
+            output.append("\tat ").append(element).append('\n');
         }
     }
 

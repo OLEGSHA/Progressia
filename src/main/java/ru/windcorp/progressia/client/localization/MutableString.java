@@ -1,6 +1,7 @@
 package ru.windcorp.progressia.client.localization;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -16,6 +17,8 @@ public abstract class MutableString {
 
 	protected final Collection<WeakReference<Listener>> listeners =
 			Collections.synchronizedCollection(new LinkedList<>());
+	
+	private Collection<Listener> myListeners = null;
 
 	protected void pokeListeners() {
 		//TODO extract as weak bus listener class
@@ -44,7 +47,13 @@ public abstract class MutableString {
 
 	protected void listen(Object obj) {
 		if (obj instanceof MutableString) {
-			((MutableString) obj).addListener(this::update);
+			if (myListeners == null) {
+				myListeners = new ArrayList<>();
+			}
+			
+			Listener listener = this::update;
+			myListeners.add(listener);
+			((MutableString) obj).addListener(listener);
 		}
 	}
 

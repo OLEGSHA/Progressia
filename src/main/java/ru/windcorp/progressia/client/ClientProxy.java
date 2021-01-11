@@ -26,6 +26,7 @@ import ru.windcorp.progressia.client.graphics.font.GNUUnifontLoader;
 import ru.windcorp.progressia.client.graphics.font.Typefaces;
 import ru.windcorp.progressia.client.graphics.texture.Atlases;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
+import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.common.resource.ResourceManager;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.server.ServerState;
@@ -43,6 +44,8 @@ public class ClientProxy implements Proxy {
 		} catch (InterruptedException e) {
 			throw CrashReports.report(e, "ClientProxy failed");
 		}
+
+		Localizer.getInstance().setLanguage("en-US");
 		
 		TestContent.registerContent();
 		

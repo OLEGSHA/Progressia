@@ -6,6 +6,7 @@ import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import org.lwjgl.glfw.GLFW;
 import ru.windcorp.progressia.client.ClientState;
+import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.backend.InputTracker;
@@ -15,6 +16,7 @@ import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.WheelScrollEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
+import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.FloatMathUtils;
 import ru.windcorp.progressia.common.world.block.BlockData;
@@ -28,9 +30,6 @@ public class TestPlayerControls {
 
     public static TestPlayerControls getInstance() {
         return INSTANCE;
-    }
-
-    private TestPlayerControls() {
     }
 
     private static final double MODE_SWITCH_MAX_DELAY = 300 * Units.MILLISECONDS;
@@ -72,6 +71,7 @@ public class TestPlayerControls {
     private int selectedTile = 0;
     private boolean isBlockSelected = true;
 
+    private LayerTestGUI debugLayer = null;
     private Runnable updateCallback = null;
 
     public void applyPlayerControls() {
@@ -163,6 +163,11 @@ public class TestPlayerControls {
                 if (!event.isPress()) return false;
                 handleEscape();
                 break;
+                
+            case GLFW.GLFW_KEY_F3:
+            	if (!event.isPress()) return false;
+                handleDebugLayerSwitch();
+                break;
 
             case GLFW.GLFW_KEY_F5:
                 if (!event.isPress()) return false;
@@ -172,6 +177,11 @@ public class TestPlayerControls {
             case GLFW.GLFW_KEY_G:
                 if (!event.isPress()) return false;
                 handleGravitySwitch();
+                break;
+                
+            case GLFW.GLFW_KEY_L:
+                if (!event.isPress()) return false;
+                handleLanguageSwitch();
                 break;
 
             case GLFW.GLFW_MOUSE_BUTTON_3:
@@ -186,7 +196,7 @@ public class TestPlayerControls {
         return true;
     }
 
-    private void handleSpace(int multiplier) {
+	private void handleSpace(int multiplier) {
         boolean isPressed = multiplier > 0;
 
         double timeSinceLastSpacePress = GraphicsInterface.getTime() - lastSpacePress;
@@ -251,6 +261,19 @@ public class TestPlayerControls {
         updateGUI();
     }
 
+    private void handleDebugLayerSwitch() {
+    	if (debugLayer == null) {
+	    	this.debugLayer = new LayerTestGUI();
+	    	this.updateCallback = debugLayer.getUpdateCallback();
+    	}
+    	
+    	if (GUI.getLayers().contains(debugLayer)) {
+    		GUI.removeLayer(debugLayer);
+    	} else {
+    		GUI.addTopLayer(debugLayer);
+    	}
+	}
+
     private void handleCameraMode() {
         if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
             return;
@@ -266,6 +289,17 @@ public class TestPlayerControls {
         useMinecraftGravity = !useMinecraftGravity;
         updateGUI();
     }
+
+	private void handleLanguageSwitch() {
+		Localizer localizer = Localizer.getInstance();
+		if (localizer.getLanguage().equals("ru-RU")) {
+			localizer.setLanguage("en-US");
+		} else {
+			localizer.setLanguage("ru-RU");
+		}
+		
+		updateGUI();
+	}
 
     private void onMouseMoved(CursorMoveEvent event) {
         if (!captureMouse) return;
@@ -340,10 +374,6 @@ public class TestPlayerControls {
 
     public LocalPlayer getPlayer() {
         return ClientState.getInstance().getLocalPlayer();
-    }
-
-    public void setUpdateCallback(Runnable updateCallback) {
-        this.updateCallback = updateCallback;
     }
 
     private void updateGUI() {

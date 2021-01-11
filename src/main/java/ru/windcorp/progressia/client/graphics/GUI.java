@@ -18,6 +18,7 @@
 package ru.windcorp.progressia.client.graphics;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.common.eventbus.Subscribe;
@@ -31,7 +32,15 @@ import ru.windcorp.progressia.client.graphics.input.bus.Input;
 
 public class GUI {
 	
-	private static final List<Layer> LAYERS = new ArrayList<>();
+	private static final List<Layer> LAYERS = Collections.synchronizedList(new ArrayList<>());
+	private static final List<Layer> UNMODIFIABLE_LAYERS = Collections.unmodifiableList(LAYERS);
+	
+	@FunctionalInterface
+	private interface LayerStackModification {
+		void affect(List<Layer> layers);
+	}
+	
+	private static final List<LayerStackModification> MODIFICATION_QUEUE = Collections.synchronizedList(new ArrayList<>());
 	
 	private static class ModifiableInput extends Input {
 		@Override
@@ -44,21 +53,34 @@ public class GUI {
 	
 	private GUI() {}
 	
-	public synchronized static void addBottomLayer(Layer layer) {
-		LAYERS.add(layer);
+	public static void addBottomLayer(Layer layer) {
+		modify(layers -> layers.add(layer));
 	}
 	
-	public synchronized static void addTopLayer(Layer layer) {
-		LAYERS.add(0, layer);
+	public static void addTopLayer(Layer layer) {
+		modify(layers -> layers.add(0, layer));
 	}
 	
-	public synchronized static void removeLayer(Layer layer) {
-		LAYERS.remove(layer);
+	public static void removeLayer(Layer layer) {
+		modify(layers -> layers.remove(layer));
 	}
 	
-	public synchronized static void render() {
-		for (int i = LAYERS.size() - 1; i >= 0; --i) {
-			LAYERS.get(i).render();
+	private static void modify(LayerStackModification mod) {
+		MODIFICATION_QUEUE.add(mod);
+	}
+	
+	public static List<Layer> getLayers() {
+		return UNMODIFIABLE_LAYERS;
+	}
+	
+	public static void render() {
+		synchronized (LAYERS) {
+			MODIFICATION_QUEUE.forEach(action -> action.affect(LAYERS));
+			MODIFICATION_QUEUE.clear();
+			
+			for (int i = LAYERS.size() - 1; i >= 0; --i) {
+				LAYERS.get(i).render();
+			}
 		}
 	}
 

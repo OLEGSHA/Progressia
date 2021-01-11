@@ -1,3 +1,22 @@
-# ru-RU
-#test
-Epsilon = Hooray?..
+# en-US
+
+LayerAbout.Title = Progressia
+LayerAbout.Version = Version: %s
+LayerAbout.DebugHint = Debug GUI: F3
+
+LayerTestGUI.IsFlyingDisplay = Flying:         %5s (Space bar x2)
+LayerTestGUI.IsSprintingDisplay = Sprinting:      %5s (W x2)
+LayerTestGUI.IsMouseCapturedDisplay = Mouse captured: %5s (Esc)
+LayerTestGUI.CameraModeDisplay = Camera mode:    %5d (F5)
+LayerTestGUI.GravityModeDisplay = Gravity:    %9s (G)
+LayerTestGUI.LanguageDisplay = Language:       %5s (L)
+LayerTestGUI.FPSDisplay = FPS: 
+LayerTestGUI.TPSDisplay = TPS: 
+LayerTestGUI.TPSDisplay.NA = TPS: n/a
+LayerTestGUI.ChunkUpdatesDisplay = Pending updates: 
+LayerTestGUI.PosDisplay = Pos: 
+LayerTestGUI.PosDisplay.NA.Client = Pos: client n/a
+LayerTestGUI.PosDisplay.NA.Entity = Pos: entity n/a
+LayerTestGUI.SelectedBlockDisplay = %s Block: %s
+LayerTestGUI.SelectedTileDisplay = %s Tile:  %s
+LayerTestGUI.PlacementModeHint = (Blocks %s Tiles: Ctrl + Mouse Wheel)
