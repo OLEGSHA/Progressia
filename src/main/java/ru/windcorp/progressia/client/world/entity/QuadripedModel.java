@@ -1,8 +1,8 @@
 package ru.windcorp.progressia.client.world.entity;
 
 import static java.lang.Math.*;
-import static ru.windcorp.progressia.common.util.FloatMathUtils.*;
-import static ru.windcorp.progressia.common.util.FloatMathUtils.sin;
+import static ru.windcorp.progressia.common.util.FloatMathUtil.*;
+import static ru.windcorp.progressia.common.util.FloatMathUtil.sin;
 
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;

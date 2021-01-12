@@ -4,7 +4,7 @@ import static java.lang.Math.atan2;
 import static java.lang.Math.min;
 import static java.lang.Math.pow;
 import static java.lang.Math.toRadians;
-import static ru.windcorp.progressia.common.util.FloatMathUtils.normalizeAngle;
+import static ru.windcorp.progressia.common.util.FloatMathUtil.normalizeAngle;
 
 import glm.Glm;
 import glm.mat._4.Mat4;

@@ -14,7 +14,6 @@ import glm.vec._3.i.Vec3i;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import ru.windcorp.jputil.functions.ThrowingConsumer;
-import ru.windcorp.progressia.common.io.ChunkCodec;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
@@ -22,6 +21,7 @@ import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.io.ChunkCodec;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 

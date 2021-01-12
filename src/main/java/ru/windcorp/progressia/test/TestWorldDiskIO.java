@@ -15,11 +15,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.io.ChunkIO;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.io.ChunkIO;
 import ru.windcorp.progressia.server.Server;
 
 public class TestWorldDiskIO {

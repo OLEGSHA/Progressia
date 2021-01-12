@@ -5,10 +5,10 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.io.ChunkIO;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.DataBuffer;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
+import ru.windcorp.progressia.common.world.io.ChunkIO;
 
 public class PacketSendChunk extends PacketAffectChunk {
 	

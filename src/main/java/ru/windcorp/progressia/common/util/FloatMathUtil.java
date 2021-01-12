@@ -1,6 +1,6 @@
 package ru.windcorp.progressia.common.util;
 
-public class FloatMathUtils {
+public class FloatMathUtil {
 	
 	public static final float PI_F = (float) Math.PI;
 	
@@ -24,6 +24,6 @@ public class FloatMathUtils {
 		return (float) Math.tan(x);
 	}
 	
-	private FloatMathUtils() {}
+	private FloatMathUtil() {}
 
 }

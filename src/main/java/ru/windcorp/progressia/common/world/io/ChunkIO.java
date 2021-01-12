@@ -1,4 +1,4 @@
-package ru.windcorp.progressia.common.io;
+package ru.windcorp.progressia.common.world.io;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

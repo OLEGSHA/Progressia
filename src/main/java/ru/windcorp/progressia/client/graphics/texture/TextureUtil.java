@@ -15,7 +15,7 @@ import java.util.Hashtable;
 
 import org.lwjgl.BufferUtils;
 
-public class TextureUtils {
+public class TextureUtil {
 	
 	public static final int BYTES_PER_PIXEL = 4; // ARGB
 	
@@ -105,6 +105,6 @@ public class TextureUtils {
 		return output;
 	}
 	
-	private TextureUtils() {}
+	private TextureUtil() {}
 
 }

@@ -24,16 +24,16 @@ public class TextureLoader {
 		int bufferWidth = BinUtil.roundToGreaterPowerOf2(width);
 		int bufferHeight = BinUtil.roundToGreaterPowerOf2(height);
 		
-		WritableRaster raster = TextureUtils.createRaster(
+		WritableRaster raster = TextureUtil.createRaster(
 				bufferWidth, bufferHeight
 		);
 		
-		BufferedImage canvas = TextureUtils.createCanvas(raster);
+		BufferedImage canvas = TextureUtil.createCanvas(raster);
 
 		Graphics2D g = canvas.createGraphics();
 		
 		try {
-			g.setColor(TextureUtils.CANVAS_BACKGROUND);
+			g.setColor(TextureUtil.CANVAS_BACKGROUND);
 			g.fillRect(0, 0, bufferWidth, bufferHeight);
 			g.drawImage(
 					readResult,
@@ -50,7 +50,7 @@ public class TextureLoader {
 		);
 		
 		result.draw(
-				TextureUtils.extractBytes(raster), bufferWidth,
+				TextureUtil.extractBytes(raster), bufferWidth,
 				0, 0, 0, 0, width, height
 		);
 		

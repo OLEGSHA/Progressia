@@ -1,6 +1,6 @@
 package ru.windcorp.progressia.client.graphics.texture;
 
-import static ru.windcorp.progressia.client.graphics.texture.TextureUtils.BYTES_PER_PIXEL;
+import static ru.windcorp.progressia.client.graphics.texture.TextureUtil.BYTES_PER_PIXEL;
 
 import java.nio.ByteBuffer;
 

@@ -39,7 +39,7 @@ import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.colliders.Collider;
-import ru.windcorp.progressia.common.util.FloatMathUtils;
+import ru.windcorp.progressia.common.util.FloatMathUtil;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.test.CollisionModelRenderer;
 import ru.windcorp.progressia.test.TestPlayerControls;
@@ -160,7 +160,7 @@ public class LayerWorld extends Layer {
 		final float scale = 1 - f/2;
 		final Vec4 color = new Vec4(0, 0, 0, 1);
 		
-		for (float phi = 0; phi < 2*FloatMathUtils.PI_F; phi += FloatMathUtils.PI_F/2) {
+		for (float phi = 0; phi < 2*FloatMathUtil.PI_F; phi += FloatMathUtil.PI_F/2) {
 			Mat4 rot = new Mat4().identity().rotateZ(phi).scale(scale);
 			
 			b.addPart(new PppBuilder(p, (Texture) null).setOrigin(

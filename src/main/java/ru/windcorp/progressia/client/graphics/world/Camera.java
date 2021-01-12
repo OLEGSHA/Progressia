@@ -18,7 +18,7 @@
 package ru.windcorp.progressia.client.graphics.world;
 
 import static java.lang.Math.*;
-import static ru.windcorp.progressia.common.util.FloatMathUtils.*;
+import static ru.windcorp.progressia.common.util.FloatMathUtil.*;
 
 import java.util.Collection;
 import java.util.function.Consumer;

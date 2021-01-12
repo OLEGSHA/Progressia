@@ -18,7 +18,7 @@ import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.common.Units;
-import ru.windcorp.progressia.common.util.FloatMathUtils;
+import ru.windcorp.progressia.common.util.FloatMathUtil;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.tile.TileData;
@@ -321,11 +321,11 @@ public class TestPlayerControls {
 
     private void normalizeAngles(Vec2 dir) {
         // Normalize yaw
-        dir.x = FloatMathUtils.normalizeAngle(dir.x);
+        dir.x = FloatMathUtil.normalizeAngle(dir.x);
 
         // Clamp pitch
         dir.y = Glm.clamp(
-                dir.y, -FloatMathUtils.PI_F / 2, +FloatMathUtils.PI_F / 2
+                dir.y, -FloatMathUtil.PI_F / 2, +FloatMathUtil.PI_F / 2
         );
     }
 

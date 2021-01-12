@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import com.google.common.collect.ImmutableList;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.FloatMathUtils;
+import ru.windcorp.progressia.common.util.FloatMathUtil;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
@@ -91,7 +91,7 @@ public class TickChunk extends Evaluation {
 		 * on average, then run 3 random ticks unconditionally
 		 * and run one extra random tick with 0.25 chance
 		 */
-		float unconditionalTicks = FloatMathUtils.floor(ticks);
+		float unconditionalTicks = FloatMathUtil.floor(ticks);
 		float extraTickChance = ticks - unconditionalTicks;
 		
 		for (int i = 0; i < unconditionalTicks; ++i) {

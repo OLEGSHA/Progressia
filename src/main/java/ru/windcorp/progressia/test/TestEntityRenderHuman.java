@@ -15,7 +15,7 @@ import ru.windcorp.progressia.client.world.entity.HumanoidModel;
 import ru.windcorp.progressia.client.world.entity.EntityRender;
 import ru.windcorp.progressia.client.world.entity.EntityRenderRegistry;
 import ru.windcorp.progressia.client.world.entity.EntityRenderable;
-import ru.windcorp.progressia.common.util.FloatMathUtils;
+import ru.windcorp.progressia.common.util.FloatMathUtil;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 import static java.lang.Math.*;
@@ -158,10 +158,10 @@ public class TestEntityRenderHuman extends EntityRender {
 						leftArm,  new Vec3(0, +1.5f, 3 + 3 - 0.5f), 0.0f
 				),
 				new HumanoidModel.Arm(
-						rightArm, new Vec3(0, -1.5f, 3 + 3 - 0.5f), FloatMathUtils.PI_F
+						rightArm, new Vec3(0, -1.5f, 3 + 3 - 0.5f), FloatMathUtil.PI_F
 				),
 				new HumanoidModel.Leg(
-						leftLeg,  new Vec3(0, +0.5f, 3), FloatMathUtils.PI_F
+						leftLeg,  new Vec3(0, +0.5f, 3), FloatMathUtil.PI_F
 				),
 				new HumanoidModel.Leg(
 						rightLeg, new Vec3(0, -0.5f, 3), 0.0f
