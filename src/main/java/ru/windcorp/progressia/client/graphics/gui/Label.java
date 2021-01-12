@@ -6,6 +6,7 @@ import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.localization.MutableString;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 public class Label extends Component {
@@ -31,9 +32,21 @@ public class Label extends Component {
 	}
 	
 	public Label(String name, Font font, MutableString contents) {
-		this(name, font, contents::get);
+		// Not the most elegant solution
 		
-		this.mutableStringListener = this::update;
+		this(name, font, () -> {
+			contents.update();
+			return contents.get();
+		});
+		
+		AtomicBoolean isUpdating = new AtomicBoolean();
+		
+		this.mutableStringListener = () -> {
+			if (isUpdating.compareAndSet(false, true)) {
+				this.update();
+				isUpdating.set(false);
+			}
+		};
 		contents.addListener(mutableStringListener);
 	}
 

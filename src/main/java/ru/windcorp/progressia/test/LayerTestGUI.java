@@ -19,6 +19,7 @@ package ru.windcorp.progressia.test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import glm.vec._3.Vec3;
@@ -35,6 +36,7 @@ import ru.windcorp.progressia.client.graphics.gui.Panel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.localization.Localizer;
+import ru.windcorp.progressia.client.localization.MutableString;
 import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.dynstr.DynamicStrings;
@@ -55,32 +57,32 @@ public class LayerTestGUI extends GUILayer {
 		
 		panel.addChild(new Label(
 				"IsFlyingDisplay", font,
-				new MutableStringLocalized("LayerTestGUI.IsFlyingDisplay").format(tpc.isFlying())
+				tmp_dynFormat("LayerTestGUI.IsFlyingDisplay", tpc::isFlying)
 		));
 
 		panel.addChild(new Label(
 				"IsSprintingDisplay", font,
-				new MutableStringLocalized("LayerTestGUI.IsSprintingDisplay").format(tpc.isSprinting())
+				tmp_dynFormat("LayerTestGUI.IsSprintingDisplay", tpc::isSprinting)
 		));
 
 		panel.addChild(new Label(
 				"IsMouseCapturedDisplay", font,
-				new MutableStringLocalized("LayerTestGUI.IsMouseCapturedDisplay").format(tpc.isMouseCaptured())
+				tmp_dynFormat("LayerTestGUI.IsMouseCapturedDisplay", tpc::isMouseCaptured)
 		));
 		
 		panel.addChild(new Label(
 				"CameraModeDisplay", font,
-				new MutableStringLocalized("LayerTestGUI.CameraModeDisplay").format(ClientState.getInstance().getCamera().getCurrentModeIndex())
+				tmp_dynFormat("LayerTestGUI.CameraModeDisplay", ClientState.getInstance().getCamera()::getCurrentModeIndex)
 		));
 		
 		panel.addChild(new Label(
 				"GravityModeDisplay", font,
-				new MutableStringLocalized("LayerTestGUI.GravityModeDisplay").format(tpc.useMinecraftGravity() ? "Minecraft" : "Realistic")
+				tmp_dynFormat("LayerTestGUI.GravityModeDisplay", () -> tpc.useMinecraftGravity() ? "Minecraft" : "Realistic")
 		));
 		
 		panel.addChild(new Label(
 				"LanguageDisplay", font,
-				new MutableStringLocalized("LayerTestGUI.LanguageDisplay").apply(s -> String.format(s, Localizer.getInstance().getLanguage()))
+				tmp_dynFormat("LayerTestGUI.LanguageDisplay", Localizer.getInstance()::getLanguage)
 		));
 		
 		panel.addChild(new DynamicLabel(
@@ -115,16 +117,16 @@ public class LayerTestGUI extends GUILayer {
 		
 		panel.addChild(new Label(
 				"SelectedBlockDisplay", font,
-				new MutableStringLocalized("LayerTestGUI.SelectedBlockDisplay").format(
-						TestPlayerControls.getInstance().isBlockSelected() ? ">" : " ",
-						TestPlayerControls.getInstance().getSelectedBlock().getId()
+				tmp_dynFormat("LayerTestGUI.SelectedBlockDisplay",
+						() -> tpc.isBlockSelected() ? ">" : " ",
+						() -> tpc.getSelectedBlock().getId()
 				)
 		));
 		panel.addChild(new Label(
 				"SelectedTileDisplay", font,
-				new MutableStringLocalized("LayerTestGUI.SelectedTileDisplay").format(
-						TestPlayerControls.getInstance().isBlockSelected() ? " " : ">",
-						TestPlayerControls.getInstance().getSelectedTile().getId()
+				tmp_dynFormat("LayerTestGUI.SelectedTileDisplay",
+						() -> tpc.isBlockSelected() ? " " : ">",
+						() -> tpc.getSelectedTile().getId()
 				)
 		));
 		panel.addChild(new Label(
@@ -223,6 +225,25 @@ public class LayerTestGUI extends GUILayer {
 		} else {
 			return POS_STRING.get();
 		}
+	}
+	
+	private static MutableString tmp_dynFormat(String formatKey, Supplier<?>... suppliers) {
+		return new MutableStringLocalized(formatKey).apply(s -> {
+			Object[] args = new Object[suppliers.length];
+			
+			for (int i = 0; i < suppliers.length; ++i) {
+				Supplier<?> supplier = suppliers[i];
+				
+				Object value = supplier != null ? supplier.get() : "null";
+				if (!(value instanceof Number)) {
+					value = Objects.toString(value);
+				}
+				
+				args[i] = value;
+			}
+			
+			return String.format(s, args);
+		});
 	}
 	
 //	private static class DebugComponent extends Component {

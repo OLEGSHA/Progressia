@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 import org.lwjgl.BufferUtils;
 
@@ -44,7 +45,7 @@ public class Resource extends Named {
 	}
 
 	public Reader getReader() {
-		return new InputStreamReader(getInputStream());
+		return new InputStreamReader(getInputStream(), StandardCharsets.UTF_8);
 	}
 
 	public String readAsString() {

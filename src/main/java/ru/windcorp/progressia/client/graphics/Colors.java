@@ -50,10 +50,10 @@ public class Colors {
 	}
 	
 	public static Vec4 toVector(int argb, Vec4 output) {
-		output.w = ((argb & 0xFF000000) >>> 24) / 256f; // Alpha
-		output.x = ((argb & 0x00FF0000) >>> 16) / 256f; // Red
-		output.y = ((argb & 0x0000FF00) >>>  8) / 256f; // Green
-		output.z = ((argb & 0x000000FF)       ) / 256f; // Blue
+		output.w = ((argb & 0xFF000000) >>> 24) / (float) 0xFF; // Alpha
+		output.x = ((argb & 0x00FF0000) >>> 16) / (float) 0xFF; // Red
+		output.y = ((argb & 0x0000FF00) >>>  8) / (float) 0xFF; // Green
+		output.z = ((argb & 0x000000FF)       ) / (float) 0xFF; // Blue
 		
 		return output;
 	}
