@@ -1,4 +1,4 @@
-### Eclipse Guide
+# Eclipse Guide
 
 This document is a guide to configuring Eclipse IDE for developing Progressia.
 
@@ -94,7 +94,7 @@ into 'Main Class' field.
 5. In the 'Arguments' tab, put
 `${workspace_loc:Progressia}/run`
 into 'Working directory:' > 'Other' field. Replace `Progressia` with your name of the project.
-Alternatively specify another location outside of the project's root directory.
+Alternatively, specify another location outside of the project's root directory.
 6. Click 'Apply' to save changes. Exit Run Configurations.
 
 Step 5 is required to specify that the game must run in some directory other than the project root,
