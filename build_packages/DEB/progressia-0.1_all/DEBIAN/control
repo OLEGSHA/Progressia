@@ -1,9 +1,0 @@
-Package: Progressia
-Version: 0.1
-Section: custom
-Priority: optional
-Architecture: all
-Essential: no
-Maintainer: Test
-Depends: default-jdk
-Description: Test package

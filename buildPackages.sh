@@ -25,15 +25,20 @@ buildDebianPackage() {
     # Commands that must be available to execute this action
     requiredCommands='dpkg-deb fakeroot'
     
-    # Version that the package will receive
-    version='0.1_all'
+    # Package name. Sync with control file manually!
+    name='progressia-techdemo'
+    # Version that the package will receive. Sync with control file manually!
+    version='1.0_all'
     
-    directory="build_packages/DEB/progressia-$version"
+    # This directory will be copied into $tmpDir
+    templateDirectory="build_packages/DEB/template"
     
-    # .deb control file that must be present
-    configurationFile="$directory/DEBIAN/control"
+    # Files that must be present
+    requiredFiles="$templateDirectory/DEBIAN/control"
     
-    outputFile="build_packages/DEB/progressia-$version.deb"
+    nameAndVersion="$name-$version"
+    tmpDir="build_packages/DEB/$nameAndVersion"
+    outputFile="build_packages/DEB/$nameAndVersion.deb"
 
     echo "Checking environment to build Debian package"
     
@@ -46,26 +51,29 @@ buildDebianPackage() {
         fi
     done
     
-    if ! [ -r "$configurationFile" ]; then
-        echoerr "$configurationFile is missing or not readable, cannot package"
-        exit 101
-    else
-        echo "- $configurationFile is present and readable"
-    fi
+    for file in $requiredFiles; do
+        if ! [ -r "$file" ]; then
+            echoerr "$file is missing or not readable, cannot package"
+            exit 101
+        else
+            echo "- $file is present and readable"
+        fi
+    done
     
     echo "Environment OK; packaging Debian package"
     exitCode=0
     
     {
-        user=`whoami`
-        homeDir="$directory/home/$user/Progressia/"
+        shareDir="$tmpDir/usr/share/progressia"
         
-        mkdir -p "$homeDir"                                         &&
-        cp -r 'build/libs/lib'            "$homeDir/lib"            &&
-        cp    'build/libs/Progressia.jar' "$homeDir/Progressia.jar" &&
-        echo "------ DPKG-DEB ------"                               &&
-        fakeroot dpkg-deb --build "$directory"                      &&
-        echo "---- DPKG-DEB END ----"                               &&
+        mkdir -p "$tmpDir"                                           &&
+        mkdir -p "$shareDir"                                         &&
+        cp -r "$templateDirectory"/*      "$tmpDir"                  &&
+        cp -r 'build/libs/lib'            "$shareDir/lib"            &&
+        cp    'build/libs/Progressia.jar' "$shareDir/Progressia.jar" &&
+        echo "------ DPKG-DEB ------"                                &&
+        fakeroot dpkg-deb --build "$tmpDir"                          &&
+        echo "---- DPKG-DEB END ----"                                &&
         mv "$outputFile" build_packages
     } || {
         echoerr "Could not create Debian package"
@@ -73,8 +81,8 @@ buildDebianPackage() {
     }
     
     {
-        if [ -d "$homeDir" ]; then
-            rm -r "$homeDir"
+        if [ -d "$tmpDir" ]; then
+            rm -r "$tmpDir"
         fi
         echo "Cleaned up"
     } || {
