@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.world.cro;
 
 import java.util.Collection;
@@ -22,29 +23,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChunkRenderOptimizers {
-	
-	private ChunkRenderOptimizers() {}
-	
-	private static final Map<String, ChunkRenderOptimizerSupplier> SUPPLIERS =
-			new HashMap<>();
-	
+
+	private ChunkRenderOptimizers() {
+	}
+
+	private static final Map<String, ChunkRenderOptimizerSupplier> SUPPLIERS = new HashMap<>();
+
 	static {
-		register(ChunkRenderOptimizerSupplier.of(
+		register(
+			ChunkRenderOptimizerSupplier.of(
 				"Default:OpaqueCube",
 				ChunkRenderOptimizerCube::new
-		));
+			)
+		);
 	}
-	
+
 	public static ChunkRenderOptimizerSupplier getSupplier(String id) {
 		return SUPPLIERS.get(id);
 	}
-	
+
 	public static void register(ChunkRenderOptimizerSupplier supplier) {
 		SUPPLIERS.put(supplier.getId(), supplier);
 	}
-	
+
 	public static Collection<ChunkRenderOptimizerSupplier> getAllSuppliers() {
 		return SUPPLIERS.values();
 	}
-	
+
 }

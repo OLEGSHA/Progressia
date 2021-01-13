@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.backend.shaders;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -47,13 +48,17 @@ public class Shader implements OpenGLDeletable {
 		public static ShaderType guessByResourceName(String resource) {
 			resource = resource.toLowerCase(Locale.ENGLISH);
 
-			if (resource.contains("vertex")) return VERTEX;
-			if (resource.contains("fragment")) return FRAGMENT;
-			if (resource.contains("vsh")) return VERTEX;
-			if (resource.contains("fsh")) return FRAGMENT;
-			
+			if (resource.contains("vertex"))
+				return VERTEX;
+			if (resource.contains("fragment"))
+				return FRAGMENT;
+			if (resource.contains("vsh"))
+				return VERTEX;
+			if (resource.contains("fsh"))
+				return FRAGMENT;
+
 			throw new IllegalArgumentException(
-					"Cannot deduce shader type from resource name \"" +
+				"Cannot deduce shader type from resource name \"" +
 					resource + "\""
 			);
 		}
@@ -86,8 +91,8 @@ public class Shader implements OpenGLDeletable {
 
 	public Shader(String resource) {
 		this(
-				ShaderType.guessByResourceName(resource),
-				getShaderResource(resource).readAsString()
+			ShaderType.guessByResourceName(resource),
+			getShaderResource(resource).readAsString()
 		);
 	}
 

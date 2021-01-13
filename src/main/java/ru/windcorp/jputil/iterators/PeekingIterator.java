@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,17 +14,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.iterators;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class PeekingIterator<E> implements Iterator<E> {
-	
+
 	private final Iterator<? extends E> source;
 	private E next = null;
-	
+
 	public PeekingIterator(Iterator<? extends E> source) {
 		this.source = source;
 	}
@@ -33,7 +34,7 @@ public class PeekingIterator<E> implements Iterator<E> {
 	public boolean hasNext() {
 		return next != null || source.hasNext();
 	}
-	
+
 	public E peek() {
 		if (next == null) {
 			if (source.hasNext()) {
@@ -42,14 +43,15 @@ public class PeekingIterator<E> implements Iterator<E> {
 				throw new NoSuchElementException();
 			}
 		}
-		
+
 		return next;
 	}
 
-	// SonarLint: "Iterator.next()" methods should throw "NoSuchElementException" (java:S2272)
-	//   peek() throws NoSuchElementException as expected
+	// SonarLint: "Iterator.next()" methods should throw
+	// "NoSuchElementException" (java:S2272)
+	// peek() throws NoSuchElementException as expected
 	@SuppressWarnings("squid:S2272")
-	
+
 	@Override
 	public E next() {
 		E element = peek();

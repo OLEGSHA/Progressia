@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.functions;
 
 import java.util.function.BiConsumer;
@@ -24,7 +25,7 @@ import java.util.function.Consumer;
 public interface ThrowingConsumer<T, E extends Exception> {
 
 	void accept(T t) throws E;
-	
+
 	@SuppressWarnings("unchecked")
 	default Consumer<T> withHandler(BiConsumer<? super T, ? super E> handler) {
 		return t -> {
@@ -37,26 +38,35 @@ public interface ThrowingConsumer<T, E extends Exception> {
 			}
 		};
 	}
-	
-	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(ThrowingConsumer<? super T, ? extends E> first, ThrowingConsumer<? super T, ? extends E> second) {
+
+	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(
+		ThrowingConsumer<? super T, ? extends E> first,
+		ThrowingConsumer<? super T, ? extends E> second
+	) {
 		return t -> {
 			first.accept(t);
 			second.accept(t);
 		};
 	}
-	
-	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(Consumer<? super T> first, ThrowingConsumer<? super T, ? extends E> second) {
+
+	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(
+		Consumer<? super T> first,
+		ThrowingConsumer<? super T, ? extends E> second
+	) {
 		return t -> {
 			first.accept(t);
 			second.accept(t);
 		};
 	}
-	
-	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(ThrowingConsumer<? super T, ? extends E> first, Consumer<? super T> second) {
+
+	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(
+		ThrowingConsumer<? super T, ? extends E> first,
+		Consumer<? super T> second
+	) {
 		return t -> {
 			first.accept(t);
 			second.accept(t);
 		};
 	}
-	
+
 }

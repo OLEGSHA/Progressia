@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.chars;
 
 import java.text.CharacterIterator;
@@ -106,14 +107,17 @@ public class CharArrayIterator implements CharacterIterator {
 	public int getIndex() {
 		return pos;
 	}
-	
+
 //	@SuppressWarnings("all") Just STFU, this _is_ terrific
-	
+
 	// SonarLint: "clone" should not be overridden (java:S2975)
-	//   And I wouldn't have done that if only CharacterIterator had not required exception safety.
-	// SonarLint: "toString()" and "clone()" methods should not return null (java:S2225)
-	//   The clause is unreachable: CharacterArrayIterator implements Cloneable and superclass is Object.
-	@SuppressWarnings({"squid:S2975", "squid:S2225"})
+	// And I wouldn't have done that if only CharacterIterator had not required
+	// exception safety.
+	// SonarLint: "toString()" and "clone()" methods should not return null
+	// (java:S2225)
+	// The clause is unreachable: CharacterArrayIterator implements Cloneable
+	// and superclass is Object.
+	@SuppressWarnings({ "squid:S2975", "squid:S2225" })
 
 	@Override
 	public CharArrayIterator clone() {

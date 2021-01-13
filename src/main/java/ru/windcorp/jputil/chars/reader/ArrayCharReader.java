@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.chars.reader;
 
 import java.util.Objects;
@@ -23,10 +24,9 @@ import ru.windcorp.jputil.ArrayUtil;
 
 /**
  * @author Javapony
- *
  */
 public class ArrayCharReader extends AbstractCharReader {
-	
+
 	private final char[] array;
 	private final int offset;
 	private final int length;
@@ -42,12 +42,13 @@ public class ArrayCharReader extends AbstractCharReader {
 	 */
 	@Override
 	public char current() {
-		if (position >= length) return DONE;
-		if (position < 0) 
+		if (position >= length)
+			return DONE;
+		if (position < 0)
 			throw new IllegalStateException("Position " + position + " is invalid");
 		return array[position + offset];
 	}
-	
+
 	/**
 	 * @see ru.windcorp.jputil.chars.reader.CharReader#remaining()
 	 */

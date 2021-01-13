@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,26 +14,27 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.gui.event;
 
 import ru.windcorp.progressia.client.graphics.gui.Component;
 
 public class ParentChangedEvent extends HierarchyEvent {
-	
+
 	private final Component previousParent;
 	private final Component newParent;
-	
+
 	public ParentChangedEvent(Component component, Component previousParent, Component newParent) {
 		super(component);
 		this.previousParent = previousParent;
 		this.newParent = newParent;
 	}
-	
+
 	public Component getPreviousParent() {
 		return previousParent;
 	}
-	
+
 	public Component getNewParent() {
 		return newParent;
 	}

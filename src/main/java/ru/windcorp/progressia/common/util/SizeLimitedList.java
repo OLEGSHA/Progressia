@@ -1,3 +1,21 @@
+/*
+ * Progressia
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+ 
 package ru.windcorp.progressia.common.util;
 
 import java.util.Collection;
@@ -8,15 +26,15 @@ import java.util.RandomAccess;
 import com.google.common.collect.ForwardingList;
 
 public class SizeLimitedList<E> extends ForwardingList<E> {
-	
+
 	private static final class RandomAccessSizeLimitedList<E>
-	extends SizeLimitedList<E>
-	implements RandomAccess {
+		extends SizeLimitedList<E>
+		implements RandomAccess {
 		protected RandomAccessSizeLimitedList(List<E> parent, int maxSize) {
 			super(parent, maxSize);
 		}
 	}
-	
+
 	public static <E> List<E> wrap(List<E> list, int maxSize) {
 		if (list instanceof RandomAccess) {
 			return new RandomAccessSizeLimitedList<>(list, maxSize);
@@ -24,9 +42,9 @@ public class SizeLimitedList<E> extends ForwardingList<E> {
 			return new SizeLimitedList<>(list, maxSize);
 		}
 	}
-	
+
 	private final List<E> delegate;
-	
+
 	private final int maxSize;
 
 	protected SizeLimitedList(List<E> parent, int maxSize) {
@@ -59,7 +77,7 @@ public class SizeLimitedList<E> extends ForwardingList<E> {
 	private void checkMaxSize() {
 		if (size() >= maxSize) {
 			throw new UnsupportedOperationException(
-					"Maximum size " + maxSize + " reached"
+				"Maximum size " + maxSize + " reached"
 			);
 		}
 	}

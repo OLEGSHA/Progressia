@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,11 +14,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.common.util;
 
 public class BinUtil {
-	
+
 	public static int closestGreaterPowerOf2(int x) {
 		x |= x >> 1;
 		x |= x >> 2;
@@ -27,11 +28,11 @@ public class BinUtil {
 		x |= x >> 16;
 		return x + 1;
 	}
-	
+
 	public static int roundToGreaterPowerOf2(int x) {
 		return closestGreaterPowerOf2(x - 1);
 	}
-	
+
 	public static boolean isPowerOf2(int x) {
 		return (x > 0) && ((x & (x - 1)) == 0);
 	}

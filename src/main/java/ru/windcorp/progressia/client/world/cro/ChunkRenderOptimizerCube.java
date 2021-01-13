@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.world.cro;
 
 import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
@@ -40,42 +41,42 @@ import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
-	
+
 	public static interface OpaqueCube {
 		public Texture getTexture(BlockFace face);
+
 		public boolean isOpaque(BlockFace face);
+
 		public boolean isBlockOpaque();
 	}
-	
+
 	public static interface OpaqueSurface {
 		public Texture getTexture(BlockFace face);
+
 		public boolean isOpaque(BlockFace face);
 	}
-	
+
 	private static class BlockInfo {
 		OpaqueCube block;
 		final FaceInfo[] faces = new FaceInfo[BLOCK_FACE_COUNT];
-		
+
 		{
 			for (int i = 0; i < faces.length; ++i) {
 				faces[i] = new FaceInfo();
 			}
 		}
 	}
-	
+
 	private static class FaceInfo {
 		static final int NO_OPAQUE_TILES = -1;
-		
+
 		int topOpaqueTile = NO_OPAQUE_TILES;
 		final OpaqueSurface[] tiles = new OpaqueSurface[TILES_PER_FACE];
 		int tileCount = 0;
 	}
-	
-	private final BlockInfo[][][] data = 
-			new BlockInfo[BLOCKS_PER_CHUNK]
-			             [BLOCKS_PER_CHUNK]
-			             [BLOCKS_PER_CHUNK];
-	
+
+	private final BlockInfo[][][] data = new BlockInfo[BLOCKS_PER_CHUNK][BLOCKS_PER_CHUNK][BLOCKS_PER_CHUNK];
+
 	{
 		for (int x = 0; x < BLOCKS_PER_CHUNK; ++x) {
 			for (int y = 0; y < BLOCKS_PER_CHUNK; ++y) {
@@ -93,14 +94,16 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 
 	@Override
 	public void processBlock(BlockRender block, Vec3i pos) {
-		if (!(block instanceof OpaqueCube)) return;
+		if (!(block instanceof OpaqueCube))
+			return;
 		OpaqueCube opaqueCube = (OpaqueCube) block;
 		addBlock(pos, opaqueCube);
 	}
-	
+
 	@Override
 	public void processTile(TileRender tile, Vec3i pos, BlockFace face) {
-		if (!(tile instanceof OpaqueSurface)) return;
+		if (!(tile instanceof OpaqueSurface))
+			return;
 		OpaqueSurface opaqueTile = (OpaqueSurface) tile;
 		addTile(pos, face, opaqueTile);
 	}
@@ -108,37 +111,37 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 	protected void addBlock(Vec3i pos, OpaqueCube cube) {
 		getBlock(pos).block = cube;
 	}
-	
+
 	private void addTile(Vec3i pos, BlockFace face, OpaqueSurface opaqueTile) {
 		FaceInfo faceInfo = getFace(pos, face);
-		
+
 		int index = faceInfo.tileCount;
 		faceInfo.tileCount++;
-		
+
 		faceInfo.tiles[index] = opaqueTile;
-		
+
 		if (opaqueTile.isOpaque(face)) {
 			faceInfo.topOpaqueTile = index;
 		}
 	}
-	
+
 	protected BlockInfo getBlock(Vec3i cursor) {
 		return data[cursor.x][cursor.y][cursor.z];
 	}
-	
+
 	protected FaceInfo getFace(Vec3i cursor, BlockFace face) {
 		return getBlock(cursor).faces[face.getId()];
 	}
 
 	@Override
 	public Shape endRender() {
-		
+
 		Collection<Face> shapeFaces = new ArrayList<>(
-				BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * 3
+			BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * 3
 		);
-		
+
 		Vec3i cursor = new Vec3i();
-		
+
 		for (cursor.x = 0; cursor.x < BLOCKS_PER_CHUNK; ++cursor.x) {
 			for (cursor.y = 0; cursor.y < BLOCKS_PER_CHUNK; ++cursor.y) {
 				for (cursor.z = 0; cursor.z < BLOCKS_PER_CHUNK; ++cursor.z) {
@@ -147,96 +150,106 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 				}
 			}
 		}
-		
+
 		return new Shape(
-				Usage.STATIC,
-				WorldRenderProgram.getDefault(),
-				shapeFaces.toArray(new Face[shapeFaces.size()])
+			Usage.STATIC,
+			WorldRenderProgram.getDefault(),
+			shapeFaces.toArray(new Face[shapeFaces.size()])
 		);
 	}
-	
+
 	private void processOuterFaces(
-			Vec3i cursor,
-			Consumer<Face> output
+		Vec3i cursor,
+		Consumer<Face> output
 	) {
 		for (BlockFace face : BlockFace.getFaces()) {
-			if (!shouldRenderOuterFace(cursor, face)) continue;
-			
+			if (!shouldRenderOuterFace(cursor, face))
+				continue;
+
 			Vec3 faceOrigin = new Vec3(cursor.x, cursor.y, cursor.z);
 			Vec3 offset = new Vec3(face.getVector().x, face.getVector().y, face.getVector().z).mul(1f / 128);
-			
+
 			FaceInfo info = getFace(cursor, face);
-			
+
 			if (info.topOpaqueTile == FaceInfo.NO_OPAQUE_TILES) {
 				OpaqueCube block = getBlock(cursor).block;
-				
+
 				if (block != null) {
 					addFace(
-							faceOrigin, face,
-							getBlock(cursor).block.getTexture(face), 
-							output
+						faceOrigin,
+						face,
+						getBlock(cursor).block.getTexture(face),
+						output
 					);
-					
+
 					faceOrigin.add(offset);
 				}
 			}
-			
+
 			int startLayer = info.topOpaqueTile;
 			if (startLayer == FaceInfo.NO_OPAQUE_TILES) {
 				startLayer = 0;
 			}
-			
+
 			for (int layer = startLayer; layer < info.tileCount; ++layer) {
 				addFace(
-						faceOrigin, face,
-						info.tiles[layer].getTexture(face),
-						output
+					faceOrigin,
+					face,
+					info.tiles[layer].getTexture(face),
+					output
 				);
-				
+
 				faceOrigin.add(offset);
 			}
 		}
 	}
-	
+
 	private void addFace(
-			Vec3 cursor, BlockFace face,
-			Texture texture,
-			Consumer<Face> output
+		Vec3 cursor,
+		BlockFace face,
+		Texture texture,
+		Consumer<Face> output
 	) {
-		if (texture == null) return;
-		
-		output.accept(Faces.createBlockFace(
+		if (texture == null)
+			return;
+
+		output.accept(
+			Faces.createBlockFace(
 				WorldRenderProgram.getDefault(),
 				texture,
 				Colors.WHITE,
 				new Vec3(cursor),
 				face,
 				false
-		));
+			)
+		);
 	}
 
 	private boolean shouldRenderOuterFace(Vec3i cursor, BlockFace face) {
 		cursor.add(face.getVector());
 		try {
-			
+
 			// TODO handle neighboring chunks properly
-			if (!isInBounds(cursor)) return true;
-			
+			if (!isInBounds(cursor))
+				return true;
+
 			OpaqueCube adjacent = getBlock(cursor).block;
-			
-			if (adjacent == null) return true;
-			if (adjacent.isOpaque(face)) return false;
-			
+
+			if (adjacent == null)
+				return true;
+			if (adjacent.isOpaque(face))
+				return false;
+
 			return true;
-			
+
 		} finally {
 			cursor.sub(face.getVector());
 		}
 	}
 
 	private void processInnerFaces(
-			Vec3i cursor,
-			Consumer<Face> output
+		Vec3i cursor,
+		Consumer<Face> output
 	) {
 //		if (block.isBlockOpaque()) return;
 //		
@@ -258,10 +271,9 @@ public class ChunkRenderOptimizerCube extends ChunkRenderOptimizer {
 	}
 
 	private boolean isInBounds(Vec3i cursor) {
-		return
-				isInBounds(cursor.x) &&
-				isInBounds(cursor.y) &&
-				isInBounds(cursor.z);
+		return isInBounds(cursor.x) &&
+			isInBounds(cursor.y) &&
+			isInBounds(cursor.z);
 	}
 
 	private boolean isInBounds(int c) {

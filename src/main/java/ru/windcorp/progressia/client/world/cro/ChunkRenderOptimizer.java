@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.world.cro;
 
 import glm.vec._3.i.Vec3i;
@@ -25,19 +26,20 @@ import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public abstract class ChunkRenderOptimizer {
-	
+
 	public abstract void startRender(ChunkRender chunk);
-	
+
 	public abstract void processBlock(
-			BlockRender block,
-			Vec3i posInChunk
+		BlockRender block,
+		Vec3i posInChunk
 	);
-	
+
 	public abstract void processTile(
-			TileRender tile,
-			Vec3i posInChunk, BlockFace face
+		TileRender tile,
+		Vec3i posInChunk,
+		BlockFace face
 	);
-	
+
 	public abstract Shape endRender();
 
 }

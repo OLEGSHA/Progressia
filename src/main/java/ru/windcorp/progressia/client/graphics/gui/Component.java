@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.gui;
 
 import java.util.Collections;
@@ -474,8 +475,11 @@ public class Component extends Named {
 		eventBus.post(event);
 	}
 
-	public <T extends InputEvent> void addListener(Class<? extends T> type, boolean handlesConsumed,
-			InputListener<T> listener) {
+	public <T extends InputEvent> void addListener(
+		Class<? extends T> type,
+		boolean handlesConsumed,
+		InputListener<T> listener
+	) {
 		if (inputBus == null) {
 			inputBus = new InputBus();
 		}
@@ -506,16 +510,16 @@ public class Component extends Named {
 	public void dispatchInput(Input input) {
 		try {
 			switch (input.getTarget()) {
-				case FOCUSED:
-					dispatchInputToFocused(input);
-					break;
-				case HOVERED:
-					dispatchInputToHovered(input);
-					break;
-				case ALL:
-				default:
-					dispatchInputToAll(input);
-					break;
+			case FOCUSED:
+				dispatchInputToFocused(input);
+				break;
+			case HOVERED:
+				dispatchInputToHovered(input);
+				break;
+			case ALL:
+			default:
+				dispatchInputToAll(input);
+				break;
 			}
 		} catch (Exception e) {
 			throw CrashReports.report(e, "Could not dispatch input to Component %s", this);

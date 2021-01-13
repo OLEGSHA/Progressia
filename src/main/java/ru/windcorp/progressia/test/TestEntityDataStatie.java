@@ -1,3 +1,21 @@
+/*
+ * Progressia
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+ 
 package ru.windcorp.progressia.test;
 
 import ru.windcorp.progressia.common.collision.AABB;
@@ -5,28 +23,27 @@ import ru.windcorp.progressia.common.state.IntStateField;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class TestEntityDataStatie extends EntityData {
-	
-	private final IntStateField size =
-			field("Test:Size").setShared().ofInt().build();
+
+	private final IntStateField size = field("Test:Size").setShared().ofInt().build();
 
 	public TestEntityDataStatie() {
 		this("Test:Statie");
 	}
-	
+
 	protected TestEntityDataStatie(String id) {
 		super(id);
 		setCollisionModel(new AABB(0, 0, 0, 1, 1, 1));
 		setSizeNow(16);
 	}
-	
+
 	public int getSize() {
 		return size.get(this);
 	}
-	
+
 	public void setSizeNow(int size) {
 		this.size.setNow(this, size);
 	}
-	
+
 	@Override
 	public float getCollisionMass() {
 		return 50f;

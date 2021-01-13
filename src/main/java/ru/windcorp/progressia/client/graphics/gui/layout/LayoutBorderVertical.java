@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.gui.layout;
 
 import static java.lang.Math.max;
@@ -24,18 +25,17 @@ import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.Layout;
 
 public class LayoutBorderVertical implements Layout {
-	
-	public static final String
-			CENTER = "Center",
-			UP = "Up",
-			DOWN = "Down";
-	
+
+	public static final String CENTER = "Center",
+		UP = "Up",
+		DOWN = "Down";
+
 	private final int margin;
-	
+
 	public LayoutBorderVertical(int margin) {
 		this.margin = margin;
 	}
-	
+
 	public LayoutBorderVertical() {
 		this(1);
 	}
@@ -43,37 +43,41 @@ public class LayoutBorderVertical implements Layout {
 	@Override
 	public void layout(Component c) {
 		int top = 0, bottom = 0;
-		
+
 		Vec2i childSize;
-		
-		synchronized (c.getChildren()) { 
+
+		synchronized (c.getChildren()) {
 			for (Component child : c.getChildren()) {
 				if (child.getLayoutHint() == UP) {
 					childSize = child.getPreferredSize();
 					top = childSize.y + margin;
 					child.setBounds(
-							c.getX(),
-							c.getY(),
-							c.getWidth(),
-							childSize.y);
+						c.getX(),
+						c.getY(),
+						c.getWidth(),
+						childSize.y
+					);
 				} else if (child.getLayoutHint() == DOWN) {
 					childSize = child.getPreferredSize();
 					bottom = childSize.y + margin;
 					child.setBounds(
-							c.getX(),
-							c.getY() + c.getHeight() - childSize.y,
-							c.getWidth(), childSize.y);
+						c.getX(),
+						c.getY() + c.getHeight() - childSize.y,
+						c.getWidth(),
+						childSize.y
+					);
 				}
 			}
-			
+
 			for (Component child : c.getChildren()) {
 				if (child.getLayoutHint() == CENTER) {
 					child.setBounds(
-							c.getX(),
-							c.getY() + top,
-							c.getWidth(),
-							c.getHeight() - top - bottom);
-					
+						c.getX(),
+						c.getY() + top,
+						c.getWidth(),
+						c.getHeight() - top - bottom
+					);
+
 				}
 			}
 		}
@@ -83,14 +87,14 @@ public class LayoutBorderVertical implements Layout {
 	public Vec2i calculatePreferredSize(Component c) {
 		Vec2i result = new Vec2i(0, 0);
 		int up = 0, down = 0;
-		
+
 		Vec2i childSize;
-		
-		synchronized (c.getChildren()) { 
+
+		synchronized (c.getChildren()) {
 			for (Component child : c.getChildren()) {
 				childSize = child.getPreferredSize();
 				if (child.getLayoutHint() instanceof String) {
-					
+
 					if (child.getLayoutHint() == UP) {
 						up = max(up, childSize.y + margin);
 						result.x = max(result.x, childSize.x);
@@ -100,7 +104,7 @@ public class LayoutBorderVertical implements Layout {
 						result.x = max(result.x, childSize.x);
 						continue;
 					}
-					
+
 				}
 
 				result.x = max(result.x, childSize.x);
@@ -108,10 +112,10 @@ public class LayoutBorderVertical implements Layout {
 			}
 		}
 		result.y += up + down;
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "(" + margin + ")";

@@ -1,3 +1,21 @@
+/*
+ * Progressia
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+ 
 package ru.windcorp.progressia.test;
 
 import ru.windcorp.progressia.client.graphics.Colors;
@@ -14,29 +32,38 @@ public class LayerAbout extends GUILayer {
 
 	public LayerAbout() {
 		super("LayerAbout", new LayoutAlign(1, 1, 5));
-		
+
 		Panel panel = new Panel("ControlDisplays", new LayoutVertical(5));
-		
+
 		Font font = new Font().withColor(Colors.WHITE).deriveOutlined().withAlign(Typeface.ALIGN_RIGHT);
 		Font aboutFont = font.withColor(0xFF37A3E6).deriveBold();
-		
-		panel.addChild(new Label(
-				"About", aboutFont,
+
+		panel.addChild(
+			new Label(
+				"About",
+				aboutFont,
 				new MutableStringLocalized("LayerAbout.Title")
-		));
-		
-		panel.addChild(new Label(
-				"Version", font,
+			)
+		);
+
+		panel.addChild(
+			new Label(
+				"Version",
+				font,
 				new MutableStringLocalized("LayerAbout.Version").format("pre-TechDemo")
-		));
-		
-		panel.addChild(new Label(
-				"DebugHint", font,
+			)
+		);
+
+		panel.addChild(
+			new Label(
+				"DebugHint",
+				font,
 				new MutableStringLocalized("LayerAbout.DebugHint")
-		));
-		
+			)
+		);
+
 		getRoot().addChild(panel);
-		
+
 	}
 
 }

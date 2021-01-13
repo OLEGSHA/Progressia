@@ -100,6 +100,18 @@ Alternatively, specify another location outside of the project's root directory.
 Step 5 is required to specify that the game must run in some directory other than the project root,
 which is the default in Eclipse.
 
+### Applying formatting templates
+
+Windcorp's Progressia repository is formatted with a style defined for Eclipse IDE in
+`templates_and_presets/eclipse_ide`.
+Please apply these templates to the project to automatically format the source in a similar fashion.
+
+1. In project context menu, click 'Properties'.
+2. In 'Java Code Style' > 'Code Templates', check 'Enable project specific settings', then click 'Import' and select 
+`templates_and_presets/eclipse_ide/CodeTemplates.xml`.
+3. In 'Java Code Style' > 'Formatter', check 'Enable project specific settings', then click 'Import' and select
+`templates_and_presets/eclipse_ide/FormatterProfile.xml`.
+
 ## Common problems
 
 ### Buildship plugin fails with a cryptic message

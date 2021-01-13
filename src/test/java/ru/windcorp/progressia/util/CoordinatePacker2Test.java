@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.util;
 
 import static org.junit.Assert.assertEquals;
@@ -26,7 +27,7 @@ import org.junit.Test;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
 
 public class CoordinatePacker2Test {
-	
+
 	@Test
 	public void cornerCases() {
 		check(0, 0);
@@ -34,36 +35,37 @@ public class CoordinatePacker2Test {
 		check(42, 0);
 		check(1, 1);
 		check(-1, -1);
-		
-		for (int a : new int[] {Integer.MAX_VALUE, Integer.MIN_VALUE, 0}) {
-			for (int b : new int[] {Integer.MAX_VALUE, Integer.MIN_VALUE, 0}) {
+
+		for (int a : new int[] { Integer.MAX_VALUE, Integer.MIN_VALUE, 0 }) {
+			for (int b : new int[] { Integer.MAX_VALUE, Integer.MIN_VALUE, 0 }) {
 				check(a, b);
 			}
 		}
 	}
-	
+
 	@Test
 	public void randomValues() {
-		Random random = new Random(0);;
-		
+		Random random = new Random(0);
+		;
+
 		for (int i = 0; i < 1000000; ++i) {
 			check(
-					random.nextInt(),
-					random.nextInt()
+				random.nextInt(),
+				random.nextInt()
 			);
 		}
 	}
 
 	private void check(int a, int b) {
-		
+
 		long packed = CoordinatePacker.pack2IntsIntoLong(a, b);
-		
+
 		int unpackedA = CoordinatePacker.unpack2IntsFromLong(packed, 0);
 		int unpackedB = CoordinatePacker.unpack2IntsFromLong(packed, 1);
-		
+
 		assertEquals(a, unpackedA);
 		assertEquals(b, unpackedB);
-		
+
 	}
 
 }

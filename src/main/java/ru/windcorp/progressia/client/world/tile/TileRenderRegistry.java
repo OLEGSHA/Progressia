@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.world.tile;
 
 import ru.windcorp.progressia.client.graphics.texture.Atlases;
@@ -25,26 +26,25 @@ import ru.windcorp.progressia.common.resource.ResourceManager;
 import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
 public class TileRenderRegistry extends NamespacedInstanceRegistry<TileRender> {
-	
+
 	private static final TileRenderRegistry INSTANCE = new TileRenderRegistry();
-	
-	private static final AtlasGroup TILES_ATLAS_GROUP =
-			new AtlasGroup("Tiles", 1 << 12);
+
+	private static final AtlasGroup TILES_ATLAS_GROUP = new AtlasGroup("Tiles", 1 << 12);
 
 	public static TileRenderRegistry getInstance() {
 		return INSTANCE;
 	}
-	
+
 	public static AtlasGroup getTilesAtlasGroup() {
 		return TILES_ATLAS_GROUP;
 	}
-	
+
 	public static Texture getTileTexture(String name) {
 		return new SimpleTexture(
-				Atlases.getSprite(
-						ResourceManager.getTextureResource("tiles/" + name),
-						TILES_ATLAS_GROUP
-				)
+			Atlases.getSprite(
+				ResourceManager.getTextureResource("tiles/" + name),
+				TILES_ATLAS_GROUP
+			)
 		);
 	}
 

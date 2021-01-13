@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,27 +14,27 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.chars.reader;
 
 /**
  * @author Javapony
- *
  */
 public abstract class BufferedCharReader extends AbstractCharReader {
-	
+
 	protected static final int DEFAULT_BUFFER_SIZE = 256;
 	/**
 	 * Buffer to store data acquired with {@link #pullChars(char[], int, int)}.
 	 * Contains characters for positions <code>[0; bufferNextIndex)</code>.
 	 */
 	private char[] buffer = new char[DEFAULT_BUFFER_SIZE];
-	
+
 	/**
 	 * The index of the next character.
 	 */
 	private int bufferNextIndex = 0;
-	
+
 	/**
 	 * Whether this reader has been buffered completely.
 	 */
@@ -42,7 +42,9 @@ public abstract class BufferedCharReader extends AbstractCharReader {
 
 	/**
 	 * Acquires the next character.
-	 * @return the character or {@link #DONE} if the end of the reader has been reached
+	 * 
+	 * @return the character or {@link #DONE} if the end of the reader has been
+	 *         reached
 	 */
 	protected abstract char pullChar();
 
@@ -60,53 +62,57 @@ public abstract class BufferedCharReader extends AbstractCharReader {
 				return i;
 			}
 		}
-		
+
 		return length;
 	}
-	
+
 	private int pullChars(int offset, int length) {
-		if (exhausted || length == 0) return 0;
-		
+		if (exhausted || length == 0)
+			return 0;
+
 		int pulled = pullChars(buffer, offset, length);
 		if (pulled != length) {
 			exhausted = true;
 		}
-		
+
 		return pulled;
 	}
-	
+
 	@Override
 	public char current() {
 		if (getPosition() < 0) {
 			throw new IllegalStateException("Position " + getPosition() + " is invalid");
 		}
-			
+
 		if (getPosition() >= bufferNextIndex) {
-			if (exhausted) return DONE;
-			
+			if (exhausted)
+				return DONE;
+
 			ensureBufferCapacity();
-			
+
 			int needToPull = getPosition() - bufferNextIndex + 1;
 			assert needToPull <= buffer.length : "buffer size not ensured!";
-			
+
 			int pulled = pullChars(bufferNextIndex, needToPull);
 			bufferNextIndex += pulled;
-			
-			if (exhausted) return DONE;
+
+			if (exhausted)
+				return DONE;
 		}
-		
+
 		// TODO test the shit out of current()
-		
+
 		return buffer[getPosition()];
 	}
 
 	private void ensureBufferCapacity() {
-		if (getPosition() < buffer.length) return;
+		if (getPosition() < buffer.length)
+			return;
 		char[] newBuffer = new char[closestGreaterPowerOf2(getPosition())];
 		System.arraycopy(buffer, 0, newBuffer, 0, bufferNextIndex);
 		buffer = newBuffer;
 	}
-	
+
 	/**
 	 * @see ru.windcorp.jputil.chars.reader.CharReader#remaining()
 	 */
@@ -115,7 +121,7 @@ public abstract class BufferedCharReader extends AbstractCharReader {
 		if (exhausted) {
 			return Math.max(bufferNextIndex - getPosition(), 0);
 		}
-		
+
 		return super.remaining();
 	}
 

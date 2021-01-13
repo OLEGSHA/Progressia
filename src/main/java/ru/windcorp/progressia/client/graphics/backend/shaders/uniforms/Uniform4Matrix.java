@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.backend.shaders.uniforms;
 
 import static org.lwjgl.opengl.GL20.*;
@@ -28,17 +29,17 @@ public class Uniform4Matrix extends Uniform {
 	public Uniform4Matrix(int handle, Program program) {
 		super(handle, program);
 	}
-	
+
 	public void set(float[] value) {
 		glUniformMatrix4fv(handle, false, value);
 	}
-	
+
 	public void set(FloatBuffer value) {
 		glUniformMatrix4fv(handle, false, value);
 	}
-	
+
 	private static final float[] BUFFER = new float[4 * 4];
-	
+
 	public void set(Mat4 value) {
 		glUniformMatrix4fv(handle, false, value.toFa(BUFFER));
 	}

@@ -1,17 +1,21 @@
-/* 
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
- * 
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+ 
 package ru.windcorp.jputil;
 
 import java.util.function.*;
@@ -35,10 +39,14 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 /**
- * Contains static methods to create {@link Stream Streams} that synchronize their
- * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#StreamOps">
+ * Contains static methods to create {@link Stream Streams} that synchronize
+ * their
+ * <a href=
+ * "https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#StreamOps">
  * terminal operations</a> on a given monitor.
- * @author Javapony (<a href="mailto:kvadropups@gmail.com">kvadropups@gmail.com</a>)
+ * 
+ * @author Javapony
+ *         (<a href="mailto:kvadropups@gmail.com">kvadropups@gmail.com</a>)
  */
 
 // SonarLint: "Stream.peek" should be used with caution (java:S3864)
@@ -48,7 +56,7 @@ import java.util.stream.Stream;
 public class SyncStreams {
 
 	public static class SyncStream<T> implements Stream<T> {
-		
+
 		private final Stream<T> parent;
 		private final Object monitor;
 
@@ -56,15 +64,15 @@ public class SyncStreams {
 			this.parent = parent;
 			this.monitor = monitor == null ? this : monitor;
 		}
-		
+
 		public Stream<T> getParent() {
 			return parent;
 		}
-		
+
 		public Object getMonitor() {
 			return monitor;
 		}
-		
+
 		/*
 		 * Returns null when child streams should sync on themselves
 		 */
@@ -307,9 +315,9 @@ public class SyncStreams {
 		}
 
 	}
-	
+
 	public static class SyncIntStream implements IntStream {
-		
+
 		private final IntStream parent;
 		private final Object monitor;
 
@@ -317,15 +325,15 @@ public class SyncStreams {
 			this.parent = parent;
 			this.monitor = monitor == null ? this : monitor;
 		}
-		
+
 		public IntStream getParent() {
 			return parent;
 		}
-		
+
 		public Object getMonitor() {
 			return monitor;
 		}
-		
+
 		/*
 		 * Returns null when child streams should sync on themselves
 		 */
@@ -392,7 +400,7 @@ public class SyncStreams {
 		public DoubleStream mapToDouble(IntToDoubleFunction mapper) {
 			return synchronizedStream(parent.mapToDouble(mapper), getInheritableMonitor());
 		}
-		
+
 		@Override
 		public <U> Stream<U> mapToObj(IntFunction<? extends U> mapper) {
 			return synchronizedStream(parent.mapToObj(mapper), getInheritableMonitor());
@@ -563,9 +571,9 @@ public class SyncStreams {
 		}
 
 	}
-	
+
 	public static class SyncLongStream implements LongStream {
-		
+
 		private final LongStream parent;
 		private final Object monitor;
 
@@ -573,11 +581,11 @@ public class SyncStreams {
 			this.parent = parent;
 			this.monitor = monitor == null ? this : monitor;
 		}
-		
+
 		public LongStream getParent() {
 			return parent;
 		}
-		
+
 		public Object getMonitor() {
 			return monitor;
 		}
@@ -648,7 +656,7 @@ public class SyncStreams {
 		public DoubleStream mapToDouble(LongToDoubleFunction mapper) {
 			return synchronizedStream(parent.mapToDouble(mapper), getInheritableMonitor());
 		}
-		
+
 		@Override
 		public <U> Stream<U> mapToObj(LongFunction<? extends U> mapper) {
 			return synchronizedStream(parent.mapToObj(mapper), getInheritableMonitor());
@@ -814,9 +822,9 @@ public class SyncStreams {
 		}
 
 	}
-	
+
 	public static class SyncDoubleStream implements DoubleStream {
-		
+
 		private final DoubleStream parent;
 		private final Object monitor;
 
@@ -824,11 +832,11 @@ public class SyncStreams {
 			this.parent = parent;
 			this.monitor = monitor == null ? this : monitor;
 		}
-		
+
 		public DoubleStream getParent() {
 			return parent;
 		}
-		
+
 		public Object getMonitor() {
 			return monitor;
 		}
@@ -899,7 +907,7 @@ public class SyncStreams {
 		public LongStream mapToLong(DoubleToLongFunction mapper) {
 			return synchronizedStream(parent.mapToLong(mapper), getInheritableMonitor());
 		}
-		
+
 		@Override
 		public <U> Stream<U> mapToObj(DoubleFunction<? extends U> mapper) {
 			return synchronizedStream(parent.mapToObj(mapper), getInheritableMonitor());
@@ -1063,148 +1071,200 @@ public class SyncStreams {
 
 	/**
 	 * Wraps the given {@link Stream} to make all
-	 * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#StreamOps">
-	 * terminal operations</a> acquire the provided monitor's lock before execution. Intermediate operations
-	 * return streams that are also synchronized on the same object. The created stream will behave identically
-	 * to the provided stream in all other aspects. Use this to synchronize access to stream's source.
-	 * <p><i>The returned {@code Stream}'s {@link Stream#iterator() iterator()} and {@link Stream#spliterator()
-	 * spliterator()} methods return regular non-synchronized iterators and spliterators respectively</i>. It
+	 * <a href=
+	 * "https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#StreamOps">
+	 * terminal operations</a> acquire the provided monitor's lock before
+	 * execution. Intermediate operations
+	 * return streams that are also synchronized on the same object. The created
+	 * stream will behave identically
+	 * to the provided stream in all other aspects. Use this to synchronize
+	 * access to stream's source.
+	 * <p>
+	 * <i>The returned {@code Stream}'s {@link Stream#iterator() iterator()} and
+	 * {@link Stream#spliterator()
+	 * spliterator()} methods return regular non-synchronized iterators and
+	 * spliterators respectively</i>. It
 	 * is the user's responsibility to avoid concurrency issues:
+	 * 
 	 * <pre>
 	 * synchronized (stream.getMonitor()) {
 	 *     Iterator<T> it = stream.iterator();
 	 *         ...
 	 * }
 	 * </pre>
+	 * 
 	 * Usage example:
+	 * 
 	 * <pre>
 	 * Set&lt;Object&gt; s = Collections.synchronizedSet(new HashSet&lt;&gt;());
 	 *    ...
 	 * Stream&lt;?&gt; stream = SyncStreams.synchronizedStream(s.stream(), s);
 	 * stream = stream.map(Object::toString); // Still synchronized
-	 * stream.forEach(System.out::println); // Should never throw a ConcurrentModificationException 
+	 * stream.forEach(System.out::println); // Should never throw a ConcurrentModificationException
 	 * </pre>
 	 * 
-	 * @param <T> the class of objects in the Stream
-	 * @param stream the stream to wrap.
-	 * @param monitor the object that the stream will use for synchronization. When {@code null}, the stream
-	 * will synchronize on itself.
-	 * @return a {@link SyncStream SyncStream&lt;T&gt;} synchronized on {@code monitor} and backed by {@code stream}.
+	 * @param <T>     the class of objects in the Stream
+	 * @param stream  the stream to wrap.
+	 * @param monitor the object that the stream will use for synchronization.
+	 *                When {@code null}, the stream
+	 *                will synchronize on itself.
+	 * @return a {@link SyncStream SyncStream&lt;T&gt;} synchronized on
+	 *         {@code monitor} and backed by {@code stream}.
 	 * @throws NullPointerException if {@code stream == null}.
 	 */
 	public static <T> SyncStream<T> synchronizedStream(Stream<T> stream, Object monitor) {
 		Objects.requireNonNull(stream, "stream cannot be null");
 		return new SyncStream<>(stream, monitor);
 	}
-	
+
 	/**
 	 * Wraps the given {@link IntStream} to make all
-	 * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#StreamOps">
-	 * terminal operations</a> acquire the provided monitor's lock before execution. Intermediate operations
-	 * return streams that are also synchronized on the same object. The created stream will behave identically
-	 * to the provided stream in all other aspects. Use this to synchronize access to stream's source.
-	 * <p><i>The returned {@code IntStream}'s {@link IntStream#iterator() iterator()} and
-	 * {@link IntStream#spliterator() spliterator()} methods return regular non-synchronized iterators and
-	 * spliterators respectively</i>. It is the user's responsibility to avoid concurrency issues:
+	 * <a href=
+	 * "https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#StreamOps">
+	 * terminal operations</a> acquire the provided monitor's lock before
+	 * execution. Intermediate operations
+	 * return streams that are also synchronized on the same object. The created
+	 * stream will behave identically
+	 * to the provided stream in all other aspects. Use this to synchronize
+	 * access to stream's source.
+	 * <p>
+	 * <i>The returned {@code IntStream}'s {@link IntStream#iterator()
+	 * iterator()} and
+	 * {@link IntStream#spliterator() spliterator()} methods return regular
+	 * non-synchronized iterators and
+	 * spliterators respectively</i>. It is the user's responsibility to avoid
+	 * concurrency issues:
+	 * 
 	 * <pre>
 	 * synchronized (stream.getMonitor()) {
 	 *     PrimitiveIterator.OfInt it = stream.iterator();
 	 *         ...
 	 * }
 	 * </pre>
+	 * 
 	 * Usage example:
+	 * 
 	 * <pre>
 	 * Set&lt;Object&gt; s = Collections.synchronizedSet(new HashSet&lt;&gt;());
 	 *    ...
 	 * IntStream stream = SyncStreams.synchronizedStream(s.stream().mapToInt(Object::hashCode), s);
 	 * stream = stream.map(i -&gt; i % 67); // Still synchronized
-	 * stream.forEach(System.out::println); // Should never throw a ConcurrentModificationException 
+	 * stream.forEach(System.out::println); // Should never throw a ConcurrentModificationException
 	 * </pre>
 	 * 
-	 * @param stream the stream to wrap.
-	 * @param monitor the object that the stream will use for synchronization. When {@code null}, the stream
-	 * will synchronize on itself.
-	 * @return a {@link SyncIntStream} synchronized on {@code monitor} and backed by {@code stream}.
+	 * @param stream  the stream to wrap.
+	 * @param monitor the object that the stream will use for synchronization.
+	 *                When {@code null}, the stream
+	 *                will synchronize on itself.
+	 * @return a {@link SyncIntStream} synchronized on {@code monitor} and
+	 *         backed by {@code stream}.
 	 * @throws NullPointerException if {@code stream == null}.
 	 */
 	public static SyncIntStream synchronizedStream(IntStream stream, Object monitor) {
 		Objects.requireNonNull(stream, "stream cannot be null");
 		return new SyncIntStream(stream, monitor);
 	}
-	
+
 	/**
 	 * Wraps the given {@link LongStream} to make all
-	 * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#StreamOps">
-	 * terminal operations</a> acquire the provided monitor's lock before execution. Intermediate operations
-	 * return streams that are also synchronized on the same object. The created stream will behave identically
-	 * to the provided stream in all other aspects. Use this to synchronize access to stream's source.
-	 * <p><i>The returned {@code LongStream}'s {@link LongStream#iterator() iterator()} and
-	 * {@link LongStream#spliterator() spliterator()} methods return regular non-synchronized iterators and
-	 * spliterators respectively</i>. It is the user's responsibility to avoid concurrency issues:
+	 * <a href=
+	 * "https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#StreamOps">
+	 * terminal operations</a> acquire the provided monitor's lock before
+	 * execution. Intermediate operations
+	 * return streams that are also synchronized on the same object. The created
+	 * stream will behave identically
+	 * to the provided stream in all other aspects. Use this to synchronize
+	 * access to stream's source.
+	 * <p>
+	 * <i>The returned {@code LongStream}'s {@link LongStream#iterator()
+	 * iterator()} and
+	 * {@link LongStream#spliterator() spliterator()} methods return regular
+	 * non-synchronized iterators and
+	 * spliterators respectively</i>. It is the user's responsibility to avoid
+	 * concurrency issues:
+	 * 
 	 * <pre>
 	 * synchronized (stream.getMonitor()) {
 	 *     PrimitiveIterator.OfLong it = stream.iterator();
 	 *         ...
 	 * }
 	 * </pre>
+	 * 
 	 * Usage example:
+	 * 
 	 * <pre>
 	 * Set&lt;Object&gt; s = Collections.synchronizedSet(new HashSet&lt;&gt;());
 	 *    ...
 	 * LongStream stream = SyncStreams.synchronizedStream(s.stream().mapToLong(o -&gt; (long) o.hashCode()), s);
 	 * stream = stream.map(i -&gt; i % 67); // Still synchronized
-	 * stream.forEach(System.out::println); // Should never throw a ConcurrentModificationException 
+	 * stream.forEach(System.out::println); // Should never throw a ConcurrentModificationException
 	 * </pre>
 	 * 
-	 * @param stream the stream to wrap.
-	 * @param monitor the object that the stream will use for synchronization. When {@code null}, the stream
-	 * will synchronize on itself.
-	 * @return a {@link SyncLongStream} synchronized on {@code monitor} and backed by {@code stream}.
+	 * @param stream  the stream to wrap.
+	 * @param monitor the object that the stream will use for synchronization.
+	 *                When {@code null}, the stream
+	 *                will synchronize on itself.
+	 * @return a {@link SyncLongStream} synchronized on {@code monitor} and
+	 *         backed by {@code stream}.
 	 * @throws NullPointerException if {@code stream == null}.
 	 */
 	public static SyncLongStream synchronizedStream(LongStream stream, Object monitor) {
 		Objects.requireNonNull(stream, "stream cannot be null");
 		return new SyncLongStream(stream, monitor);
 	}
-	
+
 	/**
 	 * Wraps the given {@link DoubleStream} to make all
-	 * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#StreamOps">
-	 * terminal operations</a> acquire the provided monitor's lock before execution. Intermediate operations
-	 * return streams that are also synchronized on the same object. The created stream will behave identically
-	 * to the provided stream in all other aspects. Use this to synchronize access to stream's source.
-	 * <p><i>The returned {@code DoubleStream}'s {@link DoubleStream#iterator() iterator()} and
-	 * {@link DoubleStream#spliterator() spliterator()} methods return regular non-synchronized iterators and
-	 * spliterators respectively</i>. It is the user's responsibility to avoid concurrency issues:
+	 * <a href=
+	 * "https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#StreamOps">
+	 * terminal operations</a> acquire the provided monitor's lock before
+	 * execution. Intermediate operations
+	 * return streams that are also synchronized on the same object. The created
+	 * stream will behave identically
+	 * to the provided stream in all other aspects. Use this to synchronize
+	 * access to stream's source.
+	 * <p>
+	 * <i>The returned {@code DoubleStream}'s {@link DoubleStream#iterator()
+	 * iterator()} and
+	 * {@link DoubleStream#spliterator() spliterator()} methods return regular
+	 * non-synchronized iterators and
+	 * spliterators respectively</i>. It is the user's responsibility to avoid
+	 * concurrency issues:
+	 * 
 	 * <pre>
 	 * synchronized (stream.getMonitor()) {
 	 *     PrimitiveIterator.OfDouble it = stream.iterator();
 	 *         ...
 	 * }
 	 * </pre>
+	 * 
 	 * Usage example:
+	 * 
 	 * <pre>
 	 * Set&lt;Object&gt; s = Collections.synchronizedSet(new HashSet&lt;&gt;());
 	 *    ...
 	 * DoubleStream stream = SyncStreams.synchronizedStream(s.stream().mapToLong(o -&gt; (double) o.hashCode()), s);
 	 * stream = stream.map(Math::sin); // Still synchronized
-	 * stream.forEach(System.out::println); // Should never throw a ConcurrentModificationException 
+	 * stream.forEach(System.out::println); // Should never throw a ConcurrentModificationException
 	 * </pre>
 	 * 
-	 * @param stream the stream to wrap.
-	 * @param monitor the object that the stream will use for synchronization. When {@code null}, the stream
-	 * will synchronize on itself.
-	 * @return a {@link SyncDoubleStream} synchronized on {@code monitor} and backed by {@code stream}.
+	 * @param stream  the stream to wrap.
+	 * @param monitor the object that the stream will use for synchronization.
+	 *                When {@code null}, the stream
+	 *                will synchronize on itself.
+	 * @return a {@link SyncDoubleStream} synchronized on {@code monitor} and
+	 *         backed by {@code stream}.
 	 * @throws NullPointerException if {@code stream == null}.
 	 */
 	public static SyncDoubleStream synchronizedStream(DoubleStream stream, Object monitor) {
 		Objects.requireNonNull(stream, "stream cannot be null");
 		return new SyncDoubleStream(stream, monitor);
 	}
-	
+
 	/*
 	 * Private constructor
 	 */
-	private SyncStreams() {}
-	
+	private SyncStreams() {
+	}
+
 }

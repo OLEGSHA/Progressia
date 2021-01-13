@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.util;
 
 import static org.junit.Assert.assertFalse;
@@ -34,15 +35,15 @@ import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.util.namespaces.NamespacedUtil;
 
 public class NamespacedTest {
-	
+
 	class TestNamespaced extends Namespaced {
 
 		public TestNamespaced(String id) {
 			super(id);
 		}
-		
+
 	}
-	
+
 	void shouldReject(String a, String b) {
 		try {
 			new TestNamespaced(NamespacedUtil.getId(a, b));
@@ -53,10 +54,10 @@ public class NamespacedTest {
 				return;
 			}
 		}
-		
+
 		throw new AssertionFailedError("Expected NPE or IllegalIdException for: \"" + a + "\":\"" + b + "\"");
 	}
-	
+
 	@Test
 	public void shouldAllow() {
 		new TestNamespaced("Something:Usual");
@@ -64,13 +65,13 @@ public class NamespacedTest {
 		new TestNamespaced("ALL:CAPS");
 		new TestNamespaced("WithDigits12345:MoreDigits67890");
 	}
-	
+
 	@Test
 	public void shouldRejectNulls() {
 		shouldReject(null, "Normal");
 		shouldReject(null, null);
 	}
-	
+
 	@Test
 	public void shouldRejectInvalid() {
 		shouldReject("Contains-hyphens", "Normal");
@@ -84,7 +85,7 @@ public class NamespacedTest {
 		shouldReject("Contains:separators", "Normal");
 		shouldReject("СодержитНеАльфанум", "Normal");
 	}
-	
+
 	@Test
 	public void shouldRejectGarbage() {
 		Random random = new Random(0);
@@ -96,36 +97,36 @@ public class NamespacedTest {
 			shouldReject(new String(bytes), "ContainsUtterGarbage");
 		}
 	}
-	
+
 	@Test
 	public void testHashCodeAndEquals() {
 		HashSet<TestNamespaced> hashSet = new HashSet<>();
-		
+
 		Collection<TestNamespaced> contains = new ArrayList<>();
 		Collection<TestNamespaced> doesNotContain = new ArrayList<>();
-		
+
 		Random random = new Random(0);
-		
+
 		for (int i = 0; i < 256; ++i) {
 			String namespace = getRandomValidString(random);
 			String name = getRandomValidString(random);
-			
+
 			TestNamespaced a = new TestNamespaced(NamespacedUtil.getId(namespace, name));
 			TestNamespaced b = new TestNamespaced(NamespacedUtil.getId(namespace, name));
-			
+
 			contains.add(a);
 			hashSet.add(b);
 		}
-		
+
 		for (int i = 0; i < 256; ++i) {
 			String namespace = getRandomValidString(random);
 			String name = getRandomValidString(random);
-			
+
 			TestNamespaced c = new TestNamespaced(NamespacedUtil.getId(namespace, name));
-			
+
 			doesNotContain.add(c);
 		}
-		
+
 		for (TestNamespaced x : contains) {
 			Iterator<TestNamespaced> it = doesNotContain.iterator();
 			while (it.hasNext()) {
@@ -135,19 +136,19 @@ public class NamespacedTest {
 				}
 			}
 		}
-		
+
 		for (TestNamespaced test : contains) {
 			assertTrue(hashSet.contains(test));
 		}
-		
+
 		for (TestNamespaced test : doesNotContain) {
 			assertFalse(hashSet.contains(test));
 		}
 	}
-	
+
 	String getRandomValidString(Random random) {
 		char[] chars = new char[random.nextInt(NamespacedUtil.MAX_NAME_LENGTH - 3) + 3];
-		
+
 		for (int i = 0; i < chars.length; ++i) {
 			switch (random.nextInt(3)) {
 			case 0:
@@ -165,7 +166,7 @@ public class NamespacedTest {
 				break;
 			}
 		}
-		
+
 		return new String(chars);
 	}
 

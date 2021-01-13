@@ -1,3 +1,21 @@
+/*
+ * Progressia
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+ 
 package ru.windcorp.progressia.server.world.tasks;
 
 import java.util.ArrayList;
@@ -25,27 +43,26 @@ import ru.windcorp.progressia.server.world.tile.TileLogic;
 import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
 
 public class TickChunk extends Evaluation {
-	
-	private static final int CHUNK_VOLUME =
-			ChunkData.BLOCKS_PER_CHUNK *
-			ChunkData.BLOCKS_PER_CHUNK *
-			ChunkData.BLOCKS_PER_CHUNK;
-	
+
+	private static final int CHUNK_VOLUME = ChunkData.BLOCKS_PER_CHUNK *
+		ChunkData.BLOCKS_PER_CHUNK *
+		ChunkData.BLOCKS_PER_CHUNK;
+
 	private final List<Consumer<Server>> randomTickMethods;
-	
+
 	{
 		List<Consumer<Server>> randomTickMethods = new ArrayList<>();
 		randomTickMethods.add(this::tickRandomBlock);
-		
+
 		for (BlockFace face : BlockFace.getFaces()) {
 			randomTickMethods.add(s -> this.tickRandomTile(s, face));
 		}
-		
+
 		this.randomTickMethods = ImmutableList.copyOf(randomTickMethods);
 	}
-	
+
 	private final ChunkLogic chunk;
-	
+
 	public TickChunk(ChunkLogic chunk) {
 		this.chunk = chunk;
 	}
@@ -62,10 +79,11 @@ public class TickChunk extends Evaluation {
 	}
 
 	private void tickRegularBlocks(Server server) {
-		if (!chunk.hasTickingBlocks()) return;
-		
+		if (!chunk.hasTickingBlocks())
+			return;
+
 		TickContextMutable context = TickContextMutable.uninitialized();
-		
+
 		chunk.forEachTickingBlock((blockInChunk, block) -> {
 			context.rebuild().withChunk(chunk).withBlockInChunk(blockInChunk).build();
 			((TickableBlock) block).tick(context);
@@ -73,10 +91,11 @@ public class TickChunk extends Evaluation {
 	}
 
 	private void tickRegularTiles(Server server) {
-		if (!chunk.hasTickingTiles()) return;
-		
+		if (!chunk.hasTickingTiles())
+			return;
+
 		TickContextMutable context = TickContextMutable.uninitialized();
-		
+
 		chunk.forEachTickingTile((ref, tile) -> {
 			context.rebuild().withServer(server).withTile(ref);
 			((TickableTile) tile).tick(context);
@@ -85,7 +104,7 @@ public class TickChunk extends Evaluation {
 
 	private void tickRandom(Server server) {
 		float ticks = computeRandomTicks(server);
-		
+
 		/*
 		 * If we are expected to run 3.25 random ticks per tick
 		 * on average, then run 3 random ticks unconditionally
@@ -93,74 +112,76 @@ public class TickChunk extends Evaluation {
 		 */
 		float unconditionalTicks = FloatMathUtil.floor(ticks);
 		float extraTickChance = ticks - unconditionalTicks;
-		
+
 		for (int i = 0; i < unconditionalTicks; ++i) {
 			tickRandomOnce(server);
 		}
-		
+
 		if (server.getAdHocRandom().nextFloat() < extraTickChance) {
 			tickRandomOnce(server);
 		}
 	}
-	
+
 	private void tickRandomOnce(Server server) {
 		// Pick a target at random: a block or one of 3 primary block faces
 		randomTickMethods.get(
-				server.getAdHocRandom().nextInt(randomTickMethods.size())
+			server.getAdHocRandom().nextInt(randomTickMethods.size())
 		).accept(server);
 	}
-	
+
 	private void tickRandomBlock(Server server) {
 		Random random = server.getAdHocRandom();
-		
+
 		Vec3i blockInChunk = new Vec3i(
-				random.nextInt(BLOCKS_PER_CHUNK),
-				random.nextInt(BLOCKS_PER_CHUNK),
-				random.nextInt(BLOCKS_PER_CHUNK)
+			random.nextInt(BLOCKS_PER_CHUNK),
+			random.nextInt(BLOCKS_PER_CHUNK),
+			random.nextInt(BLOCKS_PER_CHUNK)
 		);
 
 		BlockLogic block = this.chunk.getBlock(blockInChunk);
-		
-		if (!(block instanceof TickableBlock)) return;
+
+		if (!(block instanceof TickableBlock))
+			return;
 		TickableBlock tickable = (TickableBlock) block;
-		
-		TickContextMutable context =
-				TickContextMutable.start().withChunk(chunk).withBlockInChunk(blockInChunk).build();
-		
-		if (tickable.getTickingPolicy(context) != TickingPolicy.RANDOM) return;
+
+		TickContextMutable context = TickContextMutable.start().withChunk(chunk).withBlockInChunk(blockInChunk).build();
+
+		if (tickable.getTickingPolicy(context) != TickingPolicy.RANDOM)
+			return;
 		tickable.tick(context);
 	}
-	
+
 	private void tickRandomTile(Server server, BlockFace face) {
 		Random random = server.getAdHocRandom();
-		
+
 		Vec3i blockInChunk = new Vec3i(
-				random.nextInt(BLOCKS_PER_CHUNK),
-				random.nextInt(BLOCKS_PER_CHUNK),
-				random.nextInt(BLOCKS_PER_CHUNK)
+			random.nextInt(BLOCKS_PER_CHUNK),
+			random.nextInt(BLOCKS_PER_CHUNK),
+			random.nextInt(BLOCKS_PER_CHUNK)
 		);
 
 		TileDataStack tiles = this.chunk.getData().getTilesOrNull(blockInChunk, face);
-		if (tiles == null || tiles.isEmpty()) return;
-		
+		if (tiles == null || tiles.isEmpty())
+			return;
+
 		TSTickContext context = TickContextMutable.start().withServer(server).withTS(tiles).build();
-		
+
 		context.forEachTile(tctxt -> {
 			TileLogic logic = tctxt.getTile();
-			if (!(logic instanceof TickableTile)) return;
+			if (!(logic instanceof TickableTile))
+				return;
 			TickableTile tickable = (TickableTile) logic;
-			
-			if (tickable.getTickingPolicy(tctxt) != TickingPolicy.RANDOM) return;
+
+			if (tickable.getTickingPolicy(tctxt) != TickingPolicy.RANDOM)
+				return;
 			tickable.tick(tctxt);
 		});
 	}
 
 	private float computeRandomTicks(Server server) {
-		return (float) (
-				server.getTickingSettings().getRandomTickFrequency() *
-				CHUNK_VOLUME * randomTickMethods.size() *
-				server.getTickLength()
-		);
+		return (float) (server.getTickingSettings().getRandomTickFrequency() *
+			CHUNK_VOLUME * randomTickMethods.size() *
+			server.getTickLength());
 	}
 
 	@Override

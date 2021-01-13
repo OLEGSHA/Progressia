@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.model;
 
 import java.util.ArrayList;
@@ -24,14 +25,14 @@ import java.util.Objects;
 import glm.mat._4.Mat4;
 
 public class StaticModel extends Model {
-	
+
 	private static final Mat4 IDENTITY = new Mat4();
-	
+
 	private final Mat4[] transforms;
 
 	public StaticModel(
-			Renderable[] parts,
-			Mat4[] transforms
+		Renderable[] parts,
+		Mat4[] transforms
 	) {
 		super(parts);
 		this.transforms = transforms;
@@ -40,47 +41,48 @@ public class StaticModel extends Model {
 	public StaticModel(Builder builder) {
 		this(builder.getParts(), builder.getTransforms());
 	}
-	
+
 	@Override
 	protected Mat4 getTransform(int partIndex) {
 		return transforms[partIndex];
 	}
-	
+
 	public static Builder builder() {
 		return new Builder();
 	}
-	
+
 	public static class Builder {
-		
+
 		private final List<Renderable> parts = new ArrayList<>();
 		private final List<Mat4> transforms = new ArrayList<>();
-		
-		protected Builder() {}
-		
+
+		protected Builder() {
+		}
+
 		public Builder addPart(
-				Renderable part,
-				Mat4 transform
+			Renderable part,
+			Mat4 transform
 		) {
 			parts.add(Objects.requireNonNull(part, "part"));
 			transforms.add(Objects.requireNonNull(transform, "transform"));
-			
+
 			return this;
 		}
-		
+
 		public Builder addPart(
-				Renderable part
+			Renderable part
 		) {
 			return addPart(part, IDENTITY);
 		}
-		
+
 		private Renderable[] getParts() {
 			return parts.toArray(new Renderable[parts.size()]);
 		}
-		
+
 		private Mat4[] getTransforms() {
 			return transforms.toArray(new Mat4[transforms.size()]);
 		}
-		
+
 	}
 
 }

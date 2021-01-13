@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.test;
 
 import java.util.ArrayList;
@@ -44,99 +45,146 @@ import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.ServerState;
 
 public class LayerTestGUI extends GUILayer {
-	
+
 	public LayerTestGUI() {
 		super("LayerTestGui", new LayoutAlign(0, 1, 5));
-		
+
 		Panel panel = new Panel("ControlDisplays", new LayoutVertical(5));
-		
+
 		Vec4 color = Colors.WHITE;
 		Font font = new Font().withColor(color).deriveOutlined();
-		
+
 		TestPlayerControls tpc = TestPlayerControls.getInstance();
-		
-		panel.addChild(new Label(
-				"IsFlyingDisplay", font,
+
+		panel.addChild(
+			new Label(
+				"IsFlyingDisplay",
+				font,
 				tmp_dynFormat("LayerTestGUI.IsFlyingDisplay", tpc::isFlying)
-		));
+			)
+		);
 
-		panel.addChild(new Label(
-				"IsSprintingDisplay", font,
+		panel.addChild(
+			new Label(
+				"IsSprintingDisplay",
+				font,
 				tmp_dynFormat("LayerTestGUI.IsSprintingDisplay", tpc::isSprinting)
-		));
+			)
+		);
 
-		panel.addChild(new Label(
-				"IsMouseCapturedDisplay", font,
+		panel.addChild(
+			new Label(
+				"IsMouseCapturedDisplay",
+				font,
 				tmp_dynFormat("LayerTestGUI.IsMouseCapturedDisplay", tpc::isMouseCaptured)
-		));
-		
-		panel.addChild(new Label(
-				"CameraModeDisplay", font,
-				tmp_dynFormat("LayerTestGUI.CameraModeDisplay", ClientState.getInstance().getCamera()::getCurrentModeIndex)
-		));
-		
-		panel.addChild(new Label(
-				"GravityModeDisplay", font,
-				tmp_dynFormat("LayerTestGUI.GravityModeDisplay", () -> tpc.useMinecraftGravity() ? "Minecraft" : "Realistic")
-		));
-		
-		panel.addChild(new Label(
-				"LanguageDisplay", font,
+			)
+		);
+
+		panel.addChild(
+			new Label(
+				"CameraModeDisplay",
+				font,
+				tmp_dynFormat(
+					"LayerTestGUI.CameraModeDisplay",
+					ClientState.getInstance().getCamera()::getCurrentModeIndex
+				)
+			)
+		);
+
+		panel.addChild(
+			new Label(
+				"GravityModeDisplay",
+				font,
+				tmp_dynFormat(
+					"LayerTestGUI.GravityModeDisplay",
+					() -> tpc.useMinecraftGravity() ? "Minecraft" : "Realistic"
+				)
+			)
+		);
+
+		panel.addChild(
+			new Label(
+				"LanguageDisplay",
+				font,
 				tmp_dynFormat("LayerTestGUI.LanguageDisplay", Localizer.getInstance()::getLanguage)
-		));
-		
-		panel.addChild(new DynamicLabel(
-				"FPSDisplay", font,
+			)
+		);
+
+		panel.addChild(
+			new DynamicLabel(
+				"FPSDisplay",
+				font,
 				DynamicStrings.builder()
 					.addDyn(new MutableStringLocalized("LayerTestGUI.FPSDisplay"))
 					.addDyn(() -> FPS_RECORD.update(GraphicsInterface.getFPS()), 5, 1)
 					.buildSupplier(),
 				128
-		));
-		
-		panel.addChild(new DynamicLabel(
-				"TPSDisplay", font,
+			)
+		);
+
+		panel.addChild(
+			new DynamicLabel(
+				"TPSDisplay",
+				font,
 				LayerTestGUI::getTPS,
 				128
-		));
-		
-		panel.addChild(new DynamicLabel(
-				"ChunkUpdatesDisplay", font,
+			)
+		);
+
+		panel.addChild(
+			new DynamicLabel(
+				"ChunkUpdatesDisplay",
+				font,
 				DynamicStrings.builder()
 					.addDyn(new MutableStringLocalized("LayerTestGUI.ChunkUpdatesDisplay"))
 					.addDyn(ClientState.getInstance().getWorld()::getPendingChunkUpdates)
 					.buildSupplier(),
 				128
-		));
-		
-		panel.addChild(new DynamicLabel(
-				"PosDisplay", font,
+			)
+		);
+
+		panel.addChild(
+			new DynamicLabel(
+				"PosDisplay",
+				font,
 				LayerTestGUI::getPos,
 				128
-		));
-		
-		panel.addChild(new Label(
-				"SelectedBlockDisplay", font,
-				tmp_dynFormat("LayerTestGUI.SelectedBlockDisplay",
-						() -> tpc.isBlockSelected() ? ">" : " ",
-						() -> tpc.getSelectedBlock().getId()
+			)
+		);
+
+		panel.addChild(
+			new Label(
+				"SelectedBlockDisplay",
+				font,
+				tmp_dynFormat(
+					"LayerTestGUI.SelectedBlockDisplay",
+					() -> tpc.isBlockSelected() ? ">" : " ",
+					() -> tpc.getSelectedBlock().getId()
 				)
-		));
-		panel.addChild(new Label(
-				"SelectedTileDisplay", font,
-				tmp_dynFormat("LayerTestGUI.SelectedTileDisplay",
-						() -> tpc.isBlockSelected() ? " " : ">",
-						() -> tpc.getSelectedTile().getId()
+			)
+		);
+		panel.addChild(
+			new Label(
+				"SelectedTileDisplay",
+				font,
+				tmp_dynFormat(
+					"LayerTestGUI.SelectedTileDisplay",
+					() -> tpc.isBlockSelected() ? " " : ">",
+					() -> tpc.getSelectedTile().getId()
 				)
-		));
-		panel.addChild(new Label(
-				"PlacementModeHint", font,
+			)
+		);
+		panel.addChild(
+			new Label(
+				"PlacementModeHint",
+				font,
 				new MutableStringLocalized("LayerTestGUI.PlacementModeHint").format("\u2B04")
-		));
+			)
+		);
 
 		getRoot().addChild(panel);
 	}
-	
+
 	public Runnable getUpdateCallback() {
 		Collection<Label> labels = new ArrayList<>();
 		getRoot().getChild(0).getChildren().forEach(c -> {
@@ -146,79 +194,84 @@ public class LayerTestGUI extends GUILayer {
 		});
 		return () -> labels.forEach(Label::update);
 	}
-	
+
 	private static class Averager {
-		
+
 		private static final int DISPLAY_INERTIA = 32;
 		private static final double UPDATE_INTERVAL = Units.get(50.0, "ms");
-		
+
 		private final double[] values = new double[DISPLAY_INERTIA];
 		private int size;
 		private int head;
-		
+
 		private long lastUpdate;
-		
+
 		public void add(double value) {
 			if (size == values.length) {
 				values[head] = value;
 				head++;
-				if (head == values.length) head = 0;
+				if (head == values.length)
+					head = 0;
 			} else {
 				values[size] = value;
 				size++;
 			}
 		}
-		
+
 		public double average() {
 			double product = 1;
-			
+
 			if (size == values.length) {
-				for (double d : values) product *= d;
+				for (double d : values)
+					product *= d;
 			} else {
-				for (int i = 0; i < size; ++i) product *= values[i];
+				for (int i = 0; i < size; ++i)
+					product *= values[i];
 			}
-			
+
 			return Math.pow(product, 1.0 / size);
 		}
-		
+
 		public double update(double value) {
 			long now = (long) (GraphicsInterface.getTime() / UPDATE_INTERVAL);
 			if (lastUpdate != now) {
 				lastUpdate = now;
 				add(value);
 			}
-			
+
 			return average();
 		}
-		
+
 	}
-	
+
 	private static final Averager FPS_RECORD = new Averager();
 	private static final Averager TPS_RECORD = new Averager();
-	
+
 	private static final Supplier<CharSequence> TPS_STRING = DynamicStrings.builder()
-			.addDyn(new MutableStringLocalized("LayerTestGUI.TPSDisplay"))
-			.addDyn(() -> TPS_RECORD.update(ServerState.getInstance().getTPS()), 5, 1)
-			.buildSupplier();
-	
+		.addDyn(new MutableStringLocalized("LayerTestGUI.TPSDisplay"))
+		.addDyn(() -> TPS_RECORD.update(ServerState.getInstance().getTPS()), 5, 1)
+		.buildSupplier();
+
 	private static final Supplier<CharSequence> POS_STRING = DynamicStrings.builder()
-			.addDyn(new MutableStringLocalized("LayerTestGUI.PosDisplay"))
-			.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().x, 7, 1)
-			.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().y, 7, 1)
-			.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().z, 7, 1)
-			.buildSupplier();
-	
+		.addDyn(new MutableStringLocalized("LayerTestGUI.PosDisplay"))
+		.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().x, 7, 1)
+		.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().y, 7, 1)
+		.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().z, 7, 1)
+		.buildSupplier();
+
 	private static CharSequence getTPS() {
 		Server server = ServerState.getInstance();
-		if (server == null) return Localizer.getInstance().getValue("LayerTestGUI.TPSDisplay.NA");
-		
+		if (server == null)
+			return Localizer.getInstance().getValue("LayerTestGUI.TPSDisplay.NA");
+
 		return TPS_STRING.get();
 	}
-	
+
 	private static CharSequence getPos() {
 		Client client = ClientState.getInstance();
-		if (client == null) return Localizer.getInstance().getValue("LayerTestGUI.PosDisplay.NA.Client");
-		
+		if (client == null)
+			return Localizer.getInstance().getValue("LayerTestGUI.PosDisplay.NA.Client");
+
 		Vec3 pos = client.getCamera().getLastAnchorPosition();
 		if (Float.isNaN(pos.x)) {
 			return Localizer.getInstance().getValue("LayerTestGUI.PosDisplay.NA.Entity");
@@ -226,26 +279,26 @@ public class LayerTestGUI extends GUILayer {
 			return POS_STRING.get();
 		}
 	}
-	
+
 	private static MutableString tmp_dynFormat(String formatKey, Supplier<?>... suppliers) {
 		return new MutableStringLocalized(formatKey).apply(s -> {
 			Object[] args = new Object[suppliers.length];
-			
+
 			for (int i = 0; i < suppliers.length; ++i) {
 				Supplier<?> supplier = suppliers[i];
-				
+
 				Object value = supplier != null ? supplier.get() : "null";
 				if (!(value instanceof Number)) {
 					value = Objects.toString(value);
 				}
-				
+
 				args[i] = value;
 			}
-			
+
 			return String.format(s, args);
 		});
 	}
-	
+
 //	private static class DebugComponent extends Component {
 //		private final int color;
 //		

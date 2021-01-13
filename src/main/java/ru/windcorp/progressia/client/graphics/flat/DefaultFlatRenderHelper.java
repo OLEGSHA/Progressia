@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.flat;
 
 import java.nio.FloatBuffer;
@@ -22,29 +23,29 @@ import java.nio.FloatBuffer;
 import glm.mat._4.Mat4;
 
 public class DefaultFlatRenderHelper extends FlatRenderHelper {
-	
+
 	private final TransformedMask transformer = new TransformedMask();
-	
+
 	protected final MaskStack maskStack = new MaskStack();
-	
+
 	protected final boolean[] hasMask = new boolean[TRANSFORM_STACK_SIZE];
-	
+
 	public void pushMask(Mask mask, Mat4 transform) {
 		pushMask(transformer.set(mask, transform), transform);
 	}
-	
+
 	public void pushMask(TransformedMask mask, Mat4 transform) {
 		hasMask[transformStack.getSize()] = true;
 		pushTransform().mul(transform);
 		maskStack.pushMask(mask);
 	}
-	
+
 	@Override
 	public Mat4 pushTransform() {
 		hasMask[transformStack.getSize()] = false;
 		return super.pushTransform();
 	}
-	
+
 	@Override
 	public void popTransform() {
 		super.popTransform();
@@ -59,7 +60,7 @@ public class DefaultFlatRenderHelper extends FlatRenderHelper {
 		super.reset();
 		maskStack.clear();
 	}
-	
+
 	@Override
 	protected FloatBuffer getMasks() {
 		return maskStack.getBuffer();

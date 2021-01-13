@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.world.block;
 
 import static ru.windcorp.progressia.common.world.block.BlockFace.*;
@@ -30,39 +31,45 @@ import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerCube.OpaqueCu
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public abstract class BlockRenderTexturedCube
-extends BlockRender
-implements OpaqueCube {
-	
+	extends BlockRender
+	implements OpaqueCube {
+
 	private final Map<BlockFace, Texture> textures = new HashMap<>();
 
 	public BlockRenderTexturedCube(
-			String id,
-			Texture topTexture, Texture bottomTexture,
-			Texture northTexture, Texture southTexture,
-			Texture eastTexture, Texture westTexture
+		String id,
+		Texture topTexture,
+		Texture bottomTexture,
+		Texture northTexture,
+		Texture southTexture,
+		Texture eastTexture,
+		Texture westTexture
 	) {
 		super(id);
-		
-		textures.put(TOP,    topTexture);
+
+		textures.put(TOP, topTexture);
 		textures.put(BOTTOM, bottomTexture);
-		textures.put(NORTH,  northTexture);
-		textures.put(SOUTH,  southTexture);
-		textures.put(EAST,   eastTexture);
-		textures.put(WEST,   westTexture);
+		textures.put(NORTH, northTexture);
+		textures.put(SOUTH, southTexture);
+		textures.put(EAST, eastTexture);
+		textures.put(WEST, westTexture);
 	}
-	
+
 	@Override
 	public Texture getTexture(BlockFace face) {
 		return textures.get(face);
 	}
-	
+
 	@Override
 	public Renderable createRenderable() {
 		return new Shapes.PppBuilder(
-				WorldRenderProgram.getDefault(),
-				getTexture(TOP), getTexture(BOTTOM),
-				getTexture(NORTH), getTexture(SOUTH),
-				getTexture(EAST), getTexture(WEST)
+			WorldRenderProgram.getDefault(),
+			getTexture(TOP),
+			getTexture(BOTTOM),
+			getTexture(NORTH),
+			getTexture(SOUTH),
+			getTexture(EAST),
+			getTexture(WEST)
 		).create();
 	}
 

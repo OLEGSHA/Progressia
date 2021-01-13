@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.world.cro;
 
 import com.google.common.base.Supplier;
@@ -26,12 +27,12 @@ public abstract class ChunkRenderOptimizerSupplier extends Namespaced {
 	public ChunkRenderOptimizerSupplier(String id) {
 		super(id);
 	}
-	
+
 	public abstract ChunkRenderOptimizer createOptimizer();
-	
+
 	public static ChunkRenderOptimizerSupplier of(
-			String id,
-			Supplier<ChunkRenderOptimizer> supplier
+		String id,
+		Supplier<ChunkRenderOptimizer> supplier
 	) {
 		return new ChunkRenderOptimizerSupplier(id) {
 			@Override

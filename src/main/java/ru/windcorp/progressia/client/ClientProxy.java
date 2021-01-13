@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client;
 
 import ru.windcorp.progressia.Proxy;
@@ -40,19 +41,22 @@ public class ClientProxy implements Proxy {
 		try {
 			RenderTaskQueue.waitAndInvoke(FlatRenderProgram::init);
 			RenderTaskQueue.waitAndInvoke(WorldRenderProgram::init);
-			RenderTaskQueue.waitAndInvoke(() -> Typefaces.setDefault(GNUUnifontLoader.load(ResourceManager.getResource("assets/unifont-13.0.03.hex.gz"))));
+			RenderTaskQueue.waitAndInvoke(
+				() -> Typefaces
+					.setDefault(GNUUnifontLoader.load(ResourceManager.getResource("assets/unifont-13.0.03.hex.gz")))
+			);
 		} catch (InterruptedException e) {
 			throw CrashReports.report(e, "ClientProxy failed");
 		}
 
 		Localizer.getInstance().setLanguage("en-US");
-		
+
 		TestContent.registerContent();
-		
+
 		Atlases.loadAllAtlases();
-		
+
 		AudioSystem.initialize();
-		
+
 		ServerState.startServer();
 		ClientState.connectToLocalServer();
 	}

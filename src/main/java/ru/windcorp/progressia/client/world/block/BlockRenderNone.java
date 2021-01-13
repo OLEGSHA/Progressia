@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.world.block;
 
 import ru.windcorp.progressia.client.graphics.model.EmptyModel;
@@ -25,12 +26,12 @@ public class BlockRenderNone extends BlockRender {
 	public BlockRenderNone(String id) {
 		super(id);
 	}
-	
+
 	@Override
 	public Renderable createRenderable() {
 		return EmptyModel.getInstance();
 	}
-	
+
 	@Override
 	public boolean needsOwnRenderable() {
 		return false;

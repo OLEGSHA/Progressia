@@ -1,3 +1,21 @@
+/*
+ * Progressia
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+ 
 package ru.windcorp.progressia.client.graphics.font;
 
 import java.io.BufferedReader;
@@ -55,7 +73,7 @@ public class GNUUnifontLoader {
 	public static GNUUnifont load(Resource resource) {
 		try (BufferedReader reader = createReader(resource)) {
 			return createStream(reader).map(GNUUnifontLoader::parse).map(GNUUnifontLoader::addToAtlas)
-					.collect(Collectors.collectingAndThen(createMapper(), GNUUnifont::new));
+				.collect(Collectors.collectingAndThen(createMapper(), GNUUnifont::new));
 		} catch (IOException | UncheckedIOException e) {
 			throw CrashReports.report(e, "Could not load GNUUnifont");
 		}
@@ -63,7 +81,8 @@ public class GNUUnifontLoader {
 
 	private static BufferedReader createReader(Resource resource) throws IOException {
 		return new BufferedReader(
-				new InputStreamReader(new GZIPInputStream(resource.getInputStream()), StandardCharsets.UTF_8));
+			new InputStreamReader(new GZIPInputStream(resource.getInputStream()), StandardCharsets.UTF_8)
+		);
 	}
 
 	private static Stream<String> createStream(BufferedReader reader) {
@@ -72,25 +91,30 @@ public class GNUUnifontLoader {
 
 	private static ParsedGlyph parse(String declar) {
 		try {
-			
+
 			int width = getWidth(declar);
 			checkDeclaration(declar, width);
-		
+
 			char c = getChar(declar);
-		
-			TextureDataEditor editor = new TextureDataEditor(width, GNUUnifont.HEIGHT, width, GNUUnifont.HEIGHT,
-					TEXTURE_SETTINGS);
-		
+
+			TextureDataEditor editor = new TextureDataEditor(
+				width,
+				GNUUnifont.HEIGHT,
+				width,
+				GNUUnifont.HEIGHT,
+				TEXTURE_SETTINGS
+			);
+
 			for (int y = 0; y < GNUUnifont.HEIGHT; ++y) {
 				for (int x = 0; x < width; ++x) {
 					int bit = x + y * width;
-		
+
 					editor.setPixel(x, GNUUnifont.HEIGHT - y - 1, getBit(declar, bit) ? 0xFFFFFFFF : 0x00000000);
 				}
 			}
-		
+
 			return new ParsedGlyph(c, editor);
-		
+
 		} catch (IOException e) {
 			throw CrashReports.report(e, "Could not load GNUUnifont: could not load character \"%s\"", declar);
 		}
@@ -126,11 +150,11 @@ public class GNUUnifontLoader {
 		if (!GNUUnifont.WIDTHS.contains(width)) {
 			throw new IOException("Width " + width + " is not supported (in declar \"" + declar + "\")");
 		}
-		
+
 		if ((declar.length() - PREFIX_LENGTH) % width != 0) {
 			throw new IOException("Declar \"" + declar + "\" has invalid length");
 		}
-		
+
 		for (int i = 0; i < declar.length(); ++i) {
 			if (i == BITS_PER_HEX_DIGIT) {
 				if (declar.charAt(i) != ':') {
@@ -138,9 +162,11 @@ public class GNUUnifontLoader {
 				}
 			} else {
 				char c = declar.charAt(i);
-				
+
 				if (!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'))) {
-					throw new IOException("Illegal char in declar \"" + declar + "\" at index " + i + "; expected 0-9A-F");
+					throw new IOException(
+						"Illegal char in declar \"" + declar + "\" at index " + i + "; expected 0-9A-F"
+					);
 				}
 			}
 		}
@@ -164,16 +190,18 @@ public class GNUUnifontLoader {
 	}
 
 	private static Collector<AtlasGlyph, ?, TCharObjectMap<Texture>> createMapper() {
-		return Collector.of(TCharObjectHashMap<Texture>::new,
+		return Collector.of(
+			TCharObjectHashMap<Texture>::new,
 
-				(map, glyph) -> map.put(glyph.c, glyph.texture),
+			(map, glyph) -> map.put(glyph.c, glyph.texture),
 
-				(a, b) -> {
-					a.putAll(b);
-					return a;
-				},
+			(a, b) -> {
+				a.putAll(b);
+				return a;
+			},
 
-				Characteristics.UNORDERED);
+			Characteristics.UNORDERED
+		);
 	}
 
 	private GNUUnifontLoader() {

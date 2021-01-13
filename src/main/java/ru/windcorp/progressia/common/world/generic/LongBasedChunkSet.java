@@ -1,3 +1,21 @@
+/*
+ * Progressia
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+ 
 package ru.windcorp.progressia.common.world.generic;
 
 import java.util.Iterator;
@@ -12,21 +30,21 @@ import ru.windcorp.progressia.common.util.Vectors;
 public class LongBasedChunkSet implements ChunkSet {
 
 	protected final TLongSet impl;
-	
+
 	public LongBasedChunkSet(TLongSet impl) {
 		this.impl = impl;
 	}
-	
+
 	public LongBasedChunkSet(TLongSet impl, ChunkSet copyFrom) {
 		this(impl);
 		addAll(copyFrom);
 	}
-	
+
 	public LongBasedChunkSet(TLongSet impl, Iterable<? extends Vec3i> copyFrom) {
 		this(impl);
 		addAll(copyFrom);
 	}
-	
+
 	public LongBasedChunkSet(TLongSet impl, GenericWorld<?, ?, ?, ?, ?> copyFrom) {
 		this(impl);
 		addAllChunks(copyFrom.getChunks());
@@ -35,7 +53,7 @@ public class LongBasedChunkSet implements ChunkSet {
 	private static long getKey(Vec3i v) {
 		return CoordinatePacker.pack3IntsIntoLong(v);
 	}
-	
+
 	private static Vec3i getVector(long key, Vec3i output) {
 		return CoordinatePacker.unpack3IntsFromLong(key, output);
 	}
@@ -70,7 +88,7 @@ public class LongBasedChunkSet implements ChunkSet {
 		if (other instanceof LongBasedChunkSet) {
 			return impl.containsAll(((LongBasedChunkSet) other).impl);
 		}
-		
+
 		return ChunkSet.super.containsAll((Iterable<? extends Vec3i>) other);
 	}
 
@@ -85,7 +103,7 @@ public class LongBasedChunkSet implements ChunkSet {
 			impl.addAll(((LongBasedChunkSet) other).impl);
 			return;
 		}
-		
+
 		ChunkSet.super.addAll((Iterable<? extends Vec3i>) other);
 	}
 
@@ -95,7 +113,7 @@ public class LongBasedChunkSet implements ChunkSet {
 			impl.removeAll(((LongBasedChunkSet) other).impl);
 			return;
 		}
-		
+
 		ChunkSet.super.removeAll((Iterable<? extends Vec3i>) other);
 	}
 
@@ -105,7 +123,7 @@ public class LongBasedChunkSet implements ChunkSet {
 			impl.retainAll(((LongBasedChunkSet) other).impl);
 			return;
 		}
-		
+
 		ChunkSet.super.retainAll((Iterable<? extends Vec3i>) other);
 	}
 
@@ -113,22 +131,22 @@ public class LongBasedChunkSet implements ChunkSet {
 	public void clear() {
 		impl.clear();
 	}
-	
+
 	@Override
 	public void forEach(Consumer<? super Vec3i> action) {
 		Vec3i v = Vectors.grab3i();
-		
+
 		impl.forEach(key -> {
 			getVector(key, v);
 			action.accept(v);
 			return true;
 		});
-		
+
 		Vectors.release(v);
 	}
-	
+
 	private class IteratorImpl implements Iterator<Vec3i> {
-		
+
 		private final Vec3i vector = new Vec3i();
 		private final TLongIterator parent = LongBasedChunkSet.this.impl.iterator();
 
@@ -141,7 +159,7 @@ public class LongBasedChunkSet implements ChunkSet {
 		public Vec3i next() {
 			return getVector(parent.next(), vector);
 		}
-		
+
 		@Override
 		public void remove() {
 			parent.remove();

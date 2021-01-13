@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.iterators;
 
 import java.util.ArrayList;
@@ -22,10 +23,10 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class Reiterator<E> implements Iterable<E> {
-	
+
 	private class ReiteratorIterator implements Iterator<E> {
-		
-		int index = 0; 
+
+		int index = 0;
 
 		@Override
 		public boolean hasNext() {
@@ -37,7 +38,7 @@ public class Reiterator<E> implements Iterable<E> {
 						data.add(source.next());
 					}
 				}
-				
+
 				return true;
 			}
 		}
@@ -46,7 +47,8 @@ public class Reiterator<E> implements Iterable<E> {
 		public E next() {
 			E result;
 			synchronized (source) {
-				if (!hasNext()) throw new NoSuchElementException();
+				if (!hasNext())
+					throw new NoSuchElementException();
 				result = data.get(index);
 			}
 			index++;
@@ -57,7 +59,7 @@ public class Reiterator<E> implements Iterable<E> {
 
 	private final Iterator<E> source;
 	private final ArrayList<E> data = new ArrayList<>();
-	
+
 	public Reiterator(Iterator<E> source) {
 		this.source = source;
 	}
