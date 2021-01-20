@@ -30,6 +30,8 @@ build_packages/*
 !build_packages/NSIS
 build_packages/NSIS/*
 !build_packages/NSIS/ProgressiaInstaller.nsi
+!build_packages/NSIS/logo.ico
+!build_packages/NSIS/left_side.bmp
 
 # ... and except build_packages/DEB/template
 !build_packages/DEB

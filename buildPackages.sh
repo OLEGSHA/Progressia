@@ -128,6 +128,7 @@ buildWindowsInstaller() {
     {
         cp -r 'build/libs/lib'            'build_packages/NSIS/lib'            &&
         cp    'build/libs/Progressia.jar' 'build_packages/NSIS/Progressia.jar' &&
+        cp    'LICENSE'                   'build_packages/NSIS/LICENSE.txt'    &&
         echo "------ NSIS ------"                                              &&
         makensis "$configurationFile"                                          &&
         echo "---- NSIS END ----"                                              &&
@@ -143,6 +144,9 @@ buildWindowsInstaller() {
         fi
         if [ -e 'build_packages/NSIS/Progressia.jar' ]; then
             rm 'build_packages/NSIS/Progressia.jar'
+        fi
+        if [ -e 'build_packages/NSIS/LICENSE.txt' ]; then
+            rm 'build_packages/NSIS/LICENSE.txt'
         fi
         echo "Cleaned up"
     } || {
