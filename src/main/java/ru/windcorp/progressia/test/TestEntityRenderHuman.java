@@ -200,7 +200,7 @@ public class TestEntityRenderHuman extends EntityRender {
 			).setOrigin(ox, oy, oz).setSize(sx, sy, sz).create()
 		);
 
-		return new StaticModel(b);
+		return b.build();
 	}
 
 	@Override

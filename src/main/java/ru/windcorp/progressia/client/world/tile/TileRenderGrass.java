@@ -18,19 +18,10 @@
  
 package ru.windcorp.progressia.client.world.tile;
 
-import glm.vec._3.Vec3;
-import ru.windcorp.progressia.client.graphics.Colors;
-import ru.windcorp.progressia.client.graphics.backend.Usage;
-import ru.windcorp.progressia.client.graphics.model.Faces;
-import ru.windcorp.progressia.client.graphics.model.Shape;
-import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
-import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
-import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerCube.OpaqueSurface;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
-public class TileRenderGrass extends TileRender implements OpaqueSurface {
+public class TileRenderGrass extends TileRenderSurface {
 
 	private final Texture topTexture;
 	private final Texture sideTexture;
@@ -53,29 +44,6 @@ public class TileRenderGrass extends TileRender implements OpaqueSurface {
 	@Override
 	public boolean isOpaque(BlockFace face) {
 		return face == BlockFace.TOP;
-	}
-
-	@Override
-	public Renderable createRenderable(BlockFace face) {
-		ShapeRenderProgram program = WorldRenderProgram.getDefault();
-
-		return new Shape(
-			Usage.STATIC,
-			WorldRenderProgram.getDefault(),
-			Faces.createBlockFace(
-				program,
-				getTexture(face),
-				Colors.WHITE,
-				new Vec3(0, 0, 0),
-				face,
-				false
-			)
-		);
-	}
-
-	@Override
-	public boolean needsOwnRenderable() {
-		return false;
 	}
 
 }

@@ -20,7 +20,9 @@ package ru.windcorp.progressia.client.world.block;
 
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
+import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.generic.GenericBlock;
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 
 public abstract class BlockRender extends Namespaced implements GenericBlock {
@@ -35,7 +37,7 @@ public abstract class BlockRender extends Namespaced implements GenericBlock {
 		);
 	}
 
-	public Renderable createRenderable() {
+	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk) {
 		return null;
 	}
 

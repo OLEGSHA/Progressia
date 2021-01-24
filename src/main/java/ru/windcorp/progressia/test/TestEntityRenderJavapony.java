@@ -386,7 +386,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 			).setOrigin(16, -4, 8).setSize(4, 8, 4).create()
 		);
 
-		return new StaticModel(b);
+		return b.build();
 	}
 
 	private static Renderable createLeg(
@@ -427,7 +427,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 			).setOrigin(-8, -8, -32).setSize(16, 16, 32).create()
 		);
 
-		return new StaticModel(b);
+		return b.build();
 	}
 
 	@Override

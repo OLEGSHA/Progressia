@@ -91,6 +91,72 @@ public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B exten
 		Vectors.release(v);
 		return result;
 	}
+	
+	default boolean isSurfaceBiC(Vec3i blockInChunk) {
+		int hits = 0;
+		
+		if (Coordinates.isOnChunkBorder(blockInChunk.x)) hits++;
+		if (Coordinates.isOnChunkBorder(blockInChunk.y)) hits++;
+		if (Coordinates.isOnChunkBorder(blockInChunk.z)) hits++;
+		
+		return hits >= 1;
+	}
+	
+	default boolean isSurfaceBiW(Vec3i blockInWorld) {
+		Vec3i v = Vectors.grab3i();
+
+		v = Coordinates.getInWorld(getPosition(), Vectors.ZERO_3i, v);
+		v = blockInWorld.sub(v, v);
+
+		boolean result = isSurfaceBiC(v);
+
+		Vectors.release(v);
+		return result;
+	}
+	
+	default boolean isEdgeBiC(Vec3i blockInChunk) {
+		int hits = 0;
+		
+		if (Coordinates.isOnChunkBorder(blockInChunk.x)) hits++;
+		if (Coordinates.isOnChunkBorder(blockInChunk.y)) hits++;
+		if (Coordinates.isOnChunkBorder(blockInChunk.z)) hits++;
+		
+		return hits >= 2;
+	}
+	
+	default boolean isEdgeBiW(Vec3i blockInWorld) {
+		Vec3i v = Vectors.grab3i();
+
+		v = Coordinates.getInWorld(getPosition(), Vectors.ZERO_3i, v);
+		v = blockInWorld.sub(v, v);
+
+		boolean result = isEdgeBiC(v);
+
+		Vectors.release(v);
+		return result;
+	}
+	
+	default boolean isVertexBiC(Vec3i blockInChunk) {
+		int hits = 0;
+		
+		if (Coordinates.isOnChunkBorder(blockInChunk.x)) hits++;
+		if (Coordinates.isOnChunkBorder(blockInChunk.y)) hits++;
+		if (Coordinates.isOnChunkBorder(blockInChunk.z)) hits++;
+		
+		return hits == 3;
+	}
+	
+	default boolean isVertexBiW(Vec3i blockInWorld) {
+		Vec3i v = Vectors.grab3i();
+
+		v = Coordinates.getInWorld(getPosition(), Vectors.ZERO_3i, v);
+		v = blockInWorld.sub(v, v);
+
+		boolean result = isVertexBiC(v);
+
+		Vectors.release(v);
+		return result;
+	}
 
 	default void forEachBiC(Consumer<? super Vec3i> action) {
 		VectorUtil.iterateCuboid(

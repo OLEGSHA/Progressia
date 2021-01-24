@@ -39,6 +39,8 @@ import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
 import ru.windcorp.progressia.client.graphics.world.Selection;
 import ru.windcorp.progressia.client.world.block.*;
+import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerRegistry;
+import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSurface;
 import ru.windcorp.progressia.client.world.entity.*;
 import ru.windcorp.progressia.client.world.tile.*;
 import ru.windcorp.progressia.common.collision.AABB;
@@ -420,6 +422,7 @@ public class TestContent {
 
 	private static void registerMisc() {
 		ChunkIO.registerCodec(new TestChunkCodec());
+		ChunkRenderOptimizerRegistry.getInstance().register("Core:SurfaceOptimizer", ChunkRenderOptimizerSurface::new);
 	}
 
 }

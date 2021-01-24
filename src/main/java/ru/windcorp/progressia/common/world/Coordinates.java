@@ -158,5 +158,9 @@ public class Coordinates {
 
 		return output;
 	}
+	
+	public static boolean isOnChunkBorder(int blockInChunk) {
+		return blockInChunk == 0 || blockInChunk == BLOCKS_PER_CHUNK - 1;
+	}
 
 }

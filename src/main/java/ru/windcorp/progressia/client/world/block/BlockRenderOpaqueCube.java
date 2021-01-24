@@ -65,9 +65,4 @@ public class BlockRenderOpaqueCube extends BlockRenderTexturedCube {
 		return true;
 	}
 
-	@Override
-	public boolean needsOwnRenderable() {
-		return false;
-	}
-
 }

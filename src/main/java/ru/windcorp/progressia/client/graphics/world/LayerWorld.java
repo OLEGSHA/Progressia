@@ -188,7 +188,7 @@ public class LayerWorld extends Layer {
 			);
 		}
 
-		return new StaticModel(b);
+		return b.build();
 	}
 
 	private static final float FRICTION_COEFF = Units.get("1e-5f kg/s");

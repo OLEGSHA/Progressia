@@ -18,28 +18,17 @@
  
 package ru.windcorp.progressia.client.world.cro;
 
-import com.google.common.base.Supplier;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedFactoryRegistry;
 
-import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-
-public abstract class ChunkRenderOptimizerSupplier extends Namespaced {
-
-	public ChunkRenderOptimizerSupplier(String id) {
-		super(id);
-	}
-
-	public abstract ChunkRenderOptimizer createOptimizer();
-
-	public static ChunkRenderOptimizerSupplier of(
-		String id,
-		Supplier<ChunkRenderOptimizer> supplier
-	) {
-		return new ChunkRenderOptimizerSupplier(id) {
-			@Override
-			public ChunkRenderOptimizer createOptimizer() {
-				return supplier.get();
-			}
-		};
+public class ChunkRenderOptimizerRegistry extends NamespacedFactoryRegistry<ChunkRenderOptimizer> {
+	
+	private static final ChunkRenderOptimizerRegistry INSTANCE = new ChunkRenderOptimizerRegistry();
+	
+	/**
+	 * @return the instance
+	 */
+	public static ChunkRenderOptimizerRegistry getInstance() {
+		return INSTANCE;
 	}
 
 }

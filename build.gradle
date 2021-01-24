@@ -47,7 +47,7 @@ repositories {
      * Currently used by:
      *   - ru.windcorp.fork.io.github.java-graphics:glm:1.0.1
      */
-    maven { url 'https://windcorp.ru/./maven' }
+    maven { url 'http://192.168.0.71/./maven' }
 }
 
 dependencies {

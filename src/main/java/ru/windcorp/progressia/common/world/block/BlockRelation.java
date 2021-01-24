@@ -27,10 +27,12 @@ import glm.vec._3.i.Vec3i;
 public class BlockRelation {
 
 	private final Vec3i vector = new Vec3i();
+	private final Vec3 floatVector = new Vec3();
 	private final Vec3 normalized = new Vec3();
 
 	public BlockRelation(int x, int y, int z) {
 		vector.set(x, y, z);
+		floatVector.set(x, y, z);
 		normalized.set(x, y, z).normalize();
 	}
 
@@ -40,6 +42,10 @@ public class BlockRelation {
 
 	public Vec3i getVector() {
 		return vector;
+	}
+	
+	public Vec3 getFloatVector() {
+		return floatVector;
 	}
 
 	public Vec3 getNormalized() {

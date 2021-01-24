@@ -38,10 +38,6 @@ public class StaticModel extends Model {
 		this.transforms = transforms;
 	}
 
-	public StaticModel(Builder builder) {
-		this(builder.getParts(), builder.getTransforms());
-	}
-
 	@Override
 	protected Mat4 getTransform(int partIndex) {
 		return transforms[partIndex];
@@ -81,6 +77,10 @@ public class StaticModel extends Model {
 
 		private Mat4[] getTransforms() {
 			return transforms.toArray(new Mat4[transforms.size()]);
+		}
+		
+		public StaticModel build() {
+			return new StaticModel(getParts(), getTransforms());
 		}
 
 	}
