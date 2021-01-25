@@ -27,7 +27,7 @@ public class TestGravityModel extends GravityModel {
 	}
 
 	@Override
-	protected void doGetGravity(Vec3 output) {
+	protected void doGetGravity(Vec3 pos, Vec3 output) {
 		output.set(0, 0, -9.8);
 	}
 

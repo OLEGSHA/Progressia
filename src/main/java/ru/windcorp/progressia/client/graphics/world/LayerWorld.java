@@ -204,7 +204,7 @@ public class LayerWorld extends Layer {
 		}
 
 		Vec3 gravitationalAcceleration = Vectors.grab3();
-		ClientState.getInstance().getWorld().getData().getGravityModel().getGravity(gravitationalAcceleration);
+		ClientState.getInstance().getWorld().getData().getGravityModel().getGravity(entity.getPosition(), gravitationalAcceleration);
 		
 		gravitationalAcceleration.mul(tickLength);
 		entity.getVelocity().add(gravitationalAcceleration);
