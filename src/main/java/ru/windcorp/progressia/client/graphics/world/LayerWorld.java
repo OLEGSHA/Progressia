@@ -41,6 +41,7 @@ import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.colliders.Collider;
 import ru.windcorp.progressia.common.util.FloatMathUtil;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.test.CollisionModelRenderer;
 import ru.windcorp.progressia.test.TestPlayerControls;
@@ -197,16 +198,18 @@ public class LayerWorld extends Layer {
 		entity.getVelocity().mul((float) Math.exp(-FRICTION_COEFF / entity.getCollisionMass() * tickLength));
 	}
 
-	private static final float MC_g = Units.get("32  m/s^2");
-	private static final float IRL_g = Units.get("9.8 m/s^2");
-
 	private void tmp_applyGravity(EntityData entity, float tickLength) {
 		if (ClientState.getInstance().getLocalPlayer().getEntity() == entity && tmp_testControls.isFlying()) {
 			return;
 		}
 
-		final float gravitationalAcceleration = tmp_testControls.useMinecraftGravity() ? MC_g : IRL_g;
-		entity.getVelocity().add(0, 0, -gravitationalAcceleration * tickLength);
+		Vec3 gravitationalAcceleration = Vectors.grab3();
+		ClientState.getInstance().getWorld().getData().getGravityModel().getGravity(gravitationalAcceleration);
+		
+		gravitationalAcceleration.mul(tickLength);
+		entity.getVelocity().add(gravitationalAcceleration);
+		
+		Vectors.release(gravitationalAcceleration);
 	}
 
 	@Override

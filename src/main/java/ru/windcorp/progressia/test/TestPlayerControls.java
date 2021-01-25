@@ -83,7 +83,6 @@ public class TestPlayerControls {
 	private double lastSprintPress = Double.NEGATIVE_INFINITY;
 
 	private boolean captureMouse = true;
-	private boolean useMinecraftGravity = false;
 
 	private int selectedBlock = 0;
 	private int selectedTile = 0;
@@ -199,12 +198,6 @@ public class TestPlayerControls {
 			handleCameraMode();
 			break;
 
-		case GLFW.GLFW_KEY_G:
-			if (!event.isPress())
-				return false;
-			handleGravitySwitch();
-			break;
-
 		case GLFW.GLFW_KEY_L:
 			if (!event.isPress())
 				return false;
@@ -269,7 +262,7 @@ public class TestPlayerControls {
 			return;
 		}
 
-		getEntity().getVelocity().add(0, 0, JUMP_VELOCITY * (useMinecraftGravity ? 2 : 1));
+		getEntity().getVelocity().add(0, 0, JUMP_VELOCITY);
 	}
 
 	private void handleShift(int multiplier) {
@@ -311,11 +304,6 @@ public class TestPlayerControls {
 			ClientState.getInstance().getCamera().selectNextMode();
 			updateGUI();
 		}
-	}
-
-	private void handleGravitySwitch() {
-		useMinecraftGravity = !useMinecraftGravity;
-		updateGUI();
 	}
 
 	private void handleLanguageSwitch() {
@@ -425,10 +413,6 @@ public class TestPlayerControls {
 
 	public boolean isMouseCaptured() {
 		return captureMouse;
-	}
-
-	public boolean useMinecraftGravity() {
-		return useMinecraftGravity;
 	}
 
 	public BlockData getSelectedBlock() {

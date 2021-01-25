@@ -8,7 +8,6 @@ LayerTestGUI.IsFlyingDisplay = Полёт:          %5s (Пробел x2)
 LayerTestGUI.IsSprintingDisplay = Бег:            %5s (W x2)
 LayerTestGUI.IsMouseCapturedDisplay = Захват мыши:    %5s (Esc)
 LayerTestGUI.CameraModeDisplay = Камера:         %5d (F5)
-LayerTestGUI.GravityModeDisplay = Гравитация: %9s (G)
 LayerTestGUI.LanguageDisplay = Язык:           %5s (L)
 LayerTestGUI.FPSDisplay = FPS: 
 LayerTestGUI.TPSDisplay = TPS: 

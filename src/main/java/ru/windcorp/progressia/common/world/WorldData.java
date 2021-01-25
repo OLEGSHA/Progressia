@@ -51,6 +51,8 @@ public class WorldData
 	private final TLongObjectMap<EntityData> entitiesById = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
 	private final Collection<EntityData> entities = Collections.unmodifiableCollection(entitiesById.valueCollection());
+	
+	private GravityModel gravityModel = GravityModelRegistry.getInstance().get("Test:TheGravityModel");
 
 	private float time = 0;
 
@@ -199,6 +201,20 @@ public class WorldData
 		if (block == null)
 			return null;
 		return block.getCollisionModel();
+	}
+	
+	/**
+	 * @return the gravity model
+	 */
+	public GravityModel getGravityModel() {
+		return gravityModel;
+	}
+	
+	/**
+	 * @param gravityModel the gravity model to set
+	 */
+	public void setGravityModel(GravityModel gravityModel) {
+		this.gravityModel = gravityModel;
 	}
 
 	public Collection<WorldDataListener> getListeners() {

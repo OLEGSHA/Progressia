@@ -93,17 +93,6 @@ public class LayerTestGUI extends GUILayer {
 
 		panel.addChild(
 			new Label(
-				"GravityModeDisplay",
-				font,
-				tmp_dynFormat(
-					"LayerTestGUI.GravityModeDisplay",
-					() -> tpc.useMinecraftGravity() ? "Minecraft" : "Realistic"
-				)
-			)
-		);
-
-		panel.addChild(
-			new Label(
 				"LanguageDisplay",
 				font,
 				tmp_dynFormat("LayerTestGUI.LanguageDisplay", Localizer.getInstance()::getLanguage)

@@ -47,6 +47,7 @@ import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
+import ru.windcorp.progressia.common.world.GravityModelRegistry;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
 import ru.windcorp.progressia.common.world.io.ChunkIO;
@@ -56,6 +57,7 @@ import ru.windcorp.progressia.server.comms.controls.*;
 import ru.windcorp.progressia.server.world.block.*;
 import ru.windcorp.progressia.server.world.entity.*;
 import ru.windcorp.progressia.server.world.tile.*;
+import ru.windcorp.progressia.test.gen.TestGravityModel;
 
 public class TestContent {
 
@@ -423,6 +425,7 @@ public class TestContent {
 	private static void registerMisc() {
 		ChunkIO.registerCodec(new TestChunkCodec());
 		ChunkRenderOptimizerRegistry.getInstance().register("Core:SurfaceOptimizer", ChunkRenderOptimizerSurface::new);
+		GravityModelRegistry.getInstance().register(new TestGravityModel());
 	}
 
 }
