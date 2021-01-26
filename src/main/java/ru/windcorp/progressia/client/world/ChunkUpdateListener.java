@@ -19,6 +19,8 @@
 package ru.windcorp.progressia.client.world;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.util.VectorUtil;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.block.BlockData;
@@ -65,25 +67,33 @@ class ChunkUpdateListener implements ChunkDataListener {
 	}
 
 	private void onLocationChanged(ChunkData chunk, Vec3i blockInChunk) {
-		Vec3i chunkPos = new Vec3i(chunk.getPosition());
+		Vec3i chunkPos = Vectors.grab3i().set(chunk.getX(), chunk.getY(), chunk.getZ());
 		
-		if (blockInChunk.x == 0) {
-			chunkPos.x -= 1;
-		} else if (blockInChunk.x == ChunkData.BLOCKS_PER_CHUNK - 1) {
-			chunkPos.x += 1;
-		} else if (blockInChunk.y == 0) {
-			chunkPos.y -= 1;
-		} else if (blockInChunk.y == ChunkData.BLOCKS_PER_CHUNK - 1) {
-			chunkPos.y += 1;
-		} else if (blockInChunk.z == 0) {
-			chunkPos.z -= 1;
-		} else if (blockInChunk.z == ChunkData.BLOCKS_PER_CHUNK - 1) {
-			chunkPos.z += 1;
+		checkCoordinate(blockInChunk, chunkPos, VectorUtil.Axis.X);
+		checkCoordinate(blockInChunk, chunkPos, VectorUtil.Axis.Y);
+		checkCoordinate(blockInChunk, chunkPos, VectorUtil.Axis.Z);
+		
+		Vectors.release(chunkPos);
+	}
+
+	private void checkCoordinate(Vec3i blockInChunk, Vec3i chunkPos, VectorUtil.Axis axis) {
+		int block = VectorUtil.get(blockInChunk, axis);
+		int diff = 0;
+		
+		if (block == 0) {
+			diff = -1;
+		} else if (block == ChunkData.BLOCKS_PER_CHUNK - 1) {
+			diff = +1;
 		} else {
 			return;
 		}
 		
+		int previousChunkPos = VectorUtil.get(chunkPos, axis);
+		VectorUtil.set(chunkPos, axis, previousChunkPos + diff);
+
 		world.markChunkForUpdate(chunkPos);
+		
+		VectorUtil.set(chunkPos, axis, previousChunkPos);
 	}
 
 }
