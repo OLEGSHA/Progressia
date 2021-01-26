@@ -73,4 +73,12 @@ public class GraphicsInterface {
 		GraphicsBackend.startNextLayer();
 	}
 
+	public static void makeFullscreen(boolean state) {
+		if (state) {
+			GraphicsBackend.setFullscreen();
+		} else {
+			GraphicsBackend.setWindowed();
+		}
+	}
+
 }

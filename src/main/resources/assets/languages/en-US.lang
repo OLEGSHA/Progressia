@@ -20,3 +20,4 @@ LayerTestGUI.PosDisplay.NA.Entity = Pos: entity n/a
 LayerTestGUI.SelectedBlockDisplay = %s Block: %s
 LayerTestGUI.SelectedTileDisplay = %s Tile:  %s
 LayerTestGUI.PlacementModeHint = (Blocks %s Tiles: Ctrl + Mouse Wheel)
+LayerTestGUI.IsFullscreen = Fullscreen:     %5s (F11)

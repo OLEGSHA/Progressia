@@ -20,3 +20,4 @@ LayerTestGUI.PosDisplay.NA.Entity = Поз: сущность н/д
 LayerTestGUI.SelectedBlockDisplay = %s Блок:   %s
 LayerTestGUI.SelectedTileDisplay = %s Плитка: %s
 LayerTestGUI.PlacementModeHint = (Блок %s плитки: Ctrl + прокрутка)
+LayerTestGUI.IsFullscreen = Полный экран:   %5s (F11)

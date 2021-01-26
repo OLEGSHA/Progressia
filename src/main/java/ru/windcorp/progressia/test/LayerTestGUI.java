@@ -18,16 +18,12 @@
  
 package ru.windcorp.progressia.test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.function.Supplier;
-
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.Colors;
+import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
@@ -43,6 +39,11 @@ import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.dynstr.DynamicStrings;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.ServerState;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 public class LayerTestGUI extends GUILayer {
 
@@ -107,6 +108,14 @@ public class LayerTestGUI extends GUILayer {
 				"LanguageDisplay",
 				font,
 				tmp_dynFormat("LayerTestGUI.LanguageDisplay", Localizer.getInstance()::getLanguage)
+			)
+		);
+
+		panel.addChild(
+			new Label(
+				"FullscreenDisplay",
+				font,
+				tmp_dynFormat("LayerTestGUI.IsFullscreen", GraphicsBackend::isFullscreen)
 			)
 		);
 

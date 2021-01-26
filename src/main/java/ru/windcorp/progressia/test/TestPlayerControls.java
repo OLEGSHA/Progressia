@@ -187,6 +187,13 @@ public class TestPlayerControls {
 			handleEscape();
 			break;
 
+		case GLFW.GLFW_KEY_F11:
+			if (!event.isPress())
+				return false;
+			GraphicsInterface.makeFullscreen(!GraphicsBackend.isFullscreen());
+			updateGUI();
+			break;
+
 		case GLFW.GLFW_KEY_F3:
 			if (!event.isPress())
 				return false;
