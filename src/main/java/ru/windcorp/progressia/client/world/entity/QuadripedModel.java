@@ -44,6 +44,7 @@ public class QuadripedModel extends NPedModel {
 
 		@Override
 		protected void applyTransform(Mat4 mat, NPedModel model) {
+			super.applyTransform(mat, model);
 			float phase = model.getWalkingFrequency() * model.getWalkingParameter() + animationOffset;
 			float value = sin(phase);
 			float amplitude = ((QuadripedModel) model).getWalkingSwing() * model.getVelocityParameter();

@@ -39,8 +39,16 @@ public class BlockRay {
 	private boolean isValid = false;
 
 	public void start(Vec3 position, Vec3 direction) {
-		if (!direction.any()) {
+		if (direction.x == 0 && direction.y == 0 && direction.z == 0) {
 			throw new IllegalArgumentException("Direction is a zero vector");
+		}
+		
+		if (Float.isNaN(direction.x) || Float.isNaN(direction.y) || Float.isNaN(direction.z)) {
+			throw new IllegalArgumentException("Direction contains NaN: " + direction);
+		}
+		
+		if (Float.isNaN(position.x) || Float.isNaN(position.y) || Float.isNaN(position.z)) {
+			throw new IllegalArgumentException("Position contains NaN: " + position);
 		}
 
 		isValid = true;
@@ -75,6 +83,8 @@ public class BlockRay {
 			tMin = tz;
 			axis = Axis.Z;
 		}
+		
+		assert tMin > 0 : "tMin is not positive (" + tMin + ")";
 
 		// block.(axis) += signum(direction.(axis))
 		VectorUtil.set(block, axis, VectorUtil.get(block, axis) + (int) signum(VectorUtil.get(direction, axis)));

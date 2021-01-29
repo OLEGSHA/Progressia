@@ -20,6 +20,8 @@ package ru.windcorp.progressia.common.util;
 
 import java.util.function.Consumer;
 
+import glm.Glm;
+import glm.mat._3.Mat3;
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._2.d.Vec2d;
@@ -135,12 +137,72 @@ public class VectorUtil {
 	}
 
 	public static void applyMat4(Vec3 inOut, Mat4 mat) {
-		Vec4 vec4 = Vectors.grab4();
-		vec4.set(inOut, 1f);
-
-		mat.mul(vec4);
-
-		inOut.set(vec4.x, vec4.y, vec4.z);
+		applyMat4(inOut, mat, inOut);
+	}
+	
+	public static void rotate(Vec3 in, Vec3 axis, float angle, Vec3 out) {
+		Mat3 mat = Matrices.grab3();
+		
+		mat.identity().rotate(angle, axis);
+		mat.mul(in, out);
+		
+		Matrices.release(mat);
+	}
+	
+	public static void rotate(Vec3 inOut, Vec3 axis, float angle) {
+		rotate(inOut, axis, angle, inOut);
+	}
+	
+	public static double getAngle(Vec3 from, Vec3 to, Vec3 normal) {
+		Vec3 left = Vectors.grab3();
+		
+		left.set(normal).cross(from);
+		double sign = Math.signum(left.dot(to));
+		
+		double result = (float) Math.acos(Glm.clamp(from.dot(to), -1, +1)) * sign;
+		
+		Vectors.release(left);
+		return result;
+	}
+	
+	public static Vec3 projectOnSurface(Vec3 in, Vec3 normal, Vec3 out) {
+		if (in == out) {
+			return projectOnSurface(in, normal);
+		}
+		
+		if (out == null) {
+			out = new Vec3();
+		}
+		
+		out.set(normal).mul(-normal.dot(in)).add(in);
+		
+		return out;
+	}
+	
+	public static Vec3 projectOnSurface(Vec3 inOut, Vec3 normal) {
+		Vec3 buffer = Vectors.grab3();
+		
+		projectOnSurface(inOut, normal, buffer);
+		inOut.set(buffer);
+		
+		Vectors.release(buffer);
+		
+		return inOut;
+	}
+	
+	public static Vec3 projectOnVector(Vec3 in, Vec3 vector, Vec3 out) {
+		if (out == null) {
+			out = new Vec3();
+		}
+		
+		float dot = vector.dot(in);
+		out.set(vector).mul(dot);
+		
+		return out;
+	}
+	
+	public static Vec3 projectOnVector(Vec3 inOut, Vec3 vector) {
+		return projectOnVector(inOut, vector);
 	}
 
 	public static Vec3 linearCombination(

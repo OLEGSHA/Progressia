@@ -38,10 +38,9 @@ public class Selection {
 	private BlockRay ray = new BlockRay();
 
 	public void update(WorldRender world, EntityData player) {
-		Vec3 direction = new Vec3();
 		Vec3 start = new Vec3();
-
-		player.getLookingAtVector(direction);
+		Vec3 direction = player.getLookingAt();
+		
 		world.getEntityRenderable(player).getViewPoint(start);
 		start.add(player.getPosition());
 

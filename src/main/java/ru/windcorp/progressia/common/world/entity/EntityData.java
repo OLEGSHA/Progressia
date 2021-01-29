@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.entity;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
 import ru.windcorp.jputil.chars.StringUtil;
 import ru.windcorp.progressia.common.collision.Collideable;
@@ -36,7 +35,8 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 	private final Vec3 position = new Vec3();
 	private final Vec3 velocity = new Vec3();
 
-	private final Vec2 direction = new Vec2();
+	private final Vec3 lookingAt = new Vec3(1, 0, 0);
+	private final Vec3 upVector = new Vec3(0, 0, 1);
 
 	/**
 	 * The unique {@code long} value guaranteed to never be assigned to an
@@ -77,22 +77,6 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 
 	public void setVelocity(Vec3 velocity) {
 		this.velocity.set(velocity);
-	}
-
-	public Vec2 getDirection() {
-		return direction;
-	}
-
-	public void setDirection(Vec2 direction) {
-		this.direction.set(direction.x, direction.y);
-	}
-
-	public float getYaw() {
-		return getDirection().x;
-	}
-
-	public float getPitch() {
-		return getDirection().y;
 	}
 
 	public long getEntityId() {
@@ -152,14 +136,88 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 		getVelocity().add(velocityChange);
 	}
 
-	public Vec3 getLookingAtVector(Vec3 output) {
-		output.set(
-			Math.cos(getPitch()) * Math.cos(getYaw()),
-			Math.cos(getPitch()) * Math.sin(getYaw()),
-			-Math.sin(getPitch())
-		);
+	public Vec3 getLookingAt() {
+		return lookingAt;
+	}
 
+	public void setLookingAt(Vec3 lookingAt) {
+		float lengthSq = lookingAt.x * lookingAt.x + lookingAt.y * lookingAt.y + lookingAt.z * lookingAt.z;
+		if (lengthSq == 1) {
+			this.lookingAt.set(lookingAt);
+		} else if (lengthSq == 0) {
+			throw new IllegalArgumentException("lookingAt is zero-length");
+		} else {
+			float length = (float) Math.sqrt(lengthSq);
+			this.lookingAt.set(
+				lookingAt.x / length,
+				lookingAt.y / length,
+				lookingAt.z / length
+			);
+		}
+	}
+
+	public Vec3 getUpVector() {
+		return upVector;
+	}
+
+	/**
+	 * Sets this entity's up vector without updating looking at-vector.
+	 * 
+	 * @param upVector the Vec3 to copy up vector from
+	 * @see #changeUpVector(Vec3)
+	 */
+	public void setUpVector(Vec3 upVector) {
+		float lengthSq = upVector.x * upVector.x + upVector.y * upVector.y + upVector.z * upVector.z;
+		if (lengthSq == 1) {
+			this.upVector.set(upVector);
+		} else if (lengthSq == 0) {
+			throw new IllegalArgumentException("upVector is zero-length");
+		} else {
+			float length = (float) Math.sqrt(lengthSq);
+			this.upVector.set(
+				upVector.x / length,
+				upVector.y / length,
+				upVector.z / length
+			);
+		}
+	}
+
+	/**
+	 * Computes the forward vector of this entity. An entity's forward vector is
+	 * defined as a normalized projection of the looking at-vector onto the
+	 * plane perpendicular to up vector, or {@code (NaN; NaN; NaN)} if looking
+	 * at-vector is parallel to the up vector.
+	 * 
+	 * @param output a {@link Vec3} where the result is stored. May be
+	 *               {@code null}.
+	 * @return the computed forward vector or {@code (NaN; NaN; NaN)}
+	 */
+	public Vec3 getForwardVector(Vec3 output) {
+		if (output == null)
+			output = new Vec3();
+		output.set(getUpVector()).mul(-getUpVector().dot(getLookingAt())).add(getLookingAt()).normalize();
 		return output;
+	}
+
+	public double getPitch() {
+		return -Math.acos(getLookingAt().dot(getUpVector())) + Math.PI / 2;
+	}
+
+	/**
+	 * Updates this entity's up vector and alters looking at-vector to match the
+	 * rotation of the up vector.
+	 * <p>
+	 * This method assumes that the up vector has changed due to rotation around
+	 * some axis. The axis and the angle are computed, after which the same
+	 * rotation is applied to the looking at-vector.
+	 * 
+	 * @param newUpVector the Vec3 to copy up vector from. May be equal to
+	 *                    current up vector
+	 * @see #setLookingAt(Vec3)
+	 */
+	public void changeUpVector(Vec3 newUpVector) {
+		// TODO
+		this.upVector.set(newUpVector);
 	}
 
 	@Override
@@ -189,8 +247,13 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 		output.writeFloat(getVelocity().y);
 		output.writeFloat(getVelocity().z);
 
-		output.writeFloat(getDirection().x);
-		output.writeFloat(getDirection().y);
+		output.writeFloat(getLookingAt().x);
+		output.writeFloat(getLookingAt().y);
+		output.writeFloat(getLookingAt().z);
+
+		output.writeFloat(getUpVector().x);
+		output.writeFloat(getUpVector().y);
+		output.writeFloat(getUpVector().z);
 
 		super.write(output, context);
 	}
@@ -209,14 +272,22 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 			input.readFloat()
 		);
 
-		Vec2 direction = new Vec2(
+		Vec3 lookingAt = new Vec3(
+			input.readFloat(),
+			input.readFloat(),
+			input.readFloat()
+		);
+
+		Vec3 upVector = new Vec3(
+			input.readFloat(),
 			input.readFloat(),
 			input.readFloat()
 		);
 
 		setPosition(position);
 		setVelocity(velocity);
-		setDirection(direction);
+		setLookingAt(lookingAt);
+		setUpVector(upVector);
 
 		super.read(input, context);
 	}

@@ -29,6 +29,9 @@ import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.world.Camera.Anchor.Mode;
+import ru.windcorp.progressia.client.world.entity.NPedModel;
+import ru.windcorp.progressia.common.util.Matrices;
+import ru.windcorp.progressia.common.util.Vectors;
 
 public class Camera {
 
@@ -60,13 +63,13 @@ public class Camera {
 			}
 		}
 
-		void getCameraPosition(Vec3 output);
+		Vec3 getCameraPosition(Vec3 output);
 
-		void getCameraVelocity(Vec3 output);
+		Vec3 getCameraVelocity(Vec3 output);
 
-		float getCameraYaw();
-
-		float getCameraPitch();
+		Vec3 getLookingAt(Vec3 output);
+		
+		Vec3 getUpVector(Vec3 output);
 
 		Collection<Mode> getCameraModes();
 
@@ -84,13 +87,10 @@ public class Camera {
 	 */
 
 	private final Vec3 lastAnchorPosition = new Vec3();
-	private float lastAnchorYaw;
-	private float lastAnchorPitch;
+	private final Vec3 lastAnchorLookingAt = new Vec3();
+	private final Vec3 lastAnchorUpVector = new Vec3();
 
 	private final Mat4 lastCameraMatrix = new Mat4();
-
-	private final Vec3 lastAnchorLookingAt = new Vec3();
-	private final Vec3 lastAnchorUp = new Vec3();
 
 	{
 		invalidateCache();
@@ -108,6 +108,9 @@ public class Camera {
 	 */
 
 	public void apply(WorldRenderHelper helper) {
+		if (NPedModel.flag) {
+//			System.out.println("Camera.apply()");
+		}
 		applyPerspective(helper);
 		rotateCoordinateSystem(helper);
 
@@ -149,26 +152,34 @@ public class Camera {
 	}
 
 	private void applyDirection(WorldRenderHelper helper) {
-		float pitch = anchor.getCameraPitch();
-		float yaw = anchor.getCameraYaw();
+		anchor.getLookingAt(lastAnchorLookingAt);
+		anchor.getUpVector(lastAnchorUpVector);
 
-		helper.pushViewTransform()
-			.rotateY(-pitch)
-			.rotateZ(-yaw);
+		lookAt(helper.pushViewTransform());
+	}
 
-		this.lastAnchorYaw = yaw;
-		this.lastAnchorPitch = pitch;
-
-		this.lastAnchorLookingAt.set(
-			cos(pitch) * cos(yaw),
-			cos(pitch) * sin(yaw),
-			sin(pitch)
+	private void lookAt(Mat4 result) {
+		Vec3 f = this.lastAnchorLookingAt;
+		Vec3 s = Vectors.grab3();
+		Vec3 u = Vectors.grab3();
+		
+		f.cross(this.lastAnchorUpVector, s);
+		s.normalize();
+		
+		s.cross(f, u);
+		
+		Mat4 workspace = Matrices.grab4();
+		workspace.set(
+			+f.x, -s.x, +u.x,    0,
+			+f.y, -s.y, +u.y,    0,
+			+f.z, -s.z, +u.z,    0,
+			   0,    0,    0,    1
 		);
-		this.lastAnchorUp.set(
-			cos(pitch + PI_F / 2) * cos(yaw),
-			cos(pitch + PI_F / 2) * sin(yaw),
-			sin(pitch + PI_F / 2)
-		);
+		result.mul(workspace);
+		Matrices.release(workspace);
+		
+		Vectors.release(s);
+		Vectors.release(u);
 	}
 
 	private void applyPosition(WorldRenderHelper helper) {
@@ -247,8 +258,6 @@ public class Camera {
 
 	private void invalidateCache() {
 		this.lastAnchorPosition.set(Float.NaN);
-		this.lastAnchorYaw = Float.NaN;
-		this.lastAnchorPitch = Float.NaN;
 
 		this.lastCameraMatrix.set(
 			Float.NaN,
@@ -270,7 +279,7 @@ public class Camera {
 		);
 
 		this.lastAnchorLookingAt.set(Float.NaN);
-		this.lastAnchorUp.set(Float.NaN);
+		this.lastAnchorUpVector.set(Float.NaN);
 	}
 
 	public Anchor.Mode getMode() {
@@ -289,14 +298,6 @@ public class Camera {
 		return currentModeIndex;
 	}
 
-	public float getLastAnchorYaw() {
-		return lastAnchorYaw;
-	}
-
-	public float getLastAnchorPitch() {
-		return lastAnchorPitch;
-	}
-
 	public Vec3 getLastAnchorPosition() {
 		return lastAnchorPosition;
 	}
@@ -310,7 +311,7 @@ public class Camera {
 	}
 
 	public Vec3 getLastAnchorUp() {
-		return lastAnchorUp;
+		return lastAnchorUpVector;
 	}
 
 }

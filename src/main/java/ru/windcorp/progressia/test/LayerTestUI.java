@@ -24,7 +24,6 @@ import com.google.common.eventbus.Subscribe;
 
 import glm.mat._4.Mat4;
 import glm.vec._4.Vec4;
-import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.flat.AssembledFlatLayer;
@@ -34,7 +33,6 @@ import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.model.LambdaModel;
 import ru.windcorp.progressia.client.graphics.texture.SimpleTextures;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.client.graphics.world.Camera;
 
 public class LayerTestUI extends AssembledFlatLayer {
 
@@ -46,9 +44,12 @@ public class LayerTestUI extends AssembledFlatLayer {
 
 	private boolean flag = false;
 
-	private static final int WIDTH = 80;
-	private static final int HEIGHT = 80;
+	private static final int SCALE = 4;
+	private static final int TEX_SIZE = 16 * SCALE;
+	private static final int TEX_SHADOW = SCALE / 2;
 	private static final int BORDER = 5;
+	private static final int HEIGHT = TEX_SIZE + 4 * BORDER;
+	private static final int WIDTH = HEIGHT;
 
 	@Override
 	protected void assemble(RenderTarget target) {
@@ -64,25 +65,22 @@ public class LayerTestUI extends AssembledFlatLayer {
 		target.fill(x, y, WIDTH, HEIGHT, borderColor);
 		target.fill(x + BORDER, y + BORDER, WIDTH - 2 * BORDER, HEIGHT - 2 * BORDER, boxColor);
 
-		final int texShadow = 2;
-		final int texSize = HEIGHT - 4 * BORDER;
-
 		target.pushTransform(new Mat4().identity().translate(x + 2 * BORDER, y + 2 * BORDER, 0));
 
 		final Texture compassBg = SimpleTextures.get("compass_icon");
 		final Texture compassFg = SimpleTextures.get("compass_icon_arrow");
 
-		target.drawTexture(texShadow, -texShadow, texSize, texSize, Colors.BLACK, compassBg);
-		target.drawTexture(0, 0, texSize, texSize, compassBg);
+		target.drawTexture(TEX_SHADOW, -TEX_SHADOW, TEX_SIZE, TEX_SIZE, Colors.BLACK, compassBg);
+		target.drawTexture(0, 0, TEX_SIZE, TEX_SIZE, compassBg);
 
 		target.addCustomRenderer(
 			new LambdaModel(
 				LambdaModel.lambdaBuilder()
 					.addDynamicPart(
-						target.createRectagle(0, 0, texSize, texSize, Colors.WHITE, compassFg),
-						mat -> mat.translate(texSize / 2, texSize / 2, 0)
+						target.createRectagle(0, 0, TEX_SIZE, TEX_SIZE, Colors.WHITE, compassFg),
+						mat -> mat.translate(TEX_SIZE / 2, TEX_SIZE / 2, 0)
 							.rotateZ(getCompassRotation())
-							.translate(-texSize / 2, -texSize / 2, 0)
+							.translate(-TEX_SIZE / 2, -TEX_SIZE / 2, 0)
 					)
 			)
 		);
@@ -92,12 +90,7 @@ public class LayerTestUI extends AssembledFlatLayer {
 	}
 
 	private double getCompassRotation() {
-		Camera.Anchor anchor = ClientState.getInstance().getCamera().getAnchor();
-
-		if (anchor == null)
-			return 0;
-
-		return -anchor.getCameraYaw();
+		return 0;
 	}
 
 	private void drawCross(RenderTarget target) {

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import glm.vec._2.Vec2;
+import glm.vec._3.Vec3;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
@@ -61,12 +61,9 @@ public class PlayerManager {
 
 		player.setEntityId(TestContent.PLAYER_ENTITY_ID);
 		player.setPosition(TestContent.SPAWN);
-		player.setDirection(
-			new Vec2(
-				Math.toRadians(40),
-				Math.toRadians(10)
-			)
-		);
+		
+		player.setUpVector(new Vec3(0, 0, 1));
+		player.setLookingAt(new Vec3(2, 1, 0));
 
 		getServer().getWorld().getData().addEntity(player);
 
