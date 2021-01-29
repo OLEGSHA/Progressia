@@ -33,7 +33,7 @@ import org.lwjgl.glfw.GLFW;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
-import ru.windcorp.progressia.client.audio.SoundEffect;
+import ru.windcorp.progressia.client.audio.Sound;
 import ru.windcorp.progressia.client.comms.controls.*;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
@@ -360,7 +360,7 @@ public class TestContent {
 
 	private static void onBlockBreakTrigger(ControlData control) {
 		((ControlBreakBlockData) control).setBlockInWorld(getSelection().getBlock());
-		SoundEffect sfx = new SoundEffect("Progressia:BlockDestroy");
+		Sound sfx = new Sound("Progressia:BlockDestroy");
 		sfx.setPosition(getSelection().getPoint());
 		sfx.setPitch((float) (Math.random() + 1 * 0.5));
 		sfx.play(false);

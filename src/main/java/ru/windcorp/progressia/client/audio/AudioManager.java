@@ -94,15 +94,26 @@ public class AudioManager {
 		);
 	}
 
-	public static Speaker initSpeaker(String soundID) {
+	public static Speaker initSpeaker(SoundType st) {
 		Speaker speaker = getLastSpeaker();
 		try {
-			findSoundType(soundID).initSpeaker(speaker);
+			st.initSpeaker(speaker);
 		} catch (Exception ex) {
 			throw new RuntimeException();
 		}
 		return speaker;
 	}
+	
+	public static SoundType getSoundType(String id) {
+		SoundType st;
+		try {
+			st = findSoundType(id);
+		} catch (Exception ex) {
+			throw new RuntimeException();
+		}
+		return st;
+	}
+
 
 	public static Speaker initMusicSpeaker(String soundID) {
 		try {

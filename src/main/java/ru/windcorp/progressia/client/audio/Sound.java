@@ -19,23 +19,26 @@
 package ru.windcorp.progressia.client.audio;
 
 import glm.vec._3.Vec3;
+import ru.windcorp.progressia.client.audio.backend.SoundType;
 import ru.windcorp.progressia.client.audio.backend.Speaker;
-import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
-public class SoundEffect
-	extends Namespaced {
+public class Sound {
 
-	private Vec3 position = new Vec3();
-	private Vec3 velocity = new Vec3();
-	private float pitch = 1.0f;
-	private float gain = 1.0f;
+	protected Vec3 position = new Vec3(0f, 0f, 0f);
+	protected Vec3 velocity = new Vec3(0f, 0f, 0f);
+	protected float pitch = 1.0f;
+	protected float gain = 1.0f;
+	protected int timeLength = 0;
+	
+	protected SoundType soundType;
 
-	public SoundEffect(String id) {
-		super(id);
+	public Sound(String id) {
+		soundType = AudioManager.getSoundType(id);
 	}
-
-	public SoundEffect(
+	
+	public Sound(
 		String id,
+		int timeLength,
 		Vec3 position,
 		Vec3 velocity,
 		float pitch,
@@ -49,7 +52,7 @@ public class SoundEffect
 	}
 
 	public void play(boolean loop) {
-		Speaker speaker = AudioManager.initSpeaker(this.getId());
+		Speaker speaker = AudioManager.initSpeaker(soundType);
 		speaker.setGain(gain);
 		speaker.setPitch(pitch);
 		speaker.setPosition(position);
@@ -93,4 +96,9 @@ public class SoundEffect
 	public float getPitch() {
 		return pitch;
 	}
+	
+	public int getTimeLength() {
+		return soundType.getTimeLength();
+	}
+
 }
