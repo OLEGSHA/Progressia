@@ -29,6 +29,7 @@ public class SoundType extends Namespaced {
 	private int sampleRate;
 	private int format;
 	private int audioBuffer;
+	private int timeLength;
 
 	public SoundType(
 		String id,
@@ -46,9 +47,14 @@ public class SoundType extends Namespaced {
 	private void createAudioBuffer() {
 		this.audioBuffer = alGenBuffers();
 		alBufferData(audioBuffer, format, rawAudio, sampleRate);
+		timeLength = rawAudio.limit() / sampleRate;
 	}
 
 	public void initSpeaker(Speaker speaker) {
 		speaker.setAudioData(audioBuffer);
+	}
+	
+	public int getTimeLength() {
+		return timeLength;
 	}
 }
