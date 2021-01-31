@@ -120,6 +120,14 @@ public class LayerTestGUI extends GUILayer {
 		);
 
 		panel.addChild(
+			new Label(
+				"VSYNCDisplay",
+				font,
+				tmp_dynFormat("LayerTestGUI.IsVSYNC", GraphicsBackend::isVSYNC)
+			)
+		);
+
+		panel.addChild(
 			new DynamicLabel(
 				"FPSDisplay",
 				font,

@@ -203,13 +203,12 @@ public class CrashReports {
 			if (provider == null)
 				continue;
 
-			addSeparator(output);
-
 			try {
 				Map<String, String> buf = new HashMap<>();
 				provider.provideContext(buf);
 
 				if (!buf.isEmpty()) {
+					addSeparator(output);
 					output.append(StringUtil.center(provider.getName(), 80)).append("\n");
 					for (Map.Entry<String, String> entry : buf.entrySet()) {
 						output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");

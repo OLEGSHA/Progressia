@@ -15,29 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util.crash.providers;
 
+import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
+import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.common.util.crash.ContextProvider;
 
 import java.util.Map;
 
-public class RAMContextProvider implements ContextProvider {
+public class ScreenContextProvider implements ContextProvider {
 
 	@Override
 	public void provideContext(Map<String, String> output) {
-		output.put("Max Memory", Runtime.getRuntime().maxMemory() / 1024 / 1024 + " MB");
-		output.put("Total Memory", Runtime.getRuntime().totalMemory() / 1024 / 1024 + " MB");
-		output.put("Free Memory", Runtime.getRuntime().freeMemory() / 1024 / 1024 + " MB");
-		output.put(
-			"Used Memory",
-			(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024
-				+ " MB"
-		);
+		if (GraphicsBackend.isGLFWInitialized()) {
+			output.put("Refresh rate", GraphicsBackend.getRefreshRate() + " Hz");
+			output.put("Size", GraphicsBackend.getFrameWidth() + "x" + GraphicsBackend.getFrameHeight());
+			output.put("Fullscreen", GraphicsBackend.isFullscreen() ? "enabled" : "disabled");
+		}
 	}
 
 	@Override
 	public String getName() {
-		return "RAM Context Provider";
+		return "Screen Context Provider";
 	}
 }

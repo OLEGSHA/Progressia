@@ -79,6 +79,7 @@ public class GraphicsInterface {
 		} else {
 			GraphicsBackend.setWindowed();
 		}
+		GraphicsBackend.setVSYNC(GraphicsBackend.isVSYNC());
 	}
 
 }

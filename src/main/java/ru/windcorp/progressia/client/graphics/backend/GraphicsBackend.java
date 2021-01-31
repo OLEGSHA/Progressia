@@ -39,10 +39,29 @@ public class GraphicsBackend {
 	private static boolean faceCullingEnabled = false;
 
 	private static boolean isFullscreen = false;
+	private static boolean isVSYNC = false;
+	private static boolean isGLFWInitialized = false;
+	private static boolean isOpenGLInitialized = false;
 
 	private GraphicsBackend() {
 	}
 
+	public static boolean isGLFWInitialized() {
+		return isGLFWInitialized;
+	}
+
+	static void setGLFWInitialized(boolean isGLFWInitialized) {
+		GraphicsBackend.isGLFWInitialized = isGLFWInitialized;
+	}
+
+	public static boolean isOpenGLInitialized() {
+		return isOpenGLInitialized;
+	}
+
+	static void setOpenGLInitialized(boolean isOpenGLInitialized) {
+		GraphicsBackend.isOpenGLInitialized = isOpenGLInitialized;
+	}
+	
 	public static void initialize() {
 		startRenderThread();
 	}
@@ -134,6 +153,10 @@ public class GraphicsBackend {
 		return isFullscreen;
 	}
 
+	public static boolean isVSYNC() {
+		return isVSYNC;
+	}
+
 	public static void setFullscreen() {
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		glfwSetWindowMonitor(
@@ -158,5 +181,15 @@ public class GraphicsBackend {
 			getFrameHeight(),
 			0);
 		isFullscreen = false;
+	}
+
+	public static void setVSYNC(boolean state) {
+		glfwSwapInterval(state ? 1 : 0);
+		isVSYNC = state;
+	}
+
+	public static int getRefreshRate() {
+		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		return vidmode.refreshRate();
 	}
 }

@@ -50,6 +50,7 @@ class LWJGLInitializer {
 	private static void initializeGLFW() {
 		// TODO Do GLFW error handling: check glfwInit, setup error callback
 		glfwInit();
+		GraphicsBackend.setGLFWInitialized(true);
 	}
 
 	private static void createWindow() {
@@ -67,7 +68,7 @@ class LWJGLInitializer {
 		glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		glfwMakeContextCurrent(handle);
-		glfwSwapInterval(0);
+		glfwSwapInterval(0);	// TODO: remove after config system is added
 	}
 
 	private static void positionWindow() {
@@ -87,6 +88,7 @@ class LWJGLInitializer {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		RenderTaskQueue.schedule(OpenGLObjectTracker::deleteEnqueuedObjects);
+		GraphicsBackend.setOpenGLInitialized(true);
 	}
 
 	private static void setupWindowCallbacks() {
