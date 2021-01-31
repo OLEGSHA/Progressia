@@ -16,7 +16,7 @@ temperature mechanics and a parallelism-capable server.
 - GNU/Linux (x64, arm32 or arm64), Windows XP or later (x64 or x86) or MacOS (x64)
 - Java 8 or later
 - OpenGL 2.1 or later
-- Probably at least 4 GiB RAM
+- Probably about 0.5 GiB RAM
 - Less than 1 GiB of storage space
 
 See [Build Guide](docs/building/BuildGuide.md) for compilation requirements.
