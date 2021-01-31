@@ -24,59 +24,72 @@ import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 /**
- * Gravity model specifies the gravitational acceleration field. A gravity model may be queried for the vector of gravitational acceleration that should affect an object. This vector is, generally speaking, a function of space: gravity in two different locations may vary. Gravity may also be a zero vector.
+ * Gravity model specifies the gravitational acceleration field. A gravity model
+ * may be queried for the vector of gravitational acceleration that should
+ * affect an object. This vector is, generally speaking, a function of space:
+ * gravity in two different locations may vary. Gravity may also be a zero
+ * vector.
  * 
  * @author javapony
  */
 public abstract class GravityModel extends Namespaced {
-	
+
 	public GravityModel(String id) {
 		super(id);
 	}
 
 	/**
-	 * Computes the vector of gravitational acceleration at the provided location.
+	 * Computes the vector of gravitational acceleration at the provided
+	 * location.
 	 * 
-	 * @param pos the position to compute gravity at
-	 * @param output a {@link Vec3} where the result is stored. May be {@code null}.
-	 * 
-	 * @return the vector of gravitational acceleration. The returned object will match {@code output} parameter is it is non-null.
+	 * @param pos    the position to compute gravity at
+	 * @param output a {@link Vec3} where the result is stored. May be
+	 *               {@code null}.
+	 * @return the vector of gravitational acceleration. The returned object
+	 *         will match {@code output} parameter is it is non-null.
 	 */
 	public Vec3 getGravity(Vec3 pos, Vec3 output) {
 		Objects.requireNonNull(pos, "pos");
-		
+
 		if (output == null) {
 			output = new Vec3();
 		}
-		
+
 		try {
 			doGetGravity(pos, output);
 		} catch (Exception e) {
 			throw CrashReports.report(e, "%s failed to compute gravity at (%d; %d; %d)", this, pos.x, pos.y, pos.z);
 		}
-		
+
 		return output;
 	}
-	
+
 	/**
-	 * Computes the up direction at the provided location. Up vector is defined as the normalized gravitational acceleration vector or {@code (0; 0; 0)} if there is no gravity. 
+	 * Computes the up direction at the provided location. Up vector is defined
+	 * as the additive inverse of the normalized gravitational acceleration
+	 * vector or {@code (0; 0; 0)} if there is no gravity.
 	 * 
-	 * @param pos the position to compute up vector at
-	 * @param output a {@link Vec3} where the result is stored. May be {@code null}.
-	 * 
-	 * @return the up vector. The returned object will match {@code output} parameter is it is non-null.
+	 * @param pos    the position to compute up vector at
+	 * @param output a {@link Vec3} where the result is stored. May be
+	 *               {@code null}.
+	 * @return the up vector. The returned object will match {@code output}
+	 *         parameter is it is non-null.
 	 */
 	public Vec3 getUp(Vec3 pos, Vec3 output) {
 		output = getGravity(pos, output);
-		if (output.any()) output.normalize();
+		if (output.any())
+			output.normalize().negate();
 		return output;
 	}
-	
+
 	/**
-	 * Computes the gravitational acceleration vector at the provided location. Actual computation of gravity is delegated to this method by the other methods in this class.
+	 * Computes the gravitational acceleration vector at the provided location.
+	 * Actual computation of gravity is delegated to this method by the other
+	 * methods in this class.
 	 * 
-	 * @param pos the position to compute gravity at
-	 * @param output a {@link Vec3} where the result must be stored. Never {@code null}.
+	 * @param pos    the position to compute gravity at
+	 * @param output a {@link Vec3} where the result must be stored. Never
+	 *               {@code null}.
 	 */
 	protected abstract void doGetGravity(Vec3 pos, Vec3 output);
 

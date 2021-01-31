@@ -21,13 +21,16 @@ package ru.windcorp.progressia.common.world.entity;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Objects;
 
+import glm.mat._3.Mat3;
 import glm.vec._3.Vec3;
 import ru.windcorp.jputil.chars.StringUtil;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.state.StatefulObject;
+import ru.windcorp.progressia.common.util.Matrices;
 import ru.windcorp.progressia.common.world.generic.GenericEntity;
 
 public class EntityData extends StatefulObject implements Collideable, GenericEntity {
@@ -146,6 +149,8 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 			this.lookingAt.set(lookingAt);
 		} else if (lengthSq == 0) {
 			throw new IllegalArgumentException("lookingAt is zero-length");
+		} else if (!Float.isFinite(lengthSq)) {
+			throw new IllegalArgumentException("lookingAt is not finite: " + lookingAt);
 		} else {
 			float length = (float) Math.sqrt(lengthSq);
 			this.lookingAt.set(
@@ -172,6 +177,8 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 			this.upVector.set(upVector);
 		} else if (lengthSq == 0) {
 			throw new IllegalArgumentException("upVector is zero-length");
+		} else if (!Float.isFinite(lengthSq)) {
+			throw new IllegalArgumentException("upVector is not finite: " + upVector);
 		} else {
 			float length = (float) Math.sqrt(lengthSq);
 			this.upVector.set(
@@ -216,8 +223,76 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 	 * @see #setLookingAt(Vec3)
 	 */
 	public void changeUpVector(Vec3 newUpVector) {
-		// TODO
-		this.upVector.set(newUpVector);
+		Objects.requireNonNull(newUpVector, "newUpVector");
+
+		Vec3 u0 = upVector;
+		Vec3 u1 = newUpVector;
+
+		if (u1.x == 0 && u1.y == 0 && u1.z == 0) {
+			// Entering weightlessness, not changing anything
+			return;
+		}
+
+		if (u0.x == u1.x && u0.y == u1.y && u0.z == u1.z) {
+			// Nothing changed
+			return;
+		}
+
+		if (u0.x == -u1.x && u0.y == -u1.y && u0.z == -u1.z) {
+			// Welp, don't do anything stupid then
+			upVector.set(newUpVector);
+			return;
+		}
+
+		float u1LengthSq = u1.x*u1.x + u1.y*u1.y + u1.z*u1.z;
+		float u1Length = 1;
+		
+		if (!Float.isFinite(u1LengthSq)) {
+			throw new IllegalArgumentException("newUpVector is not finite: " + newUpVector);
+		} else if (u1LengthSq != 1) {
+			u1Length = (float) Math.sqrt(u1LengthSq);
+		}
+
+		// u0 and u1 are now both definitely two different usable vectors
+		
+		if (rotateLookingAtToMatchUpVectorRotation(u0, u1, u1Length, lookingAt)) {
+			return;
+		}
+		
+		upVector.set(newUpVector).div(u1Length);
+	}
+
+	private static boolean rotateLookingAtToMatchUpVectorRotation(Vec3 u0, Vec3 u1, float u1Length, Vec3 lookingAt) {
+		// Determine rotation parameters
+		Vec3 axis = u0.cross_(u1);
+		float cos = u0.dot(u1) / u1Length;
+		float sin = axis.length() / u1Length;
+		
+		if (sin == 0) {
+			return true;
+		}
+		
+		axis.div(sin * u1Length); // normalize axis
+
+		float x = axis.x;
+		float y = axis.y;
+		float z = axis.z;
+
+		Mat3 matrix = Matrices.grab3();
+
+		// Don't format. @formatter:off
+		matrix.set(
+			 cos + (1 - cos)*x*x,    (1 - cos)*x*y - sin*z,   (1 - cos)*x*z + sin*y,
+			(1 - cos)*y*x + sin*z,    cos + (1 - cos)*y*y,    (1 - cos)*y*z - sin*x,
+			(1 - cos)*z*x - sin*y,   (1 - cos)*z*y + sin*x,    cos + (1 - cos)*z*z
+		);
+		// @formatter:on
+
+		matrix.mul_(lookingAt); // bug in jglm, .mul() and .mul_() are swapped
+
+		Matrices.release(matrix);
+		
+		return false;
 	}
 
 	@Override

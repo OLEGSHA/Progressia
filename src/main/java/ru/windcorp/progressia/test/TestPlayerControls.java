@@ -116,7 +116,7 @@ public class TestPlayerControls {
 			desiredVelocity.normalize();
 		}
 		desiredVelocity.z = movementUp;
-		movementTransform.mul_(desiredVelocity); // bug in jglm, .mul() and mul_() are
+		movementTransform.mul_(desiredVelocity); // bug in jglm, .mul() and .mul_() are
 										         // swapped
 		desiredVelocity.mul(speed);
 
@@ -154,9 +154,9 @@ public class TestPlayerControls {
 		Vec3 s = u.cross_(f);
 		
 		return mat.set(
-			+f.x, -s.x, +u.x,
-			+f.y, -s.y, +u.y,
-			+f.z, -s.z, +u.z
+			+f.x, +f.y, +f.z,
+			-s.x, -s.y, -s.z,
+			+u.x, +u.y, +u.z
 		);
 	}
 
@@ -282,7 +282,13 @@ public class TestPlayerControls {
 			return;
 		}
 
-		getEntity().getVelocity().add(0, 0, JUMP_VELOCITY);
+		Vec3 up = getEntity().getUpVector();
+		
+		getEntity().getVelocity().add(
+			up.x * JUMP_VELOCITY,
+			up.y * JUMP_VELOCITY,
+			up.z * JUMP_VELOCITY
+		);
 	}
 
 	private void handleShift(int multiplier) {

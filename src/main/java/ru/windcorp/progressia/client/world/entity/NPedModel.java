@@ -231,9 +231,9 @@ public abstract class NPedModel extends EntityRenderable {
 		s.set(u).cross(f);
 		
 		bodyTransform.identity().set(
-			+f.x, -s.x, +u.x,    0,
-			+f.y, -s.y, +u.y,    0,
-			+f.z, -s.z, +u.z,    0,
+			+f.x, +f.y, +f.z,    0,
+			-s.x, -s.y, -s.z,    0,
+			+u.x, +u.y, +u.z,    0,
 			   0,    0,    0,    1
 		);
 		
@@ -253,7 +253,6 @@ public abstract class NPedModel extends EntityRenderable {
 
 		computeVelocityParameter();
 
-		// TODO switch to world time
 		walkingParameter += velocity * GraphicsInterface.getFrameLength() * 1000;
 		
 		rotateBodyWithMovement(horizontal);

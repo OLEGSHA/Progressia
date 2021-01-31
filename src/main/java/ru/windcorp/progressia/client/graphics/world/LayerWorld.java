@@ -42,6 +42,7 @@ import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.colliders.Collider;
 import ru.windcorp.progressia.common.util.FloatMathUtil;
 import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.test.CollisionModelRenderer;
 import ru.windcorp.progressia.test.TestPlayerControls;
@@ -199,12 +200,19 @@ public class LayerWorld extends Layer {
 	}
 
 	private void tmp_applyGravity(EntityData entity, float tickLength) {
+		GravityModel gm = ClientState.getInstance().getWorld().getData().getGravityModel();
+		
+		Vec3 upVector = Vectors.grab3();
+		gm.getUp(entity.getPosition(), upVector);
+		entity.changeUpVector(upVector);
+		Vectors.release(upVector);
+		
 		if (ClientState.getInstance().getLocalPlayer().getEntity() == entity && tmp_testControls.isFlying()) {
 			return;
 		}
 
 		Vec3 gravitationalAcceleration = Vectors.grab3();
-		ClientState.getInstance().getWorld().getData().getGravityModel().getGravity(entity.getPosition(), gravitationalAcceleration);
+		gm.getGravity(entity.getPosition(), gravitationalAcceleration);
 		
 		gravitationalAcceleration.mul(tickLength);
 		entity.getVelocity().add(gravitationalAcceleration);

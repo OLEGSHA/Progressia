@@ -126,7 +126,11 @@ public class VectorUtil {
 		iterateCuboidAround(center.x, center.y, center.z, diameter, action);
 	}
 
-	public static void applyMat4(Vec3 in, Mat4 mat, Vec3 out) {
+	public static Vec3 applyMat4(Vec3 in, Mat4 mat, Vec3 out) {
+		if (out == null) {
+			out = new Vec3();
+		}
+		
 		Vec4 vec4 = Vectors.grab4();
 		vec4.set(in, 1f);
 
@@ -134,23 +138,31 @@ public class VectorUtil {
 
 		out.set(vec4.x, vec4.y, vec4.z);
 		Vectors.release(vec4);
+		
+		return out;
 	}
 
-	public static void applyMat4(Vec3 inOut, Mat4 mat) {
-		applyMat4(inOut, mat, inOut);
+	public static Vec3 applyMat4(Vec3 inOut, Mat4 mat) {
+		return applyMat4(inOut, mat, inOut);
 	}
 	
-	public static void rotate(Vec3 in, Vec3 axis, float angle, Vec3 out) {
+	public static Vec3 rotate(Vec3 in, Vec3 axis, float angle, Vec3 out) {
+		if (out == null) {
+			out = new Vec3();
+		}
+		
 		Mat3 mat = Matrices.grab3();
 		
 		mat.identity().rotate(angle, axis);
 		mat.mul(in, out);
 		
 		Matrices.release(mat);
+		
+		return out;
 	}
 	
-	public static void rotate(Vec3 inOut, Vec3 axis, float angle) {
-		rotate(inOut, axis, angle, inOut);
+	public static Vec3 rotate(Vec3 inOut, Vec3 axis, float angle) {
+		return rotate(inOut, axis, angle, inOut);
 	}
 	
 	public static double getAngle(Vec3 from, Vec3 to, Vec3 normal) {
@@ -212,6 +224,10 @@ public class VectorUtil {
 		float kb,
 		Vec3 output
 	) {
+		if (output == null) {
+			output = new Vec3();
+		}
+		
 		output.set(
 			va.x * ka + vb.x * kb,
 			va.y * ka + vb.y * kb,
@@ -229,6 +245,10 @@ public class VectorUtil {
 		float kc,
 		Vec3 output
 	) {
+		if (output == null) {
+			output = new Vec3();
+		}
+		
 		output.set(
 			va.x * ka + vb.x * kb + vc.x * kc,
 			va.y * ka + vb.y * kb + vc.y * kc,

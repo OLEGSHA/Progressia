@@ -28,7 +28,14 @@ public class TestGravityModel extends GravityModel {
 
 	@Override
 	protected void doGetGravity(Vec3 pos, Vec3 output) {
-		output.set(0, 0, -9.8);
+		output.set(pos);
+		
+		if (output.length() < 10) {
+			output.set(0);
+			return;
+		}
+		
+		output.normalize().mul(-9.8f);
 	}
 
 }
