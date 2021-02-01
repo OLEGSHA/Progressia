@@ -18,12 +18,12 @@
  
 package ru.windcorp.progressia.client.graphics.model;
 
-import static ru.windcorp.progressia.common.world.block.AbsFace.*;
+import static ru.windcorp.progressia.common.world.rels.AbsFace.*;
 
 import com.google.common.collect.ImmutableMap;
 
 import glm.vec._3.Vec3;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 class BlockFaceVectors {
 

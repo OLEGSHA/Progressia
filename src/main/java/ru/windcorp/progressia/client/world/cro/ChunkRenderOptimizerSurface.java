@@ -19,8 +19,8 @@
 package ru.windcorp.progressia.client.world.cro;
 
 import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
-import static ru.windcorp.progressia.common.world.block.AbsFace.BLOCK_FACE_COUNT;
 import static ru.windcorp.progressia.common.world.generic.GenericTileStack.TILES_PER_FACE;
+import static ru.windcorp.progressia.common.world.rels.AbsFace.BLOCK_FACE_COUNT;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
-import ru.windcorp.progressia.client.graphics.model.Face;
+import ru.windcorp.progressia.client.graphics.model.ShapePart;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
@@ -38,7 +38,7 @@ import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 
@@ -52,26 +52,26 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 	private static interface OptimizedSurface {
 
 		/**
-		 * Creates and outputs a set of faces that correspond to this surface.
-		 * The coordinates of the face vertices must be in chunk coordinate
-		 * system.
+		 * Creates and outputs a set of shape parts that correspond to this
+		 * surface. The coordinates of the face vertices must be in chunk
+		 * coordinate system.
 		 * 
 		 * @param chunk        the chunk that contains the requested face
 		 * @param blockInChunk the block in chunk
 		 * @param blockFace    the requested face
 		 * @param inner        whether this face should be visible from inside
 		 *                     ({@code true}) or outside ({@code false})
-		 * @param output       a consumer that the created faces must be given
-		 *                     to
+		 * @param output       a consumer that the created shape parts must be
+		 *                     given to
 		 * @param offset       an additional offset that must be applied to all
 		 *                     vertices
 		 */
-		void getFaces(
+		void getShapeParts(
 			ChunkData chunk,
 			Vec3i blockInChunk,
 			AbsFace blockFace,
 			boolean inner,
-			Consumer<Face> output,
+			Consumer<ShapePart> output,
 			Vec3 offset /* kostyl 156% */
 		);
 
@@ -207,12 +207,12 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 
 	@Override
 	public Renderable endRender() {
-		Collection<Face> shapeFaces = new ArrayList<>(
+		Collection<ShapePart> shapeParts = new ArrayList<>(
 			BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * 3
 		);
 
 		Vec3i cursor = new Vec3i();
-		Consumer<Face> consumer = shapeFaces::add;
+		Consumer<ShapePart> consumer = shapeParts::add;
 
 		for (cursor.x = 0; cursor.x < BLOCKS_PER_CHUNK; ++cursor.x) {
 			for (cursor.y = 0; cursor.y < BLOCKS_PER_CHUNK; ++cursor.y) {
@@ -223,27 +223,27 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 			}
 		}
 
-		if (shapeFaces.isEmpty()) {
+		if (shapeParts.isEmpty()) {
 			return null;
 		}
 
 		return new Shape(
 			Usage.STATIC,
 			WorldRenderProgram.getDefault(),
-			shapeFaces.toArray(new Face[shapeFaces.size()])
+			shapeParts.toArray(new ShapePart[shapeParts.size()])
 		);
 	}
 
 	private void processOuterFaces(
 		Vec3i blockInChunk,
-		Consumer<Face> output
+		Consumer<ShapePart> output
 	) {
 		for (AbsFace blockFace : AbsFace.getFaces()) {
 			processOuterFace(blockInChunk, blockFace, output);
 		}
 	}
 
-	private void processOuterFace(Vec3i blockInChunk, AbsFace blockFace, Consumer<Face> output) {
+	private void processOuterFace(Vec3i blockInChunk, AbsFace blockFace, Consumer<ShapePart> output) {
 		if (!shouldRenderOuterFace(blockInChunk, blockFace))
 			return;
 
@@ -264,7 +264,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 			if (surface == null)
 				continue; // layer may be BLOCK_LAYER, then block may be null
 
-			surface.getFaces(chunk.getData(), blockInChunk, blockFace, false, output, faceOrigin);
+			surface.getShapeParts(chunk.getData(), blockInChunk, blockFace, false, output, faceOrigin);
 
 			faceOrigin.add(offset);
 		}
@@ -272,14 +272,14 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 
 	private void processInnerFaces(
 		Vec3i blockInChunk,
-		Consumer<Face> output
+		Consumer<ShapePart> output
 	) {
 		for (AbsFace blockFace : AbsFace.getFaces()) {
 			processInnerFace(blockInChunk, blockFace, output);
 		}
 	}
 
-	private void processInnerFace(Vec3i blockInChunk, AbsFace blockFace, Consumer<Face> output) {
+	private void processInnerFace(Vec3i blockInChunk, AbsFace blockFace, Consumer<ShapePart> output) {
 		if (!shouldRenderInnerFace(blockInChunk, blockFace))
 			return;
 
@@ -300,7 +300,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 			if (surface == null)
 				continue; // layer may be BLOCK_LAYER, then block may be null
 
-			surface.getFaces(chunk.getData(), blockInChunk, blockFace, true, output, faceOrigin);
+			surface.getShapeParts(chunk.getData(), blockInChunk, blockFace, true, output, faceOrigin);
 
 			faceOrigin.add(offset);
 		}

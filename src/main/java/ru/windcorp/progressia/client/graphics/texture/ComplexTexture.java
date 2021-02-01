@@ -21,7 +21,7 @@ package ru.windcorp.progressia.client.graphics.texture;
 import java.util.Map;
 
 import glm.vec._2.Vec2;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class ComplexTexture {
 

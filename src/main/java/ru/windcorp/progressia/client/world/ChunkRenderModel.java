@@ -36,7 +36,7 @@ import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.client.world.tile.TileRenderNone;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class ChunkRenderModel implements Renderable {
 	

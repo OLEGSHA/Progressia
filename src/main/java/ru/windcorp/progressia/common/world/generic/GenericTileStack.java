@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public abstract class GenericTileStack<Self extends GenericTileStack<Self, T, C>, T extends GenericTile, C extends GenericChunk<C, ?, T, Self>>
 	extends AbstractList<T>

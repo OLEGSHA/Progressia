@@ -24,8 +24,8 @@ import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizer;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.generic.GenericTile;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class TileRender extends Namespaced implements GenericTile {
 

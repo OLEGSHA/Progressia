@@ -15,8 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.common.world.block;
+package ru.windcorp.progressia.common.world.rels;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -24,34 +23,22 @@ import static java.lang.Math.max;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 
-public class AbsRelation {
+public abstract class BlockRelation {
 
-	private final Vec3i vector = new Vec3i();
-	private final Vec3 floatVector = new Vec3();
-	private final Vec3 normalized = new Vec3();
-
-	public AbsRelation(int x, int y, int z) {
-		vector.set(x, y, z);
-		floatVector.set(x, y, z);
-		normalized.set(x, y, z).normalize();
-	}
-
-	public AbsRelation(Vec3i vector) {
-		this(vector.x, vector.y, vector.z);
-	}
-
-	public Vec3i getVector() {
-		return vector;
+	public abstract AbsRelation resolve(AbsFace up);
+	
+	public Vec3i getVector(AbsFace up) {
+		return resolve(up).getVector();
 	}
 	
-	public Vec3 getFloatVector() {
-		return floatVector;
+	public Vec3 getFloatVector(AbsFace up) {
+		return resolve(up).getFloatVector();
 	}
-
-	public Vec3 getNormalized() {
-		return normalized;
+	
+	public Vec3 getNormalized(AbsFace up) {
+		return resolve(up).getNormalized();
 	}
-
+	
 	/**
 	 * Returns the distance between the source and destination blocks, as
 	 * defined by the Euclidean space. Your everyday distance.
@@ -59,7 +46,7 @@ public class AbsRelation {
 	 * @return square root of the sum of the squares of the coordinates
 	 */
 	public float getEuclideanDistance() {
-		return vector.length();
+		return getVector(AbsFace.POS_Z).length();
 	}
 
 	/**
@@ -72,6 +59,7 @@ public class AbsRelation {
 	 * @return the sum of the absolute values of the coordinates
 	 */
 	public int getManhattanDistance() {
+		Vec3i vector = getVector(AbsFace.POS_Z);
 		return abs(vector.x) + abs(vector.y) + abs(vector.z);
 	}
 
@@ -83,7 +71,8 @@ public class AbsRelation {
 	 * @return the maximum of the absolute values of the coordinates
 	 */
 	public int getChebyshevDistance() {
+		Vec3i vector = getVector(AbsFace.POS_Z);
 		return max(abs(vector.x), max(abs(vector.y), abs(vector.z)));
 	}
-
+	
 }

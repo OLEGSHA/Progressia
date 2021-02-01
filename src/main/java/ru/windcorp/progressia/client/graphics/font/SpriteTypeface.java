@@ -33,8 +33,8 @@ import gnu.trove.stack.TIntStack;
 import gnu.trove.stack.array.TIntArrayStack;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
-import ru.windcorp.progressia.client.graphics.model.Face;
-import ru.windcorp.progressia.client.graphics.model.Faces;
+import ru.windcorp.progressia.client.graphics.model.ShapePart;
+import ru.windcorp.progressia.client.graphics.model.ShapeParts;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
@@ -144,7 +144,7 @@ public abstract class SpriteTypeface extends Typeface {
 		return new Shape(
 			Usage.STATIC,
 			getProgram(),
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				getProgram(),
 				getTexture(c),
 				Colors.WHITE,
@@ -167,7 +167,7 @@ public abstract class SpriteTypeface extends Typeface {
 		private final Renderable unitLine = new Shape(
 			Usage.STATIC,
 			getProgram(),
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				getProgram(),
 				null,
 				Vectors.UNIT_4,
@@ -257,7 +257,7 @@ public abstract class SpriteTypeface extends Typeface {
 
 		private class SDWorkspace extends SpriteTypeface.Workspace {
 
-			private final Collection<Face> faces = new ArrayList<>();
+			private final Collection<ShapePart> faces = new ArrayList<>();
 
 			private final Vec3 origin = new Vec3();
 			private final Vec3 width = new Vec3();
@@ -298,7 +298,7 @@ public abstract class SpriteTypeface extends Typeface {
 			workspace.height.sub(workspace.origin);
 
 			workspace.faces.add(
-				Faces.createRectangle(
+				ShapeParts.createRectangle(
 					getProgram(),
 					texture,
 					color,
@@ -314,7 +314,7 @@ public abstract class SpriteTypeface extends Typeface {
 			return new Shape(
 				Usage.STATIC,
 				getProgram(),
-				workspace.faces.toArray(new Face[workspace.faces.size()])
+				workspace.faces.toArray(new ShapePart[workspace.faces.size()])
 			);
 		}
 

@@ -20,7 +20,7 @@ package ru.windcorp.progressia.test;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.comms.controls.ControlData;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 public class ControlPlaceTileData extends ControlData {

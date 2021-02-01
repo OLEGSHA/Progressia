@@ -25,7 +25,7 @@ import ru.windcorp.progressia.common.collision.colliders.Collider.ColliderWorksp
 import ru.windcorp.progressia.common.collision.colliders.Collider.Collision;
 import ru.windcorp.progressia.common.util.Matrices;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 class AABBoidCollider {
 

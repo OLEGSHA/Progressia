@@ -24,7 +24,7 @@ import java.util.Objects;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 
-public class Face implements Comparable<Face> {
+public class ShapePart implements Comparable<ShapePart> {
 
 	private static final ShortBuffer GENERATE_SUCCESSIVE_LATER = null;
 
@@ -40,7 +40,7 @@ public class Face implements Comparable<Face> {
 	private ShortBuffer userIndices;
 	private boolean userIndicesUpdated = true;
 
-	public Face(
+	public ShapePart(
 		Texture texture,
 		ByteBuffer vertices,
 		ShortBuffer indices
@@ -50,7 +50,7 @@ public class Face implements Comparable<Face> {
 		setIndices(indices);
 	}
 
-	public Face(
+	public ShapePart(
 		Texture texture,
 		ByteBuffer vertices
 	) {
@@ -155,7 +155,7 @@ public class Face implements Comparable<Face> {
 		return vertices;
 	}
 
-	public Face setVertices(ByteBuffer vertices) {
+	public ShapePart setVertices(ByteBuffer vertices) {
 		this.vertices = Objects.requireNonNull(vertices, "vertices");
 		markForVertexUpdate();
 		return this;
@@ -202,7 +202,7 @@ public class Face implements Comparable<Face> {
 		return userIndices.remaining();
 	}
 
-	public Face setIndices(ShortBuffer indices) {
+	public ShapePart setIndices(ShortBuffer indices) {
 		if (indices == null) {
 			indices = GENERATE_SUCCESSIVE_LATER;
 		}
@@ -245,7 +245,7 @@ public class Face implements Comparable<Face> {
 	}
 
 	@Override
-	public int compareTo(Face o) {
+	public int compareTo(ShapePart o) {
 		return Integer.compare(getSortingIndex(), o.getSortingIndex());
 	}
 

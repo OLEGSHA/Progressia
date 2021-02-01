@@ -19,8 +19,8 @@
 package ru.windcorp.progressia.server.world.block;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.generic.GenericBlock;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class BlockLogic extends Namespaced implements GenericBlock {
 

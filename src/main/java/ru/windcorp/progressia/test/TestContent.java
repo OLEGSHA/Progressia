@@ -51,6 +51,7 @@ import ru.windcorp.progressia.common.world.GravityModelRegistry;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
 import ru.windcorp.progressia.common.world.io.ChunkIO;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.tile.*;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.comms.controls.*;

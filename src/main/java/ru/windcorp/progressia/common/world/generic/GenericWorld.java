@@ -26,7 +26,7 @@ import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS extends GenericTileStack<TS, T, C>, C extends GenericChunk<C, B, T, TS>, E extends GenericEntity> {
 

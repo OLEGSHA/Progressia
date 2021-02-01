@@ -23,8 +23,8 @@ import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.world.WorldRender;
 import ru.windcorp.progressia.common.world.BlockRay;
-import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class Selection {
 

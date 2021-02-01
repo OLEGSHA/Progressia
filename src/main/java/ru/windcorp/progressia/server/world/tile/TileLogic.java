@@ -19,8 +19,8 @@
 package ru.windcorp.progressia.server.world.tile;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.generic.GenericTile;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class TileLogic extends Namespaced implements GenericTile {
 

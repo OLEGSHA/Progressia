@@ -25,14 +25,14 @@ import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram.VertexBuilder;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
-public class Faces {
+public class ShapeParts {
 
-	private Faces() {
+	private ShapeParts() {
 	}
 
-	public static Face createRectangle(
+	public static ShapePart createRectangle(
 		ShapeRenderProgram program,
 		Texture texture,
 		Vec4 colorMultiplier,
@@ -82,14 +82,14 @@ public class Faces {
 				}
 			);
 
-		return new Face(
+		return new ShapePart(
 			texture,
 			builder.assemble(),
 			buffer
 		);
 	}
 
-	public static Face createBlockFace(
+	public static ShapePart createBlockFace(
 		ShapeRenderProgram program,
 		Texture texture,
 		Vec4 colorMultiplier,

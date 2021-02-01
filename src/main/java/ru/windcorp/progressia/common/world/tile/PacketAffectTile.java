@@ -26,7 +26,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.PacketAffectChunk;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public abstract class PacketAffectTile extends PacketAffectChunk {
 

@@ -21,13 +21,13 @@ package ru.windcorp.progressia.client.graphics.model;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.texture.TexturePrimitive;
 
-public class FaceGroup {
+public class ShapePartGroup {
 
 	private final TexturePrimitive texture;
 	private final int indexCount;
 	private final int byteOffsetOfIndices;
 
-	FaceGroup(Face[] faces, int start, int end) {
+	ShapePartGroup(ShapePart[] faces, int start, int end) {
 
 		Texture t = faces[start].getTexture();
 		this.texture = t == null ? null : t.getSprite().getPrimitive();
@@ -36,7 +36,7 @@ public class FaceGroup {
 		int indexCount = 0;
 
 		for (int i = start; i < end; ++i) {
-			Face face = faces[i];
+			ShapePart face = faces[i];
 
 			assert this.texture == null
 				? (face.getTexture() == null)

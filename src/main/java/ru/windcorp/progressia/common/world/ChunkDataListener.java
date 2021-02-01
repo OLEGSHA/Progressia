@@ -20,7 +20,7 @@ package ru.windcorp.progressia.common.world;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 public interface ChunkDataListener {

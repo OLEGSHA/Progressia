@@ -25,8 +25,8 @@ import glm.vec._3.i.Vec3i;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
-import ru.windcorp.progressia.client.graphics.model.Face;
-import ru.windcorp.progressia.client.graphics.model.Faces;
+import ru.windcorp.progressia.client.graphics.model.ShapePart;
+import ru.windcorp.progressia.client.graphics.model.ShapeParts;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
@@ -34,7 +34,7 @@ import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSurface.TileOptimizedSurface;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public abstract class TileRenderSurface extends TileRender implements TileOptimizedSurface {
 
@@ -58,21 +58,21 @@ public abstract class TileRenderSurface extends TileRender implements TileOptimi
 	}
 	
 	@Override
-	public final void getFaces(
+	public final void getShapeParts(
 		ChunkData chunk, Vec3i blockInChunk, AbsFace blockFace,
 		boolean inner,
-		Consumer<Face> output,
+		Consumer<ShapePart> output,
 		Vec3 offset
 	) {
 		output.accept(createFace(chunk, blockInChunk, blockFace, inner, offset));
 	}
 	
-	private Face createFace(
+	private ShapePart createFace(
 		ChunkData chunk, Vec3i blockInChunk, AbsFace blockFace,
 		boolean inner,
 		Vec3 offset
 	) {
-		return Faces.createBlockFace(
+		return ShapeParts.createBlockFace(
 			WorldRenderProgram.getDefault(),
 			getTexture(blockFace),
 			getColorMultiplier(blockFace),

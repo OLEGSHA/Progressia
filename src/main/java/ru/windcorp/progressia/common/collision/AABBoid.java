@@ -19,7 +19,7 @@
 package ru.windcorp.progressia.common.collision;
 
 import glm.vec._3.Vec3;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public interface AABBoid extends CollisionModel {
 

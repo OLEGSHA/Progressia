@@ -21,7 +21,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.model.EmptyModel;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class TileRenderNone extends TileRender {
 
