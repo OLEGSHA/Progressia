@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.TickAndUpdateUtil;
 import ru.windcorp.progressia.server.world.WorldLogic;
@@ -30,7 +30,7 @@ import ru.windcorp.progressia.server.world.WorldLogic;
 class TileTriggeredUpdate extends CachedEvaluation {
 
 	private final Vec3i blockInWorld = new Vec3i();
-	private BlockFace face = null;
+	private AbsFace face = null;
 
 	public TileTriggeredUpdate(Consumer<? super CachedEvaluation> disposer) {
 		super(disposer);
@@ -53,7 +53,7 @@ class TileTriggeredUpdate extends CachedEvaluation {
 																			// complement
 	}
 
-	public void init(Vec3i blockInWorld, BlockFace face) {
+	public void init(Vec3i blockInWorld, AbsFace face) {
 		this.blockInWorld.set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 		this.face = face;
 	}

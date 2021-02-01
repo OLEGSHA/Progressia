@@ -20,14 +20,14 @@ package ru.windcorp.progressia.test;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.comms.controls.ControlData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 public class ControlPlaceTileData extends ControlData {
 
 	private TileData tile;
 	private final Vec3i blockInWorld = new Vec3i();
-	private BlockFace face;
+	private AbsFace face;
 
 	public ControlPlaceTileData(String id) {
 		super(id);
@@ -41,11 +41,11 @@ public class ControlPlaceTileData extends ControlData {
 		return blockInWorld;
 	}
 
-	public BlockFace getFace() {
+	public AbsFace getFace() {
 		return face;
 	}
 
-	public void set(TileData block, Vec3i blockInWorld, BlockFace face) {
+	public void set(TileData block, Vec3i blockInWorld, AbsFace face) {
 		this.tile = block;
 		this.blockInWorld.set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 		this.face = face;

@@ -39,7 +39,7 @@ import ru.windcorp.progressia.client.world.entity.EntityRender;
 import ru.windcorp.progressia.client.world.entity.EntityRenderRegistry;
 import ru.windcorp.progressia.client.world.entity.EntityRenderable;
 import ru.windcorp.progressia.client.world.entity.QuadripedModel;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class TestEntityRenderJavapony extends EntityRender {
@@ -78,7 +78,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addStaticPart(
 			new PppBuilder(
 				WorldRenderProgram.getDefault(),
-				BlockFace.mapToFaces(
+				AbsFace.mapToFaces(
 					tailStartTexture,
 					tailStartTexture,
 					tailStartTexture,
@@ -97,7 +97,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addStaticPart(
 			new PppBuilder(
 				WorldRenderProgram.getDefault(),
-				BlockFace.mapToFaces(
+				AbsFace.mapToFaces(
 					neckTexture,
 					neckTexture,
 					neckTexture,
@@ -360,7 +360,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addPart(
 			new PppBuilder(
 				program,
-				BlockFace.mapToFaces(
+				AbsFace.mapToFaces(
 					texture.get(32, 64, 0, 0),
 					texture.get(32, 64, 0, 0),
 					texture.get(32 + 8, 64, 16, 8),
@@ -375,7 +375,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addPart(
 			new PppBuilder(
 				program,
-				BlockFace.mapToFaces(
+				AbsFace.mapToFaces(
 					texture.get(32, 64, 0, 0),
 					texture.get(32, 64, 0, 0),
 					texture.get(32 + 12, 64 + 8, 8, 4),
@@ -416,7 +416,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addPart(
 			new PppBuilder(
 				program,
-				BlockFace.mapToFaces(
+				AbsFace.mapToFaces(
 					texture.get(128, 96, 16, 16),
 					texture.get(128, 96, 16, 16),
 					texture.get(128, 96, 16, 32),

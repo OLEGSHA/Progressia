@@ -19,7 +19,7 @@
 package ru.windcorp.progressia.common.collision;
 
 import glm.vec._3.Vec3;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 public interface AABBoid extends CollisionModel {
 
@@ -27,7 +27,7 @@ public interface AABBoid extends CollisionModel {
 
 	void getSize(Vec3 output);
 
-	default Wall getWall(BlockFace face) {
+	default Wall getWall(AbsFace face) {
 		return getWall(face.getId());
 	}
 

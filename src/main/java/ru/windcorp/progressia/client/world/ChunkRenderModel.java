@@ -36,7 +36,7 @@ import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.client.world.tile.TileRenderNone;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 public class ChunkRenderModel implements Renderable {
 	
@@ -99,7 +99,7 @@ public class ChunkRenderModel implements Renderable {
 	private void processBlockAndTiles(Vec3i blockInChunk, Builder sink) {
 		processBlock(blockInChunk, sink);
 		
-		for (BlockFace face : BlockFace.getFaces()) {
+		for (AbsFace face : AbsFace.getFaces()) {
 			processTileStack(blockInChunk, face, sink);
 		}
 	}
@@ -127,7 +127,7 @@ public class ChunkRenderModel implements Renderable {
 		}
 	}
 
-	private void processTileStack(Vec3i blockInChunk, BlockFace face, Builder sink) {
+	private void processTileStack(Vec3i blockInChunk, AbsFace face, Builder sink) {
 		TileRenderStack trs = chunk.getTilesOrNull(blockInChunk, face);
 		
 		if (trs == null || trs.isEmpty()) {
@@ -137,7 +137,7 @@ public class ChunkRenderModel implements Renderable {
 		trs.forEach(tile -> processTile(tile, blockInChunk, face, sink));
 	}
 
-	private void processTile(TileRender tile, Vec3i blockInChunk, BlockFace face, Builder sink) {	
+	private void processTile(TileRender tile, Vec3i blockInChunk, AbsFace face, Builder sink) {	
 		if (tile instanceof TileRenderNone) {
 			return;
 		}
@@ -152,7 +152,7 @@ public class ChunkRenderModel implements Renderable {
 		processTileWithCROs(tile, blockInChunk, face);
 	}
 
-	private void processTileWithCROs(TileRender tile, Vec3i blockInChunk, BlockFace face) {
+	private void processTileWithCROs(TileRender tile, Vec3i blockInChunk, AbsFace face) {
 		for (ChunkRenderOptimizer optimizer : optimizers) {
 			optimizer.addTile(tile, blockInChunk, face);
 		}

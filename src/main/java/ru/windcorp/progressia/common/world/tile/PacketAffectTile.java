@@ -26,12 +26,12 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.PacketAffectChunk;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 public abstract class PacketAffectTile extends PacketAffectChunk {
 
 	private final Vec3i blockInWorld = new Vec3i();
-	private BlockFace face;
+	private AbsFace face;
 	private int tag;
 
 	public PacketAffectTile(String id) {
@@ -42,7 +42,7 @@ public abstract class PacketAffectTile extends PacketAffectChunk {
 		return blockInWorld;
 	}
 
-	public BlockFace getFace() {
+	public AbsFace getFace() {
 		return face;
 	}
 
@@ -50,7 +50,7 @@ public abstract class PacketAffectTile extends PacketAffectChunk {
 		return tag;
 	}
 
-	public void set(Vec3i blockInWorld, BlockFace face, int tag) {
+	public void set(Vec3i blockInWorld, AbsFace face, int tag) {
 		this.blockInWorld.set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 		this.face = face;
 		this.tag = tag;
@@ -59,7 +59,7 @@ public abstract class PacketAffectTile extends PacketAffectChunk {
 	@Override
 	public void read(DataInput input) throws IOException, DecodingException {
 		this.blockInWorld.set(input.readInt(), input.readInt(), input.readInt());
-		this.face = BlockFace.getFaces().get(input.readByte());
+		this.face = AbsFace.getFaces().get(input.readByte());
 		this.tag = input.readInt();
 	}
 

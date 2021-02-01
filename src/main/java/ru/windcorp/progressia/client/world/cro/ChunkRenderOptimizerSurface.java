@@ -19,7 +19,7 @@
 package ru.windcorp.progressia.client.world.cro;
 
 import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
-import static ru.windcorp.progressia.common.world.block.BlockFace.BLOCK_FACE_COUNT;
+import static ru.windcorp.progressia.common.world.block.AbsFace.BLOCK_FACE_COUNT;
 import static ru.windcorp.progressia.common.world.generic.GenericTileStack.TILES_PER_FACE;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 
@@ -69,7 +69,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		void getFaces(
 			ChunkData chunk,
 			Vec3i blockInChunk,
-			BlockFace blockFace,
+			AbsFace blockFace,
 			boolean inner,
 			Consumer<Face> output,
 			Vec3 offset /* kostyl 156% */
@@ -77,14 +77,14 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 
 		/**
 		 * Returns the opacity of the surface identified by the provided
-		 * {@link BlockFace}.
+		 * {@link AbsFace}.
 		 * Opaque surfaces prevent surfaces behind them from being included in
 		 * chunk models.
 		 * 
 		 * @param blockFace the face to query
 		 * @return {@code true} iff the surface is opaque.
 		 */
-		boolean isOpaque(BlockFace blockFace);
+		boolean isOpaque(AbsFace blockFace);
 	}
 
 	/**
@@ -168,7 +168,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 	}
 
 	@Override
-	public void addTile(TileRender tile, Vec3i pos, BlockFace face) {
+	public void addTile(TileRender tile, Vec3i pos, AbsFace face) {
 		if (!(tile instanceof TileOptimizedSurface))
 			return;
 
@@ -180,7 +180,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		getBlock(pos).block = block;
 	}
 
-	private void addTile(Vec3i pos, BlockFace face, TileOptimizedSurface tile) {
+	private void addTile(Vec3i pos, AbsFace face, TileOptimizedSurface tile) {
 		FaceInfo faceInfo = getFace(pos, face);
 
 		int index = faceInfo.tileCount;
@@ -201,7 +201,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		return data[cursor.x][cursor.y][cursor.z];
 	}
 
-	protected FaceInfo getFace(Vec3i cursor, BlockFace face) {
+	protected FaceInfo getFace(Vec3i cursor, AbsFace face) {
 		return getBlock(cursor).faces[face.getId()];
 	}
 
@@ -238,12 +238,12 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		Vec3i blockInChunk,
 		Consumer<Face> output
 	) {
-		for (BlockFace blockFace : BlockFace.getFaces()) {
+		for (AbsFace blockFace : AbsFace.getFaces()) {
 			processOuterFace(blockInChunk, blockFace, output);
 		}
 	}
 
-	private void processOuterFace(Vec3i blockInChunk, BlockFace blockFace, Consumer<Face> output) {
+	private void processOuterFace(Vec3i blockInChunk, AbsFace blockFace, Consumer<Face> output) {
 		if (!shouldRenderOuterFace(blockInChunk, blockFace))
 			return;
 
@@ -274,12 +274,12 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		Vec3i blockInChunk,
 		Consumer<Face> output
 	) {
-		for (BlockFace blockFace : BlockFace.getFaces()) {
+		for (AbsFace blockFace : AbsFace.getFaces()) {
 			processInnerFace(blockInChunk, blockFace, output);
 		}
 	}
 
-	private void processInnerFace(Vec3i blockInChunk, BlockFace blockFace, Consumer<Face> output) {
+	private void processInnerFace(Vec3i blockInChunk, AbsFace blockFace, Consumer<Face> output) {
 		if (!shouldRenderInnerFace(blockInChunk, blockFace))
 			return;
 
@@ -306,7 +306,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		}
 	}
 
-	private boolean shouldRenderOuterFace(Vec3i blockInChunk, BlockFace face) {
+	private boolean shouldRenderOuterFace(Vec3i blockInChunk, AbsFace face) {
 		blockInChunk.add(face.getVector());
 		try {
 			return shouldRenderWhenFacing(blockInChunk, face);
@@ -315,11 +315,11 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		}
 	}
 
-	private boolean shouldRenderInnerFace(Vec3i blockInChunk, BlockFace face) {
+	private boolean shouldRenderInnerFace(Vec3i blockInChunk, AbsFace face) {
 		return shouldRenderWhenFacing(blockInChunk, face);
 	}
 
-	private boolean shouldRenderWhenFacing(Vec3i blockInChunk, BlockFace face) {
+	private boolean shouldRenderWhenFacing(Vec3i blockInChunk, AbsFace face) {
 		if (chunk.containsBiC(blockInChunk)) {
 			return shouldRenderWhenFacingLocal(blockInChunk, face);
 		} else {
@@ -327,7 +327,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		}
 	}
 
-	private boolean shouldRenderWhenFacingLocal(Vec3i blockInChunk, BlockFace face) {
+	private boolean shouldRenderWhenFacingLocal(Vec3i blockInChunk, AbsFace face) {
 		BlockOptimizedSurface block = getBlock(blockInChunk).block;
 
 		if (block == null) {
@@ -340,7 +340,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		return true;
 	}
 
-	private boolean shouldRenderWhenFacingNeighbor(Vec3i blockInLocalChunk, BlockFace face) {
+	private boolean shouldRenderWhenFacingNeighbor(Vec3i blockInLocalChunk, AbsFace face) {
 		Vec3i blockInChunk = Vectors.grab3i().set(blockInLocalChunk.x, blockInLocalChunk.y, blockInLocalChunk.z);
 		Vec3i chunkPos = Vectors.grab3i().set(chunk.getX(), chunk.getY(), chunk.getZ());
 

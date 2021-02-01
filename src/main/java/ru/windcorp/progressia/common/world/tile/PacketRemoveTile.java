@@ -26,7 +26,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.WorldData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 public class PacketRemoveTile extends PacketAffectTile {
 
@@ -39,7 +39,7 @@ public class PacketRemoveTile extends PacketAffectTile {
 	}
 
 	@Override
-	public void set(Vec3i blockInWorld, BlockFace face, int tag) {
+	public void set(Vec3i blockInWorld, AbsFace face, int tag) {
 		super.set(blockInWorld, face, tag);
 	}
 

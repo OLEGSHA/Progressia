@@ -18,7 +18,7 @@
  
 package ru.windcorp.progressia.common.world;
 
-import static ru.windcorp.progressia.common.world.block.BlockFace.*;
+import static ru.windcorp.progressia.common.world.block.AbsFace.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
@@ -83,31 +83,31 @@ public class ChunkData
 	}
 
 	@Override
-	public TileDataStack getTilesOrNull(Vec3i blockInChunk, BlockFace face) {
+	public TileDataStack getTilesOrNull(Vec3i blockInChunk, AbsFace face) {
 		return tiles[getTileIndex(blockInChunk, face)];
 	}
 
 	/**
 	 * Internal use only. Modify a list returned by
-	 * {@link #getTiles(Vec3i, BlockFace)} or
-	 * {@link #getTilesOrNull(Vec3i, BlockFace)}
+	 * {@link #getTiles(Vec3i, AbsFace)} or
+	 * {@link #getTilesOrNull(Vec3i, AbsFace)}
 	 * to change tiles.
 	 */
 	protected void setTiles(
 		Vec3i blockInChunk,
-		BlockFace face,
+		AbsFace face,
 		TileDataStack tiles
 	) {
 		this.tiles[getTileIndex(blockInChunk, face)] = tiles;
 	}
 
 	@Override
-	public boolean hasTiles(Vec3i blockInChunk, BlockFace face) {
+	public boolean hasTiles(Vec3i blockInChunk, AbsFace face) {
 		return getTilesOrNull(blockInChunk, face) != null;
 	}
 
 	@Override
-	public TileDataStack getTiles(Vec3i blockInChunk, BlockFace face) {
+	public TileDataStack getTiles(Vec3i blockInChunk, AbsFace face) {
 		int index = getTileIndex(blockInChunk, face);
 
 		if (tiles[index] == null) {
@@ -117,15 +117,15 @@ public class ChunkData
 		return tiles[index];
 	}
 
-	private void createTileStack(Vec3i blockInChunk, BlockFace face) {
+	private void createTileStack(Vec3i blockInChunk, AbsFace face) {
 		Vec3i independentBlockInChunk = conjureIndependentBlockInChunkVec3i(blockInChunk);
 		TileDataStackImpl stack = new TileDataStackImpl(independentBlockInChunk, face);
 		setTiles(blockInChunk, face, stack);
 	}
 
 	private Vec3i conjureIndependentBlockInChunkVec3i(Vec3i blockInChunk) {
-		for (int i = 0; i < BlockFace.BLOCK_FACE_COUNT; ++i) {
-			TileDataStack stack = getTilesOrNull(blockInChunk, BlockFace.getFaces().get(i));
+		for (int i = 0; i < AbsFace.BLOCK_FACE_COUNT; ++i) {
+			TileDataStack stack = getTilesOrNull(blockInChunk, AbsFace.getFaces().get(i));
 			if (stack instanceof TileDataStackImpl) {
 				return ((TileDataStackImpl) stack).blockInChunk;
 			}
@@ -142,7 +142,7 @@ public class ChunkData
 			posInChunk.x;
 	}
 
-	private static int getTileIndex(Vec3i posInChunk, BlockFace face) {
+	private static int getTileIndex(Vec3i posInChunk, AbsFace face) {
 		return getBlockIndex(posInChunk) * BLOCK_FACE_COUNT +
 			face.getId();
 	}
@@ -162,14 +162,14 @@ public class ChunkData
 			posInChunk.z >= 0 && posInChunk.z < BLOCKS_PER_CHUNK;
 	}
 
-	public boolean isBorder(Vec3i blockInChunk, BlockFace face) {
+	public boolean isBorder(Vec3i blockInChunk, AbsFace face) {
 		final int min = 0, max = BLOCKS_PER_CHUNK - 1;
-		return (blockInChunk.x == min && face == SOUTH) ||
-			(blockInChunk.x == max && face == NORTH) ||
-			(blockInChunk.y == min && face == EAST) ||
-			(blockInChunk.y == max && face == WEST) ||
-			(blockInChunk.z == min && face == BOTTOM) ||
-			(blockInChunk.z == max && face == TOP);
+		return (blockInChunk.x == min && face == NEG_X) ||
+			(blockInChunk.x == max && face == POS_X) ||
+			(blockInChunk.y == min && face == NEG_Y) ||
+			(blockInChunk.y == max && face == POS_Y) ||
+			(blockInChunk.z == min && face == NEG_Z) ||
+			(blockInChunk.z == max && face == POS_Z);
 	}
 
 	public void forEachBlock(Consumer<Vec3i> action) {
@@ -186,7 +186,7 @@ public class ChunkData
 
 	public void forEachTileStack(Consumer<TileDataStack> action) {
 		forEachBlock(blockInChunk -> {
-			for (BlockFace face : BlockFace.getFaces()) {
+			for (AbsFace face : AbsFace.getFaces()) {
 				TileDataStack stack = getTilesOrNull(blockInChunk, face);
 				if (stack == null)
 					continue;
@@ -309,9 +309,9 @@ public class ChunkData
 		 * Potentially shared
 		 */
 		private final Vec3i blockInChunk;
-		private final BlockFace face;
+		private final AbsFace face;
 
-		public TileDataStackImpl(Vec3i blockInChunk, BlockFace face) {
+		public TileDataStackImpl(Vec3i blockInChunk, AbsFace face) {
 			this.blockInChunk = blockInChunk;
 			this.face = face;
 		}
@@ -325,7 +325,7 @@ public class ChunkData
 		}
 
 		@Override
-		public BlockFace getFace() {
+		public AbsFace getFace() {
 			return face;
 		}
 

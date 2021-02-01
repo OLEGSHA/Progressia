@@ -413,7 +413,7 @@ public class TestContent {
 		ControlPlaceTileData controlData = ((ControlPlaceTileData) packet.getControl());
 		TileData tile = controlData.getTile();
 		Vec3i blockInWorld = controlData.getBlockInWorld();
-		BlockFace face = controlData.getFace();
+		AbsFace face = controlData.getFace();
 
 		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null)
 			return;

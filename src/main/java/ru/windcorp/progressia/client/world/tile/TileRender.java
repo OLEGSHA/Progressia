@@ -24,7 +24,7 @@ import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizer;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.generic.GenericTile;
 
 public class TileRender extends Namespaced implements GenericTile {
@@ -33,13 +33,13 @@ public class TileRender extends Namespaced implements GenericTile {
 		super(id);
 	}
 
-	public void render(ShapeRenderHelper renderer, BlockFace face) {
+	public void render(ShapeRenderHelper renderer, AbsFace face) {
 		throw new UnsupportedOperationException(
 			"TileRender.render() not implemented in " + this
 		);
 	}
 
-	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk, BlockFace face) {
+	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk, AbsFace face) {
 		return null;
 	}
 

@@ -25,7 +25,7 @@ import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram.VertexBuilder;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 public class Faces {
 
@@ -94,7 +94,7 @@ public class Faces {
 		Texture texture,
 		Vec4 colorMultiplier,
 		Vec3 blockCenter,
-		BlockFace face,
+		AbsFace face,
 		boolean inner
 	) {
 		BlockFaceVectors vectors = BlockFaceVectors.get(inner);

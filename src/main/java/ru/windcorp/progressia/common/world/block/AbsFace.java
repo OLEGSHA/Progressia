@@ -23,65 +23,68 @@ import com.google.common.collect.ImmutableMap;
 
 import glm.vec._3.i.Vec3i;
 
-public final class BlockFace extends BlockRelation {
+public final class AbsFace extends AbsRelation {
 
-	public static final BlockFace TOP = new BlockFace(0, 0, +1, true, "TOP"),
-		BOTTOM = new BlockFace(0, 0, -1, false, "BOTTOM"),
-		NORTH = new BlockFace(+1, 0, 0, true, "NORTH"),
-		SOUTH = new BlockFace(-1, 0, 0, false, "SOUTH"),
-		WEST = new BlockFace(0, +1, 0, false, "WEST"),
-		EAST = new BlockFace(0, -1, 0, true, "EAST");
+	// @formatter:off
+	public static final AbsFace
+		POS_Z = new AbsFace( 0,  0, +1,  true, "POS_Z"),
+		NEG_Z = new AbsFace( 0,  0, -1, false, "NEG_Z"),
+		POS_X = new AbsFace(+1,  0,  0,  true, "POS_X"),
+		NEG_X = new AbsFace(-1,  0,  0, false, "NEG_X"),
+		POS_Y = new AbsFace( 0, +1,  0, false, "POS_Y"),
+		NEG_Y = new AbsFace( 0, -1,  0,  true, "NEG_Y");
+	// @formatter:on
 
-	private static final ImmutableList<BlockFace> ALL_FACES = ImmutableList.of(TOP, BOTTOM, NORTH, SOUTH, WEST, EAST);
+	private static final ImmutableList<AbsFace> ALL_FACES = ImmutableList.of(POS_Z, NEG_Z, POS_X, NEG_X, POS_Y, NEG_Y);
 
 	static {
-		link(TOP, BOTTOM);
-		link(NORTH, SOUTH);
-		link(WEST, EAST);
+		link(POS_Z, NEG_Z);
+		link(POS_X, NEG_X);
+		link(POS_Y, NEG_Y);
 	}
 
-	private static final ImmutableList<BlockFace> PRIMARY_FACES = ALL_FACES.stream().filter(BlockFace::isPrimary)
+	private static final ImmutableList<AbsFace> PRIMARY_FACES = ALL_FACES.stream().filter(AbsFace::isPrimary)
 		.collect(ImmutableList.toImmutableList());
 
-	private static final ImmutableList<BlockFace> SECONDARY_FACES = ALL_FACES.stream().filter(BlockFace::isSecondary)
+	private static final ImmutableList<AbsFace> SECONDARY_FACES = ALL_FACES.stream().filter(AbsFace::isSecondary)
 		.collect(ImmutableList.toImmutableList());
 
 	public static final int BLOCK_FACE_COUNT = ALL_FACES.size();
 	public static final int PRIMARY_BLOCK_FACE_COUNT = PRIMARY_FACES.size();
 	public static final int SECONDARY_BLOCK_FACE_COUNT = SECONDARY_FACES.size();
 
-	public static ImmutableList<BlockFace> getFaces() {
+	public static ImmutableList<AbsFace> getFaces() {
 		return ALL_FACES;
 	}
 
-	public static ImmutableList<BlockFace> getPrimaryFaces() {
+	public static ImmutableList<AbsFace> getPrimaryFaces() {
 		return PRIMARY_FACES;
 	}
 
-	public static ImmutableList<BlockFace> getSecondaryFaces() {
+	public static ImmutableList<AbsFace> getSecondaryFaces() {
 		return SECONDARY_FACES;
 	}
 
-	private static void link(BlockFace a, BlockFace b) {
+	private static void link(AbsFace a, AbsFace b) {
 		a.counterFace = b;
 		b.counterFace = a;
 	}
 
-	public static <E> ImmutableMap<BlockFace, E> mapToFaces(
-		E top,
-		E bottom,
-		E north,
-		E south,
-		E east,
-		E west
+	public static <E> ImmutableMap<AbsFace, E> mapToFaces(
+		E posZ,
+		E negZ,
+		E posX,
+		E negX,
+		E negY,
+		E posY
 	) {
-		return ImmutableMap.<BlockFace, E>builderWithExpectedSize(6)
-			.put(TOP, top)
-			.put(BOTTOM, bottom)
-			.put(NORTH, north)
-			.put(SOUTH, south)
-			.put(EAST, east)
-			.put(WEST, west)
+		return ImmutableMap.<AbsFace, E>builderWithExpectedSize(6)
+			.put(POS_Z, posZ)
+			.put(NEG_Z, negZ)
+			.put(POS_X, posX)
+			.put(NEG_X, negX)
+			.put(NEG_Y, negY)
+			.put(POS_Y, posY)
 			.build();
 	}
 
@@ -89,10 +92,10 @@ public final class BlockFace extends BlockRelation {
 
 	private final int id;
 	private final String name;
-	private BlockFace counterFace;
+	private AbsFace counterFace;
 	private final boolean isPrimary;
 
-	private BlockFace(int x, int y, int z, boolean isPrimary, String name) {
+	private AbsFace(int x, int y, int z, boolean isPrimary, String name) {
 		super(x, y, z);
 		this.id = nextId++;
 		this.isPrimary = isPrimary;
@@ -107,14 +110,14 @@ public final class BlockFace extends BlockRelation {
 		return isPrimary;
 	}
 
-	public BlockFace getPrimary() {
+	public AbsFace getPrimary() {
 		if (isPrimary)
 			return this;
 		else
 			return counterFace;
 	}
 
-	public BlockFace getPrimaryAndMoveCursor(Vec3i cursor) {
+	public AbsFace getPrimaryAndMoveCursor(Vec3i cursor) {
 		if (isPrimary)
 			return this;
 
@@ -126,14 +129,14 @@ public final class BlockFace extends BlockRelation {
 		return !isPrimary;
 	}
 
-	public BlockFace getSecondary() {
+	public AbsFace getSecondary() {
 		if (isPrimary)
 			return counterFace;
 		else
 			return this;
 	}
 
-	public BlockFace getSecondaryAndMoveCursor(Vec3i cursor) {
+	public AbsFace getSecondaryAndMoveCursor(Vec3i cursor) {
 		if (!isPrimary)
 			return this;
 
@@ -141,11 +144,11 @@ public final class BlockFace extends BlockRelation {
 		return counterFace;
 	}
 
-	public BlockFace getCounter() {
+	public AbsFace getCounter() {
 		return counterFace;
 	}
 
-	public BlockFace getCounterAndMoveCursor(Vec3i cursor) {
+	public AbsFace getCounterAndMoveCursor(Vec3i cursor) {
 		cursor.add(getVector());
 		return counterFace;
 	}

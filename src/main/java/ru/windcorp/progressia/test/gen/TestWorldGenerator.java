@@ -33,7 +33,7 @@ import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.WorldDataListener;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 import ru.windcorp.progressia.server.world.WorldLogic;
@@ -238,9 +238,9 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 		TileData grass = TileDataRegistry.getInstance().get("Test:Grass");
 
-		world.getTiles(biw, BlockFace.TOP).add(grass);
+		world.getTiles(biw, AbsFace.POS_Z).add(grass);
 
-		for (BlockFace face : BlockFace.getFaces()) {
+		for (AbsFace face : AbsFace.getFaces()) {
 			if (face.getVector().z != 0)
 				continue;
 			biw.add(face.getVector());
@@ -257,25 +257,25 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 	private void addDecor(ChunkData chunk, Vec3i biw, WorldData world, Random random, boolean isDirt) {
 		if (isDirt) {
 			if (random.nextInt(8) == 0) {
-				world.getTiles(biw, BlockFace.TOP).addFarthest(
+				world.getTiles(biw, AbsFace.POS_Z).addFarthest(
 					TileDataRegistry.getInstance().get("Test:Sand")
 				);
 			}
 
 			if (random.nextInt(8) == 0) {
-				world.getTiles(biw, BlockFace.TOP).addFarthest(
+				world.getTiles(biw, AbsFace.POS_Z).addFarthest(
 					TileDataRegistry.getInstance().get("Test:Stones")
 				);
 			}
 
 			if (random.nextInt(8) == 0) {
-				world.getTiles(biw, BlockFace.TOP).addFarthest(
+				world.getTiles(biw, AbsFace.POS_Z).addFarthest(
 					TileDataRegistry.getInstance().get("Test:YellowFlowers")
 				);
 			}
 		} else {
 			if (random.nextInt(2) == 0) {
-				world.getTiles(biw, BlockFace.TOP).addFarthest(
+				world.getTiles(biw, AbsFace.POS_Z).addFarthest(
 					TileDataRegistry.getInstance().get("Test:Stones")
 				);
 			}
@@ -300,8 +300,8 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		double halfChance = computeSnowHalfChance(height, grad);
 		double opaqueChance = computeSnowOpaqueChance(height, grad);
 
-		for (BlockFace face : BlockFace.getFaces()) {
-			if (face == BlockFace.BOTTOM)
+		for (AbsFace face : AbsFace.getFaces()) {
+			if (face == AbsFace.NEG_Z)
 				continue;
 
 			if (face.getVector().z == 0) {

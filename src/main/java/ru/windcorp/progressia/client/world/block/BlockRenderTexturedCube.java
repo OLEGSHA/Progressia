@@ -18,7 +18,7 @@
  
 package ru.windcorp.progressia.client.world.block;
 
-import static ru.windcorp.progressia.common.world.block.BlockFace.*;
+import static ru.windcorp.progressia.common.world.block.AbsFace.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,44 +38,44 @@ import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSurface.BlockOptimizedSurface;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 public abstract class BlockRenderTexturedCube
 	extends BlockRender
 	implements BlockOptimizedSurface {
 
-	private final Map<BlockFace, Texture> textures = new HashMap<>();
+	private final Map<AbsFace, Texture> textures = new HashMap<>();
 
 	public BlockRenderTexturedCube(
 		String id,
-		Texture topTexture,
-		Texture bottomTexture,
-		Texture northTexture,
-		Texture southTexture,
-		Texture eastTexture,
-		Texture westTexture
+		Texture posZTexture,
+		Texture negZTexture,
+		Texture posXTexture,
+		Texture negXTexture,
+		Texture negYTexture,
+		Texture posYTexture
 	) {
 		super(id);
 
-		textures.put(TOP, topTexture);
-		textures.put(BOTTOM, bottomTexture);
-		textures.put(NORTH, northTexture);
-		textures.put(SOUTH, southTexture);
-		textures.put(EAST, eastTexture);
-		textures.put(WEST, westTexture);
+		textures.put(POS_Z, posZTexture);
+		textures.put(NEG_Z, negZTexture);
+		textures.put(POS_X, posXTexture);
+		textures.put(NEG_X, negXTexture);
+		textures.put(NEG_Y, negYTexture);
+		textures.put(POS_Y, posYTexture);
 	}
 
-	public Texture getTexture(BlockFace blockFace) {
+	public Texture getTexture(AbsFace blockFace) {
 		return textures.get(blockFace);
 	}
 	
-	public Vec4 getColorMultiplier(BlockFace blockFace) {
+	public Vec4 getColorMultiplier(AbsFace blockFace) {
 		return Colors.WHITE;
 	}
 
 	@Override
 	public final void getFaces(
-		ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace,
+		ChunkData chunk, Vec3i blockInChunk, AbsFace blockFace,
 		boolean inner,
 		Consumer<Face> output,
 		Vec3 offset
@@ -84,7 +84,7 @@ public abstract class BlockRenderTexturedCube
 	}
 	
 	private Face createFace(
-		ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace,
+		ChunkData chunk, Vec3i blockInChunk, AbsFace blockFace,
 		boolean inner,
 		Vec3 offset
 	) {
@@ -105,12 +105,12 @@ public abstract class BlockRenderTexturedCube
 		Face[] faces = new Face[BLOCK_FACE_COUNT + (opaque ? BLOCK_FACE_COUNT : 0)];
 		
 		for (int i = 0; i < BLOCK_FACE_COUNT; ++i) {
-			faces[i] = createFace(chunk, blockInChunk, BlockFace.getFaces().get(i), false, Vectors.ZERO_3);
+			faces[i] = createFace(chunk, blockInChunk, AbsFace.getFaces().get(i), false, Vectors.ZERO_3);
 		}
 		
 		if (!opaque) {
 			for (int i = 0; i < BLOCK_FACE_COUNT; ++i) {
-				faces[i + BLOCK_FACE_COUNT] = createFace(chunk, blockInChunk, BlockFace.getFaces().get(i), true, Vectors.ZERO_3);
+				faces[i + BLOCK_FACE_COUNT] = createFace(chunk, blockInChunk, AbsFace.getFaces().get(i), true, Vectors.ZERO_3);
 			}
 		}
 		

@@ -25,7 +25,7 @@ import ru.windcorp.progressia.common.collision.colliders.Collider.ColliderWorksp
 import ru.windcorp.progressia.common.collision.colliders.Collider.Collision;
 import ru.windcorp.progressia.common.util.Matrices;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 class AABBoidCollider {
 
@@ -50,7 +50,7 @@ class AABBoidCollider {
 		computeCollisionVelocity(collisionVelocity, obstacleBody, colliderBody);
 
 		// For every wall of collision space
-		for (int i = 0; i < BlockFace.BLOCK_FACE_COUNT; ++i) {
+		for (int i = 0; i < AbsFace.BLOCK_FACE_COUNT; ++i) {
 			Wall wall = originCollisionSpace.getWall(i);
 
 			Collision collision = computeWallCollision(

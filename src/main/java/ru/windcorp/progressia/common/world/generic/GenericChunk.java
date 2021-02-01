@@ -24,7 +24,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B extends GenericBlock, T extends GenericTile, TS extends GenericTileStack<TS, T, Self>> {
 
@@ -34,9 +34,9 @@ public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B exten
 
 	B getBlock(Vec3i blockInChunk);
 
-	TS getTiles(Vec3i blockInChunk, BlockFace face);
+	TS getTiles(Vec3i blockInChunk, AbsFace face);
 
-	boolean hasTiles(Vec3i blockInChunk, BlockFace face);
+	boolean hasTiles(Vec3i blockInChunk, AbsFace face);
 
 	default int getX() {
 		return getPosition().x;
@@ -182,7 +182,7 @@ public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B exten
 		);
 	}
 
-	default TS getTilesOrNull(Vec3i blockInChunk, BlockFace face) {
+	default TS getTilesOrNull(Vec3i blockInChunk, AbsFace face) {
 		if (hasTiles(blockInChunk, face)) {
 			return getTiles(blockInChunk, face);
 		}

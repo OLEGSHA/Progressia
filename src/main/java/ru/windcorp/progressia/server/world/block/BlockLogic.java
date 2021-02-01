@@ -19,7 +19,7 @@
 package ru.windcorp.progressia.server.world.block;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.generic.GenericBlock;
 
 public class BlockLogic extends Namespaced implements GenericBlock {
@@ -28,11 +28,11 @@ public class BlockLogic extends Namespaced implements GenericBlock {
 		super(id);
 	}
 
-	public boolean isSolid(BlockTickContext context, BlockFace face) {
+	public boolean isSolid(BlockTickContext context, AbsFace face) {
 		return isSolid(face);
 	}
 
-	public boolean isSolid(BlockFace face) {
+	public boolean isSolid(AbsFace face) {
 		return true;
 	}
 

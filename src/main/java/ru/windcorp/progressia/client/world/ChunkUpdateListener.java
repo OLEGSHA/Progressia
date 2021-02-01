@@ -22,7 +22,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 class ChunkUpdateListener implements ChunkDataListener {
@@ -41,7 +41,7 @@ class ChunkUpdateListener implements ChunkDataListener {
 	@Override
 	public void onChunkLoaded(ChunkData chunk) {
 		Vec3i cursor = new Vec3i();
-		for (BlockFace face : BlockFace.getFaces()) {
+		for (AbsFace face : AbsFace.getFaces()) {
 			cursor.set(chunk.getX(), chunk.getY(), chunk.getZ());
 			cursor.add(face.getVector());
 			world.markChunkForUpdate(cursor);
@@ -57,7 +57,7 @@ class ChunkUpdateListener implements ChunkDataListener {
 	public void onChunkTilesChanged(
 		ChunkData chunk,
 		Vec3i blockInChunk,
-		BlockFace face,
+		AbsFace face,
 		TileData tile,
 		boolean wasAdded
 	) {

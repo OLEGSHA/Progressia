@@ -19,7 +19,7 @@
 package ru.windcorp.progressia.server.world.tile;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.generic.GenericTile;
 
 public class TileLogic extends Namespaced implements GenericTile {
@@ -32,7 +32,7 @@ public class TileLogic extends Namespaced implements GenericTile {
 		return canOccupyFace(context.getFace());
 	}
 
-	public boolean canOccupyFace(BlockFace face) {
+	public boolean canOccupyFace(AbsFace face) {
 		return true;
 	}
 

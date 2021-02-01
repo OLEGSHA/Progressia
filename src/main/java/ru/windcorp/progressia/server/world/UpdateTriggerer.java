@@ -23,7 +23,7 @@ import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.Server;
 
@@ -49,7 +49,7 @@ public class UpdateTriggerer implements ChunkDataListener {
 	public void onChunkTilesChanged(
 		ChunkData chunk,
 		Vec3i blockInChunk,
-		BlockFace face,
+		AbsFace face,
 		TileData tile,
 		boolean wasAdded
 	) {

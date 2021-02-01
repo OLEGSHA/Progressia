@@ -25,7 +25,7 @@ import java.util.function.Function;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.generic.GenericTileStack;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.common.world.tile.TileReference;
@@ -126,7 +126,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		}
 
 		public static interface Block extends Builder {
-			Builder.TileStack withFace(BlockFace face);
+			Builder.TileStack withFace(AbsFace face);
 		}
 
 		public static interface TileStack extends Builder {
@@ -148,7 +148,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		protected Server server;
 		protected final Vec3i chunk = new Vec3i();
 		protected final Vec3i blockInWorld = new Vec3i();
-		protected BlockFace face;
+		protected AbsFace face;
 		protected int layer;
 
 		protected Role role = Role.NONE;
@@ -188,7 +188,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		}
 
 		@Override
-		public BlockFace getFace() {
+		public AbsFace getFace() {
 			checkContextState(Role.TILE_STACK);
 			return this.face;
 		}
@@ -277,7 +277,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		}
 
 		@Override
-		public TileStack withFace(BlockFace face) {
+		public TileStack withFace(AbsFace face) {
 			Objects.requireNonNull(face, "face");
 			checkBuilderState(Role.BLOCK);
 
@@ -339,12 +339,12 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		@Override
 		public void forEachFace(Consumer<TSTickContext> action) {
 			checkContextState(Role.BLOCK);
-			BlockFace previousFace = this.face;
+			AbsFace previousFace = this.face;
 			Role previousRole = this.role;
 
 			this.role = Role.TILE_STACK;
-			for (int i = 0; i < BlockFace.BLOCK_FACE_COUNT; ++i) {
-				this.face = BlockFace.getFaces().get(i);
+			for (int i = 0; i < AbsFace.BLOCK_FACE_COUNT; ++i) {
+				this.face = AbsFace.getFaces().get(i);
 				action.accept(this);
 			}
 

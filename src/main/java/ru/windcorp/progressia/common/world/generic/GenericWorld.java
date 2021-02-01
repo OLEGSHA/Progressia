@@ -26,7 +26,7 @@ import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS extends GenericTileStack<TS, T, C>, C extends GenericChunk<C, B, T, TS>, E extends GenericEntity> {
 
@@ -63,7 +63,7 @@ public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS 
 		return result;
 	}
 
-	default TS getTiles(Vec3i blockInWorld, BlockFace face) {
+	default TS getTiles(Vec3i blockInWorld, AbsFace face) {
 		Vec3i v = Vectors.grab3i();
 		TS result;
 
@@ -78,7 +78,7 @@ public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS 
 		return result;
 	}
 
-	default TS getTilesOrNull(Vec3i blockInWorld, BlockFace face) {
+	default TS getTilesOrNull(Vec3i blockInWorld, AbsFace face) {
 		Vec3i v = Vectors.grab3i();
 		TS result;
 
@@ -93,7 +93,7 @@ public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS 
 		return result;
 	}
 
-	default boolean hasTiles(Vec3i blockInWorld, BlockFace face) {
+	default boolean hasTiles(Vec3i blockInWorld, AbsFace face) {
 		Vec3i v = Vectors.grab3i();
 		boolean result;
 
@@ -108,7 +108,7 @@ public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS 
 		return result;
 	}
 
-	default T getTile(Vec3i blockInWorld, BlockFace face, int layer) {
+	default T getTile(Vec3i blockInWorld, AbsFace face, int layer) {
 		TS stack = getTilesOrNull(blockInWorld, face);
 		if (stack == null || stack.size() <= layer)
 			return null;

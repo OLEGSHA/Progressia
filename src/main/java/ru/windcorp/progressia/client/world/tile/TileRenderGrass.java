@@ -19,7 +19,7 @@
 package ru.windcorp.progressia.client.world.tile;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 public class TileRenderGrass extends TileRenderSurface {
 
@@ -37,13 +37,13 @@ public class TileRenderGrass extends TileRenderSurface {
 	}
 
 	@Override
-	public Texture getTexture(BlockFace face) {
-		return (face == BlockFace.TOP) ? topTexture : sideTexture;
+	public Texture getTexture(AbsFace face) {
+		return (face == AbsFace.POS_Z) ? topTexture : sideTexture;
 	}
 
 	@Override
-	public boolean isOpaque(BlockFace face) {
-		return face == BlockFace.TOP;
+	public boolean isOpaque(AbsFace face) {
+		return face == AbsFace.POS_Z;
 	}
 
 }

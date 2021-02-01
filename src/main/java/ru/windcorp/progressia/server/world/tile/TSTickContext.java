@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.server.world.ChunkLogic;
 import ru.windcorp.progressia.server.world.TickContextMutable;
@@ -35,7 +35,7 @@ public interface TSTickContext extends BlockTickContext {
 	 * Specifications
 	 */
 
-	BlockFace getFace();
+	AbsFace getFace();
 
 	/*
 	 * Getters

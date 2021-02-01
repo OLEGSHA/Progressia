@@ -24,7 +24,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.MultiLOC;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
@@ -64,17 +64,17 @@ public class WorldAccessor {
 		setBlock(blockInWorld, BlockDataRegistry.getInstance().get(id));
 	}
 
-	public void addTile(Vec3i blockInWorld, BlockFace face, TileData tile) {
+	public void addTile(Vec3i blockInWorld, AbsFace face, TileData tile) {
 		AddTile change = cache.grab(AddTile.class);
 		change.getPacket().set(tile, blockInWorld, face);
 		server.requestChange(change);
 	}
 
-	public void addTile(Vec3i blockInWorld, BlockFace face, String id) {
+	public void addTile(Vec3i blockInWorld, AbsFace face, String id) {
 		addTile(blockInWorld, face, TileDataRegistry.getInstance().get(id));
 	}
 
-	public void removeTile(Vec3i blockInWorld, BlockFace face, int tag) {
+	public void removeTile(Vec3i blockInWorld, AbsFace face, int tag) {
 		RemoveTile change = cache.grab(RemoveTile.class);
 		change.getPacket().set(blockInWorld, face, tag);
 		server.requestChange(change);
@@ -112,7 +112,7 @@ public class WorldAccessor {
 	 * @param face
 	 */
 	// TODO rename to something meaningful
-	public void triggerUpdates(Vec3i blockInWorld, BlockFace face) {
+	public void triggerUpdates(Vec3i blockInWorld, AbsFace face) {
 		TileTriggeredUpdate evaluation = cache.grab(TileTriggeredUpdate.class);
 		evaluation.init(blockInWorld, face);
 		server.requestEvaluation(evaluation);

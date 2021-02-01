@@ -25,8 +25,8 @@ import java.util.function.Function;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
-import ru.windcorp.progressia.common.world.block.BlockRelation;
+import ru.windcorp.progressia.common.world.block.AbsFace;
+import ru.windcorp.progressia.common.world.block.AbsRelation;
 import ru.windcorp.progressia.server.world.ChunkTickContext;
 import ru.windcorp.progressia.server.world.TickContextMutable;
 import ru.windcorp.progressia.server.world.tile.TSTickContext;
@@ -56,7 +56,7 @@ public interface BlockTickContext extends ChunkTickContext {
 		Objects.requireNonNull(action, "action");
 		TickContextMutable context = TickContextMutable.uninitialized();
 
-		for (BlockFace face : BlockFace.getFaces()) {
+		for (AbsFace face : AbsFace.getFaces()) {
 			context.rebuild().withServer(getServer()).withBlock(getBlockInWorld()).withFace(face).build();
 			action.accept(context);
 		}
@@ -67,7 +67,7 @@ public interface BlockTickContext extends ChunkTickContext {
 		return TickContextMutable.copyWorld(this).withBlock(getBlockInWorld().add_(direction)).build();
 	}
 
-	default BlockTickContext getNeighbor(BlockRelation relation) {
+	default BlockTickContext getNeighbor(AbsRelation relation) {
 		Objects.requireNonNull(relation, "relation");
 		return getNeighbor(relation.getVector());
 	}
@@ -78,7 +78,7 @@ public interface BlockTickContext extends ChunkTickContext {
 		return action.apply(getNeighbor(direction));
 	}
 
-	default <R> R evalNeighbor(BlockRelation relation, Function<BlockTickContext, R> action) {
+	default <R> R evalNeighbor(AbsRelation relation, Function<BlockTickContext, R> action) {
 		Objects.requireNonNull(action, "action");
 		Objects.requireNonNull(relation, "relation");
 		return evalNeighbor(relation.getVector(), action);
@@ -93,7 +93,7 @@ public interface BlockTickContext extends ChunkTickContext {
 		});
 	}
 
-	default void forNeighbor(BlockRelation relation, Consumer<BlockTickContext> action) {
+	default void forNeighbor(AbsRelation relation, Consumer<BlockTickContext> action) {
 		Objects.requireNonNull(action, "action");
 		Objects.requireNonNull(relation, "relation");
 		forNeighbor(relation.getVector(), action);

@@ -28,7 +28,7 @@ import java.util.function.BiConsumer;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.common.world.tile.TileReference;
@@ -75,12 +75,12 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 	}
 
 	@Override
-	public TileLogicStack getTiles(Vec3i blockInChunk, BlockFace face) {
+	public TileLogicStack getTiles(Vec3i blockInChunk, AbsFace face) {
 		return getTileStackWrapper(getData().getTiles(blockInChunk, face));
 	}
 
 	@Override
-	public boolean hasTiles(Vec3i blockInChunk, BlockFace face) {
+	public boolean hasTiles(Vec3i blockInChunk, AbsFace face) {
 		return getData().hasTiles(blockInChunk, face);
 	}
 
@@ -149,7 +149,7 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 		}
 
 		@Override
-		public BlockFace getFace() {
+		public AbsFace getFace() {
 			return parent.getFace();
 		}
 

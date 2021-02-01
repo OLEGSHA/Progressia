@@ -20,7 +20,7 @@ package ru.windcorp.progressia.server.world;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
@@ -61,7 +61,7 @@ public class TickAndUpdateUtil {
 		}
 	}
 
-	public static void tickTile(WorldLogic world, Vec3i blockInWorld, BlockFace face, int layer) {
+	public static void tickTile(WorldLogic world, Vec3i blockInWorld, AbsFace face, int layer) {
 		TileLogic tile = world.getTile(blockInWorld, face, layer);
 		if (!(tile instanceof TickableTile))
 			return;
@@ -71,7 +71,7 @@ public class TickAndUpdateUtil {
 		tickTile((TickableTile) tile, tickContext);
 	}
 
-	public static void tickTiles(WorldLogic world, Vec3i blockInWorld, BlockFace face) {
+	public static void tickTiles(WorldLogic world, Vec3i blockInWorld, AbsFace face) {
 		TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face).build()
 			.forEachTile(context -> {
 				TileLogic tile = context.getTile();
@@ -106,7 +106,7 @@ public class TickAndUpdateUtil {
 		}
 	}
 
-	public static void updateTile(WorldLogic world, Vec3i blockInWorld, BlockFace face, int layer) {
+	public static void updateTile(WorldLogic world, Vec3i blockInWorld, AbsFace face, int layer) {
 		TileLogic tile = world.getTile(blockInWorld, face, layer);
 		if (!(tile instanceof UpdateableTile))
 			return;
@@ -116,7 +116,7 @@ public class TickAndUpdateUtil {
 		updateTile((UpdateableTile) tile, tickContext);
 	}
 
-	public static void updateTiles(WorldLogic world, Vec3i blockInWorld, BlockFace face) {
+	public static void updateTiles(WorldLogic world, Vec3i blockInWorld, AbsFace face) {
 		TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face).build()
 			.forEachTile(context -> {
 				TileLogic tile = context.getTile();

@@ -24,19 +24,19 @@ import static java.lang.Math.max;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 
-public class BlockRelation {
+public class AbsRelation {
 
 	private final Vec3i vector = new Vec3i();
 	private final Vec3 floatVector = new Vec3();
 	private final Vec3 normalized = new Vec3();
 
-	public BlockRelation(int x, int y, int z) {
+	public AbsRelation(int x, int y, int z) {
 		vector.set(x, y, z);
 		floatVector.set(x, y, z);
 		normalized.set(x, y, z).normalize();
 	}
 
-	public BlockRelation(Vec3i vector) {
+	public AbsRelation(Vec3i vector) {
 		this(vector.x, vector.y, vector.z);
 	}
 

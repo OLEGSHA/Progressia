@@ -24,7 +24,7 @@ import ru.windcorp.progressia.client.world.ChunkRender;
 import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 
 /**
  * Chunk render optimizer (CRO) is an object that produces optimized models for
@@ -44,7 +44,7 @@ import ru.windcorp.progressia.common.world.block.BlockFace;
  * instance.</li>
  * <li>{@link #startRender()} is invoked. The CRO must reset its state.</li>
  * <li>{@link #addBlock(BlockRender, Vec3i)} and
- * {@link #addTile(TileRender, Vec3i, BlockFace)} are invoked for each block and
+ * {@link #addTile(TileRender, Vec3i, AbsFace)} are invoked for each block and
  * tile that this CRO should optimize. {@code addTile} specifies tiles in order
  * of ascension within a tile stack.</li>
  * <li>{@link #endRender()} is invoked. The CRO may perform any pending
@@ -116,7 +116,7 @@ public abstract class ChunkRenderOptimizer extends Namespaced {
 	 * @param blockInChunk the position of the block that the tile belongs to
 	 * @param blockFace    the face that the tile belongs to
 	 */
-	public abstract void addTile(TileRender tile, Vec3i blockInChunk, BlockFace blockFace);
+	public abstract void addTile(TileRender tile, Vec3i blockInChunk, AbsFace blockFace);
 
 	/**
 	 * Requests that the CRO assembles and outputs its model. This method may

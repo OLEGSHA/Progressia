@@ -38,7 +38,7 @@ import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.block.AbsFace;
 import ru.windcorp.progressia.common.world.io.ChunkCodec;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
@@ -138,7 +138,7 @@ public class TestChunkCodec extends ChunkCodec {
 				break;
 
 			bic.set(xOrEndMarker, input.readByte() & 0xFF, input.readByte() & 0xFF);
-			BlockFace face = BlockFace.getFaces().get(input.readByte() & 0xFF);
+			AbsFace face = AbsFace.getFaces().get(input.readByte() & 0xFF);
 
 			int tiles = input.readByte() & 0xFF;
 
