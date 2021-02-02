@@ -38,6 +38,40 @@ public class VectorUtil {
 	public static enum Axis {
 		X, Y, Z, W;
 	}
+	
+	public static enum SignedAxis {
+		POS_X(Axis.X, +1),
+		NEG_X(Axis.X, -1),
+		POS_Y(Axis.Y, +1),
+		NEG_Y(Axis.Y, -1),
+		POS_Z(Axis.Z, +1),
+		NEG_Z(Axis.Z, -1),
+		POS_W(Axis.W, +1),
+		NEG_W(Axis.W, -1);
+		
+		private final Axis axis;
+		private final boolean isPositive;
+		
+		private SignedAxis(Axis axis, int sign) {
+			this.axis = axis;
+			this.isPositive = (sign == +1 ? true : false);
+		}
+		
+		/**
+		 * @return the axis
+		 */
+		public Axis getAxis() {
+			return axis;
+		}
+		
+		public boolean isPositive() {
+			return isPositive;
+		}
+		
+		public int getSign() {
+			return isPositive ? +1 : -1;
+		}
+	}
 
 	public static void iterateCuboid(
 		int x0,

@@ -18,9 +18,12 @@
  
 package ru.windcorp.progressia.common.world.rels;
 
+import java.util.Objects;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 
 public final class AbsFace extends AbsRelation {
@@ -86,6 +89,124 @@ public final class AbsFace extends AbsRelation {
 			.put(NEG_Y, negY)
 			.put(POS_Y, posY)
 			.build();
+	}
+	
+	/**
+	 * Rounds the provided vector to one of {@link AbsFace}s. The returned face
+	 * is pointing in the same general direction as the provided vector. The
+	 * result is undefined for arguments where two largest in absolute values
+	 * coordinates are equal (e.g. for {@code (5; -5; 2)}). For a zero vector
+	 * the result is {@code null}. Infinite vectors are handled correctly.
+	 * 
+	 * @param vector the vector to round
+	 * @return the face most adequately describing the provided vector, or
+	 *         {@code null} iff {@code vector.x = vector.y = vector.z = 0}
+	 * @throws IllegalArgumentException if one of the coordinates is a NaN
+	 */
+	public static AbsFace roundToFace(Vec3 vector) {
+		Objects.requireNonNull(vector, "vector");
+		return roundToFace(vector.x, vector.y, vector.z);
+	}
+	
+	/**
+	 * Rounds the provided vector to one of {@link AbsFace}s. The returned face
+	 * is pointing in the same general direction as the provided vector. The
+	 * result is undefined for arguments where two largest in absolute values
+	 * coordinates are equal (e.g. for {@code (5; -5; 2)}). For a zero vector
+	 * the result is {@code null}. Infinite arguments are handled correctly.
+	 * 
+	 * @param x the X coordinate
+	 * @param y the Y coordinate
+	 * @param z the Z coordinate
+	 * @return the face most adequately describing the provided vector, or
+	 *         {@code null} iff {@code x = y = z = 0}
+	 * @throws IllegalArgumentException if one of the coordinates is a NaN
+	 */
+	public static AbsFace roundToFace(float x, float y, float z) {
+		if (x == 0 && y == 0 && z == 0) {
+			return null;
+		}
+		
+		if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
+			throw new IllegalArgumentException("Vector contains NaN: (" + x + "; " + y + "; " + z + ")");
+		}
+		
+		// The following code handles infinite x, y or z properly
+		
+		float absX = Math.abs(x);
+		float absY = Math.abs(y);
+		float absZ = Math.abs(z);
+		
+		if (absX > absY) {
+			if (absX > absZ) {
+				return x > 0 ? POS_X : NEG_X;
+			} else {
+				// Z is the answer; exit decision tree
+			}
+		} else {
+			if (absY > absZ) {
+				return y > 0 ? POS_Y : NEG_Y;
+			} else {
+				// Z is the answer; exit decision tree
+			}
+		}
+		
+		return z > 0 ? POS_Z : NEG_Z;
+	}
+	
+	/**
+	 * Rounds the provided vector to one of {@link AbsFace}s. The returned face
+	 * is pointing in the same general direction as the provided vector. The
+	 * result is undefined for arguments where two largest in absolute values
+	 * coordinates are equal (e.g. for {@code (5; -5; 2)}). For a zero vector
+	 * the result is {@code null}.
+	 * 
+	 * @param vector the vector to round
+	 * @return the face most adequately describing the provided vector, or
+	 *         {@code null} iff {@code vector.x = vector.y = vector.z = 0}
+	 */
+	public static AbsFace roundToFace(Vec3i vector) {
+		Objects.requireNonNull(vector, "vector");
+		return roundToFace(vector.x, vector.y, vector.z);
+	}
+	
+	/**
+	 * Rounds the provided vector to one of {@link AbsFace}s. The returned face
+	 * is pointing in the same general direction as the provided vector. The
+	 * result is undefined for arguments where two largest in absolute values
+	 * coordinates are equal (e.g. for {@code (5; -5; 2)}). For a zero vector
+	 * the result is {@code null}.
+	 * 
+	 * @param x the X coordinate
+	 * @param y the Y coordinate
+	 * @param z the Z coordinate
+	 * @return the face most adequately describing the provided vector, or
+	 *         {@code null} iff {@code x = y = z = 0}
+	 */
+	public static AbsFace roundToFace(int x, int y, int z) {
+		if (x == 0 && y == 0 && z == 0) {
+			return null;
+		}
+		
+		int absX = Math.abs(x);
+		int absY = Math.abs(y);
+		int absZ = Math.abs(z);
+		
+		if (absX > absY) {
+			if (absX > absZ) {
+				return x > 0 ? POS_X : NEG_X;
+			} else {
+				// Z is the answer; exit decision tree
+			}
+		} else {
+			if (absY > absZ) {
+				return y > 0 ? POS_Y : NEG_Y;
+			} else {
+				// Z is the answer; exit decision tree
+			}
+		}
+		
+		return z > 0 ? POS_Z : NEG_Z;
 	}
 
 	private static int nextId = 0;

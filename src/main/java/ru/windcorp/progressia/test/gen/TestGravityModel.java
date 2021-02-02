@@ -18,7 +18,9 @@
 package ru.windcorp.progressia.test.gen;
 
 import glm.vec._3.Vec3;
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.GravityModel;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class TestGravityModel extends GravityModel {
 
@@ -36,6 +38,12 @@ public class TestGravityModel extends GravityModel {
 		}
 		
 		output.normalize().mul(-9.8f);
+	}
+	
+	@Override
+	protected AbsFace doGetDiscreteUp(Vec3i chunkPos) {
+		AbsFace rounded = AbsFace.roundToFace(chunkPos.x, chunkPos.y, chunkPos.z - 54);
+		return rounded == null ? AbsFace.POS_Z : rounded;
 	}
 
 }

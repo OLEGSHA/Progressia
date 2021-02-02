@@ -39,6 +39,10 @@ public abstract class BlockRelation {
 		return resolve(up).getNormalized();
 	}
 	
+	protected Vec3i getSample() {
+		return getVector(AbsFace.POS_Z);
+	}
+	
 	/**
 	 * Returns the distance between the source and destination blocks, as
 	 * defined by the Euclidean space. Your everyday distance.
@@ -46,7 +50,7 @@ public abstract class BlockRelation {
 	 * @return square root of the sum of the squares of the coordinates
 	 */
 	public float getEuclideanDistance() {
-		return getVector(AbsFace.POS_Z).length();
+		return getSample().length();
 	}
 
 	/**
@@ -59,7 +63,7 @@ public abstract class BlockRelation {
 	 * @return the sum of the absolute values of the coordinates
 	 */
 	public int getManhattanDistance() {
-		Vec3i vector = getVector(AbsFace.POS_Z);
+		Vec3i vector = getSample();
 		return abs(vector.x) + abs(vector.y) + abs(vector.z);
 	}
 
@@ -71,7 +75,7 @@ public abstract class BlockRelation {
 	 * @return the maximum of the absolute values of the coordinates
 	 */
 	public int getChebyshevDistance() {
-		Vec3i vector = getVector(AbsFace.POS_Z);
+		Vec3i vector = getSample();
 		return max(abs(vector.x), max(abs(vector.y), abs(vector.z)));
 	}
 	
