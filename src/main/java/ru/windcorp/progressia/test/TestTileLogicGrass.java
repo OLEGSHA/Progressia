@@ -18,7 +18,7 @@
  
 package ru.windcorp.progressia.test;
 
-import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.BlockTickContext;
 import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
@@ -34,12 +34,12 @@ public class TestTileLogicGrass extends HangingTileLogic implements TickableTile
 
 	@Override
 	public boolean canOccupyFace(TileTickContext context) {
-		return context.getFace() != AbsFace.NEG_Z && super.canOccupyFace(context);
+		return context.getFace() != RelFace.DOWN && super.canOccupyFace(context);
 	}
 
 	@Override
-	public boolean canOccupyFace(AbsFace face) {
-		return face != AbsFace.NEG_Z;
+	public boolean canOccupyFace(RelFace face) {
+		return face != RelFace.DOWN;
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class TestTileLogicGrass extends HangingTileLogic implements TickableTile
 	@Override
 	public void tick(TileTickContext context) {
 		if (!isLocationSuitable(context)) {
-			context.removeThisTile();
+//			context.removeThisTile();
 		}
 	}
 
@@ -64,7 +64,7 @@ public class TestTileLogicGrass extends HangingTileLogic implements TickableTile
 	}
 
 	private boolean isBlockAboveTransparent(BlockTickContext context) {
-		return context.evalNeighbor(AbsFace.POS_Z, bctxt -> {
+		return context.evalNeighbor(RelFace.UP, bctxt -> {
 			BlockLogic block = bctxt.getBlock();
 			if (block == null)
 				return true;

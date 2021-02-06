@@ -35,6 +35,7 @@ import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSurface.TileO
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public abstract class TileRenderSurface extends TileRender implements TileOptimizedSurface {
 
@@ -49,26 +50,26 @@ public abstract class TileRenderSurface extends TileRender implements TileOptimi
 		this(id, null);
 	}
 
-	public Texture getTexture(AbsFace blockFace) {
+	public Texture getTexture(RelFace blockFace) {
 		return texture;
 	}
 	
-	public Vec4 getColorMultiplier(AbsFace blockFace) {
+	public Vec4 getColorMultiplier(RelFace blockFace) {
 		return Colors.WHITE;
 	}
 	
 	@Override
 	public final void getShapeParts(
-		ChunkData chunk, Vec3i blockInChunk, AbsFace blockFace,
+		ChunkData chunk, Vec3i relBlockInChunk, RelFace blockFace,
 		boolean inner,
 		Consumer<ShapePart> output,
 		Vec3 offset
 	) {
-		output.accept(createFace(chunk, blockInChunk, blockFace, inner, offset));
+		output.accept(createFace(chunk, relBlockInChunk, blockFace, inner, offset));
 	}
 	
 	private ShapePart createFace(
-		ChunkData chunk, Vec3i blockInChunk, AbsFace blockFace,
+		ChunkData chunk, Vec3i blockInChunk, RelFace blockFace,
 		boolean inner,
 		Vec3 offset
 	) {
@@ -77,13 +78,13 @@ public abstract class TileRenderSurface extends TileRender implements TileOptimi
 			getTexture(blockFace),
 			getColorMultiplier(blockFace),
 			offset,
-			blockFace,
+			blockFace.resolve(AbsFace.POS_Z),
 			inner
 		);
 	}
 
 	@Override
-	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk, AbsFace blockFace) {
+	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk, RelFace blockFace) {
 		return new Shape(
 			Usage.STATIC,
 			WorldRenderProgram.getDefault(),

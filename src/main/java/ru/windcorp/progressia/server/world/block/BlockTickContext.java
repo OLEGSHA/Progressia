@@ -26,7 +26,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
-import ru.windcorp.progressia.common.world.rels.AbsRelation;
+import ru.windcorp.progressia.common.world.rels.BlockRelation;
 import ru.windcorp.progressia.server.world.ChunkTickContext;
 import ru.windcorp.progressia.server.world.TickContextMutable;
 import ru.windcorp.progressia.server.world.tile.TSTickContext;
@@ -67,9 +67,9 @@ public interface BlockTickContext extends ChunkTickContext {
 		return TickContextMutable.copyWorld(this).withBlock(getBlockInWorld().add_(direction)).build();
 	}
 
-	default BlockTickContext getNeighbor(AbsRelation relation) {
+	default BlockTickContext getNeighbor(BlockRelation relation) {
 		Objects.requireNonNull(relation, "relation");
-		return getNeighbor(relation.getVector());
+		return getNeighbor(relation.getVector(getChunkData().getUp()));
 	}
 
 	default <R> R evalNeighbor(Vec3i direction, Function<BlockTickContext, R> action) {
@@ -78,10 +78,10 @@ public interface BlockTickContext extends ChunkTickContext {
 		return action.apply(getNeighbor(direction));
 	}
 
-	default <R> R evalNeighbor(AbsRelation relation, Function<BlockTickContext, R> action) {
+	default <R> R evalNeighbor(BlockRelation relation, Function<BlockTickContext, R> action) {
 		Objects.requireNonNull(action, "action");
 		Objects.requireNonNull(relation, "relation");
-		return evalNeighbor(relation.getVector(), action);
+		return evalNeighbor(relation.getVector(getChunkData().getUp()), action);
 	}
 
 	default void forNeighbor(Vec3i direction, Consumer<BlockTickContext> action) {
@@ -93,10 +93,10 @@ public interface BlockTickContext extends ChunkTickContext {
 		});
 	}
 
-	default void forNeighbor(AbsRelation relation, Consumer<BlockTickContext> action) {
+	default void forNeighbor(BlockRelation relation, Consumer<BlockTickContext> action) {
 		Objects.requireNonNull(action, "action");
 		Objects.requireNonNull(relation, "relation");
-		forNeighbor(relation.getVector(), action);
+		forNeighbor(relation.getVector(getChunkData().getUp()), action);
 	}
 
 	/*

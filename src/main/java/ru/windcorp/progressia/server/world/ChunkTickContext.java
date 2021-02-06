@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.server.world.block.BlockTickContext;
 
 public interface ChunkTickContext extends TickContext {
@@ -35,6 +36,10 @@ public interface ChunkTickContext extends TickContext {
 	default ChunkData getChunkData() {
 		ChunkLogic chunkLogic = getChunkLogic();
 		return chunkLogic == null ? null : chunkLogic.getData();
+	}
+	
+	default AbsFace getUp() {
+		return getChunkData().getUp();
 	}
 
 	default void forEachBlock(Consumer<BlockTickContext> action) {

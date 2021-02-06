@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world;
 
 import java.util.Objects;
@@ -26,7 +26,8 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.generic.GenericTileStack;
-import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.common.world.tile.TileReference;
 import ru.windcorp.progressia.server.Server;
@@ -126,7 +127,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		}
 
 		public static interface Block extends Builder {
-			Builder.TileStack withFace(AbsFace face);
+			Builder.TileStack withFace(BlockFace face);
 		}
 
 		public static interface TileStack extends Builder {
@@ -148,7 +149,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		protected Server server;
 		protected final Vec3i chunk = new Vec3i();
 		protected final Vec3i blockInWorld = new Vec3i();
-		protected AbsFace face;
+		protected RelFace face;
 		protected int layer;
 
 		protected Role role = Role.NONE;
@@ -188,7 +189,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		}
 
 		@Override
-		public AbsFace getFace() {
+		public RelFace getFace() {
 			checkContextState(Role.TILE_STACK);
 			return this.face;
 		}
@@ -261,8 +262,9 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		public TileStack withTS(GenericTileStack<?, ?, ?> tileStack) {
 			Objects.requireNonNull(tileStack, "tileStack");
 
-			return withBlock(tileStack.getBlockInWorld(this.blockInWorld)).withFace(tileStack.getFace());
-			// ^^^^^^^^^^^^^^^^^ This is safe
+			return withBlock(
+				tileStack.getBlockInWorld(this.blockInWorld) // This is safe
+			).withFace(tileStack.getFace());
 		}
 
 		@Override
@@ -277,11 +279,11 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		}
 
 		@Override
-		public TileStack withFace(AbsFace face) {
+		public TileStack withFace(BlockFace face) {
 			Objects.requireNonNull(face, "face");
 			checkBuilderState(Role.BLOCK);
 
-			this.face = face;
+			this.face = face.relativize(server.getWorld().getChunk(chunk).getUp());
 
 			this.role = Role.TILE_STACK;
 			return this;
@@ -339,12 +341,12 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		@Override
 		public void forEachFace(Consumer<TSTickContext> action) {
 			checkContextState(Role.BLOCK);
-			AbsFace previousFace = this.face;
+			RelFace previousFace = this.face;
 			Role previousRole = this.role;
 
 			this.role = Role.TILE_STACK;
-			for (int i = 0; i < AbsFace.BLOCK_FACE_COUNT; ++i) {
-				this.face = AbsFace.getFaces().get(i);
+			for (int i = 0; i < BlockFace.BLOCK_FACE_COUNT; ++i) {
+				this.face = RelFace.getFaces().get(i);
 				action.accept(this);
 			}
 
@@ -393,11 +395,13 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 			Objects.requireNonNull(action, "action");
 			checkContextState(Role.TILE_STACK);
 
-			this.blockInWorld.add(this.face.getVector());
+			Vec3i vector = this.face.getVector(getUp());
+			
+			this.blockInWorld.add(vector);
 			this.face = this.face.getCounter();
 			R result = action.apply(this);
 			this.face = this.face.getCounter();
-			this.blockInWorld.sub(this.face.getVector());
+			this.blockInWorld.sub(vector);
 
 			return result;
 		}
@@ -407,11 +411,13 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 			Objects.requireNonNull(action, "action");
 			checkContextState(Role.TILE_STACK);
 
-			this.blockInWorld.add(this.face.getVector());
+			Vec3i vector = this.face.getVector(getUp());
+			
+			this.blockInWorld.add(vector);
 			this.face = this.face.getCounter();
 			action.accept(this);
 			this.face = this.face.getCounter();
-			this.blockInWorld.sub(this.face.getVector());
+			this.blockInWorld.sub(vector);
 		}
 
 		/*

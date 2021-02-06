@@ -23,6 +23,7 @@ import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 class ChunkUpdateListener implements ChunkDataListener {
@@ -57,7 +58,7 @@ class ChunkUpdateListener implements ChunkDataListener {
 	public void onChunkTilesChanged(
 		ChunkData chunk,
 		Vec3i blockInChunk,
-		AbsFace face,
+		RelFace face,
 		TileData tile,
 		boolean wasAdded
 	) {

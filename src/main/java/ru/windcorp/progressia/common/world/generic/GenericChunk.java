@@ -25,19 +25,64 @@ import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelRelation;
 
 public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B extends GenericBlock, T extends GenericTile, TS extends GenericTileStack<TS, T, Self>> {
 
 	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
 
 	Vec3i getPosition();
+	
+	AbsFace getUp();
 
 	B getBlock(Vec3i blockInChunk);
 
-	TS getTiles(Vec3i blockInChunk, AbsFace face);
+	TS getTiles(Vec3i blockInChunk, BlockFace face);
 
-	boolean hasTiles(Vec3i blockInChunk, AbsFace face);
-
+	boolean hasTiles(Vec3i blockInChunk, BlockFace face);
+	
+	default Vec3i resolve(Vec3i relativeBlockInChunk, Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+		
+		final int offset = BLOCKS_PER_CHUNK - 1;
+		
+		output.set(relativeBlockInChunk.x, relativeBlockInChunk.y, relativeBlockInChunk.z);
+		output.mul(2).sub(offset);
+		
+		RelRelation.resolve(output, getUp(), output);
+		
+		output.add(offset).div(2);
+		
+		return output;
+	}
+	
+	default B getBlockRel(Vec3i relativeBlockInChunk) {
+		Vec3i absoluteBlockInChunk = Vectors.grab3i();
+		resolve(relativeBlockInChunk, absoluteBlockInChunk);
+		B result = getBlock(absoluteBlockInChunk);
+		Vectors.release(absoluteBlockInChunk);
+		return result;
+	}
+	
+	default TS getTilesRel(Vec3i relativeBlockInChunk, BlockFace face) {
+		Vec3i absoluteBlockInChunk = Vectors.grab3i();
+		resolve(relativeBlockInChunk, absoluteBlockInChunk);
+		TS result = getTiles(absoluteBlockInChunk, face);
+		Vectors.release(absoluteBlockInChunk);
+		return result;
+	}
+	
+	default boolean hasTilesRel(Vec3i relativeBlockInChunk, BlockFace face) {
+		Vec3i absoluteBlockInChunk = Vectors.grab3i();
+		resolve(relativeBlockInChunk, absoluteBlockInChunk);
+		boolean result = hasTiles(absoluteBlockInChunk, face);
+		Vectors.release(absoluteBlockInChunk);
+		return result;
+	}
+	
 	default int getX() {
 		return getPosition().x;
 	}
@@ -182,12 +227,29 @@ public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B exten
 		);
 	}
 
-	default TS getTilesOrNull(Vec3i blockInChunk, AbsFace face) {
+	default TS getTilesOrNull(Vec3i blockInChunk, BlockFace face) {
 		if (hasTiles(blockInChunk, face)) {
 			return getTiles(blockInChunk, face);
 		}
 
 		return null;
+	}
+	
+	default TS getTilesOrNullRel(Vec3i relativeBlockInChunk, BlockFace face) {
+		Vec3i absoluteBlockInChunk = Vectors.grab3i();
+		resolve(relativeBlockInChunk, absoluteBlockInChunk);
+		
+		TS result;
+		
+		if (hasTiles(absoluteBlockInChunk, face)) {
+			result = getTiles(absoluteBlockInChunk, face);
+		} else {
+			result = null;
+		}
+		
+		Vectors.release(absoluteBlockInChunk);
+		
+		return result;
 	}
 
 }

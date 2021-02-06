@@ -26,7 +26,7 @@ import com.google.common.collect.ImmutableMap;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 
-public final class AbsFace extends AbsRelation {
+public final class AbsFace extends AbsRelation implements BlockFace {
 
 	// @formatter:off
 	public static final AbsFace
@@ -52,7 +52,6 @@ public final class AbsFace extends AbsRelation {
 	private static final ImmutableList<AbsFace> SECONDARY_FACES = ALL_FACES.stream().filter(AbsFace::isSecondary)
 		.collect(ImmutableList.toImmutableList());
 
-	public static final int BLOCK_FACE_COUNT = ALL_FACES.size();
 	public static final int PRIMARY_BLOCK_FACE_COUNT = PRIMARY_FACES.size();
 	public static final int SECONDARY_BLOCK_FACE_COUNT = SECONDARY_FACES.size();
 
@@ -225,6 +224,16 @@ public final class AbsFace extends AbsRelation {
 
 	public String getName() {
 		return name;
+	}
+	
+	@Override
+	public AbsFace resolve(AbsFace up) {
+		return this;
+	}
+	
+	@Override
+	public RelFace relativize(AbsFace up) {
+		return BlockFaceResolver.relativize(this, up);
 	}
 
 	public boolean isPrimary() {

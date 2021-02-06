@@ -18,7 +18,6 @@
  
 package ru.windcorp.progressia.client.world.block;
 
-import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.generic.GenericBlock;
@@ -31,13 +30,7 @@ public abstract class BlockRender extends Namespaced implements GenericBlock {
 		super(id);
 	}
 
-	public void render(ShapeRenderHelper renderer) {
-		throw new UnsupportedOperationException(
-			"BlockRender.render() not implemented in " + this
-		);
-	}
-
-	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk) {
+	public Renderable createRenderable(ChunkData chunk, Vec3i relBlockInChunk) {
 		return null;
 	}
 

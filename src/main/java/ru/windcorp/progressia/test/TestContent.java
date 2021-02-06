@@ -137,9 +137,6 @@ public class TestContent {
 				"Test:Log",
 				getBlockTexture("LogTop"),
 				getBlockTexture("LogTop"),
-				getBlockTexture("LogSide"),
-				getBlockTexture("LogSide"),
-				getBlockTexture("LogSide"),
 				getBlockTexture("LogSide")
 			)
 		);
@@ -159,7 +156,7 @@ public class TestContent {
 		Set<String> placeableBlacklist = new HashSet<>();
 
 		register(new TileData("Test:Grass"));
-		register(new TileRenderGrass("Test:Grass", getTileTexture("GrassTop"), getTileTexture("GrassSide")));
+		register(new TestTileRenderGrass("Test:Grass", getTileTexture("GrassTop"), getTileTexture("GrassSide")));
 		register(new TestTileLogicGrass("Test:Grass"));
 
 		register(new TileData("Test:Stones"));

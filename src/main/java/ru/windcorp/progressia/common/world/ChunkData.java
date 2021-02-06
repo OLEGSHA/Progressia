@@ -18,7 +18,7 @@
  
 package ru.windcorp.progressia.common.world;
 
-import static ru.windcorp.progressia.common.world.rels.AbsFace.*;
+import static ru.windcorp.progressia.common.world.rels.BlockFace.BLOCK_FACE_COUNT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +33,8 @@ import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.common.world.tile.TileReference;
@@ -50,6 +52,8 @@ public class ChunkData
 
 	private final TileDataStack[] tiles = new TileDataStack[BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK *
 		BLOCK_FACE_COUNT];
+	
+	private final AbsFace up;
 
 	private Object generationHint = null;
 
@@ -58,11 +62,17 @@ public class ChunkData
 	public ChunkData(Vec3i position, WorldData world) {
 		this.position.set(position.x, position.y, position.z);
 		this.world = world;
+		this.up = world.getGravityModel().getDiscreteUp(position);
 	}
 
 	@Override
 	public Vec3i getPosition() {
 		return position;
+	}
+	
+	@Override
+	public AbsFace getUp() {
+		return up;
 	}
 
 	@Override
@@ -83,31 +93,31 @@ public class ChunkData
 	}
 
 	@Override
-	public TileDataStack getTilesOrNull(Vec3i blockInChunk, AbsFace face) {
+	public TileDataStack getTilesOrNull(Vec3i blockInChunk, BlockFace face) {
 		return tiles[getTileIndex(blockInChunk, face)];
 	}
 
 	/**
 	 * Internal use only. Modify a list returned by
-	 * {@link #getTiles(Vec3i, AbsFace)} or
-	 * {@link #getTilesOrNull(Vec3i, AbsFace)}
+	 * {@link #getTiles(Vec3i, BlockFace)} or
+	 * {@link #getTilesOrNull(Vec3i, BlockFace)}
 	 * to change tiles.
 	 */
 	protected void setTiles(
 		Vec3i blockInChunk,
-		AbsFace face,
+		BlockFace face,
 		TileDataStack tiles
 	) {
 		this.tiles[getTileIndex(blockInChunk, face)] = tiles;
 	}
 
 	@Override
-	public boolean hasTiles(Vec3i blockInChunk, AbsFace face) {
+	public boolean hasTiles(Vec3i blockInChunk, BlockFace face) {
 		return getTilesOrNull(blockInChunk, face) != null;
 	}
 
 	@Override
-	public TileDataStack getTiles(Vec3i blockInChunk, AbsFace face) {
+	public TileDataStack getTiles(Vec3i blockInChunk, BlockFace face) {
 		int index = getTileIndex(blockInChunk, face);
 
 		if (tiles[index] == null) {
@@ -117,7 +127,7 @@ public class ChunkData
 		return tiles[index];
 	}
 
-	private void createTileStack(Vec3i blockInChunk, AbsFace face) {
+	private void createTileStack(Vec3i blockInChunk, BlockFace face) {
 		Vec3i independentBlockInChunk = conjureIndependentBlockInChunkVec3i(blockInChunk);
 		TileDataStackImpl stack = new TileDataStackImpl(independentBlockInChunk, face);
 		setTiles(blockInChunk, face, stack);
@@ -142,15 +152,15 @@ public class ChunkData
 			posInChunk.x;
 	}
 
-	private static int getTileIndex(Vec3i posInChunk, AbsFace face) {
+	private int getTileIndex(Vec3i posInChunk, BlockFace face) {
 		return getBlockIndex(posInChunk) * BLOCK_FACE_COUNT +
-			face.getId();
+			face.resolve(getUp()).getId();
 	}
 
 	private static void checkLocalCoordinates(Vec3i posInChunk) {
 		if (!isInBounds(posInChunk)) {
 			throw new IllegalCoordinatesException(
-				"Coordinates " + str(posInChunk) + " "
+				"Coordinates (" + posInChunk.x + "; " + posInChunk.y + "; " + posInChunk.z + ") "
 					+ "are not legal chunk coordinates"
 			);
 		}
@@ -162,14 +172,15 @@ public class ChunkData
 			posInChunk.z >= 0 && posInChunk.z < BLOCKS_PER_CHUNK;
 	}
 
-	public boolean isBorder(Vec3i blockInChunk, AbsFace face) {
+	public boolean isBorder(Vec3i blockInChunk, BlockFace face) {
 		final int min = 0, max = BLOCKS_PER_CHUNK - 1;
-		return (blockInChunk.x == min && face == NEG_X) ||
-			(blockInChunk.x == max && face == POS_X) ||
-			(blockInChunk.y == min && face == NEG_Y) ||
-			(blockInChunk.y == max && face == POS_Y) ||
-			(blockInChunk.z == min && face == NEG_Z) ||
-			(blockInChunk.z == max && face == POS_Z);
+		AbsFace absFace = face.resolve(getUp());
+		return (blockInChunk.x == min && absFace == AbsFace.NEG_X) ||
+			(blockInChunk.x == max && absFace == AbsFace.POS_X) ||
+			(blockInChunk.y == min && absFace == AbsFace.NEG_Y) ||
+			(blockInChunk.y == max && absFace == AbsFace.POS_Y) ||
+			(blockInChunk.z == min && absFace == AbsFace.NEG_Z) ||
+			(blockInChunk.z == max && absFace == AbsFace.POS_Z);
 	}
 
 	public void forEachBlock(Consumer<Vec3i> action) {
@@ -219,10 +230,6 @@ public class ChunkData
 
 	public void removeListener(ChunkDataListener listener) {
 		this.listeners.remove(listener);
-	}
-
-	private static String str(Vec3i v) {
-		return "(" + v.x + "; " + v.y + "; " + v.z + ")";
 	}
 
 	protected void onLoaded() {
@@ -309,11 +316,11 @@ public class ChunkData
 		 * Potentially shared
 		 */
 		private final Vec3i blockInChunk;
-		private final AbsFace face;
+		private final RelFace face;
 
-		public TileDataStackImpl(Vec3i blockInChunk, AbsFace face) {
+		public TileDataStackImpl(Vec3i blockInChunk, BlockFace face) {
 			this.blockInChunk = blockInChunk;
-			this.face = face;
+			this.face = face.relativize(getUp());
 		}
 
 		@Override
@@ -325,7 +332,7 @@ public class ChunkData
 		}
 
 		@Override
-		public AbsFace getFace() {
+		public RelFace getFace() {
 			return face;
 		}
 
@@ -389,7 +396,7 @@ public class ChunkData
 			references[index] = null;
 
 			for (int tag = 0; tag < indicesByTag.length; ++tag) {
-				if (tagsByIndex[tag] == -1) {
+				if (indicesByTag[tag] == -1) {
 					indicesByTag[tag] = index;
 					tagsByIndex[index] = tag;
 					break;
@@ -405,21 +412,29 @@ public class ChunkData
 		@Override
 		public void load(TileData tile, int tag) {
 			addFarthest(tile);
-
-			int assignedTag = getIndexByTag(tag);
-
-			if (assignedTag == tag)
+			
+			int assignedIndex = size() - 1;
+			
+			// Skip if we already have the correct tag
+			int assignedTag = getTagByIndex(assignedIndex);
+			if (assignedTag == tag) {
 				return;
-			if (assignedTag == -1) {
+			}
+			assert assignedTag != -1 : "Adding farthest tile resulted in -1 tag";
+			
+			// Make sure we aren't trying to assign a tag already in use
+			int tileWithRequestedTag = getIndexByTag(tag);
+			if (tileWithRequestedTag != -1) {
 				throw new IllegalArgumentException(
-					"Tag " + tag + " already used by tile at index " + getIndexByTag(tag)
+					"Tag " + tag + " already used by tile at index " + tileWithRequestedTag
 				);
 			}
+			assert tileWithRequestedTag != assignedIndex : "tag == assignedTag yet tileWithRequestedTag != assignedIndex";
 
-			indicesByTag[tagsByIndex[size() - 1]] = -1;
-			tagsByIndex[size() - 1] = tag;
-			indicesByTag[tag] = size() - 1;
-
+			// Do the tag editing
+			indicesByTag[assignedTag] = -1; // Release assigned tag
+			tagsByIndex[assignedIndex] = tag; // Reroute assigned index to requested tag
+			indicesByTag[tag] = assignedIndex; // Claim requested tag
 			assert checkConsistency();
 		}
 

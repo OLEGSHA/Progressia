@@ -78,14 +78,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addStaticPart(
 			new PppBuilder(
 				WorldRenderProgram.getDefault(),
-				AbsFace.mapToFaces(
-					tailStartTexture,
-					tailStartTexture,
-					tailStartTexture,
-					tailStartTexture,
-					tailStartTexture,
-					tailStartTexture
-				)
+				tailStartTexture
 			)
 				.setOrigin(-60, -4, 14)
 				.setDepth(32, 0, -16).setWidth(8).setHeight(8)
@@ -97,14 +90,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addStaticPart(
 			new PppBuilder(
 				WorldRenderProgram.getDefault(),
-				AbsFace.mapToFaces(
-					neckTexture,
-					neckTexture,
-					neckTexture,
-					neckTexture,
-					neckTexture,
-					neckTexture
-				)
+				neckTexture
 			)
 				.setOrigin(0, -8, 8)
 				.setWidth(16).setDepth(16).setHeight(2, 0, 16)

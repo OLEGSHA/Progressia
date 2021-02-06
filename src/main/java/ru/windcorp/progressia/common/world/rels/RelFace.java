@@ -22,7 +22,7 @@ import com.google.common.collect.ImmutableMap;
 
 import glm.vec._3.i.Vec3i;
 
-public class RelFace extends RelRelation {
+public class RelFace extends RelRelation implements BlockFace {
 
 	// @formatter:off
 	public static final RelFace
@@ -76,13 +76,31 @@ public class RelFace extends RelRelation {
 	private RelFace counterFace;
 
 	private RelFace(int x, int y, int z, String name) {
-		super(x, y, z, true);
+		super(x, y, z, false);
 		this.id = nextId++;
 		this.name = name;
 	}
 
 	public String getName() {
 		return name;
+	}
+	
+	@Override
+	public AbsFace resolve(AbsFace up) {
+		return BlockFaceResolver.resolve(this, up);
+	}
+	
+	@Override
+	public RelFace relativize(AbsFace up) {
+		return this;
+	}
+	
+	public RelFace rotate(AbsFace fromUp, AbsFace toUp) {
+		if (fromUp == toUp) {
+			return this;
+		}
+		
+		return resolve(fromUp).relativize(toUp);
 	}
 
 	/**
@@ -97,7 +115,7 @@ public class RelFace extends RelRelation {
 	}
 
 	public RelFace getCounterAndMoveCursor(Vec3i cursor) {
-		cursor.add(getVector());
+		cursor.add(getRelVector());
 		return counterFace;
 	}
 

@@ -39,13 +39,8 @@ import ru.windcorp.progressia.server.world.tile.TileLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogicStack;
 
 public class WorldLogic
-	implements GenericWorld<BlockLogic, TileLogic, TileLogicStack, ChunkLogic, EntityData // not
-																							// using
-																							// EntityLogic
-																							// because
-																							// it
-																							// is
-																							// stateless
+	implements GenericWorld<BlockLogic, TileLogic, TileLogicStack, ChunkLogic, EntityData
+	// not using EntityLogic because it is stateless
 > {
 
 	private final WorldData data;

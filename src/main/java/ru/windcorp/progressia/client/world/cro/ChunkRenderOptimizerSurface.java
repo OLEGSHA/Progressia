@@ -38,7 +38,7 @@ import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 
@@ -56,20 +56,23 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		 * surface. The coordinates of the face vertices must be in chunk
 		 * coordinate system.
 		 * 
-		 * @param chunk        the chunk that contains the requested face
-		 * @param blockInChunk the block in chunk
-		 * @param blockFace    the requested face
-		 * @param inner        whether this face should be visible from inside
-		 *                     ({@code true}) or outside ({@code false})
-		 * @param output       a consumer that the created shape parts must be
-		 *                     given to
-		 * @param offset       an additional offset that must be applied to all
-		 *                     vertices
+		 * @param chunk           the chunk that contains the requested face
+		 * @param relBlockInChunk the relative block in chunk
+		 * @param blockFace       the requested face
+		 * @param inner           whether this face should be visible from
+		 *                        inside
+		 *                        ({@code true}) or outside ({@code false})
+		 * @param output          a consumer that the created shape parts must
+		 *                        be
+		 *                        given to
+		 * @param offset          an additional offset that must be applied to
+		 *                        all
+		 *                        vertices
 		 */
 		void getShapeParts(
 			ChunkData chunk,
-			Vec3i blockInChunk,
-			AbsFace blockFace,
+			Vec3i relBlockInChunk,
+			RelFace blockFace,
 			boolean inner,
 			Consumer<ShapePart> output,
 			Vec3 offset /* kostyl 156% */
@@ -77,14 +80,14 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 
 		/**
 		 * Returns the opacity of the surface identified by the provided
-		 * {@link AbsFace}.
+		 * {@link RelFace}.
 		 * Opaque surfaces prevent surfaces behind them from being included in
 		 * chunk models.
 		 * 
 		 * @param blockFace the face to query
 		 * @return {@code true} iff the surface is opaque.
 		 */
-		boolean isOpaque(AbsFace blockFace);
+		boolean isOpaque(RelFace blockFace);
 	}
 
 	/**
@@ -159,29 +162,29 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 	}
 
 	@Override
-	public void addBlock(BlockRender block, Vec3i pos) {
+	public void addBlock(BlockRender block, Vec3i relBlockInChunk) {
 		if (!(block instanceof BlockOptimizedSurface))
 			return;
 
 		BlockOptimizedSurface bos = (BlockOptimizedSurface) block;
-		addBlock(pos, bos);
+		addBlock(relBlockInChunk, bos);
 	}
 
 	@Override
-	public void addTile(TileRender tile, Vec3i pos, AbsFace face) {
+	public void addTile(TileRender tile, Vec3i relBlockInChunk, RelFace face) {
 		if (!(tile instanceof TileOptimizedSurface))
 			return;
 
 		TileOptimizedSurface tos = (TileOptimizedSurface) tile;
-		addTile(pos, face, tos);
+		addTile(relBlockInChunk, face, tos);
 	}
 
-	protected void addBlock(Vec3i pos, BlockOptimizedSurface block) {
-		getBlock(pos).block = block;
+	private void addBlock(Vec3i relBlockInChunk, BlockOptimizedSurface block) {
+		getBlock(relBlockInChunk).block = block;
 	}
 
-	private void addTile(Vec3i pos, AbsFace face, TileOptimizedSurface tile) {
-		FaceInfo faceInfo = getFace(pos, face);
+	private void addTile(Vec3i relBlockInChunk, RelFace face, TileOptimizedSurface tile) {
+		FaceInfo faceInfo = getFace(relBlockInChunk, face);
 
 		int index = faceInfo.tileCount;
 		faceInfo.tileCount++;
@@ -197,12 +200,12 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		}
 	}
 
-	protected BlockInfo getBlock(Vec3i cursor) {
-		return data[cursor.x][cursor.y][cursor.z];
+	protected BlockInfo getBlock(Vec3i relBlockInChunk) {
+		return data[relBlockInChunk.x][relBlockInChunk.y][relBlockInChunk.z];
 	}
 
-	protected FaceInfo getFace(Vec3i cursor, AbsFace face) {
-		return getBlock(cursor).faces[face.getId()];
+	protected FaceInfo getFace(Vec3i relBlockInChunk, RelFace face) {
+		return getBlock(relBlockInChunk).faces[face.getId()];
 	}
 
 	@Override
@@ -211,17 +214,12 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 			BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * 3
 		);
 
-		Vec3i cursor = new Vec3i();
 		Consumer<ShapePart> consumer = shapeParts::add;
 
-		for (cursor.x = 0; cursor.x < BLOCKS_PER_CHUNK; ++cursor.x) {
-			for (cursor.y = 0; cursor.y < BLOCKS_PER_CHUNK; ++cursor.y) {
-				for (cursor.z = 0; cursor.z < BLOCKS_PER_CHUNK; ++cursor.z) {
-					processInnerFaces(cursor, consumer);
-					processOuterFaces(cursor, consumer);
-				}
-			}
-		}
+		chunk.forEachBiC(relBlockInChunk -> {
+			processInnerFaces(relBlockInChunk, consumer);
+			processOuterFaces(relBlockInChunk, consumer);
+		});
 
 		if (shapeParts.isEmpty()) {
 			return null;
@@ -235,25 +233,25 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 	}
 
 	private void processOuterFaces(
-		Vec3i blockInChunk,
+		Vec3i relBlockInChunk,
 		Consumer<ShapePart> output
 	) {
-		for (AbsFace blockFace : AbsFace.getFaces()) {
-			processOuterFace(blockInChunk, blockFace, output);
+		for (RelFace blockFace : RelFace.getFaces()) {
+			processOuterFace(relBlockInChunk, blockFace, output);
 		}
 	}
 
-	private void processOuterFace(Vec3i blockInChunk, AbsFace blockFace, Consumer<ShapePart> output) {
-		if (!shouldRenderOuterFace(blockInChunk, blockFace))
+	private void processOuterFace(Vec3i relBlockInChunk, RelFace blockFace, Consumer<ShapePart> output) {
+		if (!shouldRenderOuterFace(relBlockInChunk, blockFace))
 			return;
 
-		FaceInfo info = getFace(blockInChunk, blockFace);
+		FaceInfo info = getFace(relBlockInChunk, blockFace);
 
 		if (info.tileCount == 0 && info.block.block == null)
 			return;
 
-		Vec3 faceOrigin = new Vec3(blockInChunk.x, blockInChunk.y, blockInChunk.z);
-		Vec3 offset = new Vec3(blockFace.getFloatVector()).mul(OVERLAY_OFFSET);
+		Vec3 faceOrigin = new Vec3(relBlockInChunk.x, relBlockInChunk.y, relBlockInChunk.z);
+		Vec3 offset = new Vec3(blockFace.getRelFloatVector()).mul(OVERLAY_OFFSET);
 
 		for (
 			int layer = info.topOpaqueSurface;
@@ -264,32 +262,29 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 			if (surface == null)
 				continue; // layer may be BLOCK_LAYER, then block may be null
 
-			surface.getShapeParts(chunk.getData(), blockInChunk, blockFace, false, output, faceOrigin);
+			surface.getShapeParts(chunk.getData(), relBlockInChunk, blockFace, false, output, faceOrigin);
 
 			faceOrigin.add(offset);
 		}
 	}
 
-	private void processInnerFaces(
-		Vec3i blockInChunk,
-		Consumer<ShapePart> output
-	) {
-		for (AbsFace blockFace : AbsFace.getFaces()) {
-			processInnerFace(blockInChunk, blockFace, output);
+	private void processInnerFaces(Vec3i relBlockInChunk, Consumer<ShapePart> output) {
+		for (RelFace blockFace : RelFace.getFaces()) {
+			processInnerFace(relBlockInChunk, blockFace, output);
 		}
 	}
 
-	private void processInnerFace(Vec3i blockInChunk, AbsFace blockFace, Consumer<ShapePart> output) {
-		if (!shouldRenderInnerFace(blockInChunk, blockFace))
+	private void processInnerFace(Vec3i relBlockInChunk, RelFace blockFace, Consumer<ShapePart> output) {
+		if (!shouldRenderInnerFace(relBlockInChunk, blockFace))
 			return;
 
-		FaceInfo info = getFace(blockInChunk, blockFace);
+		FaceInfo info = getFace(relBlockInChunk, blockFace);
 
 		if (info.tileCount == 0 && info.block.block == null)
 			return;
 
-		Vec3 faceOrigin = new Vec3(blockInChunk.x, blockInChunk.y, blockInChunk.z);
-		Vec3 offset = new Vec3(blockFace.getFloatVector()).mul(OVERLAY_OFFSET);
+		Vec3 faceOrigin = new Vec3(relBlockInChunk.x, relBlockInChunk.y, relBlockInChunk.z);
+		Vec3 offset = new Vec3(blockFace.getRelFloatVector()).mul(OVERLAY_OFFSET);
 
 		for (
 			int layer = FaceInfo.BLOCK_LAYER;
@@ -300,35 +295,35 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 			if (surface == null)
 				continue; // layer may be BLOCK_LAYER, then block may be null
 
-			surface.getShapeParts(chunk.getData(), blockInChunk, blockFace, true, output, faceOrigin);
+			surface.getShapeParts(chunk.getData(), relBlockInChunk, blockFace, true, output, faceOrigin);
 
 			faceOrigin.add(offset);
 		}
 	}
 
-	private boolean shouldRenderOuterFace(Vec3i blockInChunk, AbsFace face) {
-		blockInChunk.add(face.getVector());
+	private boolean shouldRenderOuterFace(Vec3i relBlockInChunk, RelFace face) {
+		relBlockInChunk.add(face.getRelVector());
 		try {
-			return shouldRenderWhenFacing(blockInChunk, face);
+			return shouldRenderWhenFacing(relBlockInChunk, face);
 		} finally {
-			blockInChunk.sub(face.getVector());
+			relBlockInChunk.sub(face.getRelVector());
 		}
 	}
 
-	private boolean shouldRenderInnerFace(Vec3i blockInChunk, AbsFace face) {
-		return shouldRenderWhenFacing(blockInChunk, face);
+	private boolean shouldRenderInnerFace(Vec3i relBlockInChunk, RelFace face) {
+		return shouldRenderWhenFacing(relBlockInChunk, face);
 	}
 
-	private boolean shouldRenderWhenFacing(Vec3i blockInChunk, AbsFace face) {
-		if (chunk.containsBiC(blockInChunk)) {
-			return shouldRenderWhenFacingLocal(blockInChunk, face);
+	private boolean shouldRenderWhenFacing(Vec3i relBlockInChunk, RelFace face) {
+		if (chunk.containsBiC(relBlockInChunk)) {
+			return shouldRenderWhenFacingLocal(relBlockInChunk, face);
 		} else {
-			return shouldRenderWhenFacingNeighbor(blockInChunk, face);
+			return shouldRenderWhenFacingNeighbor(relBlockInChunk, face);
 		}
 	}
 
-	private boolean shouldRenderWhenFacingLocal(Vec3i blockInChunk, AbsFace face) {
-		BlockOptimizedSurface block = getBlock(blockInChunk).block;
+	private boolean shouldRenderWhenFacingLocal(Vec3i relBlockInChunk, RelFace face) {
+		BlockOptimizedSurface block = getBlock(relBlockInChunk).block;
 
 		if (block == null) {
 			return true;
@@ -340,36 +335,37 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		return true;
 	}
 
-	private boolean shouldRenderWhenFacingNeighbor(Vec3i blockInLocalChunk, AbsFace face) {
-		Vec3i blockInChunk = Vectors.grab3i().set(blockInLocalChunk.x, blockInLocalChunk.y, blockInLocalChunk.z);
+	private boolean shouldRenderWhenFacingNeighbor(Vec3i relBlockInLocalChunk, RelFace face) {
+		Vec3i blockInChunk = Vectors.grab3i();
+		chunk.resolve(relBlockInLocalChunk, blockInChunk);
 		Vec3i chunkPos = Vectors.grab3i().set(chunk.getX(), chunk.getY(), chunk.getZ());
 
 		try {
 			// Determine blockInChunk and chunkPos
-			if (blockInLocalChunk.x == -1) {
+			if (blockInChunk.x == -1) {
 				blockInChunk.x = BLOCKS_PER_CHUNK - 1;
 				chunkPos.x -= 1;
-			} else if (blockInLocalChunk.x == BLOCKS_PER_CHUNK) {
+			} else if (blockInChunk.x == BLOCKS_PER_CHUNK) {
 				blockInChunk.x = 0;
 				chunkPos.x += 1;
-			} else if (blockInLocalChunk.y == -1) {
+			} else if (blockInChunk.y == -1) {
 				blockInChunk.y = BLOCKS_PER_CHUNK - 1;
 				chunkPos.y -= 1;
-			} else if (blockInLocalChunk.y == BLOCKS_PER_CHUNK) {
+			} else if (blockInChunk.y == BLOCKS_PER_CHUNK) {
 				blockInChunk.y = 0;
 				chunkPos.y += 1;
-			} else if (blockInLocalChunk.z == -1) {
+			} else if (blockInChunk.z == -1) {
 				blockInChunk.z = BLOCKS_PER_CHUNK - 1;
 				chunkPos.z -= 1;
-			} else if (blockInLocalChunk.z == BLOCKS_PER_CHUNK) {
+			} else if (blockInChunk.z == BLOCKS_PER_CHUNK) {
 				blockInChunk.z = 0;
 				chunkPos.z += 1;
 			} else {
 				throw new AssertionError(
 					"Requested incorrent neighbor ("
-						+ blockInLocalChunk.x + "; "
-						+ blockInLocalChunk.y + "; "
-						+ blockInLocalChunk.z + ")"
+						+ relBlockInLocalChunk.x + "; "
+						+ relBlockInLocalChunk.y + "; "
+						+ relBlockInLocalChunk.z + ")"
 				);
 			}
 
@@ -382,8 +378,11 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 				return true;
 
 			BlockOptimizedSurface bos = (BlockOptimizedSurface) block;
-			if (!bos.isOpaque(face))
+			RelFace rotatedFace = face.rotate(this.chunk.getUp(), chunk.getUp());
+
+			if (!bos.isOpaque(rotatedFace)) {
 				return true;
+			}
 
 			return false;
 

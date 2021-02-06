@@ -21,7 +21,7 @@ package ru.windcorp.progressia.server.world;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.BlockTickContext;
@@ -61,17 +61,22 @@ public class TickAndUpdateUtil {
 		}
 	}
 
-	public static void tickTile(WorldLogic world, Vec3i blockInWorld, AbsFace face, int layer) {
+	public static void tickTile(WorldLogic world, Vec3i blockInWorld, BlockFace face, int layer) {
 		TileLogic tile = world.getTile(blockInWorld, face, layer);
-		if (!(tile instanceof TickableTile))
+		if (!(tile instanceof TickableTile)) {
 			return;
+		}
 
 		TileTickContext tickContext = TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face)
 			.withLayer(layer);
 		tickTile((TickableTile) tile, tickContext);
 	}
 
-	public static void tickTiles(WorldLogic world, Vec3i blockInWorld, AbsFace face) {
+	public static void tickTiles(WorldLogic world, Vec3i blockInWorld, BlockFace face) {
+		if (!world.isBlockLoaded(blockInWorld)) {
+			return;
+		}
+		
 		TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face).build()
 			.forEachTile(context -> {
 				TileLogic tile = context.getTile();
@@ -106,17 +111,22 @@ public class TickAndUpdateUtil {
 		}
 	}
 
-	public static void updateTile(WorldLogic world, Vec3i blockInWorld, AbsFace face, int layer) {
+	public static void updateTile(WorldLogic world, Vec3i blockInWorld, BlockFace face, int layer) {
 		TileLogic tile = world.getTile(blockInWorld, face, layer);
-		if (!(tile instanceof UpdateableTile))
+		if (!(tile instanceof UpdateableTile)) {
 			return;
+		}
 
 		TileTickContext tickContext = TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face)
 			.withLayer(layer);
 		updateTile((UpdateableTile) tile, tickContext);
 	}
 
-	public static void updateTiles(WorldLogic world, Vec3i blockInWorld, AbsFace face) {
+	public static void updateTiles(WorldLogic world, Vec3i blockInWorld, BlockFace face) {
+		if (!world.isBlockLoaded(blockInWorld)) {
+			return;
+		}
+		
 		TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face).build()
 			.forEachTile(context -> {
 				TileLogic tile = context.getTile();

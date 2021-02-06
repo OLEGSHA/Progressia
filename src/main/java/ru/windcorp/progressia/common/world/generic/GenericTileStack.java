@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public abstract class GenericTileStack<Self extends GenericTileStack<Self, T, C>, T extends GenericTile, C extends GenericChunk<C, ?, T, Self>>
 	extends AbstractList<T>
@@ -41,7 +41,7 @@ public abstract class GenericTileStack<Self extends GenericTileStack<Self, T, C>
 
 	public abstract C getChunk();
 
-	public abstract AbsFace getFace();
+	public abstract RelFace getFace();
 
 	public Vec3i getBlockInWorld(Vec3i output) {
 		// This is safe

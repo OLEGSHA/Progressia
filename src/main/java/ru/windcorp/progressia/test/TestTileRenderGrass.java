@@ -16,17 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
  
-package ru.windcorp.progressia.client.world.tile;
+package ru.windcorp.progressia.test;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.client.world.tile.TileRenderSurface;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
-public class TileRenderGrass extends TileRenderSurface {
+public class TestTileRenderGrass extends TileRenderSurface {
 
 	private final Texture topTexture;
 	private final Texture sideTexture;
 
-	public TileRenderGrass(
+	public TestTileRenderGrass(
 		String id,
 		Texture top,
 		Texture side
@@ -37,13 +38,13 @@ public class TileRenderGrass extends TileRenderSurface {
 	}
 
 	@Override
-	public Texture getTexture(AbsFace face) {
-		return (face == AbsFace.POS_Z) ? topTexture : sideTexture;
+	public Texture getTexture(RelFace face) {
+		return (face == RelFace.UP) ? topTexture : sideTexture;
 	}
 
 	@Override
-	public boolean isOpaque(AbsFace face) {
-		return face == AbsFace.POS_Z;
+	public boolean isOpaque(RelFace face) {
+		return face == RelFace.UP;
 	}
 
 }

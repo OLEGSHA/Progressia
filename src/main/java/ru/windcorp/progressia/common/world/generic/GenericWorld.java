@@ -27,6 +27,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
 
 public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS extends GenericTileStack<TS, T, C>, C extends GenericChunk<C, B, T, TS>, E extends GenericEntity> {
 
@@ -47,6 +48,10 @@ public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS 
 		Vectors.release(chunkCoords);
 		return result;
 	}
+	
+	default AbsFace getUp(Vec3i blockInWorld) {
+		return getChunkByBlock(blockInWorld).getUp();
+	}
 
 	default B getBlock(Vec3i blockInWorld) {
 		Vec3i v = Vectors.grab3i();
@@ -63,7 +68,7 @@ public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS 
 		return result;
 	}
 
-	default TS getTiles(Vec3i blockInWorld, AbsFace face) {
+	default TS getTiles(Vec3i blockInWorld, BlockFace face) {
 		Vec3i v = Vectors.grab3i();
 		TS result;
 
@@ -78,7 +83,7 @@ public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS 
 		return result;
 	}
 
-	default TS getTilesOrNull(Vec3i blockInWorld, AbsFace face) {
+	default TS getTilesOrNull(Vec3i blockInWorld, BlockFace face) {
 		Vec3i v = Vectors.grab3i();
 		TS result;
 
@@ -93,7 +98,7 @@ public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS 
 		return result;
 	}
 
-	default boolean hasTiles(Vec3i blockInWorld, AbsFace face) {
+	default boolean hasTiles(Vec3i blockInWorld, BlockFace face) {
 		Vec3i v = Vectors.grab3i();
 		boolean result;
 
@@ -108,7 +113,7 @@ public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS 
 		return result;
 	}
 
-	default T getTile(Vec3i blockInWorld, AbsFace face, int layer) {
+	default T getTile(Vec3i blockInWorld, BlockFace face, int layer) {
 		TS stack = getTilesOrNull(blockInWorld, face);
 		if (stack == null || stack.size() <= layer)
 			return null;

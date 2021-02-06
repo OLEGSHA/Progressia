@@ -21,7 +21,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.model.EmptyModel;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public class TileRenderNone extends TileRender {
 
@@ -30,7 +30,7 @@ public class TileRenderNone extends TileRender {
 	}
 	
 	@Override
-	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk, AbsFace face) {
+	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk, RelFace face) {
 		return EmptyModel.getInstance();
 	}
 	

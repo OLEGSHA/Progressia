@@ -30,6 +30,8 @@ import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.common.world.tile.TileReference;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
@@ -66,6 +68,11 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 	public Vec3i getPosition() {
 		return getData().getPosition();
 	}
+	
+	@Override
+	public AbsFace getUp() {
+		return getData().getUp();
+	}
 
 	@Override
 	public BlockLogic getBlock(Vec3i blockInChunk) {
@@ -75,12 +82,12 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 	}
 
 	@Override
-	public TileLogicStack getTiles(Vec3i blockInChunk, AbsFace face) {
+	public TileLogicStack getTiles(Vec3i blockInChunk, BlockFace face) {
 		return getTileStackWrapper(getData().getTiles(blockInChunk, face));
 	}
 
 	@Override
-	public boolean hasTiles(Vec3i blockInChunk, AbsFace face) {
+	public boolean hasTiles(Vec3i blockInChunk, BlockFace face) {
 		return getData().hasTiles(blockInChunk, face);
 	}
 
@@ -149,7 +156,7 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 		}
 
 		@Override
-		public AbsFace getFace() {
+		public RelFace getFace() {
 			return parent.getFace();
 		}
 

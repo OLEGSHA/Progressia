@@ -19,7 +19,7 @@
 package ru.windcorp.progressia.client.world.tile;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public class TileRenderOpaqueSurface extends TileRenderSurface {
 
@@ -28,7 +28,7 @@ public class TileRenderOpaqueSurface extends TileRenderSurface {
 	}
 
 	@Override
-	public boolean isOpaque(AbsFace face) {
+	public boolean isOpaque(RelFace face) {
 		return true;
 	}
 

@@ -15,28 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen;
+package ru.windcorp.progressia.common.world.rels;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.GravityModel;
-import ru.windcorp.progressia.common.world.rels.AbsFace;
 
-public class TestGravityModel extends GravityModel {
-
-	public TestGravityModel() {
-		super("Test:TheGravityModel");
-	}
-
-	@Override
-	protected void doGetGravity(Vec3 pos, Vec3 output) {
-		output.set(0, 0, -9.8f);
+public interface BlockFace {
+	
+	public static final int BLOCK_FACE_COUNT = 6;
+	
+	AbsFace resolve(AbsFace up);
+	RelFace relativize(AbsFace up);
+	
+	public default Vec3i getVector(AbsFace up) {
+		return resolve(up).getVector();
 	}
 	
-	@Override
-	protected AbsFace doGetDiscreteUp(Vec3i chunkPos) {
-		AbsFace rounded = AbsFace.roundToFace(chunkPos.x, chunkPos.y, chunkPos.z - 54);
-		return rounded == null ? AbsFace.POS_Z : rounded;
+	public default Vec3 getFloatVector(AbsFace up) {
+		return resolve(up).getFloatVector();
+	}
+	
+	public default Vec3 getNormalized(AbsFace up) {
+		return resolve(up).getNormalized();
 	}
 
 }

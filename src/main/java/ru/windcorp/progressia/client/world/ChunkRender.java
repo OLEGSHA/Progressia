@@ -32,6 +32,8 @@ import ru.windcorp.progressia.client.world.tile.TileRenderStack;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 
 public class ChunkRender
@@ -55,6 +57,11 @@ public class ChunkRender
 	public Vec3i getPosition() {
 		return getData().getPosition();
 	}
+	
+	@Override
+	public AbsFace getUp() {
+		return getData().getUp();
+	}
 
 	@Override
 	public BlockRender getBlock(Vec3i posInChunk) {
@@ -64,12 +71,12 @@ public class ChunkRender
 	}
 
 	@Override
-	public TileRenderStack getTiles(Vec3i blockInChunk, AbsFace face) {
+	public TileRenderStack getTiles(Vec3i blockInChunk, BlockFace face) {
 		return getTileStackWrapper(getData().getTiles(blockInChunk, face));
 	}
 
 	@Override
-	public boolean hasTiles(Vec3i blockInChunk, AbsFace face) {
+	public boolean hasTiles(Vec3i blockInChunk, BlockFace face) {
 		return getData().hasTiles(blockInChunk, face);
 	}
 
@@ -119,7 +126,7 @@ public class ChunkRender
 		}
 
 		@Override
-		public AbsFace getFace() {
+		public RelFace getFace() {
 			return parent.getFace();
 		}
 

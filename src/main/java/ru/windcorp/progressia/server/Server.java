@@ -68,9 +68,9 @@ public class Server {
 		this.chunkManager = new ChunkManager(this);
 		this.entityManager = new EntityManager(this);
 
-		schedule(this::scheduleWorldTicks);
 		schedule(chunkManager::tick);
 		schedule(entityManager::tick);
+		schedule(this::scheduleWorldTicks); // Must run after chunkManager so it only schedules chunks that hadn't unloaded
 	}
 
 	/**

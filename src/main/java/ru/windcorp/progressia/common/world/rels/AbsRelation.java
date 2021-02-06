@@ -41,6 +41,18 @@ public class AbsRelation extends BlockRelation {
 		this(vector.x, vector.y, vector.z);
 	}
 	
+	public static AbsRelation of(Vec3i vector) {
+		return of(vector.x, vector.y, vector.z);
+	}
+	
+	public static AbsRelation of(int x, int y, int z) {
+		if (Math.abs(x) + Math.abs(y) + Math.abs(z) == 1) {
+			return AbsFace.roundToFace(x, y, z);
+		}
+		
+		return new AbsRelation(x, y, z);
+	}
+	
 	@Override
 	public AbsRelation resolve(AbsFace up) {
 		return this;
