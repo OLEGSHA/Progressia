@@ -26,6 +26,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
+import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.WorldData;
 
 public abstract class WorldGenerator extends Namespaced {
@@ -42,5 +43,7 @@ public abstract class WorldGenerator extends Namespaced {
 	public abstract void writeGenerationHint(DataOutputStream output, Object hint) throws IOException;
 
 	public abstract boolean isChunkReady(Object hint);
+	
+	public abstract GravityModel getGravityModel();
 
 }

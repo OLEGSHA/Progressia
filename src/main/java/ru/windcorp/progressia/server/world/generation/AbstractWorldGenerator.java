@@ -25,14 +25,23 @@ import java.util.Objects;
 
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
+import ru.windcorp.progressia.common.world.GravityModel;
+import ru.windcorp.progressia.common.world.GravityModelRegistry;
 
 public abstract class AbstractWorldGenerator<H> extends WorldGenerator {
 
 	private final Class<H> hintClass;
+	
+	private final GravityModel gravityModel;
 
-	public AbstractWorldGenerator(String id, Class<H> hintClass) {
+	public AbstractWorldGenerator(String id, Class<H> hintClass, String gravityModelId) {
 		super(id);
 		this.hintClass = Objects.requireNonNull(hintClass, "hintClass");
+		this.gravityModel = GravityModelRegistry.getInstance().get(Objects.requireNonNull(gravityModelId, "gravityModelId"));
+		
+		if (this.gravityModel == null) {
+			throw new IllegalArgumentException("Gravity model with ID \"" + gravityModelId + "\" not found");
+		}
 	}
 
 	@Override
@@ -62,6 +71,11 @@ public abstract class AbstractWorldGenerator<H> extends WorldGenerator {
 
 	protected void setHint(ChunkData chunk, H hint) {
 		chunk.setGenerationHint(hint);
+	}
+	
+	@Override
+	public GravityModel getGravityModel() {
+		return gravityModel;
 	}
 
 }

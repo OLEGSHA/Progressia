@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world;
 
 import java.util.ArrayList;
@@ -51,8 +51,8 @@ public class WorldData
 	private final TLongObjectMap<EntityData> entitiesById = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
 	private final Collection<EntityData> entities = Collections.unmodifiableCollection(entitiesById.valueCollection());
-	
-	private GravityModel gravityModel = GravityModelRegistry.getInstance().get("Test:TheGravityModel");
+
+	private GravityModel gravityModel = null;
 
 	private float time = 0;
 
@@ -202,18 +202,25 @@ public class WorldData
 			return null;
 		return block.getCollisionModel();
 	}
-	
+
 	/**
 	 * @return the gravity model
 	 */
 	public GravityModel getGravityModel() {
 		return gravityModel;
 	}
-	
+
 	/**
 	 * @param gravityModel the gravity model to set
 	 */
 	public void setGravityModel(GravityModel gravityModel) {
+		if (!chunks.isEmpty()) {
+			throw new IllegalStateException(
+				"Attempted to change gravity model to " + gravityModel + " while " + chunks.size()
+					+ " chunks were loaded"
+			);
+		}
+
 		this.gravityModel = gravityModel;
 	}
 

@@ -55,7 +55,9 @@ public class WorldLogic
 	public WorldLogic(WorldData data, Server server, Function<WorldLogic, WorldGenerator> worldGeneratorConstructor) {
 		this.data = data;
 		this.server = server;
+		
 		this.generator = worldGeneratorConstructor.apply(this);
+		data.setGravityModel(getGenerator().getGravityModel());
 
 		data.addListener(new WorldDataListener() {
 			@Override

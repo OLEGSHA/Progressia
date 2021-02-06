@@ -44,7 +44,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 	private final TestTerrainGenerator terrainGen;
 
 	public TestWorldGenerator(WorldLogic world) {
-		super("Test:WorldGenerator", Boolean.class);
+		super("Test:WorldGenerator", Boolean.class, "Test:TheGravityModel");
 		this.terrainGen = new TestTerrainGenerator(this, world);
 
 		world.getData().addListener(new WorldDataListener() {
