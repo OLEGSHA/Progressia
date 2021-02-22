@@ -31,7 +31,7 @@ import ru.windcorp.progressia.server.world.WorldLogic;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Change;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
-import ru.windcorp.progressia.test.gen.TestWorldGenerator;
+import ru.windcorp.progressia.test.gen.TestPlanetGenerator;
 
 public class Server {
 
@@ -60,7 +60,7 @@ public class Server {
 	private final TickingSettings tickingSettings = new TickingSettings();
 
 	public Server(WorldData world) {
-		this.world = new WorldLogic(world, this, TestWorldGenerator::new);
+		this.world = new WorldLogic(world, this, w -> new TestPlanetGenerator("Test:PlanetGenerator", Units.get("48 m"), w));
 		this.serverThread = new ServerThread(this);
 
 		this.clientManager = new ClientManager(this);
@@ -206,7 +206,7 @@ public class Server {
 	}
 
 	public float getLoadDistance(Player player) {
-		return Units.get(150.0f, "m");
+		return Units.get(100.5f, "m");
 	}
 
 	/**

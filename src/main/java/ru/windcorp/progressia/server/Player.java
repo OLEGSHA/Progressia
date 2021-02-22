@@ -63,7 +63,7 @@ public class Player extends PlayerData implements ChunkLoader {
 		for (cursor.x = -iRadius; cursor.x <= +iRadius; ++cursor.x) {
 			for (cursor.y = -iRadius; cursor.y <= +iRadius; ++cursor.y) {
 				for (cursor.z = -iRadius; cursor.z <= +iRadius; ++cursor.z) {
-					if (cursor.x * cursor.x + cursor.y * cursor.y + (cursor.z * 2) * (cursor.z * 2) <= radiusSq) {
+					if (cursor.x * cursor.x + cursor.y * cursor.y + (cursor.z/* * 2*/) * (cursor.z/* * 2*/) <= radiusSq) {
 
 						cursor.add(start);
 						chunkConsumer.accept(cursor);

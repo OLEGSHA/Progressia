@@ -122,46 +122,51 @@ class AABBoidCollider {
 		return output;
 	}
 
+	// @formatter:off
 	/*
-	 * Here we determine whether a collision has actually happened, and if it
-	 * did, at what moment.
-	 * The basic idea is to compute the moment of collision and impact
-	 * coordinates in wall coordinate space.
-	 * Then, we can check impact coordinates to determine if we actually hit the
-	 * wall or flew by and then
-	 * check time to make sure the collision is not too far in the future and
-	 * not in the past.
+	 * Here we determine whether a collision has actually happened, and if it did, at what moment.
+	 * 
+	 * The basic idea is to compute the moment of collision and impact coordinates in wall coordinate space.
+	 * Then, we can check impact coordinates to determine if we actually hit the wall or flew by and then
+	 * check time to make sure the collision is not too far in the future and not in the past.
+	 * 
 	 * DETAILED EXPLANATION:
-	 * Consider a surface defined by an origin r_wall and two noncollinear
-	 * nonzero vectors w and h.
+	 * 
+	 * Consider a surface defined by an origin r_wall and two noncollinear nonzero vectors w and h.
 	 * Consider a line defined by an origin r_line and a nonzero vector v.
+	 * 
 	 * Then, a collision occurs if there exist x, y and t such that
-	 * ______ _
-	 * r_line + v * t
+	 *   ______   _
+	 *   r_line + v * t
+	 *   
 	 * and
-	 * ______ _ _
-	 * r_wall + w * x + h * y
-	 * describe the same location (indeed, this corresponds to a collision at
-	 * moment t0 + t
-	 * with a point on the wall with coordinates (x; y) in (w; h) coordinate
-	 * system).
+	 *   ______   _       _
+	 *   r_wall + w * x + h * y
+	 *   
+	 * describe the same location (indeed, this corresponds to a collision at moment t0 + t
+	 * with a point on the wall with coordinates (x; y) in (w; h) coordinate system).
+	 * 
 	 * Therefore,
-	 * ______ _ ______ _ _
-	 * r_line + v*t = r_wall + w*x + h*y;
-	 * _ ⎡w_x h_x -v_x⎤ ⎡x⎤ _ ______ ______
-	 * r = ⎢w_y h_y -v_y⎥ * ⎢y⎥, where r = r_line - r_wall;
-	 * ⎣w_z h_z -v_z⎦ ⎣t⎦
-	 * ⎡x⎤ ⎡w_x h_x -v_x⎤ -1 _
-	 * ⎢y⎥ = ⎢w_y h_y -v_y⎥ * r, if the matrix is invertible.
-	 * ⎣t⎦ ⎣w_z h_z -v_z⎦
+	 *   ______   _     ______   _     _
+	 *   r_line + v*t = r_wall + w*x + h*y;
+	 *   
+	 *   _   ⎡w_x  h_x  -v_x⎤   ⎡x⎤        _   ______   ______
+	 *   r = ⎢w_y  h_y  -v_y⎥ * ⎢y⎥, where r = r_line - r_wall;
+	 *       ⎣w_z  h_z  -v_z⎦   ⎣t⎦
+	 *       
+	 *   ⎡x⎤   ⎡w_x  h_x  -v_x⎤ -1   _
+	 *   ⎢y⎥ = ⎢w_y  h_y  -v_y⎥    * r, if the matrix is invertible.
+	 *   ⎣t⎦   ⎣w_z  h_z  -v_z⎦
+	 * 
 	 * Then, one only needs to ensure that:
-	 * 0 < x < 1,
-	 * 0 < y < 1, and
-	 * 0 < t < T, where T is remaining tick time.
-	 * If the matrix is not invertible or any of the conditions are not met, no
-	 * collision happened.
+	 *   0 < x < 1,
+	 *   0 < y < 1, and
+	 *   0 < t < T, where T is remaining tick time.
+	 * 
+	 * If the matrix is not invertible or any of the conditions are not met, no collision happened.
 	 * If all conditions are satisfied, then the moment of impact is t0 + t.
 	 */
+	// @formatter:on
 	private static Collision computeWallCollision(
 		Wall obstacleWall,
 		AABBoid colliderModel,

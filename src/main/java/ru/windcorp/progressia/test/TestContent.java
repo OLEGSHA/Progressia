@@ -59,13 +59,15 @@ import ru.windcorp.progressia.server.world.block.*;
 import ru.windcorp.progressia.server.world.entity.*;
 import ru.windcorp.progressia.server.world.tile.*;
 import ru.windcorp.progressia.test.gen.TestGravityModel;
+import ru.windcorp.progressia.test.gen.TestPlanetGravityModel;
 
 public class TestContent {
 
 	public static final String PLAYER_LOGIN = "Sasha";
 	public static final long PLAYER_ENTITY_ID = 0x42;
 	public static final long STATIE_ENTITY_ID = 0xDEADBEEF;
-	public static final Vec3 SPAWN = new Vec3(8, 8, 880);
+//	public static final Vec3 SPAWN = new Vec3(8, 8, 880);
+	public static final Vec3 SPAWN = new Vec3(0, 0, 66);
 
 	public static final List<BlockData> PLACEABLE_BLOCKS = new ArrayList<>();
 	public static final List<TileData> PLACEABLE_TILES = new ArrayList<>();
@@ -424,6 +426,7 @@ public class TestContent {
 		ChunkIO.registerCodec(new TestChunkCodec());
 		ChunkRenderOptimizerRegistry.getInstance().register("Core:SurfaceOptimizer", ChunkRenderOptimizerSurface::new);
 		GravityModelRegistry.getInstance().register(new TestGravityModel());
+		GravityModelRegistry.getInstance().register(new TestPlanetGravityModel());
 	}
 
 }

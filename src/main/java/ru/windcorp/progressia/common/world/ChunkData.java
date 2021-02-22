@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
@@ -44,14 +45,16 @@ public class ChunkData
 	implements GenericChunk<ChunkData, BlockData, TileData, TileDataStack> {
 
 	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
+	public static final int CHUNK_RADIUS = BLOCKS_PER_CHUNK / 2;
 
 	private final Vec3i position = new Vec3i();
 	private final WorldData world;
 
 	private final BlockData[] blocks = new BlockData[BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK];
 
-	private final TileDataStack[] tiles = new TileDataStack[BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK *
-		BLOCK_FACE_COUNT];
+	private final TileDataStack[] tiles = new TileDataStack[
+		BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCK_FACE_COUNT
+	];
 	
 	private final AbsFace up;
 
@@ -90,6 +93,13 @@ public class ChunkData
 				l.onChunkChanged(this);
 			});
 		}
+	}
+	
+	public void setBlockRel(Vec3i relativeBlockInChunk, BlockData block, boolean notify) {
+		Vec3i absoluteBlockInChunk = Vectors.grab3i();
+		resolve(relativeBlockInChunk, absoluteBlockInChunk);
+		setBlock(absoluteBlockInChunk, block, notify);
+		Vectors.release(absoluteBlockInChunk);
 	}
 
 	@Override
