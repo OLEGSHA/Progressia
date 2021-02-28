@@ -31,7 +31,7 @@ import ru.windcorp.progressia.server.world.WorldLogic;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Change;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
-import ru.windcorp.progressia.test.gen.TestPlanetGenerator;
+import ru.windcorp.progressia.test.gen.planet.TestPlanetGenerator;
 
 public class Server {
 

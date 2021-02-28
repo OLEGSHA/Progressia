@@ -59,7 +59,7 @@ import ru.windcorp.progressia.server.world.block.*;
 import ru.windcorp.progressia.server.world.entity.*;
 import ru.windcorp.progressia.server.world.tile.*;
 import ru.windcorp.progressia.test.gen.TestGravityModel;
-import ru.windcorp.progressia.test.gen.TestPlanetGravityModel;
+import ru.windcorp.progressia.test.gen.planet.TestPlanetGravityModel;
 
 public class TestContent {
 
