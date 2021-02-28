@@ -36,8 +36,8 @@ import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.client.world.tile.TileRenderNone;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.rels.AxisRotations;
 import ru.windcorp.progressia.common.world.rels.RelFace;
-import ru.windcorp.progressia.common.world.rels.RelRelation;
 
 public class ChunkRenderModel implements Renderable {
 	
@@ -61,7 +61,7 @@ public class ChunkRenderModel implements Renderable {
 			chunk.getY() * ChunkData.BLOCKS_PER_CHUNK,
 			chunk.getZ() * ChunkData.BLOCKS_PER_CHUNK
 		).translate(offset, offset, offset)
-		.mul(RelRelation.getResolutionMatrix4(chunk.getUp()))
+		.mul(AxisRotations.getResolutionMatrix4(chunk.getUp()))
 		.translate(-offset, -offset, -offset);
 
 		model.render(renderer);

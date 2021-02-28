@@ -37,7 +37,7 @@ public class BlockFaceResolver {
 		for (AbsFace up : AbsFace.getFaces()) {
 			for (RelFace relative : RelFace.getFaces()) {
 				
-				AbsFace absolute = (AbsFace) AbsRelation.of(RelRelation.resolve(relative.getRelVector(), up, null));
+				AbsFace absolute = (AbsFace) AbsRelation.of(AxisRotations.resolve(relative.getRelVector(), up, null));
 				
 				RESOLUTION_TABLE[up.getId()][relative.getId()] = absolute;
 				RELATIVIZATION_TABLE[up.getId()][absolute.getId()] = relative;

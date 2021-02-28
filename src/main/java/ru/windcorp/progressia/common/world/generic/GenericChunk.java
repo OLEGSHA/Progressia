@@ -25,8 +25,8 @@ import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AxisRotations;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
-import ru.windcorp.progressia.common.world.rels.RelRelation;
 
 public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B extends GenericBlock, T extends GenericTile, TS extends GenericTileStack<TS, T, Self>> {
 
@@ -52,7 +52,7 @@ public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B exten
 		output.set(relativeBlockInChunk.x, relativeBlockInChunk.y, relativeBlockInChunk.z);
 		output.mul(2).sub(offset);
 		
-		RelRelation.resolve(output, getUp(), output);
+		AxisRotations.resolve(output, getUp(), output);
 		
 		output.add(offset).div(2);
 		

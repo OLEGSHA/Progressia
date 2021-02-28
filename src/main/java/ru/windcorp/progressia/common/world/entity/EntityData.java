@@ -26,12 +26,14 @@ import java.util.Objects;
 import glm.mat._3.Mat3;
 import glm.vec._3.Vec3;
 import ru.windcorp.jputil.chars.StringUtil;
+import ru.windcorp.progressia.common.collision.AABBRotator;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.state.StatefulObject;
 import ru.windcorp.progressia.common.util.Matrices;
 import ru.windcorp.progressia.common.world.generic.GenericEntity;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class EntityData extends StatefulObject implements Collideable, GenericEntity {
 
@@ -51,6 +53,7 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 	private long entityId;
 
 	private CollisionModel collisionModel = null;
+	private CollisionModel rotatedCollisionModel = null;
 
 	private double age = 0;
 
@@ -107,11 +110,16 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 
 	@Override
 	public CollisionModel getCollisionModel() {
+		return rotatedCollisionModel;
+	}
+	
+	public CollisionModel getOriginalCollisionModel() {
 		return collisionModel;
 	}
 
 	public void setCollisionModel(CollisionModel collisionModel) {
 		this.collisionModel = collisionModel;
+		this.rotatedCollisionModel = AABBRotator.rotate(this::getUpFace, this::getPosition, collisionModel);
 	}
 
 	@Override
@@ -163,6 +171,10 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 
 	public Vec3 getUpVector() {
 		return upVector;
+	}
+	
+	public AbsFace getUpFace() {
+		return AbsFace.roundToFace(getUpVector());
 	}
 
 	/**

@@ -43,9 +43,9 @@ public class TestPlanetGravityModel extends GravityModel {
 	@Override
 	protected void doGetGravity(Vec3 pos, Vec3 output) {
 		// Change to a CS where (0;0;0) is the center of the center chunk
-		float px = pos.x - ChunkData.CHUNK_RADIUS;
-		float py = pos.y - ChunkData.CHUNK_RADIUS;
-		float pz = pos.z - ChunkData.CHUNK_RADIUS;
+		float px = pos.x - ChunkData.CHUNK_RADIUS + 0.5f;
+		float py = pos.y - ChunkData.CHUNK_RADIUS + 0.5f;
+		float pz = pos.z - ChunkData.CHUNK_RADIUS + 0.5f;
 		
 		// Assume weightlessness when too close to center
 		if ((px*px + py*py + pz*pz) < INNER_RADIUS*INNER_RADIUS) {

@@ -17,121 +17,14 @@
  */
 package ru.windcorp.progressia.common.world.rels;
 
-import java.util.Map;
-
-import glm.mat._3.Mat3;
-import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.util.VectorUtil.SignedAxis;
-
-import static ru.windcorp.progressia.common.util.VectorUtil.SignedAxis.*;
 
 /**
  * Name stands for Relative Relation 
  */
 public class RelRelation extends BlockRelation {
-	
-	private static class Rotation {
-		private final SignedAxis northDestination;
-		private final SignedAxis westDestination;
-		private final SignedAxis upDestination;
-		
-		private final Mat3 resolutionMatrix3 = new Mat3();
-		private final Mat4 resolutionMatrix4 = new Mat4();
-		
-		private final Mat3 relativizationMatrix3 = new Mat3();
-		private final Mat4 relativizationMatrix4 = new Mat4();
-		
-		private Rotation(SignedAxis northDestination, SignedAxis westDestination, SignedAxis upDestination) {
-			this.northDestination = northDestination;
-			this.westDestination = westDestination;
-			this.upDestination = upDestination;
-			
-			resolutionMatrix3.c0(apply(null, new Vec3(1, 0, 0)));
-			resolutionMatrix3.c1(apply(null, new Vec3(0, 1, 0)));
-			resolutionMatrix3.c2(apply(null, new Vec3(0, 0, 1)));
-			resolutionMatrix3.toMat4(resolutionMatrix4);
-			
-			relativizationMatrix3.set(resolutionMatrix3).transpose();
-			relativizationMatrix4.set(resolutionMatrix4).transpose();
-		}
-		
-		/**
-		 * @return the resolutionMatrix3
-		 */
-		public Mat3 getResolutionMatrix3() {
-			return resolutionMatrix3;
-		}
-		
-		/**
-		 * @return the resolutionMatrix4
-		 */
-		public Mat4 getResolutionMatrix4() {
-			return resolutionMatrix4;
-		}
-		
-		/**
-		 * @return the relativizationMatrix3
-		 */
-		public Mat3 getRelativizationMatrix3() {
-			return relativizationMatrix3;
-		}
-		
-		/**
-		 * @return the relativizationMatrix4
-		 */
-		public Mat4 getRelativizationMatrix4() {
-			return relativizationMatrix4;
-		}
-		
-		public Vec3i apply(Vec3i output, Vec3i input) {
-			if (output == null) {
-				output = new Vec3i();
-			}
-			
-			int inX = input.x, inY = input.y, inZ = input.z;
-			
-			set(output, inX, northDestination);
-			set(output, inY, westDestination);
-			set(output, inZ, upDestination);
-			
-			return output;
-		}
-		
-		private static void set(Vec3i output, int value, SignedAxis axis) {
-			VectorUtil.set(output, axis.getAxis(), axis.isPositive() ? +value : -value);
-		}
-		
-		public Vec3 apply(Vec3 output, Vec3 input) {
-			if (output == null) {
-				output = new Vec3();
-			}
-			
-			float inX = input.x, inY = input.y, inZ = input.z;
-			
-			set(output, inX, northDestination);
-			set(output, inY, westDestination);
-			set(output, inZ, upDestination);
-			
-			return output;
-		}
-		
-		private static void set(Vec3 output, float value, SignedAxis axis) {
-			VectorUtil.set(output, axis.getAxis(), axis.isPositive() ? +value : -value);
-		}
-	}
-	
-	private final static Map<AbsFace, Rotation> TRANSFORMATIONS = AbsFace.mapToFaces(
-		new Rotation(POS_X, POS_Y, POS_Z),
-		new Rotation(POS_X, NEG_Y, NEG_Z),
-		new Rotation(POS_Z, NEG_Y, POS_X),
-		new Rotation(POS_Z, POS_Y, NEG_X),
-		new Rotation(POS_Z, NEG_X, NEG_Y),
-		new Rotation(POS_Z, POS_X, POS_Y)
-	);
 	
 	private final Vec3i vector = new Vec3i();
 	private final Vec3 floatVector = new Vec3();
@@ -242,37 +135,10 @@ public class RelRelation extends BlockRelation {
 	
 	private AbsRelation computeResolution(AbsFace up) {
 		Vec3i resolution = Vectors.grab3i();
-		resolve(vector, up, resolution);
+		AxisRotations.resolve(vector, up, resolution);
 		AbsRelation result = AbsRelation.of(resolution);
 		Vectors.release(resolution);
 		return result;
-	}
-	
-	public static Vec3i resolve(Vec3i relative, AbsFace up, Vec3i output) {
-		if (output == null) {
-			output = new Vec3i();
-		}
-		
-		TRANSFORMATIONS.get(up).apply(output, relative);
-		
-		return output;
-	}
-	
-	public static Mat3 getResolutionMatrix3(AbsFace up) {
-		return TRANSFORMATIONS.get(up).getResolutionMatrix3();
-	}
-	
-	public static Mat4 getResolutionMatrix4(AbsFace up) {
-		return TRANSFORMATIONS.get(up).getResolutionMatrix4();
-	}
-	
-
-	public static Mat3 getRelativizationMatrix3(AbsFace up) {
-		return TRANSFORMATIONS.get(up).getRelativizationMatrix3();
-	}
-	
-	public static Mat4 getRelativizationMatrix4(AbsFace up) {
-		return TRANSFORMATIONS.get(up).getRelativizationMatrix4();
 	}
 
 	@Override
