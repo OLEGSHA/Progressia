@@ -22,6 +22,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -47,6 +48,11 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 			throw new IllegalArgumentException("planetRadius too small, must be at least 32 m");
 		}
 	}
+	
+	@Override
+	public Vec3 suggestSpawnLocation() {
+		return new Vec3(0, 0, 66);
+	}
 
 	@Override
 	protected Boolean doReadGenerationHint(DataInputStream input) throws IOException, DecodingException {
@@ -70,7 +76,6 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 		generate(chunk);
 		chunk.setGenerationHint(true);
 		
-		world.addChunk(chunk);
 		return chunk;
 	}
 	

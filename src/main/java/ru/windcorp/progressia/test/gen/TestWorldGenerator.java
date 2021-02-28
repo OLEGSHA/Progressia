@@ -23,6 +23,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
@@ -54,6 +55,11 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 			}
 		});
 	}
+	
+	@Override
+	public Vec3 suggestSpawnLocation() {
+		return new Vec3(8, 8, 880);
+	}
 
 	@Override
 	protected Boolean doReadGenerationHint(DataInputStream input) throws IOException, DecodingException {
@@ -72,9 +78,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 
 	@Override
 	public ChunkData generate(Vec3i chunkPos, WorldData world) {
-		ChunkData chunk = generateUnpopulated(chunkPos, world);
-		world.addChunk(chunk);
-		return chunk;
+		return generateUnpopulated(chunkPos, world);
 	}
 
 	private ChunkData generateUnpopulated(Vec3i chunkPos, WorldData world) {

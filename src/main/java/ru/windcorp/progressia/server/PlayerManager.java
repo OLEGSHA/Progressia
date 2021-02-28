@@ -60,7 +60,7 @@ public class PlayerManager {
 		EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
 
 		player.setEntityId(TestContent.PLAYER_ENTITY_ID);
-		player.setPosition(TestContent.SPAWN);
+		player.setPosition(getServer().getWorld().getGenerator().suggestSpawnLocation());
 		
 		player.setUpVector(new Vec3(0, 0, 1));
 		player.setLookingAt(new Vec3(2, 1, 0));

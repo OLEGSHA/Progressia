@@ -30,7 +30,6 @@ import java.util.function.Consumer;
 
 import org.lwjgl.glfw.GLFW;
 
-import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.audio.SoundEffect;
@@ -66,8 +65,6 @@ public class TestContent {
 	public static final String PLAYER_LOGIN = "Sasha";
 	public static final long PLAYER_ENTITY_ID = 0x42;
 	public static final long STATIE_ENTITY_ID = 0xDEADBEEF;
-//	public static final Vec3 SPAWN = new Vec3(8, 8, 880);
-	public static final Vec3 SPAWN = new Vec3(0, 0, 66);
 
 	public static final List<BlockData> PLACEABLE_BLOCKS = new ArrayList<>();
 	public static final List<TileData> PLACEABLE_TILES = new ArrayList<>();

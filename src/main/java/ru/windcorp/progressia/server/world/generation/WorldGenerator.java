@@ -22,6 +22,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -45,5 +46,7 @@ public abstract class WorldGenerator extends Namespaced {
 	public abstract boolean isChunkReady(Object hint);
 	
 	public abstract GravityModel getGravityModel();
+	
+	public abstract Vec3 suggestSpawnLocation();
 
 }
