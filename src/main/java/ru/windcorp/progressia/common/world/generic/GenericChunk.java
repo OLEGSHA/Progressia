@@ -20,6 +20,7 @@ package ru.windcorp.progressia.common.world.generic;
 
 import java.util.function.Consumer;
 
+import glm.Glm;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
@@ -117,6 +118,64 @@ public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B exten
 
 	default int getMaxZ() {
 		return Coordinates.getInWorld(getZ(), BLOCKS_PER_CHUNK - 1);
+	}
+	
+	default Vec3i getMinBIW(Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+		
+		output.set(getMinX(), getMinY(), getMinZ());
+		
+		return output;
+	}
+	
+	default Vec3i getMaxBIW(Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+		
+		output.set(getMaxX(), getMaxY(), getMaxZ());
+		
+		return output;
+	}
+	
+	default Vec3i getMinBIWRel(Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+		
+		Vec3i absMin = getMinBIW(Vectors.grab3i());
+		Vec3i absMax = getMaxBIW(Vectors.grab3i());
+		
+		AxisRotations.relativize(absMin, getUp(), absMin);
+		AxisRotations.relativize(absMax, getUp(), absMax);
+		
+		Glm.min(absMin, absMax, output);
+		
+		Vectors.release(absMax);
+		Vectors.release(absMin);
+		
+		return output;
+	}
+	
+	default Vec3i getMaxBIWRel(Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+		
+		Vec3i absMin = getMinBIW(Vectors.grab3i());
+		Vec3i absMax = getMaxBIW(Vectors.grab3i());
+		
+		AxisRotations.relativize(absMin, getUp(), absMin);
+		AxisRotations.relativize(absMax, getUp(), absMax);
+		
+		Glm.max(absMin, absMax, output);
+		
+		Vectors.release(absMax);
+		Vectors.release(absMin);
+		
+		return output;
 	}
 
 	default boolean containsBiC(Vec3i blockInChunk) {

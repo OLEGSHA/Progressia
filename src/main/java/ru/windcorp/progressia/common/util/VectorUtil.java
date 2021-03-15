@@ -290,6 +290,88 @@ public class VectorUtil {
 		);
 		return output;
 	}
+	
+	public static Vec3i sort(Vec3i input, Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+		
+		int ax = input.x, ay = input.y, az = input.z;
+
+		if (ax > ay) {
+			if (ax > az) {
+				output.x = ax;
+				output.y = ay > az ? ay : az;
+				output.z = ay > az ? az : ay;
+			} else {
+				output.x = az;
+				output.y = ax;
+				output.z = ay;
+			}
+		} else {
+			if (ay > az) {
+				output.x = ay;
+				output.y = ax > az ? ax : az;
+				output.z = ax > az ? az : ax;
+			} else {
+				output.x = az;
+				output.y = ay;
+				output.z = ax;
+			}
+		}
+		
+		return output;
+	}
+	
+	public static Vec3 sort(Vec3 input, Vec3 output) {
+		if (output == null) {
+			output = new Vec3();
+		}
+		
+		float ax = input.x, ay = input.y, az = input.z;
+
+		if (ax > ay) {
+			if (ax > az) {
+				output.x = ax;
+				output.y = ay > az ? ay : az;
+				output.z = ay > az ? az : ay;
+			} else {
+				output.x = az;
+				output.y = ax;
+				output.z = ay;
+			}
+		} else {
+			if (ay > az) {
+				output.x = ay;
+				output.y = ax > az ? ax : az;
+				output.z = ax > az ? az : ax;
+			} else {
+				output.x = az;
+				output.y = ay;
+				output.z = ax;
+			}
+		}
+		
+		return output;
+	}
+	
+	public static Vec3i sortAfterAbs(Vec3i input, Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+		
+		input.abs(output);
+		return sort(output, output);
+	}
+	
+	public static Vec3 sortAfterAbs(Vec3 input, Vec3 output) {
+		if (output == null) {
+			output = new Vec3();
+		}
+		
+		input.abs(output);
+		return sort(output, output);
+	}
 
 	public static float get(Vec2 v, Axis a) {
 		switch (a) {

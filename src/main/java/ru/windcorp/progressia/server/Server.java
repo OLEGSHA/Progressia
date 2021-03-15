@@ -31,6 +31,7 @@ import ru.windcorp.progressia.server.world.WorldLogic;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Change;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
+import ru.windcorp.progressia.test.gen.planet.Planet;
 import ru.windcorp.progressia.test.gen.planet.TestPlanetGenerator;
 
 public class Server {
@@ -60,7 +61,7 @@ public class Server {
 	private final TickingSettings tickingSettings = new TickingSettings();
 
 	public Server(WorldData world) {
-		this.world = new WorldLogic(world, this, w -> new TestPlanetGenerator("Test:PlanetGenerator", Units.get("48 m"), w));
+		this.world = new WorldLogic(world, this, w -> new TestPlanetGenerator("Test:PlanetGenerator", new Planet(4, 16f, 9.8f, 16f), w));
 		this.serverThread = new ServerThread(this);
 
 		this.clientManager = new ClientManager(this);

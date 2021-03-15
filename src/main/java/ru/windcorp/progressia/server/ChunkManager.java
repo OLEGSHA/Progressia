@@ -128,7 +128,7 @@ public class ChunkManager {
 	private void processQueues() {
 		toUnload.forEach(this::unloadChunk);
 		toUnload.clear();
-		toLoad.forEach(this::loadChunk);
+		toLoad.forEach(this::loadOrGenerateChunk);
 		toLoad.clear();
 
 		visions.forEach((p, v) -> {
@@ -140,15 +140,26 @@ public class ChunkManager {
 		return createIfMissing ? visions.computeIfAbsent(player, k -> new PlayerVision()) : visions.get(player);
 	}
 
-	public void loadChunk(Vec3i chunkPos) {
+	public void loadOrGenerateChunk(Vec3i chunkPos) {
+
+		boolean chunkLoadedFromDisk = loadChunk(chunkPos);
+		
+		if (!chunkLoadedFromDisk) {
+			getServer().getWorld().generate(chunkPos);
+		}
+
+	}
+	
+	public boolean loadChunk(Vec3i chunkPos) {
 
 		WorldData world = getServer().getWorld().getData();
 
 		ChunkData chunk = TestWorldDiskIO.tryToLoad(chunkPos, world, getServer());
 		if (chunk != null) {
 			world.addChunk(chunk);
+			return true;
 		} else {
-			getServer().getWorld().generate(chunkPos);
+			return false;
 		}
 
 	}

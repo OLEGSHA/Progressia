@@ -90,11 +90,7 @@ public class BlockRay {
 		VectorUtil.set(block, axis, VectorUtil.get(block, axis) + (int) signum(VectorUtil.get(direction, axis)));
 
 		// position += direction * tMin
-		VectorUtil.linearCombination(position, 1, direction, tMin, position); // position
-																				// +=
-																				// direction
-																				// *
-																				// tMin
+		VectorUtil.linearCombination(position, 1, direction, tMin, position);
 		distance += tMin;
 
 		// position.(axis) = round(position.(axis))
