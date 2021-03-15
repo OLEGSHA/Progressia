@@ -19,36 +19,86 @@ package ru.windcorp.progressia.test.gen.planet;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 import static java.lang.Math.*;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 public class TestPlanetGravityModel extends GravityModel {
 	
-	private static final float GRAVITATIONAL_ACCELERATION = Units.get("9.8 m/s^2");
-	private static final float ROUNDNESS = Units.get("16 m");
-	private static final float INNER_RADIUS = Units.get("16 m");
+	public static class Settings {
+		public float surfaceGravitationalAcceleration;
+		public float curvature;
+		public float innerRadius;
+		
+		public Settings() {}
+		
+		public Settings(float surfaceGravitationalAcceleration, float curvature, float innerRadius) {
+			this.surfaceGravitationalAcceleration = surfaceGravitationalAcceleration;
+			this.curvature = curvature;
+			this.innerRadius = innerRadius;
+		}
+		
+		public void copyFrom(Settings copyFrom) {
+			this.surfaceGravitationalAcceleration = copyFrom.surfaceGravitationalAcceleration;
+			this.curvature = copyFrom.curvature;
+			this.innerRadius = copyFrom.innerRadius;
+		}
+
+		public void read(DataInput input) throws IOException, DecodingException {
+			surfaceGravitationalAcceleration = input.readFloat();
+			curvature = input.readFloat();
+			innerRadius = input.readFloat();
+		}
+		
+		public void write(DataOutput output) throws IOException {
+			output.writeFloat(surfaceGravitationalAcceleration);
+			output.writeFloat(curvature);
+			output.writeFloat(innerRadius);
+		}
+	}
 	
-	public TestPlanetGravityModel() {
-		this("Test:PlanetGravityModel");
+	private Settings settings = new Settings();
+
+	public TestPlanetGravityModel(String id) {
+		super(id);
 	}
 
-	protected TestPlanetGravityModel(String id) {
-		super(id);
+	public float getSurfaceGravitationalAcceleration() {
+		return settings.surfaceGravitationalAcceleration;
+	}
+
+	public float getCurvature() {
+		return settings.curvature;
+	}
+
+	public float getInnerRadius() {
+		return settings.innerRadius;
+	}
+	
+	public void configure(Settings settings) {
+		this.settings = settings;
 	}
 
 	@Override
 	protected void doGetGravity(Vec3 pos, Vec3 output) {
+		float r = getInnerRadius();
+		float c = getCurvature();
+		float g = getSurfaceGravitationalAcceleration();
+		
 		// Change to a CS where (0;0;0) is the center of the center chunk
 		float px = pos.x - ChunkData.CHUNK_RADIUS + 0.5f;
 		float py = pos.y - ChunkData.CHUNK_RADIUS + 0.5f;
 		float pz = pos.z - ChunkData.CHUNK_RADIUS + 0.5f;
 		
 		// Assume weightlessness when too close to center
-		if ((px*px + py*py + pz*pz) < INNER_RADIUS*INNER_RADIUS) {
+		if ((px*px + py*py + pz*pz) < r*r) {
 			output.set(0, 0, 0);
 			return;
 		}
@@ -81,23 +131,25 @@ public class TestPlanetGravityModel extends GravityModel {
 			}
 		}
 		
-		output.x = maxAbs - ax < ROUNDNESS ? (px > 0 ? +1 : -1) : 0;
-		output.y = maxAbs - ay < ROUNDNESS ? (py > 0 ? +1 : -1) : 0;
-		output.z = maxAbs - az < ROUNDNESS ? (pz > 0 ? +1 : -1) : 0;
+		output.x = maxAbs - ax < c ? (px > 0 ? +1 : -1) : 0;
+		output.y = maxAbs - ay < c ? (py > 0 ? +1 : -1) : 0;
+		output.z = maxAbs - az < c ? (pz > 0 ? +1 : -1) : 0;
 		
-		if (maxAbs - midAbs < ROUNDNESS) {
+		if (maxAbs - midAbs < c) {
 			output.normalize();
 			computeEdgeGravity(output.x, output.y, output.z, px, py, pz, output);
 		} else {
-			assert output.dot(output) == 1 : "maxAbs - midAbs = " + maxAbs + " - " + midAbs + " > " + ROUNDNESS + " yet l*l != 1";
+			assert output.dot(output) == 1 : "maxAbs - midAbs = " + maxAbs + " - " + midAbs + " > " + c + " yet l*l != 1";
 		}
 		
-		output.mul(-GRAVITATIONAL_ACCELERATION);
+		output.mul(-g);
 	}
 
 	private void computeEdgeGravity(float lx, float ly, float lz, float rx, float ry, float rz, Vec3 output) {
 		// da math is gud, no worry
 		//  - Javapony
+		
+		float r = getInnerRadius();
 		
 		if (lx == 0) rx = 0;
 		if (ly == 0) ry = 0;
@@ -107,10 +159,10 @@ public class TestPlanetGravityModel extends GravityModel {
 		float rSquared = rx*rx + ry*ry + rz*rz;
 		
 		float distanceAlongEdge = scalarProduct - (float) sqrt(
-			scalarProduct*scalarProduct - rSquared + ROUNDNESS*ROUNDNESS
+			scalarProduct*scalarProduct - rSquared + r*r
 		);
 		
-		output.set(lx, ly, lz).mul(-distanceAlongEdge).add(rx, ry, rz).div(ROUNDNESS);
+		output.set(lx, ly, lz).mul(-distanceAlongEdge).add(rx, ry, rz).div(r);
 		
 		final float f = (float) sqrt(3.0/2);
 		
@@ -127,6 +179,16 @@ public class TestPlanetGravityModel extends GravityModel {
 	protected AbsFace doGetDiscreteUp(Vec3i chunkPos) {
 		AbsFace rounded = AbsFace.roundToFace(chunkPos.x, chunkPos.y, chunkPos.z);
 		return rounded == null ? AbsFace.POS_Z : rounded;
+	}
+	
+	@Override
+	protected void doReadSettings(DataInput input) throws IOException, DecodingException {
+		this.settings.read(input);
+	}
+	
+	@Override
+	protected void doWriteSettings(DataOutput output) throws IOException {
+		this.settings.write(output);
 	}
 
 }

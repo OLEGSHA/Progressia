@@ -37,7 +37,11 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 
 	public TestPlanetGenerator(String id, Planet planet, WorldLogic world) {
 		super(id, Boolean.class, "Test:PlanetGravityModel");
+		
 		this.planet = planet;
+		
+		TestPlanetGravityModel model = (TestPlanetGravityModel) this.getGravityModel();
+		model.configure(planet.getGravityModelSettings());
 		
 		this.terrainGenerator = new PlanetTerrainGenerator(this);
 		this.scatterGenerator = new PlanetScatterGenerator(this);

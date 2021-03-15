@@ -17,6 +17,9 @@
  */
 package ru.windcorp.progressia.common.world;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Objects;
 
 import glm.vec._3.Vec3;
@@ -165,5 +168,63 @@ public abstract class GravityModel extends Namespaced {
 	 *         specified chunk. Never {@code null}.
 	 */
 	protected abstract AbsFace doGetDiscreteUp(Vec3i chunkPos);
+	
+	/**
+	 * Parses the settings from the provided {@link DataInput} and configures this object appropriately. This method will not necessarily exhaust the input.
+	 * @param input a stream to read the settings from
+	 * @throws IOException if an I/O error occurs
+	 * @throws DecodingException if the settings could not be parsed from input
+	 */
+	public void readSettings(DataInput input) throws IOException, DecodingException {
+		Objects.requireNonNull(input, "input");
+		
+		try {
+			doReadSettings(input);
+		} catch (IOException | DecodingException e) {
+			throw e;
+		} catch (Exception e) {
+			throw CrashReports.report(
+				e,
+				"%s failed to read its settings",
+				this
+			);
+		}
+	}
+	
+	/**
+	 * Encodes the settings of this model into the provided {@link DataOutput}.
+	 * @param output a stream to write the settings into
+	 * @throws IOException if an I/O error occurs
+	 */
+	public void writeSettings(DataOutput output) throws IOException {
+		Objects.requireNonNull(output, "output");
+		
+		try {
+			doWriteSettings(output);
+		} catch (IOException e) {
+			throw e;
+		} catch (Exception e) {
+			throw CrashReports.report(
+				e,
+				"%s failed to write its settings",
+				this
+			);
+		}
+	}
+	
+	/**
+	 * Parses the settings from the provided {@link DataInput} and configures this object appropriately. This method will not necessarily exhaust the input.
+	 * @param input a stream to read the settings from
+	 * @throws IOException if an I/O error occurs
+	 * @throws DecodingException if the settings could not be parsed from input
+	 */
+	protected abstract void doReadSettings(DataInput input) throws IOException, DecodingException;
+	
+	/**
+	 * Encodes the settings of this model into the provided {@link DataOutput}.
+	 * @param output a stream to write the settings into
+	 * @throws IOException if an I/O error occurs
+	 */
+	protected abstract void doWriteSettings(DataOutput output) throws IOException;
 
 }

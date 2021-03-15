@@ -17,15 +17,20 @@
  */
 package ru.windcorp.progressia.test.gen;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class TestGravityModel extends GravityModel {
 
-	public TestGravityModel() {
-		super("Test:TheGravityModel");
+	public TestGravityModel(String id) {
+		super(id);
 	}
 
 	@Override
@@ -37,6 +42,16 @@ public class TestGravityModel extends GravityModel {
 	protected AbsFace doGetDiscreteUp(Vec3i chunkPos) {
 		AbsFace rounded = AbsFace.roundToFace(chunkPos.x, chunkPos.y, chunkPos.z - 54);
 		return rounded == null ? AbsFace.POS_Z : rounded;
+	}
+
+	@Override
+	protected void doReadSettings(DataInput input) throws IOException, DecodingException {
+		// Do nothing
+	}
+
+	@Override
+	protected void doWriteSettings(DataOutput output) throws IOException {
+		// Do nothing
 	}
 
 }

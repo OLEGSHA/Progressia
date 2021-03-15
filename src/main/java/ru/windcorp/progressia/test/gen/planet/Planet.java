@@ -23,20 +23,20 @@ public class Planet {
 	
 	private final int radiusInChunks;
 	
-	private final float curvature;
-	private final float surfaceGravitationalAcceleration;
-	private final float innerGravityRadius;
+	private final TestPlanetGravityModel.Settings gravityModelSettings;
 	
 	public Planet(
 		int radiusInChunks,
-		float curvature,
 		float surfaceGravitationalAcceleration,
+		float curvature,
 		float innerGravityRadius
 	) {
 		this.radiusInChunks = radiusInChunks;
-		this.curvature = curvature;
-		this.surfaceGravitationalAcceleration = surfaceGravitationalAcceleration;
-		this.innerGravityRadius = innerGravityRadius;
+		this.gravityModelSettings = new TestPlanetGravityModel.Settings(
+			surfaceGravitationalAcceleration,
+			curvature,
+			innerGravityRadius
+		);
 	}
 	
 	/**
@@ -62,21 +62,28 @@ public class Planet {
 	 * @return the curvature
 	 */
 	public float getCurvature() {
-		return curvature;
+		return gravityModelSettings.curvature;
 	}
 	
 	/**
 	 * @return the innerGravityRadius
 	 */
 	public float getInnerGravityRadius() {
-		return innerGravityRadius;
+		return gravityModelSettings.innerRadius;
 	}
 	
 	/**
 	 * @return the surfaceGravitationalAcceleration
 	 */
 	public float getSurfaceGravitationalAcceleration() {
-		return surfaceGravitationalAcceleration;
+		return gravityModelSettings.surfaceGravitationalAcceleration;
+	}
+	
+	/**
+	 * @return the gravityModelSettings
+	 */
+	public TestPlanetGravityModel.Settings getGravityModelSettings() {
+		return gravityModelSettings;
 	}
 
 }

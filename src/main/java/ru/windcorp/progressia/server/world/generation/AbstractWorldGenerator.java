@@ -37,7 +37,7 @@ public abstract class AbstractWorldGenerator<H> extends WorldGenerator {
 	public AbstractWorldGenerator(String id, Class<H> hintClass, String gravityModelId) {
 		super(id);
 		this.hintClass = Objects.requireNonNull(hintClass, "hintClass");
-		this.gravityModel = GravityModelRegistry.getInstance().get(Objects.requireNonNull(gravityModelId, "gravityModelId"));
+		this.gravityModel = GravityModelRegistry.getInstance().create(Objects.requireNonNull(gravityModelId, "gravityModelId"));
 		
 		if (this.gravityModel == null) {
 			throw new IllegalArgumentException("Gravity model with ID \"" + gravityModelId + "\" not found");

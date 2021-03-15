@@ -15,16 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world;
+package ru.windcorp.progressia.test.gen.surface;
 
-import ru.windcorp.progressia.common.util.namespaces.NamespacedFactoryRegistry;
-
-public class GravityModelRegistry extends NamespacedFactoryRegistry<GravityModel> {
+public class SurfaceFieldRegistry {
 	
-	public static final GravityModelRegistry INSTANCE = new GravityModelRegistry();
+	private int nextIndex = 0;
 	
-	public static GravityModelRegistry getInstance() {
-		return INSTANCE;
+	public void register(SurfaceCachingFloatField field) {
+		field.setIndex(nextIndex);
+		nextIndex++;
 	}
 
 }

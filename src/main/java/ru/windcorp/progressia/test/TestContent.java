@@ -422,8 +422,8 @@ public class TestContent {
 	private static void registerMisc() {
 		ChunkIO.registerCodec(new TestChunkCodec());
 		ChunkRenderOptimizerRegistry.getInstance().register("Core:SurfaceOptimizer", ChunkRenderOptimizerSurface::new);
-		GravityModelRegistry.getInstance().register(new TestGravityModel());
-		GravityModelRegistry.getInstance().register(new TestPlanetGravityModel());
+		GravityModelRegistry.getInstance().register("Test:TheGravityModel", TestGravityModel::new);
+		GravityModelRegistry.getInstance().register("Test:PlanetGravityModel", TestPlanetGravityModel::new);
 	}
 
 }

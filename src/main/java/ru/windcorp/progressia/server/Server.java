@@ -61,7 +61,7 @@ public class Server {
 	private final TickingSettings tickingSettings = new TickingSettings();
 
 	public Server(WorldData world) {
-		this.world = new WorldLogic(world, this, w -> new TestPlanetGenerator("Test:PlanetGenerator", new Planet(4, 16f, 9.8f, 16f), w));
+		this.world = new WorldLogic(world, this, w -> new TestPlanetGenerator("Test:PlanetGenerator", new Planet(4, 9.8f, 16f, 16f), w));
 		this.serverThread = new ServerThread(this);
 
 		this.clientManager = new ClientManager(this);
