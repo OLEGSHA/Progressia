@@ -26,6 +26,7 @@ import glm.vec._3.Vec3;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
+import ru.windcorp.progressia.server.events.PlayerJoinedEvent;
 import ru.windcorp.progressia.test.TestContent;
 
 public class PlayerManager {
@@ -44,6 +45,8 @@ public class PlayerManager {
 
 	public void addPlayer(Player player) {
 		this.players.add(player);
+		System.out.println("PlayerManager.addPlayer()");
+		getServer().postEvent(new PlayerJoinedEvent.Immutable(getServer(), player));
 	}
 
 	public EntityData conjurePlayerEntity(String login) {
@@ -68,6 +71,10 @@ public class PlayerManager {
 		getServer().getWorld().getData().addEntity(player);
 
 		return player;
+	}
+	
+	public Object getMutex() {
+		return players;
 	}
 
 	public Server getServer() {

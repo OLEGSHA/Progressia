@@ -81,7 +81,7 @@ public class ClientManager {
 
 		EntityData entity = getServer().getPlayerManager().conjurePlayerEntity(login);
 		Player player = new Player(entity, getServer(), client);
-		getServer().getPlayerManager().getPlayers().add(player);
+		getServer().getPlayerManager().addPlayer(player);
 
 		PacketSetLocalPlayer packet = new PacketSetLocalPlayer();
 		packet.set(entity.getEntityId());

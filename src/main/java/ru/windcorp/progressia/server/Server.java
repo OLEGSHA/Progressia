@@ -15,18 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
 
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.google.common.eventbus.EventBus;
+
 import ru.windcorp.jputil.functions.ThrowingRunnable;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.TaskQueue;
+import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.server.comms.ClientManager;
+import ru.windcorp.progressia.server.events.ServerEvent;
+import ru.windcorp.progressia.server.management.load.ChunkRequestDaemon;
+import ru.windcorp.progressia.server.management.load.EntityRequestDaemon;
+import ru.windcorp.progressia.server.management.load.LoadManager;
 import ru.windcorp.progressia.server.world.WorldLogic;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Change;
@@ -53,25 +60,32 @@ public class Server {
 
 	private final ClientManager clientManager;
 	private final PlayerManager playerManager;
-	private final ChunkManager chunkManager;
-	private final EntityManager entityManager;
+	private final LoadManager loadManager;
 
 	private final TaskQueue taskQueue = new TaskQueue(this::isServerThread);
+
+	private final EventBus eventBus = ReportingEventBus.create("ServerEvents");
 
 	private final TickingSettings tickingSettings = new TickingSettings();
 
 	public Server(WorldData world) {
-		this.world = new WorldLogic(world, this, w -> new TestPlanetGenerator("Test:PlanetGenerator", new Planet(4, 9.8f, 16f, 16f), w));
+		this.world = new WorldLogic(
+			world,
+			this,
+			w -> new TestPlanetGenerator("Test:PlanetGenerator", new Planet(4, 9.8f, 16f, 16f), w)
+		);
 		this.serverThread = new ServerThread(this);
 
 		this.clientManager = new ClientManager(this);
 		this.playerManager = new PlayerManager(this);
-		this.chunkManager = new ChunkManager(this);
-		this.entityManager = new EntityManager(this);
+		this.loadManager = new LoadManager(this);
 
-		schedule(chunkManager::tick);
-		schedule(entityManager::tick);
-		schedule(this::scheduleWorldTicks); // Must run after chunkManager so it only schedules chunks that hadn't unloaded
+		schedule(new ChunkRequestDaemon(loadManager.getChunkManager())::tick);
+		schedule(new EntityRequestDaemon(loadManager.getEntityManager())::tick);
+
+		// Must run after request daemons so it only schedules chunks that
+		// hadn't unloaded
+		schedule(this::scheduleWorldTicks);
 	}
 
 	/**
@@ -84,8 +98,8 @@ public class Server {
 	}
 
 	/**
-	 * Returns this server's {@link ClientManager}.
-	 * Use this to deal with communications, e.g. send packets.
+	 * Returns this server's {@link ClientManager}. Use this to deal with
+	 * communications, e.g. send packets.
 	 * 
 	 * @return the {@link ClientManager} that handles this server
 	 */
@@ -97,8 +111,8 @@ public class Server {
 		return playerManager;
 	}
 
-	public ChunkManager getChunkManager() {
-		return chunkManager;
+	public LoadManager getLoadManager() {
+		return loadManager;
 	}
 
 	/**
@@ -111,9 +125,9 @@ public class Server {
 	}
 
 	/**
-	 * Requests that the provided task is executed once on next server tick.
-	 * The task will be run in the main server thread. The task object is
-	 * discarded after execution.
+	 * Requests that the provided task is executed once on next server tick. The
+	 * task will be run in the main server thread. The task object is discarded
+	 * after execution.
 	 * <p>
 	 * Use this method to request a one-time (rare) action that must necessarily
 	 * happen in the main server thread, such as initialization tasks or
@@ -130,13 +144,12 @@ public class Server {
 	/**
 	 * Executes the tasks in the server main thread as soon as possible.
 	 * <p>
-	 * If this method is invoked in the server main thread, then the task is
-	 * run immediately (the method blocks until the task finishes). Otherwise
-	 * this method behaves exactly like {@link #invokeLater(Runnable)}.
+	 * If this method is invoked in the server main thread, then the task is run
+	 * immediately (the method blocks until the task finishes). Otherwise this
+	 * method behaves exactly like {@link #invokeLater(Runnable)}.
 	 * <p>
 	 * Use this method to make sure that a piece of code is run in the main
-	 * server
-	 * thread.
+	 * server thread.
 	 * 
 	 * @param task the task to run
 	 * @see #invokeLater(Runnable)
@@ -146,11 +159,7 @@ public class Server {
 		taskQueue.invokeNow(task);
 	}
 
-	public <E extends Exception> void waitAndInvoke(
-		ThrowingRunnable<E> task
-	)
-		throws InterruptedException,
-		E {
+	public <E extends Exception> void waitAndInvoke(ThrowingRunnable<E> task) throws InterruptedException, E {
 		taskQueue.waitAndInvoke(task);
 	}
 
@@ -170,6 +179,20 @@ public class Server {
 		serverThread.getTicker().requestEvaluation(evaluation);
 	}
 
+	public void subscribe(Object object) {
+		eventBus.register(object);
+	}
+
+	public void unsubscribe(Object object) {
+		eventBus.unregister(object);
+	}
+
+	public void postEvent(ServerEvent event) {
+		event.setServer(this);
+		eventBus.post(event);
+		event.setServer(null);
+	}
+
 	/**
 	 * Returns the duration of the last server tick. Server logic should assume
 	 * that this much in-world time has passed.
@@ -186,8 +209,8 @@ public class Server {
 
 	/**
 	 * Returns the {@link WorldAccessor} object for this server. Use the
-	 * provided accessor to
-	 * request common {@link Evaluation}s and {@link Change}s.
+	 * provided accessor to request common {@link Evaluation}s and
+	 * {@link Change}s.
 	 * 
 	 * @return a {@link WorldAccessor}
 	 * @see #requestChange(Change)
@@ -227,8 +250,7 @@ public class Server {
 
 	/**
 	 * Shuts the server down, disconnecting the clients with the provided
-	 * message.
-	 * This method blocks until the shutdown is complete.
+	 * message. This method blocks until the shutdown is complete.
 	 * 
 	 * @param message the message to send to the clients as the disconnect
 	 *                reason
@@ -245,10 +267,9 @@ public class Server {
 
 	/**
 	 * Returns an instance of {@link java.util.Random Random} that can be used
-	 * as a source of indeterministic
-	 * randomness. World generation and other algorithms that must have random
-	 * but reproducible results should
-	 * not use this.
+	 * as a source of indeterministic randomness. World generation and other
+	 * algorithms that must have random but reproducible results should not use
+	 * this.
 	 * 
 	 * @return a thread-safe indeterministic instance of
 	 *         {@link java.util.Random}.
