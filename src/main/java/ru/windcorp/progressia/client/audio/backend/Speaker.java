@@ -120,6 +120,7 @@ public class Speaker {
 	}
 
 	public void setAudioData(int audioData) {
+		stop();
 		this.audioData = audioData;
 		alSourcei(this.sourceData, AL_BUFFER, audioData);
 	}

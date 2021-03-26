@@ -31,9 +31,13 @@ public class Sound {
 	protected int timeLength = 0;
 	
 	protected SoundType soundType;
+	
+	public Sound(SoundType soundType) {
+		this.soundType = soundType;
+	}
 
 	public Sound(String id) {
-		soundType = AudioManager.getSoundType(id);
+		this(AudioRegistry.getInstance().get(id));
 	}
 	
 	public Sound(
@@ -50,9 +54,28 @@ public class Sound {
 		this.pitch = pitch;
 		this.gain = gain;
 	}
+	
+	public Sound(
+		SoundType soundType,
+		int timeLength,
+		Vec3 position,
+		Vec3 velocity,
+		float pitch,
+		float gain
+	) {
+		this(soundType);
+		this.position = position;
+		this.velocity = velocity;
+		this.pitch = pitch;
+		this.gain = gain;
+	}
+	
+	protected Speaker initSpeaker() {
+		return AudioManager.initSpeaker(soundType);
+	}
 
 	public void play(boolean loop) {
-		Speaker speaker = AudioManager.initSpeaker(soundType);
+		Speaker speaker = initSpeaker();
 		speaker.setGain(gain);
 		speaker.setPitch(pitch);
 		speaker.setPosition(position);
@@ -97,8 +120,8 @@ public class Sound {
 		return pitch;
 	}
 	
-	public int getTimeLength() {
-		return soundType.getTimeLength();
+	public double getDuration() {
+		return soundType.getDuration();
 	}
 
 }

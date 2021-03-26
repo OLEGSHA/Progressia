@@ -30,19 +30,24 @@ import org.lwjgl.BufferUtils;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 
-import ru.windcorp.progressia.Progressia;
 import ru.windcorp.progressia.common.util.Named;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class Resource extends Named {
+	
+	private final ResourceReader resourceReader;
 
-	public Resource(String name) {
+	public Resource(String name, ResourceReader resourceReader) {
 		super(name);
+		this.resourceReader = resourceReader;
 	}
 
 	public InputStream getInputStream() {
-		// TODO Do proper resource lookup
-		return Progressia.class.getClassLoader().getResourceAsStream(getName());
+		return getResourceReader().read(getName());
+	}
+	
+	public ResourceReader getResourceReader() {
+		return resourceReader;
 	}
 
 	public Reader getReader() {

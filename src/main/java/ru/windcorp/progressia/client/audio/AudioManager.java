@@ -23,6 +23,7 @@ import ru.windcorp.progressia.client.audio.backend.AudioReader;
 import ru.windcorp.progressia.client.audio.backend.Listener;
 import ru.windcorp.progressia.client.audio.backend.SoundType;
 import ru.windcorp.progressia.client.audio.backend.Speaker;
+import ru.windcorp.progressia.common.resource.Resource;
 
 import static org.lwjgl.openal.AL11.*;
 import static org.lwjgl.openal.ALC10.*;
@@ -40,7 +41,6 @@ public class AudioManager {
 
 	private static List<Speaker> soundSpeakers = new ArrayList<>(SOUNDS_NUM);
 	private static Speaker musicSpeaker;
-	private static ArrayList<SoundType> soundsBuffer = new ArrayList<>();
 
 	public static void initAL() {
 		String defaultDeviceName = alcGetString(
@@ -82,18 +82,6 @@ public class AudioManager {
 		return speaker;
 	}
 
-	private static SoundType findSoundType(String soundID) throws Exception {
-		for (SoundType s : soundsBuffer) {
-			if (s.getId().equals(soundID)) {
-				return s;
-			}
-		}
-		throw new Exception(
-			"ERROR: The selected sound is not loaded or" +
-				" not exists"
-		);
-	}
-
 	public static Speaker initSpeaker(SoundType st) {
 		Speaker speaker = getLastSpeaker();
 		try {
@@ -103,21 +91,10 @@ public class AudioManager {
 		}
 		return speaker;
 	}
-	
-	public static SoundType getSoundType(String id) {
-		SoundType st;
-		try {
-			st = findSoundType(id);
-		} catch (Exception ex) {
-			throw new RuntimeException();
-		}
-		return st;
-	}
 
-
-	public static Speaker initMusicSpeaker(String soundID) {
+	public static Speaker initMusicSpeaker(SoundType st) {
 		try {
-			findSoundType(soundID).initSpeaker(musicSpeaker);
+			st.initSpeaker(musicSpeaker);
 		} catch (Exception ex) {
 			throw new RuntimeException();
 		}
@@ -131,11 +108,11 @@ public class AudioManager {
 		}
 	}
 
-	public static void loadSound(String path, String id, AudioFormat format) {
+	public static void loadSound(Resource resource, String id, AudioFormat format) {
 		if (format == AudioFormat.MONO) {
-			soundsBuffer.add(AudioReader.readAsMono(path, id));
+			AudioRegistry.getInstance().register(AudioReader.readAsMono(resource, id));
 		} else {
-			soundsBuffer.add(AudioReader.readAsStereo(path, id));
+			AudioRegistry.getInstance().register(AudioReader.readAsStereo(resource, id));
 		}
 	}
 

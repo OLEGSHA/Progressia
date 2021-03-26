@@ -287,6 +287,15 @@ public class TestContent {
 			)
 		);
 		logic.register(ControlLogic.of("Test:PlaceTile", TestContent::onTilePlaceReceived));
+		
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:StartNextMusic",
+				KeyEvent.class,
+				TestMusicPlayer::startNextNow,
+				KeyMatcher.of(GLFW.GLFW_KEY_M).matcher()
+			)
+		);
 	}
 
 	private static void register(BlockData x) {
