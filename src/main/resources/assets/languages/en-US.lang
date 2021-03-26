@@ -21,4 +21,4 @@ LayerTestGUI.SelectedBlockDisplay = %s Block: %s
 LayerTestGUI.SelectedTileDisplay = %s Tile:  %s
 LayerTestGUI.PlacementModeHint = (Blocks %s Tiles: Ctrl + Mouse Wheel)
 LayerTestGUI.IsFullscreen = Fullscreen:     %5s (F11)
-LayerTestGUI.IsVSYNC = VSYNC:          %5s (F12)
+LayerTestGUI.IsVSync = VSync:          %5s (F12)

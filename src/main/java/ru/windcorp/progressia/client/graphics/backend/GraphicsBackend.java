@@ -39,7 +39,7 @@ public class GraphicsBackend {
 	private static boolean faceCullingEnabled = false;
 
 	private static boolean isFullscreen = false;
-	private static boolean isVSYNC = false;
+	private static boolean vSyncEnabled = false;
 	private static boolean isGLFWInitialized = false;
 	private static boolean isOpenGLInitialized = false;
 
@@ -153,8 +153,8 @@ public class GraphicsBackend {
 		return isFullscreen;
 	}
 
-	public static boolean isVSYNC() {
-		return isVSYNC;
+	public static boolean isVSyncEnabled() {
+		return vSyncEnabled;
 	}
 
 	public static void setFullscreen() {
@@ -183,9 +183,9 @@ public class GraphicsBackend {
 		isFullscreen = false;
 	}
 
-	public static void setVSYNC(boolean state) {
-		glfwSwapInterval(state ? 1 : 0);
-		isVSYNC = state;
+	public static void setVSyncEnabled(boolean enable) {
+		glfwSwapInterval(enable ? 1 : 0);
+		vSyncEnabled = enable;
 	}
 
 	public static int getRefreshRate() {

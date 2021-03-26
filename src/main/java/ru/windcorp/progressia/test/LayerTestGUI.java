@@ -121,9 +121,9 @@ public class LayerTestGUI extends GUILayer {
 
 		panel.addChild(
 			new Label(
-				"VSYNCDisplay",
+				"VSyncDisplay",
 				font,
-				tmp_dynFormat("LayerTestGUI.IsVSYNC", GraphicsBackend::isVSYNC)
+				tmp_dynFormat("LayerTestGUI.IsVSync", GraphicsBackend::isVSyncEnabled)
 			)
 		);
 

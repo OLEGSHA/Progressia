@@ -197,7 +197,7 @@ public class TestPlayerControls {
 		case GLFW.GLFW_KEY_F12:
 			if (!event.isPress())
 				return false;
-			GraphicsBackend.setVSYNC(!GraphicsBackend.isVSYNC());
+			GraphicsBackend.setVSyncEnabled(!GraphicsBackend.isVSyncEnabled());
 			updateGUI();
 			break;
 

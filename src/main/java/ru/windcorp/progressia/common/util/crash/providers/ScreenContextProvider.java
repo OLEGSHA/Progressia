@@ -19,7 +19,6 @@
 package ru.windcorp.progressia.common.util.crash.providers;
 
 import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
-import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.common.util.crash.ContextProvider;
 
 import java.util.Map;
