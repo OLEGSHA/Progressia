@@ -20,15 +20,20 @@ package ru.windcorp.progressia.test.gen.planet;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.WorldLogic;
 import ru.windcorp.progressia.server.world.generation.AbstractWorldGenerator;
 
 public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
+	
+	private final Server server;
 	
 	private final Planet planet;
 	
@@ -38,6 +43,7 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 	public TestPlanetGenerator(String id, Planet planet, WorldLogic world) {
 		super(id, Boolean.class, "Test:PlanetGravityModel");
 		
+		this.server = world.getServer();
 		this.planet = planet;
 		
 		TestPlanetGravityModel model = (TestPlanetGravityModel) this.getGravityModel();
@@ -71,14 +77,33 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 
 	@Override
 	protected boolean checkIsChunkReady(Boolean hint) {
-		return hint;
+		return hint == Boolean.TRUE; // Avoid NPE
 	}
 
 	@Override
 	public ChunkData generate(Vec3i chunkPos, WorldData world) {
-		ChunkData chunk = terrainGenerator.generateTerrain(chunkPos, world);
-		scatterGenerator.generateScatter(chunk);
+		VectorUtil.iterateCuboidAround(chunkPos, 3, r -> conjureTerrain(r, world));
+		ChunkData chunk = world.getChunk(chunkPos);
+		
+		if (!isChunkReady(chunk.getGenerationHint())) {
+			scatterGenerator.generateScatter(chunk);
+		}
+		
 		return chunk;
+	}
+	
+	private void conjureTerrain(Vec3i chunkPos, WorldData world) {
+		ChunkData chunk = world.getChunk(chunkPos);
+		
+		if (chunk == null) {
+			server.getLoadManager().getChunkManager().loadChunk(chunkPos);
+			chunk = world.getChunk(chunkPos);
+		}
+
+		if (chunk == null) {
+			chunk = terrainGenerator.generateTerrain(chunkPos, world);
+			world.addChunk(chunk);
+		}
 	}
 
 }

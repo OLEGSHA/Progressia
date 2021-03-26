@@ -106,9 +106,7 @@ public class WorldLogic
 	}
 
 	public ChunkData generate(Vec3i chunkPos) {
-		ChunkData chunk = getGenerator().generate(chunkPos, getData());
-		getData().addChunk(chunk);
-		return chunk;
+		return getGenerator().generate(chunkPos, getData());
 	}
 
 	public ChunkLogic getChunk(ChunkData chunkData) {

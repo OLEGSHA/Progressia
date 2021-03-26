@@ -48,9 +48,11 @@ class PlanetTerrainGenerator {
 
 		FloatRangeMap<TerrainLayer> layers = new ArrayFloatRangeMap<>();
 		BlockData granite = BlockDataRegistry.getInstance().get("Test:GraniteMonolith");
+		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 		layers.put(Float.NEGATIVE_INFINITY, 0, (n, w, d, r, c) -> air);
-		layers.put(0, Float.POSITIVE_INFINITY, (n, w, d, r, c) -> granite);
+		layers.put(0, 4, (n, w, d, r, c) -> dirt);
+		layers.put(4, Float.POSITIVE_INFINITY, (n, w, d, r, c) -> granite);
 
 		this.surfaceGenerator = new SurfaceTerrainGenerator((f, n, w) -> heightMap.get(f, n, w) + generator.getPlanet().getRadius(), layers);
 	}

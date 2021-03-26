@@ -17,7 +17,9 @@
  */
 package ru.windcorp.progressia.test.gen.planet;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.test.gen.surface.SurfaceScatterGenerator;
 
 public class PlanetScatterGenerator {
@@ -35,6 +37,7 @@ public class PlanetScatterGenerator {
 	}
 	
 	public void generateScatter(ChunkData chunk) {
+		chunk.setBlock(new Vec3i(8, 8, 8), BlockDataRegistry.getInstance().get("Test:Log"), false);
 		surfaceGenerator.generateScatter(chunk);
 	}
 

@@ -90,7 +90,7 @@ public class ChunkManager {
 	public LoadResult loadOrGenerateChunk(Vec3i chunkPos) {
 		LoadResult loadResult = loadChunk(chunkPos);
 
-		if (loadResult == LoadResult.NOT_LOADED) {
+		if (loadResult == LoadResult.NOT_LOADED || !getServer().getWorld().getChunk(chunkPos).isReady()) {
 			getServer().getWorld().generate(chunkPos);
 			return LoadResult.GENERATED;
 		} else {

@@ -78,7 +78,9 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 
 	@Override
 	public ChunkData generate(Vec3i chunkPos, WorldData world) {
-		return generateUnpopulated(chunkPos, world);
+		ChunkData chunk = generateUnpopulated(chunkPos, world);
+		world.addChunk(chunk);
+		return chunk;
 	}
 
 	private ChunkData generateUnpopulated(Vec3i chunkPos, WorldData world) {

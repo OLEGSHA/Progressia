@@ -140,7 +140,13 @@ public class ChunkRequestDaemon {
 			ChunkUnloadRequest request = it.next();
 			
 			if (request.getUnloadAt() < now) {
+
 				it.remove();
+				
+				if (requested.contains(request.getChunkPos())) {
+					continue; // do not unload chunks that became requested
+				}
+				
 				getChunkManager().unloadChunk(request.getChunkPos());
 			}
 		}
