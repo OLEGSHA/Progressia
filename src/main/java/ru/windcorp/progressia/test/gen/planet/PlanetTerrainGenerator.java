@@ -24,7 +24,6 @@ import ru.windcorp.progressia.common.util.FloatRangeMap;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.test.gen.TerrainLayer;
@@ -61,8 +60,8 @@ class PlanetTerrainGenerator {
 		return parent;
 	}
 
-	public ChunkData generateTerrain(Vec3i chunkPos, WorldData world) {
-		ChunkData chunk = new ChunkData(chunkPos, world);
+	public ChunkData generateTerrain(Vec3i chunkPos) {
+		ChunkData chunk = new ChunkData(chunkPos, getGenerator().getWorldData());
 
 		if (isOrdinaryChunk(chunkPos)) {
 			generateOrdinaryTerrain(chunk);

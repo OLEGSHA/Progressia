@@ -41,6 +41,7 @@ public class ChunkRequestDaemon {
 	private final ChunkSet loaded;
 	private final ChunkSet requested = ChunkSets.newHashSet();
 	private final ChunkSet toLoad = ChunkSets.newHashSet();
+	private final ChunkSet toGenerate = ChunkSets.newHashSet();
 	private final ChunkSet toRequestUnload = ChunkSets.newHashSet();
 	
 	private final Collection<Vec3i> buffer = new ArrayList<>();
@@ -118,6 +119,9 @@ public class ChunkRequestDaemon {
 		toLoad.forEach(getChunkManager()::loadOrGenerateChunk);
 		toLoad.clear();
 		
+		toGenerate.forEach(getChunkManager()::loadOrGenerateChunk);
+		toGenerate.clear();
+		
 		unloadScheduledChunks();
 	}
 	
@@ -161,10 +165,15 @@ public class ChunkRequestDaemon {
 
 	private void sendChunks(PlayerVision vision) {
 		vision.getRequestedChunks().forEachIn(getServer().getWorld(), chunk -> {
-			if (!chunk.isReady())
+			if (!chunk.isReady()) {
+				toGenerate.add(chunk);
 				return;
-			if (vision.isChunkVisible(chunk.getPosition()))
+			}
+			
+			if (vision.isChunkVisible(chunk.getPosition())) {
 				return;
+			}
+			
 			buffer.add(chunk.getPosition());
 		});
 		

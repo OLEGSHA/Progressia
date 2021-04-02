@@ -21,9 +21,10 @@ package ru.windcorp.progressia.server.world;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
+import glm.Glm;
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListeners;
 import ru.windcorp.progressia.common.world.WorldData;
@@ -52,11 +53,11 @@ public class WorldLogic
 
 	private final Evaluation tickEntitiesTask = new TickEntitiesTask();
 
-	public WorldLogic(WorldData data, Server server, Function<WorldLogic, WorldGenerator> worldGeneratorConstructor) {
+	public WorldLogic(WorldData data, Server server, WorldGenerator generator) {
 		this.data = data;
 		this.server = server;
 		
-		this.generator = worldGeneratorConstructor.apply(this);
+		this.generator = generator;
 		data.setGravityModel(getGenerator().getGravityModel());
 
 		data.addListener(new WorldDataListener() {
@@ -106,7 +107,38 @@ public class WorldLogic
 	}
 
 	public ChunkData generate(Vec3i chunkPos) {
-		return getGenerator().generate(chunkPos, getData());
+		ChunkData chunk = getGenerator().generate(chunkPos);
+		
+		if (!Glm.equals(chunkPos, chunk.getPosition())) {
+			throw CrashReports.report(null, "Generator %s has generated a chunk at (%d; %d; %d) when requested to generate a chunk at (%d; %d; %d)",
+				getGenerator(),
+				chunk.getX(), chunk.getY(), chunk.getZ(),
+				chunkPos.x,   chunkPos.y,   chunkPos.z
+			);
+		}
+		
+		if (getData().getChunk(chunk.getPosition()) != chunk) {
+			if (isChunkLoaded(chunkPos)) {
+				throw CrashReports.report(null, "Generator %s has returned a chunk different to the chunk that is located at (%d; %d; %d)",
+					getGenerator(),
+					chunkPos.x, chunkPos.y, chunkPos.z
+				);
+			} else {
+				throw CrashReports.report(null, "Generator %s has returned a chunk that is not loaded when requested to generate a chunk at (%d; %d; %d)",
+					getGenerator(),
+					chunkPos.x, chunkPos.y, chunkPos.z
+				);
+			}
+		}
+		
+		if (!getChunk(chunk).isReady()) {
+			throw CrashReports.report(null, "Generator %s has returned a chunk that is not ready when requested to generate a chunk at (%d; %d; %d)",
+				getGenerator(),
+				chunkPos.x, chunkPos.y, chunkPos.z
+			);
+		}
+		
+		return chunk;
 	}
 
 	public ChunkLogic getChunk(ChunkData chunkData) {

@@ -26,24 +26,19 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.world.WorldLogic;
 import ru.windcorp.progressia.server.world.generation.AbstractWorldGenerator;
 
 public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
-	
-	private final Server server;
 	
 	private final Planet planet;
 	
 	private final PlanetTerrainGenerator terrainGenerator;
 	private final PlanetFeatureGenerator featureGenerator;
 
-	public TestPlanetGenerator(String id, Planet planet, WorldLogic world) {
-		super(id, Boolean.class, "Test:PlanetGravityModel");
+	public TestPlanetGenerator(String id, Server server, Planet planet) {
+		super(id, server, Boolean.class, "Test:PlanetGravityModel");
 		
-		this.server = world.getServer();
 		this.planet = planet;
 		
 		TestPlanetGravityModel model = (TestPlanetGravityModel) this.getGravityModel();
@@ -81,9 +76,9 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 	}
 
 	@Override
-	public ChunkData generate(Vec3i chunkPos, WorldData world) {
-		VectorUtil.iterateCuboidAround(chunkPos, 3, r -> conjureTerrain(r, world));
-		ChunkData chunk = world.getChunk(chunkPos);
+	public ChunkData generate(Vec3i chunkPos) {
+		VectorUtil.iterateCuboidAround(chunkPos, 3, r -> conjureTerrain(r));
+		ChunkData chunk = getWorldData().getChunk(chunkPos);
 		
 		if (!isChunkReady(chunk.getGenerationHint())) {
 			featureGenerator.generateFeatures(chunk);
@@ -92,17 +87,17 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 		return chunk;
 	}
 	
-	private void conjureTerrain(Vec3i chunkPos, WorldData world) {
-		ChunkData chunk = world.getChunk(chunkPos);
+	private void conjureTerrain(Vec3i chunkPos) {
+		ChunkData chunk = getWorldData().getChunk(chunkPos);
 		
 		if (chunk == null) {
-			server.getLoadManager().getChunkManager().loadChunk(chunkPos);
-			chunk = world.getChunk(chunkPos);
+			getServer().getLoadManager().getChunkManager().loadChunk(chunkPos);
+			chunk = getWorldData().getChunk(chunkPos);
 		}
 
 		if (chunk == null) {
-			chunk = terrainGenerator.generateTerrain(chunkPos, world);
-			world.addChunk(chunk);
+			chunk = terrainGenerator.generateTerrain(chunkPos);
+			getWorldData().addChunk(chunk);
 		}
 	}
 

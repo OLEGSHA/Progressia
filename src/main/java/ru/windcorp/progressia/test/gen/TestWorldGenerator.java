@@ -37,18 +37,18 @@ import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
-import ru.windcorp.progressia.server.world.WorldLogic;
+import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.generation.AbstractWorldGenerator;
 
 public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 
 	private final TestTerrainGenerator terrainGen;
 
-	public TestWorldGenerator(WorldLogic world) {
-		super("Test:WorldGenerator", Boolean.class, "Test:TheGravityModel");
-		this.terrainGen = new TestTerrainGenerator(this, world);
+	public TestWorldGenerator(Server server) {
+		super("Test:WorldGenerator", server, Boolean.class, "Test:TheGravityModel");
+		this.terrainGen = new TestTerrainGenerator(this, server.getWorld());
 
-		world.getData().addListener(new WorldDataListener() {
+		getWorldData().addListener(new WorldDataListener() {
 			@Override
 			public void onChunkLoaded(WorldData world, ChunkData chunk) {
 				findAndPopulate(chunk.getPosition(), world);
@@ -77,9 +77,9 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 	}
 
 	@Override
-	public ChunkData generate(Vec3i chunkPos, WorldData world) {
-		ChunkData chunk = generateUnpopulated(chunkPos, world);
-		world.addChunk(chunk);
+	public ChunkData generate(Vec3i chunkPos) {
+		ChunkData chunk = generateUnpopulated(chunkPos, getWorldData());
+		getWorldData().addChunk(chunk);
 		return chunk;
 	}
 

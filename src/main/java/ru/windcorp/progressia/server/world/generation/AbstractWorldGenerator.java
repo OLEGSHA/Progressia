@@ -27,17 +27,23 @@ import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.GravityModelRegistry;
+import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.world.WorldLogic;
 
 public abstract class AbstractWorldGenerator<H> extends WorldGenerator {
 
 	private final Class<H> hintClass;
 	
 	private final GravityModel gravityModel;
+	
+	private final Server server;
 
-	public AbstractWorldGenerator(String id, Class<H> hintClass, String gravityModelId) {
+	public AbstractWorldGenerator(String id, Server server, Class<H> hintClass, String gravityModelId) {
 		super(id);
 		this.hintClass = Objects.requireNonNull(hintClass, "hintClass");
 		this.gravityModel = GravityModelRegistry.getInstance().create(Objects.requireNonNull(gravityModelId, "gravityModelId"));
+		this.server = server;
 		
 		if (this.gravityModel == null) {
 			throw new IllegalArgumentException("Gravity model with ID \"" + gravityModelId + "\" not found");
@@ -76,6 +82,21 @@ public abstract class AbstractWorldGenerator<H> extends WorldGenerator {
 	@Override
 	public GravityModel getGravityModel() {
 		return gravityModel;
+	}
+	
+	@Override
+	public Server getServer() {
+		return server;
+	}
+	
+	@Override
+	public WorldLogic getWorldLogic() {
+		return server.getWorld();
+	}
+	
+	@Override
+	public WorldData getWorldData() {
+		return server.getWorld().getData();
 	}
 
 }

@@ -72,7 +72,7 @@ public class Server {
 		this.world = new WorldLogic(
 			world,
 			this,
-			w -> new TestPlanetGenerator("Test:PlanetGenerator", new Planet(4, 9.8f, 16f, 16f), w)
+			new TestPlanetGenerator("Test:PlanetGenerator", this, new Planet(4, 9.8f, 16f, 16f))
 		);
 		this.serverThread = new ServerThread(this);
 

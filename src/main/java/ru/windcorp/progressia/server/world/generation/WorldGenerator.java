@@ -29,6 +29,8 @@ import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.world.WorldLogic;
 
 public abstract class WorldGenerator extends Namespaced {
 
@@ -37,7 +39,7 @@ public abstract class WorldGenerator extends Namespaced {
 		// package-private constructor; extend AbstractWorldGeneration
 	}
 
-	public abstract ChunkData generate(Vec3i chunkPos, WorldData world);
+	public abstract ChunkData generate(Vec3i chunkPos);
 
 	public abstract Object readGenerationHint(DataInputStream input) throws IOException, DecodingException;
 
@@ -48,5 +50,9 @@ public abstract class WorldGenerator extends Namespaced {
 	public abstract GravityModel getGravityModel();
 	
 	public abstract Vec3 suggestSpawnLocation();
+	
+	public abstract Server getServer();
+	public abstract WorldLogic getWorldLogic();
+	public abstract WorldData getWorldData();
 
 }
