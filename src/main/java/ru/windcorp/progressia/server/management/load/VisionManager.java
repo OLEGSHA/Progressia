@@ -45,13 +45,11 @@ public class VisionManager {
 	
 	@Subscribe
 	private void onPlayerJoined(PlayerJoinedEvent event) {
-		System.out.println("VisionManager.onPlayerJoined()");
 		getVision(event.getPlayer(), true);
 	}
 	
 	@Subscribe
 	private void onPlayerLeft(PlayerLeftEvent event) {
-		System.out.println("VisionManager.onPlayerLeft()");
 		visions.remove(event.getPlayer());
 	}
 

@@ -45,7 +45,6 @@ public class PlayerManager {
 
 	public void addPlayer(Player player) {
 		this.players.add(player);
-		System.out.println("PlayerManager.addPlayer()");
 		getServer().postEvent(new PlayerJoinedEvent.Immutable(getServer(), player));
 	}
 

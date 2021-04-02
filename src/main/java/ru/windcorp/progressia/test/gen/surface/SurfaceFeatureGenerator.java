@@ -17,11 +17,28 @@
  */
 package ru.windcorp.progressia.test.gen.surface;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
+
+import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.world.ChunkData;
 
-public class SurfaceScatterGenerator {
+public class SurfaceFeatureGenerator {
 	
-	public void generateScatter(ChunkData chunk) {
+	private final Collection<SurfaceFeature> features; // TODO make ordered
+	
+	public SurfaceFeatureGenerator(Collection<SurfaceFeature> features) {
+		this.features = new ArrayList<>(features);
+	}
+	
+	public void generateFeatures(ChunkData chunk) {
+		Random random = new Random(CoordinatePacker.pack3IntsIntoLong(chunk.getPosition()) /* ^ seed*/);
+		
+		for (SurfaceFeature feature : features) {
+			feature.process(chunk, random);
+		}
+		
 		chunk.setGenerationHint(true);
 	}
 

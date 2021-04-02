@@ -38,7 +38,7 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 	private final Planet planet;
 	
 	private final PlanetTerrainGenerator terrainGenerator;
-	private final PlanetScatterGenerator scatterGenerator;
+	private final PlanetFeatureGenerator featureGenerator;
 
 	public TestPlanetGenerator(String id, Planet planet, WorldLogic world) {
 		super(id, Boolean.class, "Test:PlanetGravityModel");
@@ -50,7 +50,7 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 		model.configure(planet.getGravityModelSettings());
 		
 		this.terrainGenerator = new PlanetTerrainGenerator(this);
-		this.scatterGenerator = new PlanetScatterGenerator(this);
+		this.featureGenerator = new PlanetFeatureGenerator(this);
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 		ChunkData chunk = world.getChunk(chunkPos);
 		
 		if (!isChunkReady(chunk.getGenerationHint())) {
-			scatterGenerator.generateScatter(chunk);
+			featureGenerator.generateFeatures(chunk);
 		}
 		
 		return chunk;

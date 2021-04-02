@@ -15,30 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.planet;
+package ru.windcorp.progressia.test.gen.surface;
 
-import glm.vec._3.i.Vec3i;
+import java.util.Random;
+
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
-import ru.windcorp.progressia.test.gen.surface.SurfaceScatterGenerator;
 
-public class PlanetScatterGenerator {
-	
-	private final TestPlanetGenerator parent;
-	private final SurfaceScatterGenerator surfaceGenerator;
+public abstract class SurfaceFeature extends Namespaced {
 
-	public PlanetScatterGenerator(TestPlanetGenerator generator) {
-		this.parent = generator;
-		this.surfaceGenerator = new SurfaceScatterGenerator();
+	public SurfaceFeature(String id) {
+		super(id);
 	}
 	
-	public TestPlanetGenerator getGenerator() {
-		return parent;
-	}
-	
-	public void generateScatter(ChunkData chunk) {
-		chunk.setBlock(new Vec3i(8, 8, 8), BlockDataRegistry.getInstance().get("Test:Log"), false);
-		surfaceGenerator.generateScatter(chunk);
-	}
+	public abstract void process(ChunkData chunk, Random random);
 
 }
