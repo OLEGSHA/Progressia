@@ -25,14 +25,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.VectorUtil;
+
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.generic.GenericChunk;
+import ru.windcorp.progressia.common.world.generic.GenericWritableChunk;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
@@ -42,7 +41,7 @@ import ru.windcorp.progressia.common.world.tile.TileReference;
 import ru.windcorp.progressia.common.world.tile.TileStackIsFullException;
 
 public class ChunkData
-	implements GenericChunk<ChunkData, BlockData, TileData, TileDataStack> {
+	implements GenericWritableChunk<ChunkData, BlockData, TileData, TileDataStack> {
 
 	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
 	public static final int CHUNK_RADIUS = BLOCKS_PER_CHUNK / 2;
@@ -83,6 +82,7 @@ public class ChunkData
 		return blocks[getBlockIndex(posInChunk)];
 	}
 
+	@Override
 	public void setBlock(Vec3i posInChunk, BlockData block, boolean notify) {
 		BlockData previous = blocks[getBlockIndex(posInChunk)];
 		blocks[getBlockIndex(posInChunk)] = block;
@@ -95,6 +95,7 @@ public class ChunkData
 		}
 	}
 	
+	@Override
 	public void setBlockRel(Vec3i relativeBlockInChunk, BlockData block, boolean notify) {
 		Vec3i absoluteBlockInChunk = Vectors.grab3i();
 		resolve(relativeBlockInChunk, absoluteBlockInChunk);
@@ -168,62 +169,12 @@ public class ChunkData
 	}
 
 	private static void checkLocalCoordinates(Vec3i posInChunk) {
-		if (!isInBounds(posInChunk)) {
+		if (!GenericChunk.containsBiC(posInChunk)) {
 			throw new IllegalCoordinatesException(
 				"Coordinates (" + posInChunk.x + "; " + posInChunk.y + "; " + posInChunk.z + ") "
 					+ "are not legal chunk coordinates"
 			);
 		}
-	}
-
-	public static boolean isInBounds(Vec3i posInChunk) {
-		return posInChunk.x >= 0 && posInChunk.x < BLOCKS_PER_CHUNK &&
-			posInChunk.y >= 0 && posInChunk.y < BLOCKS_PER_CHUNK &&
-			posInChunk.z >= 0 && posInChunk.z < BLOCKS_PER_CHUNK;
-	}
-
-	public boolean isBorder(Vec3i blockInChunk, BlockFace face) {
-		final int min = 0, max = BLOCKS_PER_CHUNK - 1;
-		AbsFace absFace = face.resolve(getUp());
-		return (blockInChunk.x == min && absFace == AbsFace.NEG_X) ||
-			(blockInChunk.x == max && absFace == AbsFace.POS_X) ||
-			(blockInChunk.y == min && absFace == AbsFace.NEG_Y) ||
-			(blockInChunk.y == max && absFace == AbsFace.POS_Y) ||
-			(blockInChunk.z == min && absFace == AbsFace.NEG_Z) ||
-			(blockInChunk.z == max && absFace == AbsFace.POS_Z);
-	}
-
-	public void forEachBlock(Consumer<Vec3i> action) {
-		VectorUtil.iterateCuboid(
-			0,
-			0,
-			0,
-			BLOCKS_PER_CHUNK,
-			BLOCKS_PER_CHUNK,
-			BLOCKS_PER_CHUNK,
-			action
-		);
-	}
-
-	public void forEachTileStack(Consumer<TileDataStack> action) {
-		forEachBlock(blockInChunk -> {
-			for (AbsFace face : AbsFace.getFaces()) {
-				TileDataStack stack = getTilesOrNull(blockInChunk, face);
-				if (stack == null)
-					continue;
-				action.accept(stack);
-			}
-		});
-	}
-
-	/**
-	 * Iterates over all tiles in this chunk.
-	 * 
-	 * @param action the action to perform. {@code TileLocation} refers to each
-	 *               tile using its primary block
-	 */
-	public void forEachTile(BiConsumer<TileDataStack, TileData> action) {
-		forEachTileStack(stack -> stack.forEach(tileData -> action.accept(stack, tileData)));
 	}
 
 	public WorldData getWorld() {

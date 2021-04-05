@@ -38,6 +38,7 @@ import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
+import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.io.ChunkCodec;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
@@ -124,7 +125,7 @@ public class TestChunkCodec extends ChunkCodec {
 
 	private void readBlocks(DataInput input, BlockData[] blockPalette, ChunkData chunk) throws IOException {
 		try {
-			chunk.forEachBiC(guard(v -> {
+			GenericChunk.forEachBiC(guard(v -> {
 				chunk.setBlock(v, blockPalette[input.readInt()], false);
 			}));
 		} catch (UncheckedIOException e) {
@@ -171,7 +172,7 @@ public class TestChunkCodec extends ChunkCodec {
 
 	private Palette<BlockData> createBlockPalette(ChunkData chunk) {
 		Palette<BlockData> blockPalette = new Palette<>();
-		chunk.forEachBiC(v -> blockPalette.add(chunk.getBlock(v)));
+		GenericChunk.forEachBiC(v -> blockPalette.add(chunk.getBlock(v)));
 		return blockPalette;
 	}
 
@@ -199,7 +200,7 @@ public class TestChunkCodec extends ChunkCodec {
 
 	private void writeBlocks(ChunkData chunk, Palette<BlockData> blockPalette, DataOutput output) throws IOException {
 		try {
-			chunk.forEachBiC(guard(v -> {
+			GenericChunk.forEachBiC(guard(v -> {
 				output.writeInt(blockPalette.getNid(chunk.getBlock(v)));
 			}));
 		} catch (UncheckedIOException e) {

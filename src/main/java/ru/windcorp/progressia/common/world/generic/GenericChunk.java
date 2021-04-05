@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.generic;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import glm.Glm;
@@ -29,37 +30,90 @@ import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.AxisRotations;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 
+/**
+ * An unmodifiable chunk representation. Per default, it is usually one of
+ * {@link ru.windcorp.progressia.common.world.ChunkData ChunkData},
+ * {@link ru.windcorp.progressia.client.world.ChunkRender ChunkRender} or
+ * {@link ru.windcorp.progressia.server.world.ChunkLogic ChunkLogic}, but this
+ * interface may be implemented differently for various reasons.
+ * <p>
+ * A generic chunk contains {@linkplain GenericBlock blocks} and
+ * {@linkplain GenericTileStack tile stacks} and is characterized by its
+ * location. It also bears a discrete up direction. Note that no
+ * {@linkplain GenericWorld world} object is directly accessible through this
+ * interface.
+ * <p>
+ * This interface defines the most common methods for examining a chunk and
+ * implements many of them as default methods. It also contains several static
+ * methods useful when dealing with chunks. {@code GenericChunk} does not
+ * provide a way to modify a chunk; use {@link GenericWritableChunk} methods
+ * when applicable.
+ * 
+ * @param <Self> a reference to itself (required to properly reference a
+ *               {@link GenericTileStack})
+ * @param <B>    block type
+ * @param <T>    tile type
+ * @param <TS>   tile stack type
+ * @author javapony
+ */
 public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B extends GenericBlock, T extends GenericTile, TS extends GenericTileStack<TS, T, Self>> {
 
+	/**
+	 * The count of blocks in a side of a chunk. This is guaranteed to be a
+	 * power of two. This is always equal to {@link Coordinates#CHUNK_SIZE}.
+	 */
 	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
 
+	/*
+	 * Abstract methods
+	 */
+
+	/**
+	 * Returns the position of this chunk in {@linkplain Coordinates#chunk
+	 * coordinates of chunk}. The returned object must not be modified.
+	 * 
+	 * @return this chunk's position
+	 */
 	Vec3i getPosition();
-	
+
+	/**
+	 * Returns the discrete up direction for this chunk.
+	 * 
+	 * @return this chunk's discrete up direction
+	 */
 	AbsFace getUp();
 
+	/**
+	 * Retrieves the block at the location specified by its
+	 * {@linkplain Coordinates#blockInChunk chunk coordinates}. During chunk
+	 * generation it may be {@code null}.
+	 * 
+	 * @param blockInChunk local coordinates of the block to fetch
+	 * @return the block at the requested location or {@code null}.
+	 */
 	B getBlock(Vec3i blockInChunk);
 
 	TS getTiles(Vec3i blockInChunk, BlockFace face);
 
 	boolean hasTiles(Vec3i blockInChunk, BlockFace face);
-	
+
 	default Vec3i resolve(Vec3i relativeBlockInChunk, Vec3i output) {
 		if (output == null) {
 			output = new Vec3i();
 		}
-		
+
 		final int offset = BLOCKS_PER_CHUNK - 1;
-		
+
 		output.set(relativeBlockInChunk.x, relativeBlockInChunk.y, relativeBlockInChunk.z);
 		output.mul(2).sub(offset);
-		
+
 		AxisRotations.resolve(output, getUp(), output);
-		
+
 		output.add(offset).div(2);
-		
+
 		return output;
 	}
-	
+
 	default B getBlockRel(Vec3i relativeBlockInChunk) {
 		Vec3i absoluteBlockInChunk = Vectors.grab3i();
 		resolve(relativeBlockInChunk, absoluteBlockInChunk);
@@ -67,7 +121,7 @@ public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B exten
 		Vectors.release(absoluteBlockInChunk);
 		return result;
 	}
-	
+
 	default TS getTilesRel(Vec3i relativeBlockInChunk, BlockFace face) {
 		Vec3i absoluteBlockInChunk = Vectors.grab3i();
 		resolve(relativeBlockInChunk, absoluteBlockInChunk);
@@ -75,7 +129,7 @@ public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B exten
 		Vectors.release(absoluteBlockInChunk);
 		return result;
 	}
-	
+
 	default boolean hasTilesRel(Vec3i relativeBlockInChunk, BlockFace face) {
 		Vec3i absoluteBlockInChunk = Vectors.grab3i();
 		resolve(relativeBlockInChunk, absoluteBlockInChunk);
@@ -83,7 +137,7 @@ public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B exten
 		Vectors.release(absoluteBlockInChunk);
 		return result;
 	}
-	
+
 	default int getX() {
 		return getPosition().x;
 	}
@@ -119,150 +173,100 @@ public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B exten
 	default int getMaxZ() {
 		return Coordinates.getInWorld(getZ(), BLOCKS_PER_CHUNK - 1);
 	}
-	
+
 	default Vec3i getMinBIW(Vec3i output) {
 		if (output == null) {
 			output = new Vec3i();
 		}
-		
+
 		output.set(getMinX(), getMinY(), getMinZ());
-		
+
 		return output;
 	}
-	
+
 	default Vec3i getMaxBIW(Vec3i output) {
 		if (output == null) {
 			output = new Vec3i();
 		}
-		
+
 		output.set(getMaxX(), getMaxY(), getMaxZ());
-		
+
 		return output;
 	}
-	
+
 	default Vec3i getMinBIWRel(Vec3i output) {
 		if (output == null) {
 			output = new Vec3i();
 		}
-		
+
 		Vec3i absMin = getMinBIW(Vectors.grab3i());
 		Vec3i absMax = getMaxBIW(Vectors.grab3i());
-		
+
 		AxisRotations.relativize(absMin, getUp(), absMin);
 		AxisRotations.relativize(absMax, getUp(), absMax);
-		
+
 		Glm.min(absMin, absMax, output);
-		
+
 		Vectors.release(absMax);
 		Vectors.release(absMin);
-		
+
 		return output;
 	}
-	
+
 	default Vec3i getMaxBIWRel(Vec3i output) {
 		if (output == null) {
 			output = new Vec3i();
 		}
-		
+
 		Vec3i absMin = getMinBIW(Vectors.grab3i());
 		Vec3i absMax = getMaxBIW(Vectors.grab3i());
-		
+
 		AxisRotations.relativize(absMin, getUp(), absMin);
 		AxisRotations.relativize(absMax, getUp(), absMax);
-		
+
 		Glm.max(absMin, absMax, output);
-		
+
 		Vectors.release(absMax);
 		Vectors.release(absMin);
-		
+
 		return output;
 	}
 
-	default boolean containsBiC(Vec3i blockInChunk) {
+	public static boolean containsBiC(Vec3i blockInChunk) {
 		return blockInChunk.x >= 0 && blockInChunk.x < BLOCKS_PER_CHUNK &&
 			blockInChunk.y >= 0 && blockInChunk.y < BLOCKS_PER_CHUNK &&
 			blockInChunk.z >= 0 && blockInChunk.z < BLOCKS_PER_CHUNK;
 	}
 
+	public static boolean isSurfaceBiC(Vec3i blockInChunk) {
+		return Util.getBorderHits(blockInChunk) >= 1;
+	}
+
+	public static boolean isEdgeBiC(Vec3i blockInChunk) {
+		return Util.getBorderHits(blockInChunk) >= 2;
+	}
+
+	public static boolean isVertexBiC(Vec3i blockInChunk) {
+		return Util.getBorderHits(blockInChunk) == 3;
+	}
+
 	default boolean containsBiW(Vec3i blockInWorld) {
-		Vec3i v = Vectors.grab3i();
-
-		v = Coordinates.getInWorld(getPosition(), Vectors.ZERO_3i, v);
-		v = blockInWorld.sub(v, v);
-
-		boolean result = containsBiC(v);
-
-		Vectors.release(v);
-		return result;
+		return Util.testBiC(blockInWorld, this, GenericChunk::containsBiC);
 	}
-	
-	default boolean isSurfaceBiC(Vec3i blockInChunk) {
-		int hits = 0;
-		
-		if (Coordinates.isOnChunkBorder(blockInChunk.x)) hits++;
-		if (Coordinates.isOnChunkBorder(blockInChunk.y)) hits++;
-		if (Coordinates.isOnChunkBorder(blockInChunk.z)) hits++;
-		
-		return hits >= 1;
-	}
-	
+
 	default boolean isSurfaceBiW(Vec3i blockInWorld) {
-		Vec3i v = Vectors.grab3i();
-
-		v = Coordinates.getInWorld(getPosition(), Vectors.ZERO_3i, v);
-		v = blockInWorld.sub(v, v);
-
-		boolean result = isSurfaceBiC(v);
-
-		Vectors.release(v);
-		return result;
+		return Util.testBiC(blockInWorld, this, GenericChunk::isSurfaceBiC);
 	}
-	
-	default boolean isEdgeBiC(Vec3i blockInChunk) {
-		int hits = 0;
-		
-		if (Coordinates.isOnChunkBorder(blockInChunk.x)) hits++;
-		if (Coordinates.isOnChunkBorder(blockInChunk.y)) hits++;
-		if (Coordinates.isOnChunkBorder(blockInChunk.z)) hits++;
-		
-		return hits >= 2;
-	}
-	
+
 	default boolean isEdgeBiW(Vec3i blockInWorld) {
-		Vec3i v = Vectors.grab3i();
-
-		v = Coordinates.getInWorld(getPosition(), Vectors.ZERO_3i, v);
-		v = blockInWorld.sub(v, v);
-
-		boolean result = isEdgeBiC(v);
-
-		Vectors.release(v);
-		return result;
+		return Util.testBiC(blockInWorld, this, GenericChunk::isEdgeBiC);
 	}
-	
-	default boolean isVertexBiC(Vec3i blockInChunk) {
-		int hits = 0;
-		
-		if (Coordinates.isOnChunkBorder(blockInChunk.x)) hits++;
-		if (Coordinates.isOnChunkBorder(blockInChunk.y)) hits++;
-		if (Coordinates.isOnChunkBorder(blockInChunk.z)) hits++;
-		
-		return hits == 3;
-	}
-	
+
 	default boolean isVertexBiW(Vec3i blockInWorld) {
-		Vec3i v = Vectors.grab3i();
-
-		v = Coordinates.getInWorld(getPosition(), Vectors.ZERO_3i, v);
-		v = blockInWorld.sub(v, v);
-
-		boolean result = isVertexBiC(v);
-
-		Vectors.release(v);
-		return result;
+		return Util.testBiC(blockInWorld, this, GenericChunk::isVertexBiC);
 	}
 
-	default void forEachBiC(Consumer<? super Vec3i> action) {
+	public static void forEachBiC(Consumer<? super Vec3i> action) {
 		VectorUtil.iterateCuboid(
 			0,
 			0,
@@ -293,22 +297,42 @@ public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B exten
 
 		return null;
 	}
-	
+
 	default TS getTilesOrNullRel(Vec3i relativeBlockInChunk, BlockFace face) {
 		Vec3i absoluteBlockInChunk = Vectors.grab3i();
 		resolve(relativeBlockInChunk, absoluteBlockInChunk);
-		
+
 		TS result;
-		
+
 		if (hasTiles(absoluteBlockInChunk, face)) {
 			result = getTiles(absoluteBlockInChunk, face);
 		} else {
 			result = null;
 		}
-		
+
 		Vectors.release(absoluteBlockInChunk);
-		
+
 		return result;
+	}
+
+	default void forEachTileStack(Consumer<TS> action) {
+		forEachBiC(blockInChunk -> {
+			for (AbsFace face : AbsFace.getFaces()) {
+				TS stack = getTilesOrNull(blockInChunk, face);
+				if (stack == null)
+					continue;
+				action.accept(stack);
+			}
+		});
+	}
+
+	/**
+	 * Iterates over all tiles in this chunk.
+	 * 
+	 * @param action the action to perform
+	 */
+	default void forEachTile(BiConsumer<TS, T> action) {
+		forEachTileStack(stack -> stack.forEach(tileData -> action.accept(stack, tileData)));
 	}
 
 }

@@ -26,6 +26,7 @@ import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
+import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.test.gen.TerrainLayer;
 import ru.windcorp.progressia.test.gen.surface.SurfaceFloatField;
 import ru.windcorp.progressia.test.gen.surface.SurfaceTerrainGenerator;
@@ -89,7 +90,7 @@ class PlanetTerrainGenerator {
 
 		Vec3 biw = new Vec3();
 		
-		chunk.forEachBiC(bic -> {
+		GenericChunk.forEachBiC(bic -> {
 			
 			biw.set(
 				Coordinates.getInWorld(chunk.getX(), bic.x),
