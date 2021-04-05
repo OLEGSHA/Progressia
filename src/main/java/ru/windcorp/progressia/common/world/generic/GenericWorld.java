@@ -29,7 +29,16 @@ import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 
-public interface GenericWorld<B extends GenericBlock, T extends GenericTile, TS extends GenericTileStack<TS, T, C>, C extends GenericChunk<C, B, T, TS>, E extends GenericEntity> {
+// @formatter:off
+public interface GenericWorld<
+	B  extends GenericBlock,
+	T  extends GenericTile,
+	TS extends GenericTileStack     <B, T, TS, TR, C>,
+	TR extends GenericTileReference <B, T, TS, TR, C>,
+	C  extends GenericChunk         <B, T, TS, TR, C>,
+	E  extends GenericEntity
+> {
+// @formatter:on	
 
 	Collection<C> getChunks();
 

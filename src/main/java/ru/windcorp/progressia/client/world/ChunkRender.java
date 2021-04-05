@@ -27,6 +27,7 @@ import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.block.BlockRenderRegistry;
 import ru.windcorp.progressia.client.world.tile.TileRender;
+import ru.windcorp.progressia.client.world.tile.TileRenderReference;
 import ru.windcorp.progressia.client.world.tile.TileRenderRegistry;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -34,10 +35,11 @@ import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.common.world.tile.TileDataReference;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 
 public class ChunkRender
-	implements GenericChunk<ChunkRender, BlockRender, TileRender, TileRenderStack> {
+	implements GenericChunk<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender> {
 
 	private final WorldRender world;
 	private final ChunkData data;
@@ -108,6 +110,28 @@ public class ChunkRender
 	}
 
 	private class TileRenderStackImpl extends TileRenderStack {
+		private class TileRenderReferenceImpl implements TileRenderReference {
+			private final TileDataReference parent;
+
+			public TileRenderReferenceImpl(TileDataReference parent) {
+				this.parent = parent;
+			}
+
+			@Override
+			public TileRender get() {
+				return TileRenderRegistry.getInstance().get(parent.get().getId());
+			}
+
+			@Override
+			public int getIndex() {
+				return parent.getIndex();
+			}
+
+			@Override
+			public TileRenderStack getStack() {
+				return TileRenderStackImpl.this;
+			}
+		}
 
 		private final TileDataStack parent;
 
@@ -128,6 +152,21 @@ public class ChunkRender
 		@Override
 		public RelFace getFace() {
 			return parent.getFace();
+		}
+		
+		@Override
+		public TileRenderReference getReference(int index) {
+			return new TileRenderReferenceImpl(parent.getReference(index));
+		}
+
+		@Override
+		public int getIndexByTag(int tag) {
+			return parent.getIndexByTag(tag);
+		}
+
+		@Override
+		public int getTagByIndex(int index) {
+			return parent.getTagByIndex(index);
 		}
 
 		@Override

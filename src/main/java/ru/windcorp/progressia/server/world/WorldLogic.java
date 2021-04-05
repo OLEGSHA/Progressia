@@ -37,10 +37,11 @@ import ru.windcorp.progressia.server.world.generation.WorldGenerator;
 import ru.windcorp.progressia.server.world.tasks.TickEntitiesTask;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
+import ru.windcorp.progressia.server.world.tile.TileLogicReference;
 import ru.windcorp.progressia.server.world.tile.TileLogicStack;
 
 public class WorldLogic
-	implements GenericWorld<BlockLogic, TileLogic, TileLogicStack, ChunkLogic, EntityData
+	implements GenericWorld<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic, EntityData
 	// not using EntityLogic because it is stateless
 > {
 

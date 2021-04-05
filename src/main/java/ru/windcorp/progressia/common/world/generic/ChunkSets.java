@@ -198,29 +198,29 @@ public class ChunkSets {
 		}
 
 		@Override
-		public boolean contains(GenericChunk<?, ?, ?, ?> chunk) {
+		public boolean contains(GenericChunk<?, ?, ?, ?, ?> chunk) {
 			synchronized (mutex) {
 				return parent.contains(chunk);
 			}
 		}
 
 		@Override
-		public boolean add(GenericChunk<?, ?, ?, ?> chunk) {
+		public boolean add(GenericChunk<?, ?, ?, ?, ?> chunk) {
 			synchronized (mutex) {
 				return parent.add(chunk);
 			}
 		}
 
 		@Override
-		public boolean remove(GenericChunk<?, ?, ?, ?> chunk) {
+		public boolean remove(GenericChunk<?, ?, ?, ?, ?> chunk) {
 			synchronized (mutex) {
 				return parent.remove(chunk);
 			}
 		}
 
 		@Override
-		public <C extends GenericChunk<C, ?, ?, ?>> void forEachIn(
-			GenericWorld<?, ?, ?, C, ?> world,
+		public <C extends GenericChunk<?, ?, ?, ?, C>> void forEachIn(
+			GenericWorld<?, ?, ?, ?, C, ?> world,
 			Consumer<? super C> action
 		) {
 			synchronized (mutex) {
@@ -320,28 +320,28 @@ public class ChunkSets {
 		}
 
 		@Override
-		public boolean containsAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?>> chunks) {
+		public boolean containsAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?, ?>> chunks) {
 			synchronized (mutex) {
 				return parent.containsAllChunks(chunks);
 			}
 		}
 
 		@Override
-		public boolean containsAnyChunks(Iterable<? extends GenericChunk<?, ?, ?, ?>> chunks) {
+		public boolean containsAnyChunks(Iterable<? extends GenericChunk<?, ?, ?, ?, ?>> chunks) {
 			synchronized (mutex) {
 				return parent.containsAnyChunks(chunks);
 			}
 		}
 
 		@Override
-		public void addAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?>> chunks) {
+		public void addAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?, ?>> chunks) {
 			synchronized (mutex) {
 				parent.addAllChunks(chunks);
 			}
 		}
 
 		@Override
-		public void removeAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?>> chunks) {
+		public void removeAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?, ?>> chunks) {
 			synchronized (mutex) {
 				parent.removeAllChunks(chunks);
 			}

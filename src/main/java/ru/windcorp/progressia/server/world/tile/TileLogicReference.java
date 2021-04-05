@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.common.world.tile;
+package ru.windcorp.progressia.server.world.tile;
 
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.generic.GenericWritableTileStack;
+import ru.windcorp.progressia.common.world.generic.GenericTileReference;
+import ru.windcorp.progressia.server.world.ChunkLogic;
+import ru.windcorp.progressia.server.world.block.BlockLogic;
 
-public abstract class TileDataStack
-	extends GenericWritableTileStack<BlockData, TileData, TileDataStack, TileDataReference, ChunkData> {
+public interface TileLogicReference
+	extends GenericTileReference<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic> {
 
 }

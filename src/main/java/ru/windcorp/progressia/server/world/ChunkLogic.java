@@ -33,7 +33,7 @@ import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
-import ru.windcorp.progressia.common.world.tile.TileReference;
+import ru.windcorp.progressia.common.world.tile.TileDataReference;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.BlockLogicRegistry;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
@@ -41,16 +41,17 @@ import ru.windcorp.progressia.server.world.tasks.TickChunk;
 import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
 import ru.windcorp.progressia.server.world.tile.TickableTile;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
+import ru.windcorp.progressia.server.world.tile.TileLogicReference;
 import ru.windcorp.progressia.server.world.tile.TileLogicRegistry;
 import ru.windcorp.progressia.server.world.tile.TileLogicStack;
 
-public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogic, TileLogicStack> {
+public class ChunkLogic implements GenericChunk<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic> {
 
 	private final WorldLogic world;
 	private final ChunkData data;
 
 	private final Collection<Vec3i> tickingBlocks = new ArrayList<>();
-	private final Collection<TileReference> tickingTiles = new ArrayList<>();
+	private final Collection<TileDataReference> tickingTiles = new ArrayList<>();
 
 	private final TickChunk tickTask = new TickChunk(this);
 
@@ -124,7 +125,7 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 		});
 	}
 
-	public void forEachTickingTile(BiConsumer<TileReference, TileLogic> action) {
+	public void forEachTickingTile(BiConsumer<TileDataReference, TileLogic> action) {
 		tickingTiles.forEach(ref -> {
 			action.accept(
 				ref,
@@ -138,7 +139,29 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 	}
 
 	private class TileLogicStackImpl extends TileLogicStack {
+		private class TileLogicReferenceImpl implements TileLogicReference {
+			private final TileDataReference parent;
 
+			public TileLogicReferenceImpl (TileDataReference parent) {
+				this.parent = parent;
+			}
+
+			@Override
+			public TileLogic get() {
+				return TileLogicRegistry.getInstance().get(parent.get().getId());
+			}
+
+			@Override
+			public int getIndex() {
+				return parent.getIndex();
+			}
+
+			@Override
+			public TileLogicStack getStack() {
+				return TileLogicStackImpl.this;
+			}
+		}
+		
 		private final TileDataStack parent;
 
 		public TileLogicStackImpl(TileDataStack parent) {
@@ -158,6 +181,21 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 		@Override
 		public RelFace getFace() {
 			return parent.getFace();
+		}
+		
+		@Override
+		public TileLogicReference getReference(int index) {
+			return new TileLogicReferenceImpl(parent.getReference(index));
+		}
+
+		@Override
+		public int getIndexByTag(int tag) {
+			return parent.getIndexByTag(tag);
+		}
+
+		@Override
+		public int getTagByIndex(int index) {
+			return parent.getTagByIndex(index);
 		}
 
 		@Override

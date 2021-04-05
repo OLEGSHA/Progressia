@@ -19,12 +19,18 @@ package ru.windcorp.progressia.common.world.generic;
 
 import glm.vec._3.i.Vec3i;
 
-import ru.windcorp.progressia.common.world.block.BlockData;
+// @formatter:off
+public interface GenericWritableChunk<
+	B  extends GenericBlock,
+	T  extends GenericTile,
+	TS extends GenericWritableTileStack <B, T, TS, TR, C>,
+	TR extends GenericTileReference     <B, T, TS, TR, C>,
+	C  extends GenericWritableChunk     <B, T, TS, TR, C>
+>
+	extends GenericChunk<B, T, TS, TR, C> {
+// @formatter:on
 
-public interface GenericWritableChunk<Self extends GenericWritableChunk<Self, B, T, TS>, B extends GenericBlock, T extends GenericTile, TS extends GenericTileStack<TS, T, Self>>
-	extends GenericChunk<Self, B, T, TS> {
-
-	void setBlock(Vec3i posInChunk, BlockData block, boolean notify);
+	void setBlock(Vec3i posInChunk, B block, boolean notify);
 
 	void setBlockRel(Vec3i relativeBlockInChunk, B block, boolean notify);
 

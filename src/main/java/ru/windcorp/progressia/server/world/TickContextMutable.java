@@ -29,7 +29,7 @@ import ru.windcorp.progressia.common.world.generic.GenericTileStack;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
-import ru.windcorp.progressia.common.world.tile.TileReference;
+import ru.windcorp.progressia.common.world.tile.TileDataReference;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockTickContext;
 import ru.windcorp.progressia.server.world.tile.TSTickContext;
@@ -109,14 +109,14 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 
 			Block withBlock(Vec3i blockInWorld);
 
-			TileStack withTS(GenericTileStack<?, ?, ?> tileStack);
+			TileStack withTS(GenericTileStack<?, ?, ?, ?, ?> tileStack);
 
 			default Builder.Chunk withChunk(ChunkData chunk) {
 				Objects.requireNonNull(chunk, "chunk");
 				return withChunk(chunk.getPosition());
 			}
 
-			default TileTickContext withTile(TileReference ref) {
+			default TileTickContext withTile(TileDataReference ref) {
 				Objects.requireNonNull(ref, "ref");
 				return withTS(ref.getStack()).withLayer(ref.getIndex());
 			}
@@ -259,7 +259,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		}
 
 		@Override
-		public TileStack withTS(GenericTileStack<?, ?, ?> tileStack) {
+		public TileStack withTS(GenericTileStack<?, ?, ?, ?, ?> tileStack) {
 			Objects.requireNonNull(tileStack, "tileStack");
 
 			return withBlock(

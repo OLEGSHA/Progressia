@@ -27,9 +27,15 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 
-public abstract class GenericTileStack<Self extends GenericTileStack<Self, T, C>, T extends GenericTile, C extends GenericChunk<C, ?, T, Self>>
-	extends AbstractList<T>
-	implements RandomAccess {
+// @formatter:off
+public abstract class GenericTileStack<
+	B  extends GenericBlock,
+	T  extends GenericTile,
+	TS extends GenericTileStack     <B, T, TS, TR, C>,
+	TR extends GenericTileReference <B, T, TS, TR, C>,
+	C  extends GenericChunk         <B, T, TS, TR, C>
+> extends AbstractList<T> implements RandomAccess {
+// @formatter:on
 
 	public static interface TSConsumer<T> {
 		void accept(int layer, T tile);
@@ -42,6 +48,12 @@ public abstract class GenericTileStack<Self extends GenericTileStack<Self, T, C>
 	public abstract C getChunk();
 
 	public abstract RelFace getFace();
+
+	public abstract TR getReference(int index);
+
+	public abstract int getIndexByTag(int tag);
+
+	public abstract int getTagByIndex(int index);
 
 	public Vec3i getBlockInWorld(Vec3i output) {
 		// This is safe
@@ -103,6 +115,10 @@ public abstract class GenericTileStack<Self extends GenericTileStack<Self, T, C>
 
 	public boolean contains(String id) {
 		return findClosest(id) != null;
+	}
+
+	public B getHost() {
+		return getChunk().getBlock(getBlockInChunk(null));
 	}
 
 }

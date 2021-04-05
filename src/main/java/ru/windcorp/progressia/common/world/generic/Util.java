@@ -35,7 +35,7 @@ class Util {
 		return hits;
 	}
 	
-	public static boolean testBiC(Vec3i blockInWorld, GenericChunk<?, ?, ?, ?> chunk, Predicate<Vec3i> test) {
+	public static boolean testBiC(Vec3i blockInWorld, GenericChunk<?, ?, ?, ?, ?> chunk, Predicate<Vec3i> test) {
 		Vec3i v = Vectors.grab3i();
 
 		v = Coordinates.getInWorld(chunk.getPosition(), Vectors.ZERO_3i, v);

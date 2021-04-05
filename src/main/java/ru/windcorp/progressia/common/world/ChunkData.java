@@ -36,12 +36,12 @@ import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
+import ru.windcorp.progressia.common.world.tile.TileDataReference;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
-import ru.windcorp.progressia.common.world.tile.TileReference;
 import ru.windcorp.progressia.common.world.tile.TileStackIsFullException;
 
 public class ChunkData
-	implements GenericWritableChunk<ChunkData, BlockData, TileData, TileDataStack> {
+	implements GenericWritableChunk<BlockData, TileData, TileDataStack, TileDataReference, ChunkData> {
 
 	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
 	public static final int CHUNK_RADIUS = BLOCKS_PER_CHUNK / 2;
@@ -219,10 +219,10 @@ public class ChunkData
 	 * @author javapony
 	 */
 	private class TileDataStackImpl extends TileDataStack {
-		private class TileReferenceImpl implements TileReference {
+		private class TileDataReferenceImpl implements TileDataReference {
 			private int index;
 
-			public TileReferenceImpl(int index) {
+			public TileDataReferenceImpl(int index) {
 				this.index = index;
 			}
 
@@ -264,7 +264,7 @@ public class ChunkData
 		private final TileData[] tiles = new TileData[TILES_PER_FACE];
 		private int size = 0;
 
-		private final TileReferenceImpl[] references = new TileReferenceImpl[tiles.length];
+		private final TileDataReferenceImpl[] references = new TileDataReferenceImpl[tiles.length];
 		private final int[] indicesByTag = new int[tiles.length];
 		private final int[] tagsByIndex = new int[tiles.length];
 
@@ -437,11 +437,11 @@ public class ChunkData
 		}
 
 		@Override
-		public TileReference getReference(int index) {
+		public TileDataReference getReference(int index) {
 			checkIndex(index, false);
 
 			if (references[index] == null) {
-				references[index] = new TileReferenceImpl(index);
+				references[index] = new TileDataReferenceImpl(index);
 			}
 
 			return references[index];
@@ -500,7 +500,7 @@ public class ChunkData
 					throw new AssertionError("get(index) is null");
 
 				if (references[index] != null) {
-					TileReference ref = getReference(index);
+					TileDataReference ref = getReference(index);
 					if (ref == null)
 						throw new AssertionError("references[index] is not null but getReference(index) is");
 					if (!ref.isValid())

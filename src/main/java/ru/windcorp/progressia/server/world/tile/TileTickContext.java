@@ -20,7 +20,7 @@ package ru.windcorp.progressia.server.world.tile;
 
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
-import ru.windcorp.progressia.common.world.tile.TileReference;
+import ru.windcorp.progressia.common.world.tile.TileDataReference;
 
 public interface TileTickContext extends TSTickContext {
 
@@ -53,7 +53,7 @@ public interface TileTickContext extends TSTickContext {
 		return stack.get(getLayer());
 	}
 
-	default TileReference getReference() {
+	default TileDataReference getReference() {
 		return getTDS().getReference(getLayer());
 	}
 

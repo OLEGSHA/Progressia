@@ -56,7 +56,15 @@ import ru.windcorp.progressia.common.world.rels.BlockFace;
  * @param <TS>   tile stack type
  * @author javapony
  */
-public interface GenericChunk<Self extends GenericChunk<Self, B, T, TS>, B extends GenericBlock, T extends GenericTile, TS extends GenericTileStack<TS, T, Self>> {
+// @formatter:off
+public interface GenericChunk<
+	B  extends GenericBlock,
+	T  extends GenericTile,
+	TS extends GenericTileStack     <B, T, TS, TR, C>,
+	TR extends GenericTileReference <B, T, TS, TR, C>,
+	C  extends GenericChunk         <B, T, TS, TR, C>
+> {
+// @formatter:on
 
 	/**
 	 * The count of blocks in a side of a chunk. This is guaranteed to be a

@@ -75,20 +75,20 @@ public interface ChunkSet extends Iterable<Vec3i> {
 		return result;
 	}
 
-	default boolean contains(GenericChunk<?, ?, ?, ?> chunk) {
+	default boolean contains(GenericChunk<?, ?, ?, ?, ?> chunk) {
 		return contains(chunk.getPosition());
 	}
 
-	default boolean add(GenericChunk<?, ?, ?, ?> chunk) {
+	default boolean add(GenericChunk<?, ?, ?, ?, ?> chunk) {
 		return add(chunk.getPosition());
 	}
 
-	default boolean remove(GenericChunk<?, ?, ?, ?> chunk) {
+	default boolean remove(GenericChunk<?, ?, ?, ?, ?> chunk) {
 		return remove(chunk.getPosition());
 	}
 
-	default <C extends GenericChunk<C, ?, ?, ?>> void forEachIn(
-		GenericWorld<?, ?, ?, C, ?> world,
+	default <C extends GenericChunk<?, ?, ?, ?, C>> void forEachIn(
+		GenericWorld<?, ?, ?, ?, C, ?> world,
 		Consumer<? super C> action
 	) {
 		forEach(position -> {
@@ -207,7 +207,7 @@ public interface ChunkSet extends Iterable<Vec3i> {
 		}
 	}
 
-	default boolean containsAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?>> chunks) {
+	default boolean containsAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?, ?>> chunks) {
 		boolean[] hasMissing = new boolean[] { false };
 
 		chunks.forEach(c -> {
@@ -219,7 +219,7 @@ public interface ChunkSet extends Iterable<Vec3i> {
 		return hasMissing[0];
 	}
 
-	default boolean containsAnyChunks(Iterable<? extends GenericChunk<?, ?, ?, ?>> chunks) {
+	default boolean containsAnyChunks(Iterable<? extends GenericChunk<?, ?, ?, ?, ?>> chunks) {
 		boolean[] hasPresent = new boolean[] { false };
 
 		chunks.forEach(c -> {
@@ -231,11 +231,11 @@ public interface ChunkSet extends Iterable<Vec3i> {
 		return hasPresent[0];
 	}
 
-	default void addAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?>> chunks) {
+	default void addAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?, ?>> chunks) {
 		chunks.forEach(this::add);
 	}
 
-	default void removeAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?>> chunks) {
+	default void removeAllChunks(Iterable<? extends GenericChunk<?, ?, ?, ?, ?>> chunks) {
 		chunks.forEach(this::remove);
 	}
 

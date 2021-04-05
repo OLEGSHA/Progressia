@@ -38,9 +38,10 @@ import ru.windcorp.progressia.common.world.generic.GenericWorld;
 import ru.windcorp.progressia.common.world.generic.LongBasedChunkMap;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
+import ru.windcorp.progressia.common.world.tile.TileDataReference;
 
 public class WorldData
-	implements GenericWorld<BlockData, TileData, TileDataStack, ChunkData, EntityData> {
+	implements GenericWorld<BlockData, TileData, TileDataStack, TileDataReference, ChunkData, EntityData> {
 
 	private final ChunkMap<ChunkData> chunksByPos = new LongBasedChunkMap<>(
 		TCollections.synchronizedMap(new TLongObjectHashMap<>())

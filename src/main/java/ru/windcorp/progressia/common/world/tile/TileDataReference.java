@@ -20,9 +20,8 @@ package ru.windcorp.progressia.common.world.tile;
 
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.generic.GenericWritableTileStack;
+import ru.windcorp.progressia.common.world.generic.GenericTileReference;
 
-public abstract class TileDataStack
-	extends GenericWritableTileStack<BlockData, TileData, TileDataStack, TileDataReference, ChunkData> {
+public interface TileDataReference extends GenericTileReference<BlockData, TileData, TileDataStack, TileDataReference, ChunkData> {
 
 }

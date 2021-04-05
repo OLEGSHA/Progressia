@@ -15,19 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.common.world.tile;
+package ru.windcorp.progressia.client.world.tile;
 
-public interface TileReference {
+import ru.windcorp.progressia.client.world.ChunkRender;
+import ru.windcorp.progressia.client.world.block.BlockRender;
+import ru.windcorp.progressia.common.world.generic.GenericTileReference;
 
-	TileData get();
-
-	int getIndex();
-
-	TileDataStack getStack();
-
-	default boolean isValid() {
-		return get() != null;
-	}
+public interface TileRenderReference
+	extends GenericTileReference<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender> {
 
 }

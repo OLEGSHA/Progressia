@@ -34,6 +34,7 @@ import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.entity.EntityRenderRegistry;
 import ru.windcorp.progressia.client.world.entity.EntityRenderable;
 import ru.windcorp.progressia.client.world.tile.TileRender;
+import ru.windcorp.progressia.client.world.tile.TileRenderReference;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
@@ -47,7 +48,7 @@ import ru.windcorp.progressia.common.world.generic.ChunkSets;
 import ru.windcorp.progressia.common.world.generic.GenericWorld;
 
 public class WorldRender
-	implements GenericWorld<BlockRender, TileRender, TileRenderStack, ChunkRender, EntityRenderable> {
+	implements GenericWorld<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender, EntityRenderable> {
 
 	private final WorldData data;
 	private final Client client;
