@@ -111,6 +111,13 @@ public class WorldRender
 	public Collection<EntityRenderable> getEntities() {
 		return entityModels.values();
 	}
+	
+	@Override
+	public EntityRenderable getEntity(long entityId) {
+		EntityData entityData = getData().getEntity(entityId);
+		if (entityData == null) return null;
+		return getEntityRenderable(entityData);
+	}
 
 	public void render(ShapeRenderHelper renderer) {
 		updateChunks();

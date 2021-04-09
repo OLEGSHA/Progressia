@@ -106,20 +106,7 @@ public interface GenericChunk<
 	boolean hasTiles(Vec3i blockInChunk, BlockFace face);
 
 	default Vec3i resolve(Vec3i relativeCoords, Vec3i output) {
-		if (output == null) {
-			output = new Vec3i();
-		}
-
-		final int offset = BLOCKS_PER_CHUNK - 1;
-
-		output.set(relativeCoords.x, relativeCoords.y, relativeCoords.z);
-		output.mul(2).sub(offset);
-
-		AxisRotations.resolve(output, getUp(), output);
-
-		output.add(offset).div(2);
-
-		return output;
+		return GenericChunks.resolve(relativeCoords, output, getUp());
 	}
 
 	default B getBlockRel(Vec3i relativeBlockInChunk) {
@@ -240,50 +227,20 @@ public interface GenericChunk<
 		return output;
 	}
 
-	public static boolean containsBiC(Vec3i blockInChunk) {
-		return blockInChunk.x >= 0 && blockInChunk.x < BLOCKS_PER_CHUNK &&
-			blockInChunk.y >= 0 && blockInChunk.y < BLOCKS_PER_CHUNK &&
-			blockInChunk.z >= 0 && blockInChunk.z < BLOCKS_PER_CHUNK;
-	}
-
-	public static boolean isSurfaceBiC(Vec3i blockInChunk) {
-		return Util.getBorderHits(blockInChunk) >= 1;
-	}
-
-	public static boolean isEdgeBiC(Vec3i blockInChunk) {
-		return Util.getBorderHits(blockInChunk) >= 2;
-	}
-
-	public static boolean isVertexBiC(Vec3i blockInChunk) {
-		return Util.getBorderHits(blockInChunk) == 3;
-	}
-
 	default boolean containsBiW(Vec3i blockInWorld) {
-		return Util.testBiC(blockInWorld, this, GenericChunk::containsBiC);
+		return GenericChunks.testBiC(blockInWorld, this, GenericChunks::containsBiC);
 	}
 
 	default boolean isSurfaceBiW(Vec3i blockInWorld) {
-		return Util.testBiC(blockInWorld, this, GenericChunk::isSurfaceBiC);
+		return GenericChunks.testBiC(blockInWorld, this, GenericChunks::isSurfaceBiC);
 	}
 
 	default boolean isEdgeBiW(Vec3i blockInWorld) {
-		return Util.testBiC(blockInWorld, this, GenericChunk::isEdgeBiC);
+		return GenericChunks.testBiC(blockInWorld, this, GenericChunks::isEdgeBiC);
 	}
 
 	default boolean isVertexBiW(Vec3i blockInWorld) {
-		return Util.testBiC(blockInWorld, this, GenericChunk::isVertexBiC);
-	}
-
-	public static void forEachBiC(Consumer<? super Vec3i> action) {
-		VectorUtil.iterateCuboid(
-			0,
-			0,
-			0,
-			BLOCKS_PER_CHUNK,
-			BLOCKS_PER_CHUNK,
-			BLOCKS_PER_CHUNK,
-			action
-		);
+		return GenericChunks.testBiC(blockInWorld, this, GenericChunks::isVertexBiC);
 	}
 
 	default void forEachBiW(Consumer<? super Vec3i> action) {
@@ -324,7 +281,7 @@ public interface GenericChunk<
 	}
 
 	default void forEachTileStack(Consumer<TS> action) {
-		forEachBiC(blockInChunk -> {
+		GenericChunks.forEachBiC(blockInChunk -> {
 			for (AbsFace face : AbsFace.getFaces()) {
 				TS stack = getTilesOrNull(blockInChunk, face);
 				if (stack == null)

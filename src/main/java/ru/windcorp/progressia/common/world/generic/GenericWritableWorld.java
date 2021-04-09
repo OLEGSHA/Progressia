@@ -17,37 +17,29 @@
  */
 package ru.windcorp.progressia.common.world.generic;
 
-import java.util.function.Predicate;
-
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.Coordinates;
+import ru.windcorp.progressia.common.world.block.BlockData;
 
-class Util {
-	
-	public static int getBorderHits(Vec3i blockInChunk) {
-		int hits = 0;
-		
-		if (Coordinates.isOnChunkBorder(blockInChunk.x)) hits++;
-		if (Coordinates.isOnChunkBorder(blockInChunk.y)) hits++;
-		if (Coordinates.isOnChunkBorder(blockInChunk.z)) hits++;
-		
-		return hits;
+//@formatter:off
+public interface GenericWritableWorld<
+	B  extends GenericBlock,
+	T  extends GenericTile,
+	TS extends GenericWritableTileStack <B, T, TS, TR, C>,
+	TR extends GenericTileReference     <B, T, TS, TR, C>,
+	C  extends GenericWritableChunk     <B, T, TS, TR, C>,
+	E  extends GenericEntity
+>
+	extends GenericWorld<B, T, TS, TR, C, E> {
+//@formatter:on
+
+	void setBlock(Vec3i blockInWorld, BlockData block, boolean notify);
+
+	void addEntity(E entity);
+
+	void removeEntity(long entityId);
+
+	default void removeEntity(E entity) {
+		removeEntity(entity.getEntityId());
 	}
-	
-	public static boolean testBiC(Vec3i blockInWorld, GenericChunk<?, ?, ?, ?, ?> chunk, Predicate<Vec3i> test) {
-		Vec3i v = Vectors.grab3i();
-
-		v = Coordinates.getInWorld(chunk.getPosition(), Vectors.ZERO_3i, v);
-		v = blockInWorld.sub(v, v);
-
-		boolean result = test.test(v);
-
-		Vectors.release(v);
-		
-		return result;
-	}
-	
-	
 
 }

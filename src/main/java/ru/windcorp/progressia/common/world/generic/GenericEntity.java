@@ -25,6 +25,8 @@ import ru.windcorp.progressia.common.world.Coordinates;
 public interface GenericEntity {
 
 	String getId();
+	
+	long getEntityId();
 
 	Vec3 getPosition();
 

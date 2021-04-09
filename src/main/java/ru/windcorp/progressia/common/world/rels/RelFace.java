@@ -17,6 +17,8 @@
  */
 package ru.windcorp.progressia.common.world.rels;
 
+import java.util.function.Function;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -67,6 +69,17 @@ public class RelFace extends RelRelation implements BlockFace {
 			.put(WEST, west)
 			.put(EAST, east)
 			.build();
+	}
+	
+	public static <E> ImmutableMap<RelFace, E> mapToFaces(Function<RelFace, E> generator) {
+		return mapToFaces(
+			generator.apply(UP),
+			generator.apply(DOWN),
+			generator.apply(NORTH),
+			generator.apply(SOUTH),
+			generator.apply(WEST),
+			generator.apply(EAST)
+		);
 	}
 
 	private static int nextId = 0;

@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.generic.GenericChunk;
+import ru.windcorp.progressia.common.world.generic.GenericChunks;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.server.world.block.BlockTickContext;
 
@@ -46,7 +46,7 @@ public interface ChunkTickContext extends TickContext {
 	default void forEachBlock(Consumer<BlockTickContext> action) {
 		TickContextMutable context = TickContextMutable.uninitialized();
 
-		GenericChunk.forEachBiC(blockInChunk -> {
+		GenericChunks.forEachBiC(blockInChunk -> {
 			context.rebuild().withServer(getServer()).withChunk(getChunk()).withBlockInChunk(blockInChunk).build();
 			action.accept(context);
 		});

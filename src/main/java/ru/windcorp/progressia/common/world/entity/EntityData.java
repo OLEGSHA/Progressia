@@ -85,6 +85,7 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 		this.velocity.set(velocity);
 	}
 
+	@Override
 	public long getEntityId() {
 		return entityId;
 	}

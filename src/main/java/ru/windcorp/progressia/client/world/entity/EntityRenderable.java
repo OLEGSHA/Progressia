@@ -71,6 +71,11 @@ public abstract class EntityRenderable implements Renderable, GenericEntity {
 	public String getId() {
 		return getData().getId();
 	}
+	
+	@Override
+	public long getEntityId() {
+		return getData().getEntityId();
+	}
 
 	public final Vec3 getLookingAt(Vec3 output) {
 		if (output == null) output = new Vec3();

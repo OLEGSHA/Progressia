@@ -19,6 +19,7 @@
 package ru.windcorp.progressia.common.world.rels;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -88,6 +89,17 @@ public final class AbsFace extends AbsRelation implements BlockFace {
 			.put(NEG_Y, negY)
 			.put(POS_Y, posY)
 			.build();
+	}
+	
+	public static <E> ImmutableMap<AbsFace, E> mapToFaces(Function<AbsFace, E> generator) {
+		return mapToFaces(
+			generator.apply(POS_Z),
+			generator.apply(NEG_Z),
+			generator.apply(POS_X),
+			generator.apply(NEG_X),
+			generator.apply(NEG_Y),
+			generator.apply(POS_Y)
+		);
 	}
 	
 	/**

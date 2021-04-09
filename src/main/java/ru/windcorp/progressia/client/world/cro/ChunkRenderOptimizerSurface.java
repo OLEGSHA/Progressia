@@ -38,7 +38,7 @@ import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.generic.GenericChunk;
+import ru.windcorp.progressia.common.world.generic.GenericChunks;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
@@ -217,7 +217,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 
 		Consumer<ShapePart> consumer = shapeParts::add;
 
-		GenericChunk.forEachBiC(relBlockInChunk -> {
+		GenericChunks.forEachBiC(relBlockInChunk -> {
 			processInnerFaces(relBlockInChunk, consumer);
 			processOuterFaces(relBlockInChunk, consumer);
 		});
@@ -316,7 +316,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 	}
 
 	private boolean shouldRenderWhenFacing(Vec3i relBlockInChunk, RelFace face) {
-		if (GenericChunk.containsBiC(relBlockInChunk)) {
+		if (GenericChunks.containsBiC(relBlockInChunk)) {
 			return shouldRenderWhenFacingLocal(relBlockInChunk, face);
 		} else {
 			return shouldRenderWhenFacingNeighbor(relBlockInChunk, face);

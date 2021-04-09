@@ -90,6 +90,11 @@ public class WorldLogic
 	public Collection<EntityData> getEntities() {
 		return getData().getEntities();
 	}
+	
+	@Override
+	public EntityData getEntity(long entityId) {
+		return getData().getEntity(entityId);
+	}
 
 	public Evaluation getTickEntitiesTask() {
 		return tickEntitiesTask;

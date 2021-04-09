@@ -36,7 +36,7 @@ import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.client.world.tile.TileRenderNone;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
 import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.generic.GenericChunk;
+import ru.windcorp.progressia.common.world.generic.GenericChunks;
 import ru.windcorp.progressia.common.world.rels.AxisRotations;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 
@@ -77,7 +77,7 @@ public class ChunkRenderModel implements Renderable {
 		
 		optimizers.forEach(ChunkRenderOptimizer::startRender);
 		
-		GenericChunk.forEachBiC(relBlockInChunk -> {
+		GenericChunks.forEachBiC(relBlockInChunk -> {
 			processBlockAndTiles(relBlockInChunk, sink);
 		});
 		

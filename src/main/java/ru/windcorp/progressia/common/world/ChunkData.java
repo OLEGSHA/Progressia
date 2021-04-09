@@ -29,7 +29,7 @@ import java.util.Objects;
 import glm.vec._3.i.Vec3i;
 
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.generic.GenericChunk;
+import ru.windcorp.progressia.common.world.generic.GenericChunks;
 import ru.windcorp.progressia.common.world.generic.GenericWritableChunk;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
@@ -160,7 +160,7 @@ public class ChunkData
 	}
 
 	private static void checkLocalCoordinates(Vec3i posInChunk) {
-		if (!GenericChunk.containsBiC(posInChunk)) {
+		if (!GenericChunks.containsBiC(posInChunk)) {
 			throw new IllegalCoordinatesException(
 				"Coordinates (" + posInChunk.x + "; " + posInChunk.y + "; " + posInChunk.z + ") "
 					+ "are not legal chunk coordinates"

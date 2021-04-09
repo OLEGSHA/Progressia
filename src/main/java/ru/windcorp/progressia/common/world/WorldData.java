@@ -34,14 +34,14 @@ import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.ChunkMap;
 import ru.windcorp.progressia.common.world.generic.ChunkSet;
-import ru.windcorp.progressia.common.world.generic.GenericWorld;
+import ru.windcorp.progressia.common.world.generic.GenericWritableWorld;
 import ru.windcorp.progressia.common.world.generic.LongBasedChunkMap;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.common.world.tile.TileDataReference;
 
 public class WorldData
-	implements GenericWorld<BlockData, TileData, TileDataStack, TileDataReference, ChunkData, EntityData> {
+	implements GenericWritableWorld<BlockData, TileData, TileDataStack, TileDataReference, ChunkData, EntityData> {
 
 	private final ChunkMap<ChunkData> chunksByPos = new LongBasedChunkMap<>(
 		TCollections.synchronizedMap(new TLongObjectHashMap<>())
@@ -128,6 +128,7 @@ public class WorldData
 		chunksByPos.remove(chunk);
 	}
 
+	@Override
 	public void setBlock(Vec3i blockInWorld, BlockData block, boolean notify) {
 		ChunkData chunk = getChunkByBlock(blockInWorld);
 		if (chunk == null)
@@ -140,10 +141,12 @@ public class WorldData
 		chunk.setBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null), block, notify);
 	}
 
+	@Override
 	public EntityData getEntity(long entityId) {
 		return entitiesById.get(entityId);
 	}
 
+	@Override
 	public void addEntity(EntityData entity) {
 		Objects.requireNonNull(entity, "entity");
 
@@ -164,6 +167,7 @@ public class WorldData
 		getListeners().forEach(l -> l.onEntityAdded(this, entity));
 	}
 
+	@Override
 	public void removeEntity(long entityId) {
 		synchronized (entitiesById) {
 			EntityData entity = entitiesById.get(entityId);
@@ -178,6 +182,7 @@ public class WorldData
 		}
 	}
 
+	@Override
 	public void removeEntity(EntityData entity) {
 		Objects.requireNonNull(entity, "entity");
 

@@ -46,6 +46,8 @@ public interface GenericWorld<
 
 	Collection<E> getEntities();
 
+	E getEntity(long entityId);
+
 	/*
 	 * Chunks
 	 */
