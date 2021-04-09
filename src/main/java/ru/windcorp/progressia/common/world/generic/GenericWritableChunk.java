@@ -18,6 +18,7 @@
 package ru.windcorp.progressia.common.world.generic;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.util.Vectors;
 
 // @formatter:off
 public interface GenericWritableChunk<
@@ -32,6 +33,11 @@ public interface GenericWritableChunk<
 
 	void setBlock(Vec3i posInChunk, B block, boolean notify);
 
-	void setBlockRel(Vec3i relativeBlockInChunk, B block, boolean notify);
+	default void setBlockRel(Vec3i relativeBlockInChunk, B block, boolean notify) {
+		Vec3i absoluteBlockInChunk = Vectors.grab3i();
+		resolve(relativeBlockInChunk, absoluteBlockInChunk);
+		setBlock(absoluteBlockInChunk, block, notify);
+		Vectors.release(absoluteBlockInChunk);
+	}
 
 }

@@ -28,7 +28,6 @@ import java.util.Objects;
 
 import glm.vec._3.i.Vec3i;
 
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.generic.GenericWritableChunk;
@@ -93,14 +92,6 @@ public class ChunkData
 				l.onChunkChanged(this);
 			});
 		}
-	}
-	
-	@Override
-	public void setBlockRel(Vec3i relativeBlockInChunk, BlockData block, boolean notify) {
-		Vec3i absoluteBlockInChunk = Vectors.grab3i();
-		resolve(relativeBlockInChunk, absoluteBlockInChunk);
-		setBlock(absoluteBlockInChunk, block, notify);
-		Vectors.release(absoluteBlockInChunk);
 	}
 
 	@Override

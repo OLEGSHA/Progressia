@@ -105,14 +105,14 @@ public interface GenericChunk<
 
 	boolean hasTiles(Vec3i blockInChunk, BlockFace face);
 
-	default Vec3i resolve(Vec3i relativeBlockInChunk, Vec3i output) {
+	default Vec3i resolve(Vec3i relativeCoords, Vec3i output) {
 		if (output == null) {
 			output = new Vec3i();
 		}
 
 		final int offset = BLOCKS_PER_CHUNK - 1;
 
-		output.set(relativeBlockInChunk.x, relativeBlockInChunk.y, relativeBlockInChunk.z);
+		output.set(relativeCoords.x, relativeCoords.y, relativeCoords.z);
 		output.mul(2).sub(offset);
 
 		AxisRotations.resolve(output, getUp(), output);
