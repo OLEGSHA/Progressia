@@ -82,6 +82,7 @@ public class TickerCoordinator {
 	private boolean isTickStartSet = false;
 	private long tickStart = -1;
 	private double tickLength = 1.0 / 20; // Do something about it
+	private long ticks = 0;
 
 	private final Logger logger = LogManager.getLogger("Ticker Coordinator");
 
@@ -151,6 +152,10 @@ public class TickerCoordinator {
 	public double getTPS() {
 		return 1 / tickLength;
 	}
+	
+	public long getUptimeTicks() {
+		return ticks;
+	}
 
 	private void onTickStart() {
 		long now = System.currentTimeMillis();
@@ -162,6 +167,10 @@ public class TickerCoordinator {
 		}
 
 		tickStart = System.currentTimeMillis();
+	}
+	
+	private void onTickEnd() {
+		ticks++;
 	}
 
 	/*
@@ -182,6 +191,8 @@ public class TickerCoordinator {
 				logger.debug("Pass complete");
 				passes++;
 			}
+			
+			onTickEnd();
 
 			logger.debug("Tick complete; run {} passes", passes);
 
@@ -191,7 +202,7 @@ public class TickerCoordinator {
 			// ...or almost silently
 			logger.debug("Tick interrupted. WTF?");
 		} catch (Exception e) {
-			crash(e, "Coordinator");
+			throw CrashReports.report(e, "Coordinator");
 		}
 	}
 

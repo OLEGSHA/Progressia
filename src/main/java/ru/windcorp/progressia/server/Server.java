@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
 
 import java.util.function.Consumer;
@@ -181,6 +181,18 @@ public class Server {
 
 	public double getTPS() {
 		return this.serverThread.getTicker().getTPS();
+	}
+
+	/**
+	 * Returns the amount of ticks performed since the server has started. This
+	 * value resets on shutdowns. The counter is incremented at the end of a
+	 * tick.
+	 * 
+	 * @return the number of times the world has finished a tick since the
+	 *         server has started.
+	 */
+	public long getUptimeTicks() {
+		return this.serverThread.getTicker().getUptimeTicks();
 	}
 
 	/**
