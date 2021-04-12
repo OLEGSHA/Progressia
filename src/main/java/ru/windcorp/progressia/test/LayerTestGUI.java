@@ -260,13 +260,82 @@ public class LayerTestGUI extends GUILayer {
 		}
 
 	}
+	
+	private static class Counter {
+
+        private int DISPLAY_INERTIA = 200;
+        private long AVERAGE_TIME = 10000;
+        private long first_time;
+
+        private final long[] values;
+        private int size;
+        private int head;
+        
+        private long lastUpdate;
+
+        public Counter(long averageTime, int maxTPS)
+        {
+            DISPLAY_INERTIA = (int) averageTime*maxTPS/1000;
+            AVERAGE_TIME = averageTime;
+            first_time = -1;
+            values = new long[DISPLAY_INERTIA];
+        }
+
+        public void add(long value) {
+        	if (first_time==-1)
+        	{
+        		first_time=System.currentTimeMillis();
+        	}
+            if (size == values.length) {
+                values[head] = value;
+                head++;
+                if (head == values.length)
+                    head = 0;
+            } else {
+                values[size] = value;
+                size++;
+            }
+        }
+
+        public double average() {
+            double count=0;
+            long ctime = System.currentTimeMillis();
+            for (int i=0;i<size;i++)
+            {
+                if ((ctime-values[i])<AVERAGE_TIME)
+                {
+                    count++;
+                }
+            }
+            if ((ctime-first_time)<AVERAGE_TIME)
+            {
+            	if ((ctime-first_time)<10)
+            	{
+            		return 20.0;
+            	}
+                return count/(ctime-first_time)*1000;
+            }
+            return count/AVERAGE_TIME*1000;
+        }
+
+        public double update() {
+        	long now = (long) (GraphicsInterface.getTime() / .05);
+        	if (lastUpdate != now) {
+        		lastUpdate = now;
+        		add(System.currentTimeMillis());
+        	}
+
+            return average();
+        }
+
+    }
 
 	private static final Averager FPS_RECORD = new Averager();
-	private static final Averager TPS_RECORD = new Averager();
+	private static final Counter TPS_RECORD = new Counter(4000, 25);
 
 	private static final Supplier<CharSequence> TPS_STRING = DynamicStrings.builder()
 		.addDyn(new MutableStringLocalized("LayerTestGUI.TPSDisplay"))
-		.addDyn(() -> TPS_RECORD.update(ServerState.getInstance().getTPS()), 5, 1)
+		.addDyn(() -> TPS_RECORD.update(), 5, 1)
 		.buildSupplier();
 
 	private static final Supplier<CharSequence> POS_STRING = DynamicStrings.builder()
