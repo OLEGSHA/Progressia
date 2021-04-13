@@ -244,13 +244,17 @@ public interface GenericChunk<
 	}
 
 	default void forEachBiW(Consumer<? super Vec3i> action) {
+		int minX = Coordinates.getInWorld(getX(), 0);
+		int minY = Coordinates.getInWorld(getY(), 0);
+		int minZ = Coordinates.getInWorld(getZ(), 0);
+		
 		VectorUtil.iterateCuboid(
-			Coordinates.getInWorld(getX(), 0),
-			Coordinates.getInWorld(getY(), 0),
-			Coordinates.getInWorld(getZ(), 0),
-			BLOCKS_PER_CHUNK,
-			BLOCKS_PER_CHUNK,
-			BLOCKS_PER_CHUNK,
+			minX,
+			minY,
+			minZ,
+			minX + BLOCKS_PER_CHUNK,
+			minY + BLOCKS_PER_CHUNK,
+			minZ + BLOCKS_PER_CHUNK,
 			action
 		);
 	}

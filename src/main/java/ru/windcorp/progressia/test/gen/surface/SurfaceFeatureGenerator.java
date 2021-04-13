@@ -26,17 +26,30 @@ import ru.windcorp.progressia.common.world.ChunkData;
 
 public class SurfaceFeatureGenerator {
 	
+	private final Surface surface;
+	
 	private final Collection<SurfaceFeature> features; // TODO make ordered
 	
-	public SurfaceFeatureGenerator(Collection<SurfaceFeature> features) {
+	public SurfaceFeatureGenerator(Surface surface, Collection<SurfaceFeature> features) {
+		this.surface = surface;
 		this.features = new ArrayList<>(features);
 	}
 	
+	/**
+	 * @return the surface
+	 */
+	public Surface getSurface() {
+		return surface;
+	}
+	
 	public void generateFeatures(ChunkData chunk) {
+		SurfaceWorld world = new SurfaceWorld(surface, chunk.getWorld());
+		
 		Random random = new Random(CoordinatePacker.pack3IntsIntoLong(chunk.getPosition()) /* ^ seed*/);
+		SurfaceFeature.Request request = new SurfaceFeature.Request(chunk, random);
 		
 		for (SurfaceFeature feature : features) {
-			feature.process(chunk, random);
+			feature.process(world, request);
 		}
 		
 		chunk.setGenerationHint(true);
