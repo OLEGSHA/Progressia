@@ -330,12 +330,57 @@ public class LayerTestGUI extends GUILayer {
 
     }
 
+	private static class Queue {
+
+		private static final int DISPLAY_INERTIA = 32;
+		private static final double UPDATE_INTERVAL = Units.get(50.0, "ms");
+
+		private final double[] values = new double[DISPLAY_INERTIA];
+		private int size;
+		private int head;
+
+		private long lastUpdate;
+
+		public void add(double value) {
+			if (size == values.length) {
+				values[head] = value;
+				head++;
+				if (head == values.length)
+					head = 0;
+			} else {
+				values[size] = value;
+				size++;
+			}
+		}
+
+		public double average() {
+			if (size == values.length && head!=0) {
+				return (values[head-1]-values[head])/DISPLAY_INERTIA*20;
+			} else if (head==0) {
+				return (values[size-1]-values[0])/DISPLAY_INERTIA*20;
+			} else {
+				return values[head-1]/size*20;
+			}
+		}
+
+		public double update(double value) {
+			long now = (long) (GraphicsInterface.getTime() / UPDATE_INTERVAL);
+			if (lastUpdate != now) {
+				lastUpdate = now;
+				add(value);
+			}
+
+			return average();
+		}
+
+	}
+	
 	private static final Averager FPS_RECORD = new Averager();
-	private static final Counter TPS_RECORD = new Counter(4000, 25);
+	private static final Queue TPS_RECORD = new Queue();
 
 	private static final Supplier<CharSequence> TPS_STRING = DynamicStrings.builder()
 		.addDyn(new MutableStringLocalized("LayerTestGUI.TPSDisplay"))
-		.addDyn(() -> TPS_RECORD.update(), 5, 1)
+		.addDyn(() -> TPS_RECORD.update(ServerState.getInstance().getUptimeTicks()), 5, 1)
 		.buildSupplier();
 
 	private static final Supplier<CharSequence> POS_STRING = DynamicStrings.builder()
