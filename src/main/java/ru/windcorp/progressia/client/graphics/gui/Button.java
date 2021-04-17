@@ -14,23 +14,24 @@ import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.gui.event.FocusEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.HoverEvent;
+import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.input.bus.InputListener;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 
 public class Button extends Component {
 
-	private Font font;
-	private String currentText;
 	private Vec2i currentSize;
-	private String text;
 	private boolean isDisabled;
 	private boolean isClicked;
+	private Label label;
+	private LayoutAlign align;
 	
-	public <T extends InputEvent> Button(String name, Font font, String text, Consumer<Button> onClick) {//, InputListener<T> onClick, Class<? extends T> onClickClass) {
+	public <T extends InputEvent> Button(String name, Label textLabel, Consumer<Button> onClick) {//, InputListener<T> onClick, Class<? extends T> onClickClass) {
 		super(name);
-		this.font = font;
-		this.text = text;
+		label = textLabel;
+		align = new LayoutAlign();
+		addChild(textLabel);
 		setPreferredSize(107,34);
         Button inButton = (Button) setFocusable(true);
 		
@@ -44,16 +45,26 @@ public class Button extends Component {
         addListener(new Object() {
             @Subscribe
             public void onFocusChanged(FocusEvent e) {
-            	inButton.setText(e.getNewState() ? "Is Focused" : "Isn't focused");
+            	inButton.setText(new Label("dummy",new Font().withColor(Colors.BLACK),e.getNewState() ? "Is Focused" : "Isn't focused"));
                 requestReassembly();
             }
         });
         
-        addListener((Class<KeyEvent>) KeyEvent.class, (InputListener<KeyEvent>) e -> {isClicked = e.isPress();
-        							if (!inButton.isDisabled())
-        								onClick.accept(inButton);
-									requestReassembly();
-									return true;});
+        addListener((Class<KeyEvent>) KeyEvent.class, (InputListener<KeyEvent>) e -> {if (e.isLeftMouseButton() && inButton.containsCursor())
+        	{
+        		isClicked = e.isPress();
+        		if (!inButton.isDisabled())
+        		{
+        			onClick.accept(inButton);
+        		}
+        		requestReassembly();
+        	}
+        	else if (e.isLeftMouseButton())
+        	{
+        		setFocused(false);
+        	}
+		  	return true;});
+        							
 	}
 	
 	public boolean isClicked()
@@ -72,9 +83,11 @@ public class Button extends Component {
 		return isDisabled;
 	}
 	
-	public void setText(String newText)
+	public void setText(Label newText)
 	{
-		text = newText;
+		removeChild(label);
+		label = newText;
+		addChild(label);
 		requestReassembly();
 	}
 	
@@ -102,22 +115,19 @@ public class Button extends Component {
 		{
 			target.fill(getX()+2, getY()+2, getWidth()-4, getHeight()-4, Colors.WHITE);
 		}
-		//text
-		Font tempFont;
+		Font tempFont = new Font().withColor(Colors.BLACK);
 		if (isDisabled())
 		{
-			tempFont = font.withColor(Colors.GRAY_A);
+			tempFont = tempFont.withColor(Colors.GRAY_A);
 		}
 		else if (isClicked())
 		{
-			tempFont = font.withColor(Colors.WHITE);
+			tempFont = tempFont.withColor(Colors.WHITE);
 		}
-		else
-		{
-			tempFont = font.withColor(Colors.BLACK);
-		}
-		target.pushTransform(new Mat4().identity().translate(getX(), getY(), -1000).scale(2));
-		target.addCustomRenderer(tempFont.assemble( (CharSequence) this.text, this.getWidth()));
+		
+		target.pushTransform(new Mat4().identity().translate( getX()+.5f*getWidth()-.5f*label.getPreferredSize().x, getY(), 0));
+		label = new Label(label.getName(), tempFont, label.getContentSupplier());
+		label.assembleSelf(target);
 		target.popTransform();
 	}
 }

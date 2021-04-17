@@ -59,11 +59,11 @@ public class LayerTestGUI extends GUILayer {
 
 		TestPlayerControls tpc = TestPlayerControls.getInstance();
 		
-		Button disableButton = new Button("TestButton", new Font().withColor(Colors.BLACK), "I'm in TestGUI", b -> {b.setDisable(!b.isDisabled());});
+		Button disableButton = new Button("TestButton", new Label("TestButtonLabel", new Font().withColor(Colors.BLACK), "I'm in TestGUI"), b -> {b.setDisable(!b.isDisabled());});
 		
 		panel.addChild(disableButton);
 		
-		panel.addChild(new Button("TestButton", new Font().withColor(Colors.BLACK), "I enable the above button", b -> {disableButton.setDisable(false);}));
+		panel.addChild(new Button("TestButton2", new Label("TestButtonLabel2", new Font().withColor(Colors.BLACK), "I enable the above button"), b -> {disableButton.setDisable(false);b.takeFocus();}));
 
 		panel.addChild(
 			new Label(
