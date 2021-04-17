@@ -59,7 +59,7 @@ public class LayerTestGUI extends GUILayer {
 
 		TestPlayerControls tpc = TestPlayerControls.getInstance();
 		
-		panel.addChild(new Button("TestButton", new Font().withColor(Colors.BLACK), "I'm in TestGUI"));
+		panel.addChild(new Button("TestButton", new Font().withColor(Colors.BLACK), "I'm in TestGUI", b -> {}));
 
 		panel.addChild(
 			new Label(

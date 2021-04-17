@@ -1,5 +1,6 @@
 package ru.windcorp.progressia.client.graphics.gui;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.google.common.eventbus.Subscribe;
@@ -25,7 +26,7 @@ public class Button extends Component {
 	private boolean isDisabled;
 	private boolean isClicked;
 	
-	public <T extends InputEvent> Button(String name, Font font, String text) {//, InputListener<T> onClick, Class<? extends T> onClickClass) {
+	public <T extends InputEvent> Button(String name, Font font, String text, Consumer<Button> onClick) {//, InputListener<T> onClick, Class<? extends T> onClickClass) {
 		super(name);
 		this.font = font;
 		this.text = text;
@@ -39,12 +40,15 @@ public class Button extends Component {
             }
         });
         
+        Button inButton = this;
+        
         addListener(new Object() {
             @Subscribe
             public void onLeftClick(KeyEvent e) {
             	if (e.isLeftMouseButton())
             	{
             		isClicked = e.isPress();
+            		onClick.accept(inButton);
                 	requestReassembly();
             	}
             }
