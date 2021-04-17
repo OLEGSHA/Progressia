@@ -64,7 +64,7 @@ public class ServerThread implements Runnable {
 
 	public void start() {
 		ticker.start();
-		executor.scheduleAtFixedRate(this, 0, 1000, TimeUnit.MILLISECONDS);
+		executor.scheduleAtFixedRate(this, 0, 1000 / 20, TimeUnit.MILLISECONDS);
 	}
 
 	@Override

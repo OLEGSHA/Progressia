@@ -18,9 +18,6 @@
  
 package ru.windcorp.progressia.test;
 
-import java.util.Objects;
-import java.util.function.Supplier;
-
 import org.lwjgl.glfw.GLFW;
 
 import com.google.common.eventbus.Subscribe;
@@ -32,34 +29,18 @@ import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.flat.AssembledFlatLayer;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
-import ru.windcorp.progressia.client.graphics.font.Font;
-import ru.windcorp.progressia.client.graphics.gui.Button;
-import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.model.LambdaModel;
 import ru.windcorp.progressia.client.graphics.texture.SimpleTextures;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.Camera;
-import ru.windcorp.progressia.client.localization.MutableString;
-import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 
 public class LayerTestUI extends AssembledFlatLayer {
-	
-	private Button testButton;
-	private Label tl;
-	
+
 	public LayerTestUI() {
 		super("TestUI");
 
-		TestPlayerControls tpc = TestPlayerControls.getInstance();
-		
-		testButton = new Button("TestButton", new Font().withColor(Colors.BLACK), "Hi");
-		tl = new Label(
-				"IsFlyingDisplay",
-				new Font().withColor(Colors.BLACK),
-				tmp_dynFormat("LayerTestGUI.IsFlyingDisplay", tpc::isFlying)
-			);
 		GraphicsInterface.subscribeToInputEvents(this);
 	}
 
@@ -106,9 +87,7 @@ public class LayerTestUI extends AssembledFlatLayer {
 			)
 		);
 		target.popTransform();
-		
-		testButton.requestReassembly();
-		
+
 		drawCross(target);
 	}
 
@@ -178,23 +157,5 @@ public class LayerTestUI extends AssembledFlatLayer {
 		flag = event.isPress();
 		invalidate();
 	}
-	
-	private static MutableString tmp_dynFormat(String formatKey, Supplier<?>... suppliers) {
-		return new MutableStringLocalized(formatKey).apply(s -> {
-			Object[] args = new Object[suppliers.length];
 
-			for (int i = 0; i < suppliers.length; ++i) {
-				Supplier<?> supplier = suppliers[i];
-
-				Object value = supplier != null ? supplier.get() : "null";
-				if (!(value instanceof Number)) {
-					value = Objects.toString(value);
-				}
-
-				args[i] = value;
-			}
-
-			return String.format(s, args);
-		});
-	}
 }

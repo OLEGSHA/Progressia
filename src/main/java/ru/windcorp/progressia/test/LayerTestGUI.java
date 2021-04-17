@@ -29,6 +29,7 @@ import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.Button;
 import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
+import ru.windcorp.progressia.client.graphics.gui.Button;
 import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.Panel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
@@ -57,6 +58,8 @@ public class LayerTestGUI extends GUILayer {
 		Font font = new Font().withColor(color).deriveOutlined();
 
 		TestPlayerControls tpc = TestPlayerControls.getInstance();
+		
+		panel.addChild(new Button("TestButton", new Font().withColor(Colors.BLACK), "I'm in TestGUI"));
 
 		panel.addChild(
 			new Label(

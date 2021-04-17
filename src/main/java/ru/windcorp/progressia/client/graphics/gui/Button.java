@@ -2,6 +2,8 @@ package ru.windcorp.progressia.client.graphics.gui;
 
 import java.util.function.Supplier;
 
+import com.google.common.eventbus.Subscribe;
+
 import glm.mat._4.Mat4;
 import glm.vec._2.i.Vec2i;
 import org.lwjgl.glfw.GLFW;
@@ -9,6 +11,7 @@ import ru.windcorp.progressia.client.graphics.backend.InputTracker;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.Colors;
+import ru.windcorp.progressia.client.graphics.gui.event.HoverEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.InputListener;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
@@ -20,19 +23,37 @@ public class Button extends Component {
 	private Vec2i currentSize;
 	private String text;
 	private boolean isDisabled;
+	private boolean isClicked;
 	
 	public <T extends InputEvent> Button(String name, Font font, String text) {//, InputListener<T> onClick, Class<? extends T> onClickClass) {
 		super(name);
 		this.font = font;
 		this.text = text;
-		setPosition(400, 400);
-		setSize(107,34);
+		setPreferredSize(107,34);
 		//super.addListener(onClickClass, onClick);
+		
+        addListener(new Object() {
+            @Subscribe
+            public void onHoverChanged(HoverEvent e) {
+                requestReassembly();
+            }
+        });
+        
+        addListener(new Object() {
+            @Subscribe
+            public void onLeftClick(KeyEvent e) {
+            	if (e.isLeftMouseButton())
+            	{
+            		isClicked = e.isPress();
+                	requestReassembly();
+            	}
+            }
+        });
 	}
 	
 	public boolean isClicked()
 	{
-		return super.containsCursor() && InputTracker.isKeyPressed(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+		return containsCursor() && isClicked;
 	}
 	
 	public void setDisable(boolean isDisabled)
@@ -63,11 +84,11 @@ public class Button extends Component {
 		//Inside area
 		if (isHovered())
 		{
-			target.fill(getX()+1, getY()+1, getWidth()-2, getHeight()-2, 0xFFC3E4F7);
+			target.fill(getX()+2, getY()+2, getWidth()-4, getHeight()-4, 0xFFC3E4F7);
 		}
 		else if (!isClicked())
 		{
-			target.fill(getX()+1, getY()+1, getWidth()-2, getHeight()-2, Colors.WHITE);
+			target.fill(getX()+2, getY()+2, getWidth()-4, getHeight()-4, Colors.WHITE);
 		}
 		//text
 		Font tempFont;
