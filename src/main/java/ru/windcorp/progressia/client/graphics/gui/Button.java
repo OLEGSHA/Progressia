@@ -58,12 +58,13 @@ public class Button extends Component {
         			onClick.accept(inButton);
         		}
         		requestReassembly();
+        		return true;
         	}
         	else if (e.isLeftMouseButton())
         	{
         		setFocused(false);
         	}
-		  	return true;});
+		  	return false;});
         							
 	}
 	
