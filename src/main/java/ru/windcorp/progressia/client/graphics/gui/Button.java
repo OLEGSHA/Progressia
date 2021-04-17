@@ -12,6 +12,7 @@ import ru.windcorp.progressia.client.graphics.backend.InputTracker;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.Colors;
+import ru.windcorp.progressia.client.graphics.gui.event.FocusEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.HoverEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.InputListener;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
@@ -40,19 +41,20 @@ public class Button extends Component {
             }
         });
         
-        Button inButton = this;
-        
         addListener(new Object() {
             @Subscribe
-            public void onLeftClick(KeyEvent e) {
-            	if (e.isLeftMouseButton())
-            	{
-            		isClicked = e.isPress();
-            		onClick.accept(inButton);
-                	requestReassembly();
-            	}
+            public void onFocusChanged(FocusEvent e) {
+                requestReassembly();
             }
         });
+        
+        Button inButton = this;
+        
+        addListener((Class<KeyEvent>) KeyEvent.class, (InputListener<KeyEvent>) e -> {isClicked = e.isPress();
+        							if (!inButton.isDisabled())
+        								onClick.accept(inButton);
+									requestReassembly();
+									return true;});
 	}
 	
 	public boolean isClicked()
@@ -70,43 +72,49 @@ public class Button extends Component {
 		return isDisabled;
 	}
 	
+	public void setText(String newText)
+	{
+		text = newText;
+		requestReassembly();
+	}
+	
 	@Override
 	protected void assembleSelf(RenderTarget target) {
 		//Border
-		if (isClicked() || isHovered() || isFocused())
-		{
-			target.fill(getX(), getY(), getWidth(), getHeight(), 0xFF37A2E6);
-		}
-		else if (!isDisabled())
-		{
-			target.fill(getX(), getY(), getWidth(), getHeight(), 0xFFCBCBD0);
-		}
-		else
+		if (isDisabled())
 		{
 			target.fill(getX(), getY(), getWidth(), getHeight(), 0xFFE5E5E5);
 		}
+		else if (isClicked() || isHovered() || isFocused())
+		{
+			target.fill(getX(), getY(), getWidth(), getHeight(), 0xFF37A2E6);
+		}
+		else
+		{
+			target.fill(getX(), getY(), getWidth(), getHeight(), 0xFFCBCBD0);
+		}
 		//Inside area
-		if (isHovered())
+		if (!isClicked() && isHovered() && !isDisabled())
 		{
 			target.fill(getX()+2, getY()+2, getWidth()-4, getHeight()-4, 0xFFC3E4F7);
 		}
-		else if (!isClicked())
+		else if (!isClicked() || isDisabled())
 		{
 			target.fill(getX()+2, getY()+2, getWidth()-4, getHeight()-4, Colors.WHITE);
 		}
 		//text
 		Font tempFont;
-		if (isClicked())
+		if (isDisabled())
+		{
+			tempFont = font.withColor(Colors.GRAY_A);
+		}
+		else if (isClicked())
 		{
 			tempFont = font.withColor(Colors.WHITE);
 		}
-		else if (!isDisabled())
-		{
-			tempFont = font.withColor(Colors.BLACK);
-		}
 		else
 		{
-			tempFont = font.withColor(Colors.GRAY_A);
+			tempFont = font.withColor(Colors.BLACK);
 		}
 		target.pushTransform(new Mat4().identity().translate(getX(), getY(), -1000).scale(2));
 		target.addCustomRenderer(tempFont.assemble( (CharSequence) this.text, this.getWidth()));
