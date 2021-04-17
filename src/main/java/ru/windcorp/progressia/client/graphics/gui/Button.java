@@ -32,7 +32,7 @@ public class Button extends Component {
 		this.font = font;
 		this.text = text;
 		setPreferredSize(107,34);
-		//super.addListener(onClickClass, onClick);
+        Button inButton = (Button) setFocusable(true);
 		
         addListener(new Object() {
             @Subscribe
@@ -44,11 +44,10 @@ public class Button extends Component {
         addListener(new Object() {
             @Subscribe
             public void onFocusChanged(FocusEvent e) {
+            	inButton.setText(e.getNewState() ? "Is Focused" : "Isn't focused");
                 requestReassembly();
             }
         });
-        
-        Button inButton = this;
         
         addListener((Class<KeyEvent>) KeyEvent.class, (InputListener<KeyEvent>) e -> {isClicked = e.isPress();
         							if (!inButton.isDisabled())
@@ -65,6 +64,7 @@ public class Button extends Component {
 	public void setDisable(boolean isDisabled)
 	{
 		this.isDisabled = isDisabled;
+        setFocusable(isDisabled);
 	}
 	
 	public boolean isDisabled()
