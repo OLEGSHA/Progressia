@@ -20,12 +20,6 @@ import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 
 public class Button extends Interactable {
-
-	private Vec2i currentSize;
-	private boolean isDisabled;
-	private boolean isClicked;
-	private Label label;
-	private LayoutAlign align;
 	
 	public <T extends InputEvent> Button(String name, Label textLabel, Consumer<Button> onClick) {//, InputListener<T> onClick, Class<? extends T> onClickClass) {
 		super(name, textLabel);

@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import ru.windcorp.progressia.client.graphics.gui.event.FocusEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.HoverEvent;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
+import glm.vec._2.i.Vec2i;
 
 public class Interactable extends Component {
 	
