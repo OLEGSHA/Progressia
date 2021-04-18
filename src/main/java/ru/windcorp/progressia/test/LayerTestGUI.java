@@ -33,6 +33,8 @@ import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.Button;
 import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.Panel;
+import ru.windcorp.progressia.client.graphics.gui.RadioButton;
+import ru.windcorp.progressia.client.graphics.gui.RadioManager;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.localization.Localizer;
@@ -85,6 +87,26 @@ public class LayerTestGUI extends GUILayer {
 						c -> {c.setText(
 								new Label("CheckboxLabel", font, "Reset")
 								);}
+						)
+				);
+		
+		RadioManager manager = new RadioManager();
+		
+		panel.addChild(
+				new RadioButton(
+						"Radio1,1",
+						new Label("RadioLabel1,1",font,"Option 1"),
+						rb -> {},
+						manager
+						)
+				);
+		
+		panel.addChild(
+				new RadioButton(
+						"Radio1,2",
+						new Label("RadioLabel1,2",font,"Option 2"),
+						rb -> {},
+						manager
 						)
 				);
 
