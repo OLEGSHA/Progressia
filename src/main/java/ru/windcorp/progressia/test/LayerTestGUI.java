@@ -27,6 +27,7 @@ import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.Button;
+import ru.windcorp.progressia.client.graphics.gui.Checkbox;
 import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.Button;
@@ -59,11 +60,33 @@ public class LayerTestGUI extends GUILayer {
 
 		TestPlayerControls tpc = TestPlayerControls.getInstance();
 		
-		Button disableButton = new Button("TestButton", new Label("TestButtonLabel", new Font().withColor(Colors.BLACK), "I'm in TestGUI"), b -> {b.setDisable(!b.isDisabled());});
+		Button disableButton = new Button("TestButton",
+				new Label("TestButtonLabel", new Font().withColor(Colors.BLACK), "I'm in TestGUI"), 
+				b -> {b.setDisable(!b.isDisabled());}
+				);
 		
 		panel.addChild(disableButton);
 		
-		panel.addChild(new Button("TestButton2", new Label("TestButtonLabel2", new Font().withColor(Colors.BLACK), "I enable the above button"), b -> {disableButton.setDisable(false);b.takeFocus();}));
+		panel.addChild(
+				new Button(
+						"TestButton2",
+						new Label("TestButtonLabel2", new Font().withColor(Colors.BLACK), "I enable the above button"), 
+						b -> {disableButton.setDisable(false);}
+						)
+				);
+		
+		panel.addChild(
+				new Checkbox(
+						"Checkbox1",
+						new Label("CheckboxLabel", font,"Reset"),
+						c -> {c.setText(
+								new Label("CheckboxLabel", font, "Set")
+								);},
+						c -> {c.setText(
+								new Label("CheckboxLabel", font, "Reset")
+								);}
+						)
+				);
 
 		panel.addChild(
 			new Label(

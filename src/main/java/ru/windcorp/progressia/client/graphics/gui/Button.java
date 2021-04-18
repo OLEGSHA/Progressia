@@ -19,7 +19,7 @@ import ru.windcorp.progressia.client.graphics.input.bus.InputListener;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 
-public class Button extends Component {
+public class Button extends Interactable {
 
 	private Vec2i currentSize;
 	private boolean isDisabled;
@@ -28,68 +28,23 @@ public class Button extends Component {
 	private LayoutAlign align;
 	
 	public <T extends InputEvent> Button(String name, Label textLabel, Consumer<Button> onClick) {//, InputListener<T> onClick, Class<? extends T> onClickClass) {
-		super(name);
-		label = textLabel;
-		align = new LayoutAlign();
-		addChild(textLabel);
+		super(name, textLabel);
 		setPreferredSize(107,34);
-        Button inButton = (Button) setFocusable(true);
-		
-        addListener(new Object() {
-            @Subscribe
-            public void onHoverChanged(HoverEvent e) {
-                requestReassembly();
-            }
-        });
+        //Button inButton = (Button) setFocusable(true);
         
-        addListener(new Object() {
-            @Subscribe
-            public void onFocusChanged(FocusEvent e) {
-            	inButton.setText(new Label("dummy",new Font().withColor(Colors.BLACK),e.getNewState() ? "Is Focused" : "Isn't focused"));
-                requestReassembly();
-            }
-        });
-        
-        addListener((Class<KeyEvent>) KeyEvent.class, (InputListener<KeyEvent>) e -> {if (e.isLeftMouseButton() && inButton.containsCursor())
+        addListener((Class<KeyEvent>) KeyEvent.class, (InputListener<KeyEvent>) e -> {if ((e.isLeftMouseButton() && containsCursor()) || (e.getKey()==GLFW.GLFW_KEY_ENTER && isFocused()) )
         	{
         		isClicked = e.isPress();
-        		if (!inButton.isDisabled())
+        		if (!isDisabled())
         		{
-        			onClick.accept(inButton);
+        			onClick.accept(this);
+        			takeFocus();
         		}
         		requestReassembly();
         		return true;
         	}
-        	else if (e.isLeftMouseButton())
-        	{
-        		setFocused(false);
-        	}
 		  	return false;});
         							
-	}
-	
-	public boolean isClicked()
-	{
-		return containsCursor() && isClicked;
-	}
-	
-	public void setDisable(boolean isDisabled)
-	{
-		this.isDisabled = isDisabled;
-        setFocusable(isDisabled);
-	}
-	
-	public boolean isDisabled()
-	{
-		return isDisabled;
-	}
-	
-	public void setText(Label newText)
-	{
-		removeChild(label);
-		label = newText;
-		addChild(label);
-		requestReassembly();
 	}
 	
 	@Override
