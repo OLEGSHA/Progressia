@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test.gen;
 
 import java.io.DataInputStream;
@@ -23,10 +23,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.WorldData;
@@ -38,6 +42,7 @@ import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 import ru.windcorp.progressia.server.world.WorldLogic;
 import ru.windcorp.progressia.server.world.generation.AbstractWorldGenerator;
+import ru.windcorp.progressia.test.TestEntityDataFallingBlock;
 
 public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 
@@ -51,6 +56,41 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 			@Override
 			public void onChunkLoaded(WorldData world, ChunkData chunk) {
 				findAndPopulate(chunk.getPosition(), world);
+				chunk.addListener(new ChunkDataListener() {
+					@Override
+					public void onChunkBlockChanged(ChunkData chunk, Vec3i blockInChunk, BlockData previous,
+							BlockData current) {
+						if (current.getId() != "Test:Sand") { // Replace with
+																// proper check
+																// for all
+																// gravity
+																// blocks
+							return;
+						}
+						if (chunk.getBlock(blockInChunk.add_(0, 0, -1)).getId() == "Test:Air")// TODO
+																								// Won't
+																								// work
+																								// on
+																								// z
+																								// chunk
+																								// boundaries
+						{
+							LogManager.getLogger().info("Inserting FallingBlock");
+
+							TestEntityDataFallingBlock fallingBlock = new TestEntityDataFallingBlock();
+
+							Vec3i worldPos = chunk.getPosition().mul_(16).add_(blockInChunk);
+							Vec3 floatWorldPos = new Vec3(worldPos.x, worldPos.y, worldPos.z);
+							fallingBlock.setPosition(floatWorldPos);
+
+							fallingBlock.setEntityId(("Test:FallingBlock" + floatWorldPos.toString()
+									+ String.valueOf(new Random().nextFloat())).hashCode());
+
+							chunk.getWorld().addEntity(fallingBlock);
+							chunk.setBlock(blockInChunk, BlockDataRegistry.getInstance().get("Test:Air"), true);
+						}
+					}
+				});
 			}
 		});
 	}
@@ -88,12 +128,10 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		BlockData stone = BlockDataRegistry.getInstance().get("Test:Stone");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 
-		BlockData[] granites = new BlockData[] {
-			BlockDataRegistry.getInstance().get("Test:GraniteGravel"),
-			BlockDataRegistry.getInstance().get("Test:GraniteGravel"),
-			BlockDataRegistry.getInstance().get("Test:GraniteCracked"),
-			BlockDataRegistry.getInstance().get("Test:GraniteMonolith")
-		};
+		BlockData[] granites = new BlockData[] { BlockDataRegistry.getInstance().get("Test:GraniteGravel"),
+				BlockDataRegistry.getInstance().get("Test:GraniteGravel"),
+				BlockDataRegistry.getInstance().get("Test:GraniteCracked"),
+				BlockDataRegistry.getInstance().get("Test:GraniteMonolith") };
 
 		double[][] heightMap = new double[bpc][bpc];
 		double[][] gradMap = new double[bpc][bpc];
@@ -168,7 +206,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 
 		ChunkData chunk = world.getChunk(chunkPos);
 		assert chunk != null : "Something went wrong when populating chunk at (" + chunkPos.x + "; " + chunkPos.y + "; "
-			+ chunkPos.z + ")";
+				+ chunkPos.z + ")";
 
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
@@ -203,15 +241,8 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 				int xic = Coordinates.convertInWorldToInChunk(biw.x);
 				int yic = Coordinates.convertInWorldToInChunk(biw.y);
 
-				addTiles(
-					chunk,
-					biw,
-					world,
-					random,
-					world.getBlock(biw) == dirt,
-					heightMap[xic][yic],
-					gradMap[xic][yic]
-				);
+				addTiles(chunk, biw, world, random, world.getBlock(biw) == dirt, heightMap[xic][yic],
+						gradMap[xic][yic]);
 
 			}
 		}
@@ -219,15 +250,8 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		chunk.setGenerationHint(true);
 	}
 
-	private void addTiles(
-		ChunkData chunk,
-		Vec3i biw,
-		WorldData world,
-		Random random,
-		boolean isDirt,
-		double height,
-		double grad
-	) {
+	private void addTiles(ChunkData chunk, Vec3i biw, WorldData world, Random random, boolean isDirt, double height,
+			double grad) {
 		if (isDirt)
 			addGrass(chunk, biw, world, random);
 		addDecor(chunk, biw, world, random, isDirt);
@@ -257,40 +281,26 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 	private void addDecor(ChunkData chunk, Vec3i biw, WorldData world, Random random, boolean isDirt) {
 		if (isDirt) {
 			if (random.nextInt(8) == 0) {
-				world.getTiles(biw, BlockFace.TOP).addFarthest(
-					TileDataRegistry.getInstance().get("Test:Sand")
-				);
+				world.getTiles(biw, BlockFace.TOP).addFarthest(TileDataRegistry.getInstance().get("Test:Sand"));
 			}
 
 			if (random.nextInt(8) == 0) {
-				world.getTiles(biw, BlockFace.TOP).addFarthest(
-					TileDataRegistry.getInstance().get("Test:Stones")
-				);
+				world.getTiles(biw, BlockFace.TOP).addFarthest(TileDataRegistry.getInstance().get("Test:Stones"));
 			}
 
 			if (random.nextInt(8) == 0) {
-				world.getTiles(biw, BlockFace.TOP).addFarthest(
-					TileDataRegistry.getInstance().get("Test:YellowFlowers")
-				);
+				world.getTiles(biw, BlockFace.TOP)
+						.addFarthest(TileDataRegistry.getInstance().get("Test:YellowFlowers"));
 			}
 		} else {
 			if (random.nextInt(2) == 0) {
-				world.getTiles(biw, BlockFace.TOP).addFarthest(
-					TileDataRegistry.getInstance().get("Test:Stones")
-				);
+				world.getTiles(biw, BlockFace.TOP).addFarthest(TileDataRegistry.getInstance().get("Test:Stones"));
 			}
 		}
 	}
 
-	private void addSnow(
-		ChunkData chunk,
-		Vec3i biw,
-		WorldData world,
-		Random random,
-		boolean isDirt,
-		double height,
-		double grad
-	) {
+	private void addSnow(ChunkData chunk, Vec3i biw, WorldData world, Random random, boolean isDirt, double height,
+			double grad) {
 		if (height < 1500)
 			return;
 
