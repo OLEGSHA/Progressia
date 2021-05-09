@@ -15,6 +15,7 @@ import ru.windcorp.progressia.common.world.entity.EntityData;
 
 /**
  * Renderer for Test:FallingBlock
+ * 
  * @author opfromthestart
  *
  */
@@ -23,22 +24,13 @@ public class TestEntityRenderFallingBlock extends EntityRender {
 
 	public TestEntityRenderFallingBlock(String id) {
 		super(id);
-		cube = new Shapes.PppBuilder(
-				WorldRenderProgram.getDefault(),
-				new SimpleTexture(
-						Atlases.getSprite(
-							ResourceManager.getTextureResource("blocks/Sand"), new AtlasGroup("Blocks", 1 << 12)
-						)
-					)
-			).create();
+		cube = new Shapes.PppBuilder(WorldRenderProgram.getDefault(), new SimpleTexture(Atlases
+				.getSprite(ResourceManager.getTextureResource("blocks/Sand"), new AtlasGroup("Blocks", 1 << 12))))
+						.create();
 	}
-	
+
 	public void setTexture(Texture texture) { // There has to be a better way.
-		cube = new Shapes.PppBuilder(
-				WorldRenderProgram.getDefault(),
-				texture
-			)
-				.create();
+		cube = new Shapes.PppBuilder(WorldRenderProgram.getDefault(), texture).create();
 	}
 
 	@Override
@@ -46,7 +38,14 @@ public class TestEntityRenderFallingBlock extends EntityRender {
 		return new EntityRenderable(entity) {
 			@Override
 			public void render(ShapeRenderHelper renderer) {
-				//LogManager.getLogger().info("Rendering FallingBlock");
+				// LogManager.getLogger().info("Rendering FallingBlock");
+				if (((TestEntityDataFallingBlock) entity).isDone()) {
+					return;
+					//setTexture(new SimpleTexture(Atlases.getSprite(ResourceManager.getTextureResource("blocks/LogSide"),
+					//		new AtlasGroup("Blocks", 1 << 12))));
+				}
+				//setTexture(new SimpleTexture(Atlases.getSprite(ResourceManager.getTextureResource("blocks/Sand"),
+				//			new AtlasGroup("Blocks", 1 << 12))));
 				cube.render(renderer);
 			}
 		};

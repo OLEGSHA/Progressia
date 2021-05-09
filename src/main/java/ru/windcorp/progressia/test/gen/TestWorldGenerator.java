@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -43,6 +44,7 @@ import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 import ru.windcorp.progressia.server.world.WorldLogic;
 import ru.windcorp.progressia.server.world.generation.AbstractWorldGenerator;
 import ru.windcorp.progressia.test.TestEntityDataFallingBlock;
+import ru.windcorp.progressia.test.TestEntityLogicFallingBlock;
 
 public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 
@@ -60,20 +62,10 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 					@Override
 					public void onChunkBlockChanged(ChunkData chunk, Vec3i blockInChunk, BlockData previous,
 							BlockData current) {
-						if (current.getId() != "Test:Sand") { // Replace with
-																// proper check
-																// for all
-																// gravity
-																// blocks
+						if (!TestEntityLogicFallingBlock.FallingBlocks.contains(current.getId())) {
 							return;
 						}
-						if (chunk.getBlock(blockInChunk.add_(0, 0, -1)).getId() == "Test:Air")// TODO
-																								// Won't
-																								// work
-																								// on
-																								// z
-																								// chunk
-																								// boundaries
+						if (chunk.getWorld().getBlock(chunk.getPosition().mul_(16).add_(blockInChunk.add_(0, 0, -1))).getId() == "Test:Air")
 						{
 							LogManager.getLogger().info("Inserting FallingBlock");
 
@@ -87,7 +79,10 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 									+ String.valueOf(new Random().nextFloat())).hashCode());
 
 							chunk.getWorld().addEntity(fallingBlock);
-							chunk.setBlock(blockInChunk, BlockDataRegistry.getInstance().get("Test:Air"), true);
+							chunk.setBlock(blockInChunk, previous, true);
+							Vec3i chunkWorldPos = chunk.getPosition().mul_(16).add_(blockInChunk);
+							LogManager.getLogger().info(String.valueOf(chunkWorldPos.x)+" "+String.valueOf(chunkWorldPos.y)+" "+String.valueOf(chunkWorldPos.z));
+							ClientState.getInstance().getWorld().getData().setBlock(chunkWorldPos, BlockDataRegistry.getInstance().get("Test:Glass"), true);
 						}
 					}
 				});

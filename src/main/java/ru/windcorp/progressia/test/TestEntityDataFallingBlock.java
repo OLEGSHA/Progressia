@@ -12,6 +12,7 @@ import ru.windcorp.progressia.common.world.entity.EntityData;
 public class TestEntityDataFallingBlock extends EntityData {
 	
 	private BlockData block;
+	private boolean isDone = false;
 
 	public TestEntityDataFallingBlock() {
 		this("Test:FallingBlock",new BlockData("Test:Sand"));
@@ -26,5 +27,17 @@ public class TestEntityDataFallingBlock extends EntityData {
 	public BlockData getBlock()
 	{
 		return block;
+	}
+	
+	public void setInvisible()
+	{
+		//block = new BlockData("Test:Log");
+		isDone = true;
+		setCollisionModel(new AABB(0,0,0,.5f,0.5f,0.5f));
+	}
+	
+	public boolean isDone()
+	{
+		return isDone;
 	}
 }
