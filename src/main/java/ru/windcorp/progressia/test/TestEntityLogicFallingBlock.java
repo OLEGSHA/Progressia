@@ -44,7 +44,7 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 	}
 
 	@Override
-	public void tick(EntityData entity, TickContext context) {
+	public void tick(EntityData entity, TickContext context) { //context.getWorldData() ClientState.getInstance().getWorld().getData()
 		if (entity == null)
 		{
 			return;
@@ -58,7 +58,7 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 		vel = new Vec3(vel.x*friction,vel.y*friction,vel.z);
 		entity.setVelocity(vel);
 		
-		TestEntityDataFallingBlock fallBlock = (TestEntityDataFallingBlock) ClientState.getInstance().getWorld().getData().getEntity(entity.getEntityId());
+		TestEntityDataFallingBlock fallBlock = (TestEntityDataFallingBlock) ClientState.getInstance().getWorld().getData().getEntity(entity.getEntityId());  //ClientState.getInstance().getWorld().getData().getEntity(entity.getEntityId());
 		//fallBlock = (TestEntityDataFallingBlock) entity;
 		
 		if (fallBlock.isDone() || !context.getWorld().isBlockLoaded(fallBlock.getBlockInWorld(null)))
@@ -76,12 +76,13 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 		//LogManager.getLogger().info("FallingBlock is at "+String.valueOf(occupiedBlock.x)+" "+String.valueOf(occupiedBlock.y)+" "+String.valueOf(occupiedBlock.z));
 		//LogManager.getLogger().info("Block is of type " + context.getWorldData().getChunk(chunkCoords).getBlock(inChunkCoords).getId());
 
-		if (ClientState.getInstance().getWorld().getData().getChunk(chunkCoords).getBlock(inChunkCoords)
+		if (context.getWorldData().getChunk(chunkCoords).getBlock(inChunkCoords)
 				.getId() != "Test:Air") {
 			LogManager.getLogger().info("Deleting FallingBlock at " + String.valueOf(occupiedBlock.x));
-			ClientState.getInstance().getWorld().getData().setBlock(occupiedBlock, fallBlock.getBlock(),true);
-			fallBlock.setInvisible(); //Until I know how to properly delete it.
-			//ClientState.getInstance().getWorld().getData().removeEntity(entity.getEntityId());
+			//ClientState.getInstance().getWorld().getData().setBlock(occupiedBlock, fallBlock.getBlock(),true);
+			context.getAccessor().setBlock(occupiedBlock, fallBlock.getBlock());
+			//fallBlock.setInvisible(); //Until I know how to properly delete it.
+			context.getWorldData().removeEntity(entity.getEntityId());
 		}
 	}
 }

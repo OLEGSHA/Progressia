@@ -27,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -58,7 +57,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 			@Override
 			public void onChunkLoaded(WorldData world, ChunkData chunk) {
 				findAndPopulate(chunk.getPosition(), world);
-				chunk.addListener(new ChunkDataListener() {
+				chunk.addListener(new ChunkDataListener() { //Falling Block spawning logic
 					@Override
 					public void onChunkBlockChanged(ChunkData chunk, Vec3i blockInChunk, BlockData previous,
 							BlockData current) {
@@ -79,10 +78,11 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 									+ String.valueOf(new Random().nextFloat())).hashCode());
 
 							chunk.getWorld().addEntity(fallingBlock);
-							chunk.setBlock(blockInChunk, previous, true);
+							
+							chunk.setBlock(blockInChunk, previous, false);
 							Vec3i chunkWorldPos = chunk.getPosition().mul_(16).add_(blockInChunk);
 							LogManager.getLogger().info(String.valueOf(chunkWorldPos.x)+" "+String.valueOf(chunkWorldPos.y)+" "+String.valueOf(chunkWorldPos.z));
-							ClientState.getInstance().getWorld().getData().setBlock(chunkWorldPos, BlockDataRegistry.getInstance().get("Test:Glass"), true);
+							world.setBlock(chunkWorldPos, BlockDataRegistry.getInstance().get("Test:Glass"), false);
 						}
 					}
 				});
