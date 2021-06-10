@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.tile;
 
 import ru.windcorp.progressia.client.graphics.texture.Atlases;
@@ -41,11 +41,7 @@ public class TileRenderRegistry extends NamespacedInstanceRegistry<TileRender> {
 
 	public static Texture getTileTexture(String name) {
 		return new SimpleTexture(
-			Atlases.getSprite(
-				ResourceManager.getTextureResource("tiles/" + name),
-				TILES_ATLAS_GROUP
-			)
-		);
+				Atlases.getSprite(ResourceManager.getTextureResource("tiles/" + name), TILES_ATLAS_GROUP));
 	}
 
 }

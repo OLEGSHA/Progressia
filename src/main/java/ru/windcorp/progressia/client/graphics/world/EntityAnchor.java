@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.world;
 
 import java.util.Collection;
@@ -39,23 +39,16 @@ public class EntityAnchor implements Anchor {
 		this.model = model;
 
 		this.modes = ImmutableList.of(
-			// From viewpoint / first person
-			Mode.of(v -> v.set(0), m -> {
-			}),
+				// From viewpoint / first person
+				Mode.of(v -> v.set(0), m -> {
+				}),
 
-			// Third person, looking forward
-			Mode.of(
-				v -> v.set(-3.5f, +0.5f, 0),
-				m -> {
-				}
-			),
+				// Third person, looking forward
+				Mode.of(v -> v.set(-3.5f, +0.5f, 0), m -> {
+				}),
 
-			// Third person, looking back
-			Mode.of(
-				v -> v.set(-3.5f, 0, 0),
-				m -> m.rotateZ((float) Math.PI)
-			)
-		);
+				// Third person, looking back
+				Mode.of(v -> v.set(-3.5f, 0, 0), m -> m.rotateZ((float) Math.PI)));
 	}
 
 	@Override

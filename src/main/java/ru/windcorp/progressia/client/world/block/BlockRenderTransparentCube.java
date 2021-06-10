@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.block;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
@@ -23,36 +23,13 @@ import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class BlockRenderTransparentCube extends BlockRenderTexturedCube {
 
-	public BlockRenderTransparentCube(
-		String id,
-		Texture topTexture,
-		Texture bottomTexture,
-		Texture northTexture,
-		Texture southTexture,
-		Texture eastTexture,
-		Texture westTexture
-	) {
-		super(
-			id,
-			topTexture,
-			bottomTexture,
-			northTexture,
-			southTexture,
-			eastTexture,
-			westTexture
-		);
+	public BlockRenderTransparentCube(String id, Texture topTexture, Texture bottomTexture, Texture northTexture,
+			Texture southTexture, Texture eastTexture, Texture westTexture) {
+		super(id, topTexture, bottomTexture, northTexture, southTexture, eastTexture, westTexture);
 	}
 
 	public BlockRenderTransparentCube(String id, Texture texture) {
-		this(
-			id,
-			texture,
-			texture,
-			texture,
-			texture,
-			texture,
-			texture
-		);
+		this(id, texture, texture, texture, texture, texture, texture);
 	}
 
 	@Override

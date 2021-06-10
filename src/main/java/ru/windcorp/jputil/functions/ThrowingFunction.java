@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.functions;
 
 import java.util.function.BiConsumer;
@@ -28,10 +28,8 @@ public interface ThrowingFunction<T, R, E extends Exception> {
 	R apply(T t) throws E;
 
 	@SuppressWarnings("unchecked")
-	default Function<T, R> withHandler(
-		BiConsumer<? super T, ? super E> handler,
-		Function<? super T, ? extends R> value
-	) {
+	default Function<T, R> withHandler(BiConsumer<? super T, ? super E> handler,
+			Function<? super T, ? extends R> value) {
 		return t -> {
 			try {
 				return apply(t);
@@ -58,23 +56,18 @@ public interface ThrowingFunction<T, R, E extends Exception> {
 	}
 
 	public static <T, R, I, E extends Exception> ThrowingFunction<T, R, E> compose(
-		ThrowingFunction<? super T, I, ? extends E> first,
-		ThrowingFunction<? super I, ? extends R, ? extends E> second
-	) {
+			ThrowingFunction<? super T, I, ? extends E> first,
+			ThrowingFunction<? super I, ? extends R, ? extends E> second) {
+		return t -> second.apply(first.apply(t));
+	}
+
+	public static <T, R, I, E extends Exception> ThrowingFunction<T, R, E> compose(Function<? super T, I> first,
+			ThrowingFunction<? super I, ? extends R, E> second) {
 		return t -> second.apply(first.apply(t));
 	}
 
 	public static <T, R, I, E extends Exception> ThrowingFunction<T, R, E> compose(
-		Function<? super T, I> first,
-		ThrowingFunction<? super I, ? extends R, E> second
-	) {
-		return t -> second.apply(first.apply(t));
-	}
-
-	public static <T, R, I, E extends Exception> ThrowingFunction<T, R, E> compose(
-		ThrowingFunction<? super T, I, E> first,
-		Function<? super I, ? extends R> second
-	) {
+			ThrowingFunction<? super T, I, E> first, Function<? super I, ? extends R> second) {
 		return t -> second.apply(first.apply(t));
 	}
 

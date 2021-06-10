@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.collision;
 
 import java.util.ArrayList;
@@ -68,25 +68,22 @@ public class WorldCollisionHelper {
 
 	/**
 	 * Changes the state of this helper's {@link #getCollideable()} so it is
-	 * ready to adequately handle
-	 * collisions with the {@code collideable} that might happen in the next
-	 * {@code maxTime} seconds.
-	 * This helper is only valid for checking collisions with the given
-	 * Collideable and only within
+	 * ready to adequately handle collisions with the {@code collideable} that
+	 * might happen in the next {@code maxTime} seconds. This helper is only
+	 * valid for checking collisions with the given Collideable and only within
 	 * the given time limit.
 	 * 
-	 * @param collideable the {@link Collideable} that collisions will be
-	 *                    checked against
-	 * @param maxTime     maximum collision time
+	 * @param collideable
+	 *            the {@link Collideable} that collisions will be checked
+	 *            against
+	 * @param maxTime
+	 *            maximum collision time
 	 */
 	public void tuneToCollideable(WorldData world, Collideable collideable, float maxTime) {
 		activeBlockModels.forEach(blockModelCache::release);
 		activeBlockModels.clear();
-		CollisionPathComputer.forEveryBlockInCollisionPath(
-			collideable,
-			maxTime,
-			v -> addModel(world.getCollisionModelOfBlock(v), v)
-		);
+		CollisionPathComputer.forEveryBlockInCollisionPath(collideable, maxTime,
+				v -> addModel(world.getCollisionModelOfBlock(v), v));
 	}
 
 	private void addModel(CollisionModel model, Vec3i pos) {

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class GUI {
 	}
 
 	private static final List<LayerStackModification> MODIFICATION_QUEUE = Collections
-		.synchronizedList(new ArrayList<>());
+			.synchronizedList(new ArrayList<>());
 
 	private static class ModifiableInput extends Input {
 		@Override

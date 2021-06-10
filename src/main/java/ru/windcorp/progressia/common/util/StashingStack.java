@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util;
 
 import java.util.Arrays;
@@ -45,9 +45,8 @@ public class StashingStack<T> implements Iterable<T> {
 
 	/**
 	 * Stores all elements. Elements with indices
-	 * <tt>[0;&nbsp;{@link #head}]</tt>
-	 * are present in the stack, elements with indices
-	 * <tt>({@link #head};&nbsp;contents.length]</tt> are stashed.
+	 * <tt>[0;&nbsp;{@link #head}]</tt> are present in the stack, elements with
+	 * indices <tt>({@link #head};&nbsp;contents.length]</tt> are stashed.
 	 */
 	private final Object[] contents;
 
@@ -66,7 +65,8 @@ public class StashingStack<T> implements Iterable<T> {
 	/**
 	 * Creates a new stack. Its stash is filled with {@code null}s.
 	 * 
-	 * @param capacity stack's capacity
+	 * @param capacity
+	 *            stack's capacity
 	 */
 	public StashingStack(int capacity) {
 		this((T[]) new Object[capacity], 0);
@@ -75,7 +75,8 @@ public class StashingStack<T> implements Iterable<T> {
 	/**
 	 * Creates a new stack with the supplied stash.
 	 * 
-	 * @param contents elements that are put in the stash initially.
+	 * @param contents
+	 *            elements that are put in the stash initially.
 	 */
 	public StashingStack(T[] contents) {
 		this(contents.clone(), 0);
@@ -84,7 +85,8 @@ public class StashingStack<T> implements Iterable<T> {
 	/**
 	 * Creates a new stack with the supplied stash.
 	 * 
-	 * @param contents elements that are put in the stash initially.
+	 * @param contents
+	 *            elements that are put in the stash initially.
 	 */
 	public StashingStack(Iterable<T> contents) {
 		this(Iterables.toArray(contents, Object.class), 0);
@@ -95,8 +97,10 @@ public class StashingStack<T> implements Iterable<T> {
 	 * {@code generator}. The generator's {@link Supplier#get() get()} method
 	 * will only be invoked {@code capacity} times from within this constructor.
 	 * 
-	 * @param capacity  stack's capacity
-	 * @param generator a supplier of objects for the stash
+	 * @param capacity
+	 *            stack's capacity
+	 * @param generator
+	 *            a supplier of objects for the stash
 	 */
 	public StashingStack(int capacity, Supplier<T> generator) {
 		this(capacity);
@@ -160,7 +164,8 @@ public class StashingStack<T> implements Iterable<T> {
 	 * empty throws a {@link NoSuchElementException}.
 	 * 
 	 * @return head of this stack
-	 * @throws NoSuchElementException is the stack is empty
+	 * @throws NoSuchElementException
+	 *             is the stack is empty
 	 * @see #peek()
 	 */
 	public T getHead() {
@@ -170,8 +175,8 @@ public class StashingStack<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Returns and removes the head of this stack. If the stack is
-	 * empty returns {@code null}.
+	 * Returns and removes the head of this stack. If the stack is empty returns
+	 * {@code null}.
 	 * 
 	 * @return head of this stack or {@code null}
 	 * @see #removeHead()
@@ -183,11 +188,12 @@ public class StashingStack<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Returns and removes the head of this stack. If the stack is
-	 * empty throws a {@link NoSuchElementException}.
+	 * Returns and removes the head of this stack. If the stack is empty throws
+	 * a {@link NoSuchElementException}.
 	 * 
 	 * @return head of this stack
-	 * @throws NoSuchElementException is the stack is empty
+	 * @throws NoSuchElementException
+	 *             is the stack is empty
 	 * @see #pop()
 	 */
 	public T removeHead() {
@@ -216,7 +222,8 @@ public class StashingStack<T> implements Iterable<T> {
 	 * removed. If the stack is already full throws an
 	 * {@link IllegalStateException}.
 	 * 
-	 * @param newElement the element to push
+	 * @param newElement
+	 *            the element to push
 	 * @return the new head
 	 */
 	public T push(T newElement) {
@@ -233,17 +240,16 @@ public class StashingStack<T> implements Iterable<T> {
 	 * bottom of the stack. If the index is out of bounds, an
 	 * {@link IndexOutOfBoundsException} is thrown.
 	 * 
-	 * @param index index of the element to retrieve,
-	 *              <tt>[0;&nbsp;{@link #getSize()})</tt>
+	 * @param index
+	 *            index of the element to retrieve,
+	 *            <tt>[0;&nbsp;{@link #getSize()})</tt>
 	 * @return the requested element
-	 * @throws IndexOutOfBoundsException if the index is negative or greater
-	 *                                   than head
+	 * @throws IndexOutOfBoundsException
+	 *             if the index is negative or greater than head
 	 */
 	public T get(int index) {
 		if (index > head) {
-			throw new IndexOutOfBoundsException(
-				"Requested index " + index + " > head " + head
-			);
+			throw new IndexOutOfBoundsException("Requested index " + index + " > head " + head);
 		}
 
 		return (T) contents[index];

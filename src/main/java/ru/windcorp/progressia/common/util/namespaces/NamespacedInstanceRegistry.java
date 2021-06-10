@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util.namespaces;
 
 import java.util.Collection;
@@ -29,8 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.errorprone.annotations.DoNotCall;
 
-public class NamespacedInstanceRegistry<E extends Namespaced>
-	implements Map<String, E> {
+public class NamespacedInstanceRegistry<E extends Namespaced> implements Map<String, E> {
 
 	private final Map<String, E> backingMap = Collections.synchronizedMap(new HashMap<>());
 
@@ -87,9 +86,7 @@ public class NamespacedInstanceRegistry<E extends Namespaced>
 	@DoNotCall
 	@Deprecated
 	public E put(String key, E value) {
-		throw new UnsupportedOperationException(
-			"Use NamespacedInstanceRegistry.register(E)"
-		);
+		throw new UnsupportedOperationException("Use NamespacedInstanceRegistry.register(E)");
 	}
 
 	@Override
@@ -104,9 +101,7 @@ public class NamespacedInstanceRegistry<E extends Namespaced>
 	@DoNotCall
 	@Deprecated
 	public void putAll(Map<? extends String, ? extends E> m) {
-		throw new UnsupportedOperationException(
-			"Use NamespacedInstanceRegistry.registerAll(Collection<? extends E>)"
-		);
+		throw new UnsupportedOperationException("Use NamespacedInstanceRegistry.registerAll(Collection<? extends E>)");
 	}
 
 	@Override

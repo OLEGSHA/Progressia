@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.entity;
 
 import static java.lang.Math.atan2;
@@ -47,10 +47,7 @@ public abstract class NPedModel extends EntityRenderable {
 			}
 		}
 
-		protected void render(
-			ShapeRenderHelper renderer,
-			NPedModel model
-		) {
+		protected void render(ShapeRenderHelper renderer, NPedModel model) {
 			renderer.pushTransform().translate(translation);
 			applyTransform(renderer.pushTransform(), model);
 			renderable.render(renderer);
@@ -82,13 +79,7 @@ public abstract class NPedModel extends EntityRenderable {
 
 		private final Vec3 viewPoint;
 
-		public Head(
-			Renderable renderable,
-			Vec3 joint,
-			double maxYawDegrees,
-			double maxPitchDegrees,
-			Vec3 viewPoint
-		) {
+		public Head(Renderable renderable, Vec3 joint, double maxYawDegrees, double maxPitchDegrees, Vec3 viewPoint) {
 			super(renderable, joint);
 			this.maxYaw = (float) toRadians(maxYawDegrees);
 			this.maxPitch = (float) toRadians(maxPitchDegrees);
@@ -176,11 +167,7 @@ public abstract class NPedModel extends EntityRenderable {
 
 		bodyYaw = normalizeAngle(bodyYaw);
 
-		headPitch = Glm.clamp(
-			getData().getPitch(),
-			-head.maxPitch,
-			head.maxPitch
-		);
+		headPitch = Glm.clamp(getData().getPitch(), -head.maxPitch, head.maxPitch);
 	}
 
 	private void accountForVelocity() {
@@ -194,9 +181,8 @@ public abstract class NPedModel extends EntityRenderable {
 		// TODO switch to world time
 		walkingParameter += velocity * GraphicsInterface.getFrameLength() * 1000;
 
-		bodyYaw += velocityParameter * normalizeAngle(
-			(float) (atan2(horizontal.y, horizontal.x) - bodyYaw)
-		) * min(1, GraphicsInterface.getFrameLength() * 10);
+		bodyYaw += velocityParameter * normalizeAngle((float) (atan2(horizontal.y, horizontal.x) - bodyYaw))
+				* min(1, GraphicsInterface.getFrameLength() * 10);
 	}
 
 	private void evaluateVelocityCoeff() {
@@ -212,12 +198,7 @@ public abstract class NPedModel extends EntityRenderable {
 		Mat4 m = new Mat4();
 		Vec4 v = new Vec4();
 
-		m.identity()
-			.scale(scale)
-			.rotateZ(bodyYaw)
-			.translate(head.getTranslation())
-			.rotateZ(headYaw)
-			.rotateY(headPitch);
+		m.identity().scale(scale).rotateZ(bodyYaw).translate(head.getTranslation()).rotateZ(headYaw).rotateY(headPitch);
 
 		v.set(head.getViewPoint(), 1);
 		m.mul(v);
@@ -247,9 +228,8 @@ public abstract class NPedModel extends EntityRenderable {
 
 	/**
 	 * Returns a number in the range [0; 1] that can be used to scale animation
-	 * effects that depend on speed.
-	 * This parameter is 0 when the entity is not moving and 1 when it's moving
-	 * "fast".
+	 * effects that depend on speed. This parameter is 0 when the entity is not
+	 * moving and 1 when it's moving "fast".
 	 * 
 	 * @return velocity parameter
 	 */
@@ -259,9 +239,8 @@ public abstract class NPedModel extends EntityRenderable {
 
 	/**
 	 * Returns a number that can be used to parameterize animation effects that
-	 * depend on walking.
-	 * This parameter increases when the entity moves (e.g. this can be total
-	 * traveled distance).
+	 * depend on walking. This parameter increases when the entity moves (e.g.
+	 * this can be total traveled distance).
 	 * 
 	 * @return walking parameter
 	 */

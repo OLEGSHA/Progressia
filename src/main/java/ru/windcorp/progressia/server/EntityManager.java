@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
 
 import java.util.Collections;
@@ -145,9 +145,8 @@ public class EntityManager {
 		EntityData entity = server.getWorld().getData().getEntity(entityId);
 
 		if (entity == null) {
-			throw new IllegalStateException(
-				"Entity with entity ID " + new String(StringUtil.toFullHex(entityId)) + " is not loaded, cannot send"
-			);
+			throw new IllegalStateException("Entity with entity ID " + new String(StringUtil.toFullHex(entityId))
+					+ " is not loaded, cannot send");
 		}
 
 		PacketSendEntity packet = new PacketSendEntity();

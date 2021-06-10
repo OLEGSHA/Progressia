@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.functions;
 
 import java.util.function.BiConsumer;
@@ -39,30 +39,24 @@ public interface ThrowingConsumer<T, E extends Exception> {
 		};
 	}
 
-	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(
-		ThrowingConsumer<? super T, ? extends E> first,
-		ThrowingConsumer<? super T, ? extends E> second
-	) {
+	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(ThrowingConsumer<? super T, ? extends E> first,
+			ThrowingConsumer<? super T, ? extends E> second) {
 		return t -> {
 			first.accept(t);
 			second.accept(t);
 		};
 	}
 
-	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(
-		Consumer<? super T> first,
-		ThrowingConsumer<? super T, ? extends E> second
-	) {
+	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(Consumer<? super T> first,
+			ThrowingConsumer<? super T, ? extends E> second) {
 		return t -> {
 			first.accept(t);
 			second.accept(t);
 		};
 	}
 
-	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(
-		ThrowingConsumer<? super T, ? extends E> first,
-		Consumer<? super T> second
-	) {
+	public static <T, E extends Exception> ThrowingConsumer<T, E> concat(ThrowingConsumer<? super T, ? extends E> first,
+			Consumer<? super T> second) {
 		return t -> {
 			first.accept(t);
 			second.accept(t);

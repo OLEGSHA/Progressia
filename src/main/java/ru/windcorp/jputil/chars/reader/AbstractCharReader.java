@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.chars.reader;
 
 /**
@@ -27,10 +27,9 @@ public abstract class AbstractCharReader implements CharReader {
 
 	/**
 	 * Current position of this CharReader. The reader maps its input to
-	 * positions starting from 0.
-	 * Positions that are negative or lower than 0 are invalid.
-	 * {@link #current()}
-	 * will throw an exception if position is invalid.
+	 * positions starting from 0. Positions that are negative or lower than 0
+	 * are invalid. {@link #current()} will throw an exception if position is
+	 * invalid.
 	 */
 	protected int position = 0;
 

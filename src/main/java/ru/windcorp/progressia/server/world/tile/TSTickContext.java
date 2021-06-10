@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.tile;
 
 import java.util.Objects;
@@ -71,7 +71,7 @@ public interface TSTickContext extends BlockTickContext {
 
 	default TileTickContext forLayer(int layer) {
 		return TickContextMutable.start().withServer(getServer()).withBlock(getBlockInWorld()).withFace(getFace())
-			.withLayer(layer);
+				.withLayer(layer);
 	}
 
 	default boolean forEachTile(Consumer<TileTickContext> action) {
@@ -90,10 +90,8 @@ public interface TSTickContext extends BlockTickContext {
 	}
 
 	default TSTickContext getComplementary() {
-		return TickContextMutable.copyWorld(this)
-			.withBlock(getBlockInWorld().add_(getFace().getVector()))
-			.withFace(getFace().getCounter())
-			.build();
+		return TickContextMutable.copyWorld(this).withBlock(getBlockInWorld().add_(getFace().getVector()))
+				.withFace(getFace().getCounter()).build();
 	}
 
 	default <R> R evalComplementary(Function<TSTickContext, R> action) {

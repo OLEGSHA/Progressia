@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.tile;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
@@ -26,11 +26,7 @@ public class TileRenderGrass extends TileRenderSurface {
 	private final Texture topTexture;
 	private final Texture sideTexture;
 
-	public TileRenderGrass(
-		String id,
-		Texture top,
-		Texture side
-	) {
+	public TileRenderGrass(String id, Texture top, Texture side) {
 		super(id);
 		this.topTexture = top;
 		this.sideTexture = side;

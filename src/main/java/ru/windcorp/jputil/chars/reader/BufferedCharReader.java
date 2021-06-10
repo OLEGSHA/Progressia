@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.chars.reader;
 
 /**
@@ -51,9 +51,12 @@ public abstract class BufferedCharReader extends AbstractCharReader {
 	/**
 	 * Acquires next characters and stores them in the array.
 	 * 
-	 * @param buffer the output array
-	 * @param offset index of the first character
-	 * @param length maximum amount of characters to be pulled
+	 * @param buffer
+	 *            the output array
+	 * @param offset
+	 *            index of the first character
+	 * @param length
+	 *            maximum amount of characters to be pulled
 	 * @return the amount of characters actually pulled
 	 */
 	protected int pullChars(char[] buffer, int offset, int length) {

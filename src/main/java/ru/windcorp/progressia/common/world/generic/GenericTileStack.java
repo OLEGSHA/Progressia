@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.generic;
 
 import java.util.AbstractList;
@@ -28,8 +28,7 @@ import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public abstract class GenericTileStack<Self extends GenericTileStack<Self, T, C>, T extends GenericTile, C extends GenericChunk<C, ?, T, Self>>
-	extends AbstractList<T>
-	implements RandomAccess {
+		extends AbstractList<T> implements RandomAccess {
 
 	public static interface TSConsumer<T> {
 		void accept(int layer, T tile);

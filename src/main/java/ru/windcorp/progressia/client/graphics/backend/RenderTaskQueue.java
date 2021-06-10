@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend;
 
 import ru.windcorp.jputil.functions.ThrowingRunnable;
@@ -41,11 +41,7 @@ public class RenderTaskQueue {
 		HANDLER.invokeNow(task);
 	}
 
-	public static <E extends Exception> void waitAndInvoke(
-		ThrowingRunnable<E> task
-	)
-		throws InterruptedException,
-		E {
+	public static <E extends Exception> void waitAndInvoke(ThrowingRunnable<E> task) throws InterruptedException, E {
 		HANDLER.waitAndInvoke(task);
 	}
 

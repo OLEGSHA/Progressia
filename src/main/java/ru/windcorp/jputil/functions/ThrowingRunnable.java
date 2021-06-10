@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.functions;
 
 import java.util.function.Consumer;
@@ -38,10 +38,8 @@ public interface ThrowingRunnable<E extends Exception> {
 		};
 	}
 
-	public static <E extends Exception> ThrowingRunnable<E> concat(
-		ThrowingRunnable<? extends E> first,
-		ThrowingRunnable<? extends E> second
-	) {
+	public static <E extends Exception> ThrowingRunnable<E> concat(ThrowingRunnable<? extends E> first,
+			ThrowingRunnable<? extends E> second) {
 		return () -> {
 			first.run();
 			second.run();

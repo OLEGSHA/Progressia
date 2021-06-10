@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend;
 
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
@@ -23,9 +23,7 @@ import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.GL_STREAM_DRAW;
 
 public enum Usage { // TODO add _COPY and _READ, pref. as another enum
-	STATIC(GL_STATIC_DRAW),
-	DYNAMIC(GL_DYNAMIC_DRAW),
-	STREAM(GL_STREAM_DRAW);
+	STATIC(GL_STATIC_DRAW), DYNAMIC(GL_DYNAMIC_DRAW), STREAM(GL_STREAM_DRAW);
 
 	private final int glCode;
 

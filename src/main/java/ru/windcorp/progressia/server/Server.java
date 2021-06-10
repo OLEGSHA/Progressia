@@ -83,8 +83,8 @@ public class Server {
 	}
 
 	/**
-	 * Returns this server's {@link ClientManager}.
-	 * Use this to deal with communications, e.g. send packets.
+	 * Returns this server's {@link ClientManager}. Use this to deal with
+	 * communications, e.g. send packets.
 	 * 
 	 * @return the {@link ClientManager} that handles this server
 	 */
@@ -110,15 +110,16 @@ public class Server {
 	}
 
 	/**
-	 * Requests that the provided task is executed once on next server tick.
-	 * The task will be run in the main server thread. The task object is
-	 * discarded after execution.
+	 * Requests that the provided task is executed once on next server tick. The
+	 * task will be run in the main server thread. The task object is discarded
+	 * after execution.
 	 * <p>
 	 * Use this method to request a one-time (rare) action that must necessarily
 	 * happen in the main server thread, such as initialization tasks or
 	 * reconfiguration.
 	 * 
-	 * @param task the task to run
+	 * @param task
+	 *            the task to run
 	 * @see #invokeNow(Runnable)
 	 * @see #schedule(Consumer)
 	 */
@@ -129,15 +130,15 @@ public class Server {
 	/**
 	 * Executes the tasks in the server main thread as soon as possible.
 	 * <p>
-	 * If this method is invoked in the server main thread, then the task is
-	 * run immediately (the method blocks until the task finishes). Otherwise
-	 * this method behaves exactly like {@link #invokeLater(Runnable)}.
+	 * If this method is invoked in the server main thread, then the task is run
+	 * immediately (the method blocks until the task finishes). Otherwise this
+	 * method behaves exactly like {@link #invokeLater(Runnable)}.
 	 * <p>
 	 * Use this method to make sure that a piece of code is run in the main
-	 * server
-	 * thread.
+	 * server thread.
 	 * 
-	 * @param task the task to run
+	 * @param task
+	 *            the task to run
 	 * @see #invokeLater(Runnable)
 	 * @see #schedule(Consumer)
 	 */
@@ -145,11 +146,7 @@ public class Server {
 		taskQueue.invokeNow(task);
 	}
 
-	public <E extends Exception> void waitAndInvoke(
-		ThrowingRunnable<E> task
-	)
-		throws InterruptedException,
-		E {
+	public <E extends Exception> void waitAndInvoke(ThrowingRunnable<E> task) throws InterruptedException, E {
 		taskQueue.waitAndInvoke(task);
 	}
 
@@ -197,8 +194,8 @@ public class Server {
 
 	/**
 	 * Returns the {@link WorldAccessor} object for this server. Use the
-	 * provided accessor to
-	 * request common {@link Evaluation}s and {@link Change}s.
+	 * provided accessor to request common {@link Evaluation}s and
+	 * {@link Change}s.
 	 * 
 	 * @return a {@link WorldAccessor}
 	 * @see #requestChange(Change)
@@ -238,11 +235,10 @@ public class Server {
 
 	/**
 	 * Shuts the server down, disconnecting the clients with the provided
-	 * message.
-	 * This method blocks until the shutdown is complete.
+	 * message. This method blocks until the shutdown is complete.
 	 * 
-	 * @param message the message to send to the clients as the disconnect
-	 *                reason
+	 * @param message
+	 *            the message to send to the clients as the disconnect reason
 	 */
 	public void shutdown(String message) {
 		LogManager.getLogger().warn("Server.shutdown() is not yet implemented");
@@ -256,10 +252,9 @@ public class Server {
 
 	/**
 	 * Returns an instance of {@link java.util.Random Random} that can be used
-	 * as a source of indeterministic
-	 * randomness. World generation and other algorithms that must have random
-	 * but reproducible results should
-	 * not use this.
+	 * as a source of indeterministic randomness. World generation and other
+	 * algorithms that must have random but reproducible results should not use
+	 * this.
 	 * 
 	 * @return a thread-safe indeterministic instance of
 	 *         {@link java.util.Random}.

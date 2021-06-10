@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world;
 
 import java.util.ArrayList;
@@ -39,12 +39,10 @@ import ru.windcorp.progressia.common.world.generic.LongBasedChunkMap;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 
-public class WorldData
-	implements GenericWorld<BlockData, TileData, TileDataStack, ChunkData, EntityData> {
+public class WorldData implements GenericWorld<BlockData, TileData, TileDataStack, ChunkData, EntityData> {
 
 	private final ChunkMap<ChunkData> chunksByPos = new LongBasedChunkMap<>(
-		TCollections.synchronizedMap(new TLongObjectHashMap<>())
-	);
+			TCollections.synchronizedMap(new TLongObjectHashMap<>()));
 
 	private final Collection<ChunkData> chunks = Collections.unmodifiableCollection(chunksByPos.values());
 
@@ -102,14 +100,8 @@ public class WorldData
 
 		ChunkData previous = chunksByPos.get(chunk);
 		if (previous != null) {
-			throw new IllegalArgumentException(
-				String.format(
-					"Chunk at (%d; %d; %d) already exists",
-					chunk.getPosition().x,
-					chunk.getPosition().y,
-					chunk.getPosition().z
-				)
-			);
+			throw new IllegalArgumentException(String.format("Chunk at (%d; %d; %d) already exists",
+					chunk.getPosition().x, chunk.getPosition().y, chunk.getPosition().z));
 		}
 
 		chunksByPos.put(chunk, chunk);
@@ -128,11 +120,8 @@ public class WorldData
 	public void setBlock(Vec3i blockInWorld, BlockData block, boolean notify) {
 		ChunkData chunk = getChunkByBlock(blockInWorld);
 		if (chunk == null)
-			throw new IllegalCoordinatesException(
-				"Coordinates "
-					+ "(" + blockInWorld.x + "; " + blockInWorld.y + "; " + blockInWorld.z + ") "
-					+ "do not belong to a loaded chunk"
-			);
+			throw new IllegalCoordinatesException("Coordinates " + "(" + blockInWorld.x + "; " + blockInWorld.y + "; "
+					+ blockInWorld.z + ") " + "do not belong to a loaded chunk");
 
 		chunk.setBlock(Coordinates.convertInWorldToInChunk(blockInWorld, null), block, notify);
 	}
@@ -167,8 +156,7 @@ public class WorldData
 
 			if (entity == null) {
 				throw new IllegalArgumentException(
-					"Entity with EntityID " + EntityData.formatEntityId(entityId) + " not present"
-				);
+						"Entity with EntityID " + EntityData.formatEntityId(entityId) + " not present");
 			} else {
 				removeEntity(entity);
 			}

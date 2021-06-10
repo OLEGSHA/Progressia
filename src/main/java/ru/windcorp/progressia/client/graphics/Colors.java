@@ -15,26 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics;
 
 import glm.vec._4.Vec4;
 
 public class Colors {
 
-	public static final Vec4 WHITE = toVector(0xFFFFFFFF),
-		BLACK = toVector(0xFF000000),
+	public static final Vec4 WHITE = toVector(0xFFFFFFFF), BLACK = toVector(0xFF000000),
 
-		GRAY_4 = toVector(0xFF444444),
-		GRAY = toVector(0xFF888888),
-		GRAY_A = toVector(0xFFAAAAAA),
+			GRAY_4 = toVector(0xFF444444), GRAY = toVector(0xFF888888), GRAY_A = toVector(0xFFAAAAAA),
 
-		DEBUG_RED = toVector(0xFFFF0000),
-		DEBUG_GREEN = toVector(0xFF00FF00),
-		DEBUG_BLUE = toVector(0xFF0000FF),
-		DEBUG_CYAN = toVector(0xFF00FFFF),
-		DEBUG_MAGENTA = toVector(0xFFFF00FF),
-		DEBUG_YELLOW = toVector(0xFFFFFF00);
+			DEBUG_RED = toVector(0xFFFF0000), DEBUG_GREEN = toVector(0xFF00FF00), DEBUG_BLUE = toVector(0xFF0000FF),
+			DEBUG_CYAN = toVector(0xFF00FFFF), DEBUG_MAGENTA = toVector(0xFFFF00FF),
+			DEBUG_YELLOW = toVector(0xFFFFFF00);
 
 	public static Vec4 toVector(int argb) {
 		return toVector(argb, new Vec4());

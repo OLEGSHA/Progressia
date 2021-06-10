@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend;
 
 import org.lwjgl.glfw.GLFW;
@@ -49,13 +49,7 @@ public class InputHandler {
 
 	private static final ModifiableKeyEvent THE_KEY_EVENT = new ModifiableKeyEvent();
 
-	static void handleKeyInput(
-		long window,
-		int key,
-		int scancode,
-		int action,
-		int mods
-	) {
+	static void handleKeyInput(long window, int key, int scancode, int action, int mods) {
 		if (GraphicsBackend.getWindowHandle() != window)
 			return;
 		THE_KEY_EVENT.initialize(key, scancode, action, mods);
@@ -71,12 +65,7 @@ public class InputHandler {
 		}
 	}
 
-	static void handleMouseButtonInput(
-		long window,
-		int key,
-		int action,
-		int mods
-	) {
+	static void handleMouseButtonInput(long window, int key, int action, int mods) {
 		handleKeyInput(window, key, Integer.MAX_VALUE - key, action, mods);
 	}
 
@@ -97,11 +86,7 @@ public class InputHandler {
 
 	private static final ModifiableCursorMoveEvent THE_CURSOR_MOVE_EVENT = new ModifiableCursorMoveEvent();
 
-	static void handleMouseMoveInput(
-		long window,
-		double x,
-		double y
-	) {
+	static void handleMouseMoveInput(long window, double x, double y) {
 		if (GraphicsBackend.getWindowHandle() != window)
 			return;
 		y = GraphicsInterface.getFrameHeight() - y; // Flip y axis
@@ -131,11 +116,7 @@ public class InputHandler {
 
 	private static final ModifiableWheelScrollEvent THE_WHEEL_SCROLL_EVENT = new ModifiableWheelScrollEvent();
 
-	static void handleWheelScroll(
-		long window,
-		double xoffset,
-		double yoffset
-	) {
+	static void handleWheelScroll(long window, double xoffset, double yoffset) {
 		if (GraphicsBackend.getWindowHandle() != window)
 			return;
 		THE_WHEEL_SCROLL_EVENT.initialize(xoffset, yoffset);
@@ -162,10 +143,7 @@ public class InputHandler {
 	/*
 	 * NB: this is NOT a GLFW callback, the raw callback is in GraphicsBackend
 	 */
-	static void handleFrameResize(
-		int width,
-		int height
-	) {
+	static void handleFrameResize(int width, int height) {
 		THE_FRAME_RESIZE_EVENT.initialize(width, height);
 		dispatch(THE_FRAME_RESIZE_EVENT);
 	}

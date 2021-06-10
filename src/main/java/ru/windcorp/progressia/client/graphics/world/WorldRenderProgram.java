@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.world;
 
 import java.nio.ByteBuffer;
@@ -44,10 +44,8 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 	private static WorldRenderProgram def = null;
 
 	public static void init() {
-		def = new WorldRenderProgram(
-			new String[] { "WorldDefault.vertex.glsl" },
-			new String[] { "WorldDefault.fragment.glsl" }
-		);
+		def = new WorldRenderProgram(new String[] { "WorldDefault.vertex.glsl" },
+				new String[] { "WorldDefault.fragment.glsl" });
 	}
 
 	public static WorldRenderProgram getDefault() {
@@ -55,33 +53,25 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 	}
 
 	private static final int DEFAULT_BYTES_PER_VERTEX = 3 * Float.BYTES + // Position
-		4 * Float.BYTES + // Color multiplier
-		2 * Float.BYTES + // Texture coordinates
-		3 * Float.BYTES; // Normals
+			4 * Float.BYTES + // Color multiplier
+			2 * Float.BYTES + // Texture coordinates
+			3 * Float.BYTES; // Normals
 
 	private static final String WORLD_VERTEX_SHADER_RESOURCE = "World.vertex.glsl";
 	private static final String WORLD_FRAGMENT_SHADER_RESOURCE = "World.fragment.glsl";
 
 	private static final String WORLD_TRANSFORM_UNIFORM_NAME = "worldTransform",
-		NORMALS_ATTRIBUTE_NAME = "inputNormals";
+			NORMALS_ATTRIBUTE_NAME = "inputNormals";
 
 	private final Uniform4Matrix worldTransformUniform;
 	private final AttributeVertexArray normalsAttribute;
 
-	public WorldRenderProgram(
-		String[] vertexShaderResources,
-		String[] fragmentShaderResources
-	) {
-		super(
-			attachVertexShader(vertexShaderResources),
-			attachFragmentShader(fragmentShaderResources)
-		);
+	public WorldRenderProgram(String[] vertexShaderResources, String[] fragmentShaderResources) {
+		super(attachVertexShader(vertexShaderResources), attachFragmentShader(fragmentShaderResources));
 
-		this.worldTransformUniform = getUniform(WORLD_TRANSFORM_UNIFORM_NAME)
-			.as4Matrix();
+		this.worldTransformUniform = getUniform(WORLD_TRANSFORM_UNIFORM_NAME).as4Matrix();
 
-		this.normalsAttribute = getAttribute(NORMALS_ATTRIBUTE_NAME)
-			.asVertexArray();
+		this.normalsAttribute = getAttribute(NORMALS_ATTRIBUTE_NAME).asVertexArray();
 	}
 
 	private static String[] attachVertexShader(String[] others) {
@@ -103,14 +93,7 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 		int vertexStride = getBytesPerVertex();
 		int offset = super.bindVertices(vertices);
 
-		normalsAttribute.set(
-			3,
-			GL11.GL_FLOAT,
-			false,
-			vertexStride,
-			vertices,
-			offset
-		);
+		normalsAttribute.set(3, GL11.GL_FLOAT, false, vertexStride, vertices, offset);
 		offset += 3 * Float.BYTES;
 
 		return offset;
@@ -130,8 +113,7 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 
 	@Override
 	public int getBytesPerVertex() {
-		return super.getBytesPerVertex() +
-			3 * Float.BYTES; // Normals
+		return super.getBytesPerVertex() + 3 * Float.BYTES; // Normals
 	}
 
 	@Override
@@ -171,12 +153,7 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 		Vectors.release(normal);
 	}
 
-	private void computeOneNormal(
-		Vec3 a,
-		Vec3 b,
-		Vec3 c,
-		Vec3 normal
-	) {
+	private void computeOneNormal(Vec3 a, Vec3 b, Vec3 c, Vec3 normal) {
 		b.sub(a);
 		c.sub(a);
 		b.cross(c, normal);
@@ -187,18 +164,14 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 		ByteBuffer vertices = face.getVertices();
 		int offset = vertices.position() + index * getBytesPerVertex();
 
-		result.set(
-			vertices.getFloat(offset + 0 * Float.BYTES),
-			vertices.getFloat(offset + 1 * Float.BYTES),
-			vertices.getFloat(offset + 2 * Float.BYTES)
-		);
+		result.set(vertices.getFloat(offset + 0 * Float.BYTES), vertices.getFloat(offset + 1 * Float.BYTES),
+				vertices.getFloat(offset + 2 * Float.BYTES));
 	}
 
 	private void saveVertexNormal(Face face, int index, Vec3 normal) {
 		ByteBuffer vertices = face.getVertices();
-		int offset = vertices.position() + index * getBytesPerVertex() + (3 * Float.BYTES +
-			4 * Float.BYTES +
-			2 * Float.BYTES);
+		int offset = vertices.position() + index * getBytesPerVertex()
+				+ (3 * Float.BYTES + 4 * Float.BYTES + 2 * Float.BYTES);
 
 		vertices.putFloat(offset + 0 * Float.BYTES, normal.x);
 		vertices.putFloat(offset + 1 * Float.BYTES, normal.y);
@@ -231,87 +204,36 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 		private final List<Vertex> vertices = new ArrayList<>();
 
 		@Override
-		public VertexBuilder addVertex(
-			float x,
-			float y,
-			float z,
-			float r,
-			float g,
-			float b,
-			float tx,
-			float ty
-		) {
-			vertices.add(
-				new Vertex(
-					new Vec3(x, y, z),
-					new Vec4(r, g, b, 1),
-					new Vec2(tx, ty)
-				)
-			);
+		public VertexBuilder addVertex(float x, float y, float z, float r, float g, float b, float tx, float ty) {
+			vertices.add(new Vertex(new Vec3(x, y, z), new Vec4(r, g, b, 1), new Vec2(tx, ty)));
 
 			return this;
 		}
 
 		@Override
-		public VertexBuilder addVertex(
-			float x,
-			float y,
-			float z,
-			float r,
-			float g,
-			float b,
-			float a,
-			float tx,
-			float ty
-		) {
-			vertices.add(
-				new Vertex(
-					new Vec3(x, y, z),
-					new Vec4(r, g, b, a),
-					new Vec2(tx, ty)
-				)
-			);
+		public VertexBuilder addVertex(float x, float y, float z, float r, float g, float b, float a, float tx,
+				float ty) {
+			vertices.add(new Vertex(new Vec3(x, y, z), new Vec4(r, g, b, a), new Vec2(tx, ty)));
 
 			return this;
 		}
 
 		@Override
-		public VertexBuilder addVertex(
-			Vec3 position,
-			Vec4 colorMultiplier,
-			Vec2 textureCoords
-		) {
-			vertices.add(
-				new Vertex(
-					new Vec3(position),
-					new Vec4(colorMultiplier),
-					new Vec2(textureCoords)
-				)
-			);
+		public VertexBuilder addVertex(Vec3 position, Vec4 colorMultiplier, Vec2 textureCoords) {
+			vertices.add(new Vertex(new Vec3(position), new Vec4(colorMultiplier), new Vec2(textureCoords)));
 
 			return this;
 		}
 
 		@Override
 		public ByteBuffer assemble() {
-			ByteBuffer result = BufferUtils.createByteBuffer(
-				DEFAULT_BYTES_PER_VERTEX * vertices.size()
-			);
+			ByteBuffer result = BufferUtils.createByteBuffer(DEFAULT_BYTES_PER_VERTEX * vertices.size());
 
 			for (Vertex v : vertices) {
-				result
-					.putFloat(v.position.x)
-					.putFloat(v.position.y)
-					.putFloat(v.position.z)
-					.putFloat(v.colorMultiplier.x)
-					.putFloat(v.colorMultiplier.y)
-					.putFloat(v.colorMultiplier.z)
-					.putFloat(v.colorMultiplier.w)
-					.putFloat(v.textureCoords.x)
-					.putFloat(v.textureCoords.y)
-					.putFloat(Float.NaN)
-					.putFloat(Float.NaN)
-					.putFloat(Float.NaN);
+				result.putFloat(v.position.x).putFloat(v.position.y).putFloat(v.position.z)
+						.putFloat(v.colorMultiplier.x).putFloat(v.colorMultiplier.y).putFloat(v.colorMultiplier.z)
+						.putFloat(v.colorMultiplier.w).putFloat(v.textureCoords.x).putFloat(v.textureCoords.y)
+						.putFloat(Float.NaN).putFloat(Float.NaN).putFloat(Float.NaN);
 			}
 
 			result.flip();

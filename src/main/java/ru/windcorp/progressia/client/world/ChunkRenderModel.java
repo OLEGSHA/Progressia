@@ -39,9 +39,9 @@ import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.BlockFace;
 
 public class ChunkRenderModel implements Renderable {
-	
+
 	private final ChunkRender chunk;
-	
+
 	private final Collection<ChunkRenderOptimizer> optimizers = new ArrayList<>();
 	private Model model = null;
 
@@ -51,44 +51,42 @@ public class ChunkRenderModel implements Renderable {
 
 	@Override
 	public void render(ShapeRenderHelper renderer) {
-		if (model == null) return;
-		
-		renderer.pushTransform().translate(
-			chunk.getX() * ChunkData.BLOCKS_PER_CHUNK,
-			chunk.getY() * ChunkData.BLOCKS_PER_CHUNK,
-			chunk.getZ() * ChunkData.BLOCKS_PER_CHUNK
-		);
+		if (model == null)
+			return;
+
+		renderer.pushTransform().translate(chunk.getX() * ChunkData.BLOCKS_PER_CHUNK,
+				chunk.getY() * ChunkData.BLOCKS_PER_CHUNK, chunk.getZ() * ChunkData.BLOCKS_PER_CHUNK);
 
 		model.render(renderer);
 
 		renderer.popTransform();
 	}
-	
+
 	public void update() {
 		setupCROs();
-		
+
 		StaticModel.Builder sink = StaticModel.builder();
-		
+
 		optimizers.forEach(ChunkRenderOptimizer::startRender);
-		
+
 		chunk.forEachBiC(blockInChunk -> {
 			processBlockAndTiles(blockInChunk, sink);
 		});
-		
+
 		for (ChunkRenderOptimizer optimizer : optimizers) {
 			Renderable renderable = optimizer.endRender();
 			if (renderable != null) {
 				sink.addPart(renderable);
 			}
 		}
-		
+
 		this.model = sink.build();
 		this.optimizers.clear();
 	}
 
 	private void setupCROs() {
 		Set<String> ids = ChunkRenderOptimizerRegistry.getInstance().keySet();
-		
+
 		for (String id : ids) {
 			ChunkRenderOptimizer optimizer = ChunkRenderOptimizerRegistry.getInstance().create(id);
 			optimizer.setup(chunk);
@@ -98,7 +96,7 @@ public class ChunkRenderModel implements Renderable {
 
 	private void processBlockAndTiles(Vec3i blockInChunk, Builder sink) {
 		processBlock(blockInChunk, sink);
-		
+
 		for (BlockFace face : BlockFace.getFaces()) {
 			processTileStack(blockInChunk, face, sink);
 		}
@@ -106,18 +104,16 @@ public class ChunkRenderModel implements Renderable {
 
 	private void processBlock(Vec3i blockInChunk, Builder sink) {
 		BlockRender block = chunk.getBlock(blockInChunk);
-		
+
 		if (block instanceof BlockRenderNone) {
 			return;
 		}
-		
+
 		if (block.needsOwnRenderable()) {
-			sink.addPart(
-				block.createRenderable(chunk.getData(), blockInChunk), 
-				new Mat4().identity().translate(blockInChunk.x, blockInChunk.y, blockInChunk.z)
-			);
+			sink.addPart(block.createRenderable(chunk.getData(), blockInChunk),
+					new Mat4().identity().translate(blockInChunk.x, blockInChunk.y, blockInChunk.z));
 		}
-		
+
 		processBlockWithCROs(block, blockInChunk);
 	}
 
@@ -129,26 +125,24 @@ public class ChunkRenderModel implements Renderable {
 
 	private void processTileStack(Vec3i blockInChunk, BlockFace face, Builder sink) {
 		TileRenderStack trs = chunk.getTilesOrNull(blockInChunk, face);
-		
+
 		if (trs == null || trs.isEmpty()) {
 			return;
 		}
-		
+
 		trs.forEach(tile -> processTile(tile, blockInChunk, face, sink));
 	}
 
-	private void processTile(TileRender tile, Vec3i blockInChunk, BlockFace face, Builder sink) {	
+	private void processTile(TileRender tile, Vec3i blockInChunk, BlockFace face, Builder sink) {
 		if (tile instanceof TileRenderNone) {
 			return;
 		}
-		
+
 		if (tile.needsOwnRenderable()) {
-			sink.addPart(
-				tile.createRenderable(chunk.getData(), blockInChunk, face), 
-				new Mat4().identity().translate(blockInChunk.x, blockInChunk.y, blockInChunk.z)
-			);
+			sink.addPart(tile.createRenderable(chunk.getData(), blockInChunk, face),
+					new Mat4().identity().translate(blockInChunk.x, blockInChunk.y, blockInChunk.z));
 		}
-		
+
 		processTileWithCROs(tile, blockInChunk, face);
 	}
 

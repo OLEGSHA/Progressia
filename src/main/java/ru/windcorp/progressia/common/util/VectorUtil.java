@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util;
 
 import java.util.function.Consumer;
@@ -37,15 +37,7 @@ public class VectorUtil {
 		X, Y, Z, W;
 	}
 
-	public static void iterateCuboid(
-		int x0,
-		int y0,
-		int z0,
-		int x1,
-		int y1,
-		int z1,
-		Consumer<? super Vec3i> action
-	) {
+	public static void iterateCuboid(int x0, int y0, int z0, int x1, int y1, int z1, Consumer<? super Vec3i> action) {
 		Vec3i cursor = Vectors.grab3i();
 
 		for (int x = x0; x < x1; ++x) {
@@ -60,23 +52,12 @@ public class VectorUtil {
 		Vectors.release(cursor);
 	}
 
-	public static void iterateCuboid(
-		Vec3i vMin,
-		Vec3i vMax,
-		Consumer<? super Vec3i> action
-	) {
+	public static void iterateCuboid(Vec3i vMin, Vec3i vMax, Consumer<? super Vec3i> action) {
 		iterateCuboid(vMin.x, vMin.y, vMin.z, vMax.x, vMax.y, vMax.z, action);
 	}
 
-	public static void iterateCuboidAround(
-		int cx,
-		int cy,
-		int cz,
-		int dx,
-		int dy,
-		int dz,
-		Consumer<? super Vec3i> action
-	) {
+	public static void iterateCuboidAround(int cx, int cy, int cz, int dx, int dy, int dz,
+			Consumer<? super Vec3i> action) {
 		if (dx < 0)
 			throw new IllegalArgumentException("dx " + dx + " is negative");
 		if (dy < 0)
@@ -98,29 +79,15 @@ public class VectorUtil {
 		iterateCuboid(cx - dx, cy - dy, cz - dz, cx + dx + 1, cy + dy + 1, cz + dz + 1, action);
 	}
 
-	public static void iterateCuboidAround(
-		Vec3i center,
-		Vec3i diameters,
-		Consumer<? super Vec3i> action
-	) {
+	public static void iterateCuboidAround(Vec3i center, Vec3i diameters, Consumer<? super Vec3i> action) {
 		iterateCuboidAround(center.x, center.y, center.z, diameters.x, diameters.y, diameters.z, action);
 	}
 
-	public static void iterateCuboidAround(
-		int cx,
-		int cy,
-		int cz,
-		int diameter,
-		Consumer<? super Vec3i> action
-	) {
+	public static void iterateCuboidAround(int cx, int cy, int cz, int diameter, Consumer<? super Vec3i> action) {
 		iterateCuboidAround(cx, cy, cz, diameter, diameter, diameter, action);
 	}
 
-	public static void iterateCuboidAround(
-		Vec3i center,
-		int diameter,
-		Consumer<? super Vec3i> action
-	) {
+	public static void iterateCuboidAround(Vec3i center, int diameter, Consumer<? super Vec3i> action) {
 		iterateCuboidAround(center.x, center.y, center.z, diameter, action);
 	}
 
@@ -143,35 +110,14 @@ public class VectorUtil {
 		inOut.set(vec4.x, vec4.y, vec4.z);
 	}
 
-	public static Vec3 linearCombination(
-		Vec3 va,
-		float ka,
-		Vec3 vb,
-		float kb,
-		Vec3 output
-	) {
-		output.set(
-			va.x * ka + vb.x * kb,
-			va.y * ka + vb.y * kb,
-			va.z * ka + vb.z * kb
-		);
+	public static Vec3 linearCombination(Vec3 va, float ka, Vec3 vb, float kb, Vec3 output) {
+		output.set(va.x * ka + vb.x * kb, va.y * ka + vb.y * kb, va.z * ka + vb.z * kb);
 		return output;
 	}
 
-	public static Vec3 linearCombination(
-		Vec3 va,
-		float ka,
-		Vec3 vb,
-		float kb,
-		Vec3 vc,
-		float kc,
-		Vec3 output
-	) {
-		output.set(
-			va.x * ka + vb.x * kb + vc.x * kc,
-			va.y * ka + vb.y * kb + vc.y * kc,
-			va.z * ka + vb.z * kb + vc.z * kc
-		);
+	public static Vec3 linearCombination(Vec3 va, float ka, Vec3 vb, float kb, Vec3 vc, float kc, Vec3 output) {
+		output.set(va.x * ka + vb.x * kb + vc.x * kc, va.y * ka + vb.y * kb + vc.y * kc,
+				va.z * ka + vb.z * kb + vc.z * kc);
 		return output;
 	}
 

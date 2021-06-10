@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.world;
 
 import java.util.ArrayList;
@@ -132,12 +132,8 @@ public class LayerWorld extends Layer {
 		tmp_collideableList.clear();
 		tmp_collideableList.addAll(this.client.getWorld().getData().getEntities());
 
-		Collider.performCollisions(
-			tmp_collideableList,
-			this.client.getWorld().getData(),
-			tickLength,
-			tmp_colliderWorkspace
-		);
+		Collider.performCollisions(tmp_collideableList, this.client.getWorld().getData(), tickLength,
+				tmp_colliderWorkspace);
 	}
 
 	private static final Renderable SELECTION_BOX = tmp_createSelectionBox();
@@ -166,26 +162,14 @@ public class LayerWorld extends Layer {
 		for (float phi = 0; phi < 2 * FloatMathUtil.PI_F; phi += FloatMathUtil.PI_F / 2) {
 			Mat4 rot = new Mat4().identity().rotateZ(phi).scale(scale);
 
-			b.addPart(
-				new PppBuilder(p, (Texture) null).setOrigin(
-					new Vec3(-f - 0.5f, -f - 0.5f, -f - 0.5f)
-				).setSize(f, f, 2 * f + 1).setColorMultiplier(color).create(),
-				rot
-			);
+			b.addPart(new PppBuilder(p, (Texture) null).setOrigin(new Vec3(-f - 0.5f, -f - 0.5f, -f - 0.5f))
+					.setSize(f, f, 2 * f + 1).setColorMultiplier(color).create(), rot);
 
-			b.addPart(
-				new PppBuilder(p, (Texture) null).setOrigin(
-					new Vec3(-f - 0.5f, -0.5f, -f - 0.5f)
-				).setSize(f, 1, f).setColorMultiplier(color).create(),
-				rot
-			);
+			b.addPart(new PppBuilder(p, (Texture) null).setOrigin(new Vec3(-f - 0.5f, -0.5f, -f - 0.5f))
+					.setSize(f, 1, f).setColorMultiplier(color).create(), rot);
 
-			b.addPart(
-				new PppBuilder(p, (Texture) null).setOrigin(
-					new Vec3(-f - 0.5f, -0.5f, +0.5f)
-				).setSize(f, 1, f).setColorMultiplier(color).create(),
-				rot
-			);
+			b.addPart(new PppBuilder(p, (Texture) null).setOrigin(new Vec3(-f - 0.5f, -0.5f, +0.5f)).setSize(f, 1, f)
+					.setColorMultiplier(color).create(), rot);
 		}
 
 		return b.build();

@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.cro;
 
 import ru.windcorp.progressia.common.util.namespaces.NamespacedFactoryRegistry;
 
 public class ChunkRenderOptimizerRegistry extends NamespacedFactoryRegistry<ChunkRenderOptimizer> {
-	
+
 	private static final ChunkRenderOptimizerRegistry INSTANCE = new ChunkRenderOptimizerRegistry();
-	
+
 	/**
 	 * @return the instance
 	 */

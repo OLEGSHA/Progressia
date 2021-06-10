@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world;
 
 import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
@@ -29,20 +29,17 @@ import glm.vec._3.i.Vec3i;
  * Three types of coordinates are used in Progressia:
  * <ul>
  * <li id="blockInWorld"><em>World coordinates</em>, in code referred to as
- * {@code blockInWorld} -
- * coordinates relative to world origin. Every block in the world has unique
- * world coordinates.</li>
+ * {@code blockInWorld} - coordinates relative to world origin. Every block in
+ * the world has unique world coordinates.</li>
  * <li id="blockInChunk"><em>Chunk coordinates</em>, in code referred to as
- * {@code blockInChunk} -
- * coordinates relative some chunk's origin. Every block in the chunk has unique
- * chunk coordinates, but blocks in different chunks may have identical chunk
- * coordinates. These coordinates are only useful in combination with a chunk
- * reference. Chunk coordinates are always
+ * {@code blockInChunk} - coordinates relative some chunk's origin. Every block
+ * in the chunk has unique chunk coordinates, but blocks in different chunks may
+ * have identical chunk coordinates. These coordinates are only useful in
+ * combination with a chunk reference. Chunk coordinates are always
  * <tt>[0; {@link #BLOCKS_PER_CHUNK})</tt>.</li>
  * <li id="chunk"><em>Coordinates of chunk</em>, in code referred to as
- * {@code chunk} -
- * chunk coordinates relative to world origin. Every chunk in the world has
- * unique coordinates of chunk.</li>
+ * {@code chunk} - chunk coordinates relative to world origin. Every chunk in
+ * the world has unique coordinates of chunk.</li>
  * </ul>
  */
 public class Coordinates {
@@ -55,7 +52,8 @@ public class Coordinates {
 	 * Computes the coordinate of the chunk that the block specified by the
 	 * provided world coordinate belongs to.
 	 * 
-	 * @param blockInWorld world coordinate of the block
+	 * @param blockInWorld
+	 *            world coordinate of the block
 	 * @return the corresponding coordinate of the chunk containing the block
 	 * @see #convertInWorldToChunk(Vec3i, Vec3i)
 	 */
@@ -67,15 +65,14 @@ public class Coordinates {
 	 * Computes the coordinates of the chunk that the block specified by the
 	 * provided world coordinates belongs to.
 	 * 
-	 * @param blockInWorld world coordinates of the block
-	 * @param output       a {@link Vec3i} to store the result in
+	 * @param blockInWorld
+	 *            world coordinates of the block
+	 * @param output
+	 *            a {@link Vec3i} to store the result in
 	 * @return {@code output}
 	 * @see #convertInWorldToChunk(int)
 	 */
-	public static Vec3i convertInWorldToChunk(
-		Vec3i blockInWorld,
-		Vec3i output
-	) {
+	public static Vec3i convertInWorldToChunk(Vec3i blockInWorld, Vec3i output) {
 		if (output == null)
 			output = new Vec3i();
 
@@ -87,10 +84,11 @@ public class Coordinates {
 	}
 
 	/**
-	 * Computes the chunk coordinate that the block specified by the
-	 * provided world coordinate has in its chunk.
+	 * Computes the chunk coordinate that the block specified by the provided
+	 * world coordinate has in its chunk.
 	 * 
-	 * @param blockInWorld world coordinate of the block
+	 * @param blockInWorld
+	 *            world coordinate of the block
 	 * @return the corresponding chunk coordinate of the block
 	 * @see #convertInWorldToInChunk(Vec3i, Vec3i)
 	 */
@@ -99,18 +97,17 @@ public class Coordinates {
 	}
 
 	/**
-	 * Computes the chunk coordinates that the block specified by the
-	 * provided world coordinates has in its chunk.
+	 * Computes the chunk coordinates that the block specified by the provided
+	 * world coordinates has in its chunk.
 	 * 
-	 * @param blockInWorld world coordinates of the block
-	 * @param output       a {@link Vec3i} to store the result in
+	 * @param blockInWorld
+	 *            world coordinates of the block
+	 * @param output
+	 *            a {@link Vec3i} to store the result in
 	 * @return {@code output}
 	 * @see #convertInWorldToInChunk(int)
 	 */
-	public static Vec3i convertInWorldToInChunk(
-		Vec3i blockInWorld,
-		Vec3i output
-	) {
+	public static Vec3i convertInWorldToInChunk(Vec3i blockInWorld, Vec3i output) {
 		if (output == null)
 			output = new Vec3i();
 
@@ -125,8 +122,10 @@ public class Coordinates {
 	 * Computes the world coordinate of the block specified by its chunk
 	 * coordinate and the coordinate of its chunk.
 	 * 
-	 * @param chunk        coordinate of chunk
-	 * @param blockInChunk chunk coordinate of block
+	 * @param chunk
+	 *            coordinate of chunk
+	 * @param blockInChunk
+	 *            chunk coordinate of block
 	 * @return corresponding world coordinate
 	 * @see #getInWorld(int, int)
 	 */
@@ -138,17 +137,16 @@ public class Coordinates {
 	 * Computes the world coordinates of the block specified by its chunk
 	 * coordinates and the coordinates of its chunk.
 	 * 
-	 * @param chunk        coordinate of chunk
-	 * @param blockInChunk chunk coordinate of block
-	 * @param output       a {@link Vec3i} to store the result in
+	 * @param chunk
+	 *            coordinate of chunk
+	 * @param blockInChunk
+	 *            chunk coordinate of block
+	 * @param output
+	 *            a {@link Vec3i} to store the result in
 	 * @return {@code output}
 	 * @see #getInWorld(int)
 	 */
-	public static Vec3i getInWorld(
-		Vec3i chunk,
-		Vec3i blockInChunk,
-		Vec3i output
-	) {
+	public static Vec3i getInWorld(Vec3i chunk, Vec3i blockInChunk, Vec3i output) {
 		if (output == null)
 			output = new Vec3i();
 
@@ -158,7 +156,7 @@ public class Coordinates {
 
 		return output;
 	}
-	
+
 	public static boolean isOnChunkBorder(int blockInChunk) {
 		return blockInChunk == 0 || blockInChunk == BLOCKS_PER_CHUNK - 1;
 	}

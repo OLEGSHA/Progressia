@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world;
 
 import glm.vec._3.i.Vec3i;
@@ -67,18 +67,18 @@ public class TickAndUpdateUtil {
 			return;
 
 		TileTickContext tickContext = TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face)
-			.withLayer(layer);
+				.withLayer(layer);
 		tickTile((TickableTile) tile, tickContext);
 	}
 
 	public static void tickTiles(WorldLogic world, Vec3i blockInWorld, BlockFace face) {
 		TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face).build()
-			.forEachTile(context -> {
-				TileLogic tile = context.getTile();
-				if (tile instanceof TickableTile) {
-					tickTile((TickableTile) tile, context);
-				}
-			});
+				.forEachTile(context -> {
+					TileLogic tile = context.getTile();
+					if (tile instanceof TickableTile) {
+						tickTile((TickableTile) tile, context);
+					}
+				});
 	}
 
 	public static void updateBlock(UpdateableBlock block, BlockTickContext context) {
@@ -112,18 +112,18 @@ public class TickAndUpdateUtil {
 			return;
 
 		TileTickContext tickContext = TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face)
-			.withLayer(layer);
+				.withLayer(layer);
 		updateTile((UpdateableTile) tile, tickContext);
 	}
 
 	public static void updateTiles(WorldLogic world, Vec3i blockInWorld, BlockFace face) {
 		TickContextMutable.start().withWorld(world).withBlock(blockInWorld).withFace(face).build()
-			.forEachTile(context -> {
-				TileLogic tile = context.getTile();
-				if (tile instanceof UpdateableTile) {
-					updateTile((UpdateableTile) tile, context);
-				}
-			});
+				.forEachTile(context -> {
+					TileLogic tile = context.getTile();
+					if (tile instanceof UpdateableTile) {
+						updateTile((UpdateableTile) tile, context);
+					}
+				});
 	}
 
 	public static void tickEntity(EntityLogic logic, EntityData data, TickContext context) {
@@ -135,11 +135,8 @@ public class TickAndUpdateUtil {
 	}
 
 	public static void tickEntity(EntityData data, Server server) {
-		tickEntity(
-			EntityLogicRegistry.getInstance().get(data.getId()),
-			data,
-			TickContextMutable.start().withServer(server).build()
-		);
+		tickEntity(EntityLogicRegistry.getInstance().get(data.getId()), data,
+				TickContextMutable.start().withServer(server).build());
 	}
 
 	private TickAndUpdateUtil() {

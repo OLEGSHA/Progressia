@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.localization;
 
 import ru.windcorp.jputil.chars.EscapeException;
@@ -30,8 +30,7 @@ import java.util.Map;
 
 public class Parser {
 	private String filePath;
-	static private final Escaper ESCAPER = new Escaper.EscaperBuilder()
-		.withChars("n", "\n").build();
+	static private final Escaper ESCAPER = new Escaper.EscaperBuilder().withChars("n", "\n").build();
 
 	public Parser(String filePath) {
 		this.filePath = filePath;
@@ -43,11 +42,7 @@ public class Parser {
 
 	public Map<String, String> parse() {
 		Map<String, String> parsedData = new HashMap<>();
-		try (
-			Reader rawData = ResourceManager
-				.getResource(filePath)
-				.getReader()
-		) {
+		try (Reader rawData = ResourceManager.getResource(filePath).getReader()) {
 			int code;
 			char c;
 			StringBuilder stringBuilder = new StringBuilder();
@@ -88,10 +83,7 @@ public class Parser {
 								stringBuilder.append(c);
 							}
 						}
-						parsedData.put(
-							ESCAPER.unescape(key),
-							ESCAPER.unescape(stringBuilder.toString())
-						);
+						parsedData.put(ESCAPER.unescape(key), ESCAPER.unescape(stringBuilder.toString()));
 						stringBuilder.setLength(0);
 					}
 				} else if (c == '\n') {

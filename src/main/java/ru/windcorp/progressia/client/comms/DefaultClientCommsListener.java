@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.comms;
 
 import java.io.IOException;
@@ -39,9 +39,7 @@ public class DefaultClientCommsListener implements CommsListener {
 	@Override
 	public void onPacketReceived(Packet packet) {
 		if (packet instanceof PacketAffectWorld) {
-			((PacketAffectWorld) packet).apply(
-				getClient().getWorld().getData()
-			);
+			((PacketAffectWorld) packet).apply(getClient().getWorld().getData());
 		} else if (packet instanceof PacketSetLocalPlayer) {
 			setLocalPlayer((PacketSetLocalPlayer) packet);
 		}

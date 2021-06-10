@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.generic;
 
 import java.util.Collection;
@@ -97,10 +97,8 @@ public interface ChunkMap<V> {
 		return containsChunk(chunk) ? def : get(chunk);
 	}
 
-	default <C extends GenericChunk<C, ?, ?, ?>> V compute(
-		C chunk,
-		BiFunction<? super C, ? super V, ? extends V> remappingFunction
-	) {
+	default <C extends GenericChunk<C, ?, ?, ?>> V compute(C chunk,
+			BiFunction<? super C, ? super V, ? extends V> remappingFunction) {
 		V newValue = remappingFunction.apply(chunk, get(chunk));
 
 		if (newValue == null) {
@@ -128,10 +126,8 @@ public interface ChunkMap<V> {
 
 	void forEach(BiConsumer<? super Vec3i, ? super V> action);
 
-	default <C extends GenericChunk<C, ?, ?, ?>> void forEachIn(
-		GenericWorld<?, ?, ?, C, ?> world,
-		BiConsumer<? super C, ? super V> action
-	) {
+	default <C extends GenericChunk<C, ?, ?, ?>> void forEachIn(GenericWorld<?, ?, ?, C, ?> world,
+			BiConsumer<? super C, ? super V> action) {
 		forEach((pos, value) -> {
 			C chunk = world.getChunk(pos);
 			if (chunk == null)

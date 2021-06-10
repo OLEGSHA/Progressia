@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.block;
 
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
@@ -32,9 +32,7 @@ public abstract class BlockRender extends Namespaced implements GenericBlock {
 	}
 
 	public void render(ShapeRenderHelper renderer) {
-		throw new UnsupportedOperationException(
-			"BlockRender.render() not implemented in " + this
-		);
+		throw new UnsupportedOperationException("BlockRender.render() not implemented in " + this);
 	}
 
 	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk) {

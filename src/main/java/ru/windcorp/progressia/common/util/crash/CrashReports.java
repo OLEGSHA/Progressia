@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util.crash;
 
 import org.apache.logging.log4j.LogManager;
@@ -38,9 +38,8 @@ import java.util.*;
 
 /**
  * A utility for reporting critical problems, gathering system context and
- * terminating the application consequently (crashing).
- * Do not hesitate to use {@link #report(Throwable, String, Object...)} at every
- * other line.
+ * terminating the application consequently (crashing). Do not hesitate to use
+ * {@link #report(Throwable, String, Object...)} at every other line.
  * 
  * @author serega404
  */
@@ -56,8 +55,8 @@ public class CrashReports {
 
 	/**
 	 * Creates a {@link ReportedException} that describes the provided problem
-	 * so the program can crash later.
-	 * This method is intended to be used like so:
+	 * so the program can crash later. This method is intended to be used like
+	 * so:
 	 * 
 	 * <pre>
 	 * try {
@@ -68,26 +67,24 @@ public class CrashReports {
 	 * </pre>
 	 * <p>
 	 * Such usage ensures that the report will be dealt with at the top of the
-	 * call stack
-	 * (at least in methods that have a properly set up
+	 * call stack (at least in methods that have a properly set up
 	 * {@linkplain #crash(Throwable, String, Object...) crash handler}). Not
-	 * throwing the returned
-	 * exception is pointless; using this in a thread without a crash handler
-	 * will not produce a crash.
+	 * throwing the returned exception is pointless; using this in a thread
+	 * without a crash handler will not produce a crash.
 	 * <p>
 	 * Avoid inserting variable information into {@code messageFormat} directly;
-	 * use
-	 * {@linkplain Formatter#summary format string} syntax and {@code args}.
-	 * Different Strings
-	 * in {@code messageFormat} may be interpreted as unrelated problems by
-	 * {@linkplain Analyzer crash analyzers}.
+	 * use {@linkplain Formatter#summary format string} syntax and {@code args}.
+	 * Different Strings in {@code messageFormat} may be interpreted as
+	 * unrelated problems by {@linkplain Analyzer crash analyzers}.
 	 * 
-	 * @param throwable     a {@link Throwable} that caused the problem, if any;
-	 *                      {@code null} otherwise
-	 * @param messageFormat a human-readable description of the problem
-	 *                      displayed in the crash report
-	 * @param args          an array of arguments for formatting
-	 *                      {@code messageFormat}
+	 * @param throwable
+	 *            a {@link Throwable} that caused the problem, if any;
+	 *            {@code null} otherwise
+	 * @param messageFormat
+	 *            a human-readable description of the problem displayed in the
+	 *            crash report
+	 * @param args
+	 *            an array of arguments for formatting {@code messageFormat}
 	 * @return an exception containing the provided information that must be
 	 *         thrown
 	 */
@@ -102,32 +99,28 @@ public class CrashReports {
 	 * Crashes the program due to the supplied problem.
 	 * <p>
 	 * <em>Use {@link #report(Throwable, String, Object...)} unless you are
-	 * creating a catch-all handler for a
-	 * thread.</em>
+	 * creating a catch-all handler for a thread.</em>
 	 * <p>
 	 * This method recovers information about the problem by casting
-	 * {@code throwable} to {@link ReportedException},
-	 * or, failing that, uses the provided arguments as the information instead.
-	 * It then constructs a full crash
-	 * report, exports it and terminates the program by invoking
+	 * {@code throwable} to {@link ReportedException}, or, failing that, uses
+	 * the provided arguments as the information instead. It then constructs a
+	 * full crash report, exports it and terminates the program by invoking
 	 * {@link System#exit(int)}.
 	 * <p>
 	 * Such behavior can be dangerous or lead to unwanted consequences in the
-	 * middle of the call stack, so it is
-	 * necessary to invoke this method as high on the call stack as possible,
-	 * usually in a {@code catch} clause
-	 * of a {@code try} statement enveloping the thread's main method(s).
+	 * middle of the call stack, so it is necessary to invoke this method as
+	 * high on the call stack as possible, usually in a {@code catch} clause of
+	 * a {@code try} statement enveloping the thread's main method(s).
 	 * 
-	 * @param throwable     a {@link ReportedException} or another
-	 *                      {@link Throwable} that caused the problem, if any;
-	 *                      {@code null} otherwise
-	 * @param messageFormat a human-readable description of the problem used
-	 *                      when {@code throwable} is not a
-	 *                      {@link ReportedException}. See
-	 *                      {@link #report(Throwable, String, Object...)} for
-	 *                      details.
-	 * @param args          an array of arguments for formatting
-	 *                      {@code messageFormat}
+	 * @param throwable
+	 *            a {@link ReportedException} or another {@link Throwable} that
+	 *            caused the problem, if any; {@code null} otherwise
+	 * @param messageFormat
+	 *            a human-readable description of the problem used when
+	 *            {@code throwable} is not a {@link ReportedException}. See
+	 *            {@link #report(Throwable, String, Object...)} for details.
+	 * @param args
+	 *            an array of arguments for formatting {@code messageFormat}
 	 * @return {@code null}, although this method never returns normally.
 	 *         Provided for convenience.
 	 */
@@ -229,12 +222,8 @@ public class CrashReports {
 		}
 	}
 
-	private static boolean appendAnalyzers(
-		StringBuilder output,
-		Throwable throwable,
-		String messageFormat,
-		Object[] args
-	) {
+	private static boolean appendAnalyzers(StringBuilder output, Throwable throwable, String messageFormat,
+			Object[] args) {
 		boolean analyzerResponsesExist = false;
 
 		// Do a local copy to avoid deadlocks -OLEGSHA
@@ -334,10 +323,8 @@ public class CrashReports {
 				Files.createDirectory(CRASH_REPORTS_PATH);
 
 			createFileForCrashReport(output, CRASH_REPORTS_PATH.toString() + "/latest.log");
-			createFileForCrashReport(
-				output,
-				CRASH_REPORTS_PATH.toString() + "/crash-" + dateFormat.format(date) + ".log"
-			);
+			createFileForCrashReport(output,
+					CRASH_REPORTS_PATH.toString() + "/crash-" + dateFormat.format(date) + ".log");
 		} catch (Throwable t) {
 			// Crash Report not created
 		}
@@ -359,7 +346,8 @@ public class CrashReports {
 	 * Registers the provided {@link ContextProvider} so it is consulted in the
 	 * case of a crash.
 	 * 
-	 * @param provider the provider to register
+	 * @param provider
+	 *            the provider to register
 	 */
 	public static void registerProvider(ContextProvider provider) {
 		PROVIDERS.add(provider);
@@ -369,7 +357,8 @@ public class CrashReports {
 	 * Registers the provided {@link Analyzer} so it is consulted in the case of
 	 * a crash.
 	 * 
-	 * @param analyzer the analyzer to register
+	 * @param analyzer
+	 *            the analyzer to register
 	 */
 	public static void registerAnalyzer(Analyzer analyzer) {
 		ANALYZERS.add(analyzer);
@@ -377,11 +366,10 @@ public class CrashReports {
 
 	/**
 	 * A wrapper used by {@link CrashReports} to transfer problem details from
-	 * the place of
-	 * occurrence to the handler at the top of the stack. Rethrow if caught
-	 * (unless using {@link CrashReports#report(Throwable, String, Object...)},
-	 * which does
-	 * so automatically).
+	 * the place of occurrence to the handler at the top of the stack. Rethrow
+	 * if caught (unless using
+	 * {@link CrashReports#report(Throwable, String, Object...)}, which does so
+	 * automatically).
 	 * 
 	 * @author serega404
 	 */
@@ -395,11 +383,13 @@ public class CrashReports {
 		/**
 		 * Constructs a {@link ReportedException}.
 		 * 
-		 * @param throwable     the reported {@link Throwable} or {@code null}
-		 * @param messageFormat the reported message format.
-		 *                      <em>This is not the message of the constructed
-		 *                      Exception</em>.
-		 * @param args          the reported message format arguments
+		 * @param throwable
+		 *            the reported {@link Throwable} or {@code null}
+		 * @param messageFormat
+		 *            the reported message format. <em>This is not the message
+		 *            of the constructed Exception</em>.
+		 * @param args
+		 *            the reported message format arguments
 		 */
 		public ReportedException(Throwable throwable, String messageFormat, Object... args) {
 			super(throwable);

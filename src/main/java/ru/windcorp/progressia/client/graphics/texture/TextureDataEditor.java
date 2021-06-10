@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.texture;
 
 import static ru.windcorp.progressia.client.graphics.texture.TextureUtil.BYTES_PER_PIXEL;
@@ -28,21 +28,10 @@ public class TextureDataEditor {
 
 	protected final TextureData data;
 
-	public TextureDataEditor(
-		int bufferWidth,
-		int bufferHeight,
-		int contentWidth,
-		int contentHeight,
-		TextureSettings settings
-	) {
-		this.data = new TextureData(
-			BufferUtils.createByteBuffer(bufferWidth * bufferHeight * 4),
-			bufferWidth,
-			bufferHeight,
-			contentWidth,
-			contentHeight,
-			settings
-		);
+	public TextureDataEditor(int bufferWidth, int bufferHeight, int contentWidth, int contentHeight,
+			TextureSettings settings) {
+		this.data = new TextureData(BufferUtils.createByteBuffer(bufferWidth * bufferHeight * 4), bufferWidth,
+				bufferHeight, contentWidth, contentHeight, settings);
 	}
 
 	public TextureDataEditor(TextureData data) {
@@ -61,21 +50,13 @@ public class TextureDataEditor {
 		TextureData t = getData();
 
 		ByteBuffer fromBuffer = getBuffer();
-		ByteBuffer toBuffer = BufferUtils.createByteBuffer(
-			fromBuffer.capacity()
-		);
+		ByteBuffer toBuffer = BufferUtils.createByteBuffer(fromBuffer.capacity());
 
 		copy(fromBuffer, 0, fromBuffer.capacity(), toBuffer);
 		toBuffer.clear();
 
-		return new TextureData(
-			toBuffer,
-			t.getBufferWidth(),
-			t.getBufferHeight(),
-			t.getContentWidth(),
-			t.getContentHeight(),
-			t.getSettings()
-		);
+		return new TextureData(toBuffer, t.getBufferWidth(), t.getBufferHeight(), t.getContentWidth(),
+				t.getContentHeight(), t.getSettings());
 	}
 
 	public TextureData createSnapshot(TextureData output) {
@@ -114,16 +95,7 @@ public class TextureDataEditor {
 		return getData().getSettings();
 	}
 
-	public void draw(
-		ByteBuffer src,
-		int srcWidth,
-		int srcX,
-		int srcY,
-		int dstX,
-		int dstY,
-		int width,
-		int height
-	) {
+	public void draw(ByteBuffer src, int srcWidth, int srcX, int srcY, int dstX, int dstY, int width, int height) {
 		ByteBuffer dst = getBuffer();
 
 		int position = src.position();
@@ -148,77 +120,20 @@ public class TextureDataEditor {
 		}
 	}
 
-	public void draw(
-		TextureData source,
-		int srcX,
-		int srcY,
-		int dstX,
-		int dstY,
-		int width,
-		int height
-	) {
-		draw(
-			source.getData(),
-			source.getBufferWidth(),
-			srcX,
-			srcY,
-			dstX,
-			dstY,
-			width,
-			height
-		);
+	public void draw(TextureData source, int srcX, int srcY, int dstX, int dstY, int width, int height) {
+		draw(source.getData(), source.getBufferWidth(), srcX, srcY, dstX, dstY, width, height);
 	}
 
-	public void draw(
-		TextureData source,
-		int dstX,
-		int dstY
-	) {
-		draw(
-			source,
-			0,
-			0,
-			dstX,
-			dstY,
-			source.getContentWidth(),
-			source.getContentHeight()
-		);
+	public void draw(TextureData source, int dstX, int dstY) {
+		draw(source, 0, 0, dstX, dstY, source.getContentWidth(), source.getContentHeight());
 	}
 
-	public void draw(
-		TextureDataEditor source,
-		int srcX,
-		int srcY,
-		int dstX,
-		int dstY,
-		int width,
-		int height
-	) {
-		draw(
-			source.getData(),
-			srcX,
-			srcY,
-			dstX,
-			dstY,
-			width,
-			height
-		);
+	public void draw(TextureDataEditor source, int srcX, int srcY, int dstX, int dstY, int width, int height) {
+		draw(source.getData(), srcX, srcY, dstX, dstY, width, height);
 	}
 
-	public void draw(
-		TextureDataEditor source,
-		int dstX,
-		int dstY
-	) {
-		draw(
-			source,
-			0,
-			0,
-			dstX,
-			dstY,
-			source.getContentWidth(),
-			source.getContentHeight()
-		);
+	public void draw(TextureDataEditor source, int dstX, int dstY) {
+		draw(source, 0, 0, dstX, dstY, source.getContentWidth(), source.getContentHeight());
 	}
 
 	public void setPixel(int x, int y, int color) {
@@ -237,12 +152,7 @@ public class TextureDataEditor {
 		buffer.limit(buffer.position() + length * BYTES_PER_PIXEL);
 	}
 
-	private static void copy(
-		ByteBuffer src,
-		int srcStart,
-		int srcEnd,
-		ByteBuffer dst
-	) {
+	private static void copy(ByteBuffer src, int srcStart, int srcEnd, ByteBuffer dst) {
 		int position = src.position();
 		int limit = src.limit();
 

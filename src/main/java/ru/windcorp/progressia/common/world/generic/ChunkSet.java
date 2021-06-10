@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.generic;
 
 import java.util.Collection;
@@ -87,10 +87,8 @@ public interface ChunkSet extends Iterable<Vec3i> {
 		return remove(chunk.getPosition());
 	}
 
-	default <C extends GenericChunk<C, ?, ?, ?>> void forEachIn(
-		GenericWorld<?, ?, ?, C, ?> world,
-		Consumer<? super C> action
-	) {
+	default <C extends GenericChunk<C, ?, ?, ?>> void forEachIn(GenericWorld<?, ?, ?, C, ?> world,
+			Consumer<? super C> action) {
 		forEach(position -> {
 			C chunk = world.getChunk(position);
 			if (chunk == null)

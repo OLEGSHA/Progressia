@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.font;
 
 import java.io.BufferedReader;
@@ -73,7 +73,7 @@ public class GNUUnifontLoader {
 	public static GNUUnifont load(Resource resource) {
 		try (BufferedReader reader = createReader(resource)) {
 			return createStream(reader).map(GNUUnifontLoader::parse).map(GNUUnifontLoader::addToAtlas)
-				.collect(Collectors.collectingAndThen(createMapper(), GNUUnifont::new));
+					.collect(Collectors.collectingAndThen(createMapper(), GNUUnifont::new));
 		} catch (IOException | UncheckedIOException e) {
 			throw CrashReports.report(e, "Could not load GNUUnifont");
 		}
@@ -81,8 +81,7 @@ public class GNUUnifontLoader {
 
 	private static BufferedReader createReader(Resource resource) throws IOException {
 		return new BufferedReader(
-			new InputStreamReader(new GZIPInputStream(resource.getInputStream()), StandardCharsets.UTF_8)
-		);
+				new InputStreamReader(new GZIPInputStream(resource.getInputStream()), StandardCharsets.UTF_8));
 	}
 
 	private static Stream<String> createStream(BufferedReader reader) {
@@ -97,13 +96,8 @@ public class GNUUnifontLoader {
 
 			char c = getChar(declar);
 
-			TextureDataEditor editor = new TextureDataEditor(
-				width,
-				GNUUnifont.HEIGHT,
-				width,
-				GNUUnifont.HEIGHT,
-				TEXTURE_SETTINGS
-			);
+			TextureDataEditor editor = new TextureDataEditor(width, GNUUnifont.HEIGHT, width, GNUUnifont.HEIGHT,
+					TEXTURE_SETTINGS);
 
 			for (int y = 0; y < GNUUnifont.HEIGHT; ++y) {
 				for (int x = 0; x < width; ++x) {
@@ -165,8 +159,7 @@ public class GNUUnifontLoader {
 
 				if (!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'))) {
 					throw new IOException(
-						"Illegal char in declar \"" + declar + "\" at index " + i + "; expected 0-9A-F"
-					);
+							"Illegal char in declar \"" + declar + "\" at index " + i + "; expected 0-9A-F");
 				}
 			}
 		}
@@ -190,18 +183,16 @@ public class GNUUnifontLoader {
 	}
 
 	private static Collector<AtlasGlyph, ?, TCharObjectMap<Texture>> createMapper() {
-		return Collector.of(
-			TCharObjectHashMap<Texture>::new,
+		return Collector.of(TCharObjectHashMap<Texture>::new,
 
-			(map, glyph) -> map.put(glyph.c, glyph.texture),
+				(map, glyph) -> map.put(glyph.c, glyph.texture),
 
-			(a, b) -> {
-				a.putAll(b);
-				return a;
-			},
+				(a, b) -> {
+					a.putAll(b);
+					return a;
+				},
 
-			Characteristics.UNORDERED
-		);
+				Characteristics.UNORDERED);
 	}
 
 	private GNUUnifontLoader() {

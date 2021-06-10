@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util;
 
 import java.util.Collection;
@@ -27,9 +27,7 @@ import com.google.common.collect.ForwardingList;
 
 public class SizeLimitedList<E> extends ForwardingList<E> {
 
-	private static final class RandomAccessSizeLimitedList<E>
-		extends SizeLimitedList<E>
-		implements RandomAccess {
+	private static final class RandomAccessSizeLimitedList<E> extends SizeLimitedList<E> implements RandomAccess {
 		protected RandomAccessSizeLimitedList(List<E> parent, int maxSize) {
 			super(parent, maxSize);
 		}
@@ -76,9 +74,7 @@ public class SizeLimitedList<E> extends ForwardingList<E> {
 
 	private void checkMaxSize() {
 		if (size() >= maxSize) {
-			throw new UnsupportedOperationException(
-				"Maximum size " + maxSize + " reached"
-			);
+			throw new UnsupportedOperationException("Maximum size " + maxSize + " reached");
 		}
 	}
 

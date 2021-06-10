@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
 
 import java.util.Collections;
@@ -160,13 +160,7 @@ public class ChunkManager {
 		ChunkData chunk = world.getChunk(chunkPos);
 		if (chunk == null) {
 			throw new IllegalStateException(
-				String.format(
-					"Chunk (%d; %d; %d) not loaded, cannot unload",
-					chunkPos.x,
-					chunkPos.y,
-					chunkPos.z
-				)
-			);
+					String.format("Chunk (%d; %d; %d) not loaded, cannot unload", chunkPos.x, chunkPos.y, chunkPos.z));
 		}
 
 		world.removeChunk(chunk);
@@ -180,13 +174,7 @@ public class ChunkManager {
 
 		if (chunk == null) {
 			throw new IllegalStateException(
-				String.format(
-					"Chunk (%d; %d; %d) is not loaded, cannot send",
-					chunkPos.x,
-					chunkPos.y,
-					chunkPos.z
-				)
-			);
+					String.format("Chunk (%d; %d; %d) is not loaded, cannot send", chunkPos.x, chunkPos.y, chunkPos.z));
 		}
 
 		PacketSendChunk packet = new PacketSendChunk();

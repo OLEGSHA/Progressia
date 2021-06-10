@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.audio;
 
 import ru.windcorp.progressia.common.resource.ResourceManager;
@@ -29,10 +29,7 @@ public class AudioSystem {
 	}
 
 	static void loadAudioData() {
-		AudioManager.loadSound(
-			ResourceManager.getResource("assets/sounds/block_destroy_clap.ogg"),
-			"Progressia:BlockDestroy",
-			AudioFormat.MONO
-		);
+		AudioManager.loadSound(ResourceManager.getResource("assets/sounds/block_destroy_clap.ogg"),
+				"Progressia:BlockDestroy", AudioFormat.MONO);
 	}
 }

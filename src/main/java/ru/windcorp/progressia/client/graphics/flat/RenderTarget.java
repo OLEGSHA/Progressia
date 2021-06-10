@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.flat;
 
 import java.util.ArrayList;
@@ -45,11 +45,7 @@ public class RenderTarget {
 		private final Mat4 transform;
 		private final Renderable renderable;
 
-		public Clip(
-			Iterable<TransformedMask> masks,
-			Mat4 transform,
-			Renderable renderable
-		) {
+		public Clip(Iterable<TransformedMask> masks, Mat4 transform, Renderable renderable) {
 			for (TransformedMask mask : masks) {
 				this.masks.pushMask(mask);
 			}
@@ -94,33 +90,19 @@ public class RenderTarget {
 
 	protected void assembleCurrentClipFromFaces() {
 		if (!currentClipFaces.isEmpty()) {
-			Face[] faces = currentClipFaces.toArray(
-				new Face[currentClipFaces.size()]
-			);
+			Face[] faces = currentClipFaces.toArray(new Face[currentClipFaces.size()]);
 			currentClipFaces.clear();
 
-			Shape shape = new Shape(
-				Usage.STATIC,
-				FlatRenderProgram.getDefault(),
-				faces
-			);
+			Shape shape = new Shape(Usage.STATIC, FlatRenderProgram.getDefault(), faces);
 
-			assembled.add(
-				new Clip(
-					maskStack,
-					getTransform(),
-					shape
-				)
-			);
+			assembled.add(new Clip(maskStack, getTransform(), shape));
 		}
 	}
 
 	public Clip[] assemble() {
 		assembleCurrentClipFromFaces();
 
-		Clip[] result = assembled.toArray(
-			new Clip[assembled.size()]
-		);
+		Clip[] result = assembled.toArray(new Clip[assembled.size()]);
 
 		reset();
 
@@ -142,21 +124,11 @@ public class RenderTarget {
 
 		pushTransform(new Mat4().identity().translate(startX, startY, 0));
 
-		maskStack.push(
-			new TransformedMask(
-				new Mask(startX, startY, endX, endY),
-				getTransform()
-			)
-		);
+		maskStack.push(new TransformedMask(new Mask(startX, startY, endX, endY), getTransform()));
 	}
 
 	public void pushMask(Mask mask) {
-		pushMaskStartEnd(
-			mask.getStartX(),
-			mask.getStartY(),
-			mask.getEndX(),
-			mask.getEndY()
-		);
+		pushMaskStartEnd(mask.getStartX(), mask.getStartY(), mask.getEndX(), mask.getEndY());
 	}
 
 	public void pushMaskStartSize(int x, int y, int width, int height) {
@@ -189,142 +161,58 @@ public class RenderTarget {
 
 	public void addCustomRenderer(Renderable renderable) {
 		assembleCurrentClipFromFaces();
-		assembled.add(
-			new Clip(
-				maskStack,
-				getTransform(),
-				renderable
-			)
-		);
+		assembled.add(new Clip(maskStack, getTransform(), renderable));
 	}
 
 	protected void addFaceToCurrentClip(Face face) {
 		currentClipFaces.add(face);
 	}
 
-	public void drawTexture(
-		int x,
-		int y,
-		int width,
-		int height,
-		Vec4 color,
-		Texture texture
-	) {
-		addFaceToCurrentClip(
-			createRectagleFace(x, y, width, height, color, texture)
-		);
+	public void drawTexture(int x, int y, int width, int height, Vec4 color, Texture texture) {
+		addFaceToCurrentClip(createRectagleFace(x, y, width, height, color, texture));
 	}
 
-	public void drawTexture(
-		int x,
-		int y,
-		int width,
-		int height,
-		int color,
-		Texture texture
-	) {
+	public void drawTexture(int x, int y, int width, int height, int color, Texture texture) {
 		drawTexture(x, y, width, height, Colors.toVector(color), texture);
 	}
 
-	public void drawTexture(
-		int x,
-		int y,
-		int width,
-		int height,
-		Texture texture
-	) {
+	public void drawTexture(int x, int y, int width, int height, Texture texture) {
 		drawTexture(x, y, width, height, Colors.WHITE, texture);
 	}
 
-	public void fill(
-		int x,
-		int y,
-		int width,
-		int height,
-		Vec4 color
-	) {
+	public void fill(int x, int y, int width, int height, Vec4 color) {
 		drawTexture(x, y, width, height, color, null);
 	}
 
-	public void fill(
-		int x,
-		int y,
-		int width,
-		int height,
-		int color
-	) {
+	public void fill(int x, int y, int width, int height, int color) {
 		fill(x, y, width, height, Colors.toVector(color));
 	}
 
 	public void fill(Vec4 color) {
-		fill(
-			Integer.MIN_VALUE / 2,
-			Integer.MIN_VALUE / 2,
-			Integer.MAX_VALUE,
-			Integer.MAX_VALUE,
-			color
-		);
+		fill(Integer.MIN_VALUE / 2, Integer.MIN_VALUE / 2, Integer.MAX_VALUE, Integer.MAX_VALUE, color);
 	}
 
 	public void fill(int color) {
 		fill(Colors.toVector(color));
 	}
 
-	public Face createRectagleFace(
-		int x,
-		int y,
-		int width,
-		int height,
-		Vec4 color,
-		Texture texture
-	) {
+	public Face createRectagleFace(int x, int y, int width, int height, Vec4 color, Texture texture) {
 		float depth = this.depth--;
 
-		return Faces.createRectangle(
-			FlatRenderProgram.getDefault(),
-			texture,
-			color,
-			new Vec3(x, y, depth),
-			new Vec3(width, 0, 0),
-			new Vec3(0, height, 0),
-			false
-		);
+		return Faces.createRectangle(FlatRenderProgram.getDefault(), texture, color, new Vec3(x, y, depth),
+				new Vec3(width, 0, 0), new Vec3(0, height, 0), false);
 	}
 
-	public Face createRectagleFace(
-		int x,
-		int y,
-		int width,
-		int height,
-		int color,
-		Texture texture
-	) {
+	public Face createRectagleFace(int x, int y, int width, int height, int color, Texture texture) {
 		return createRectagleFace(x, y, width, height, Colors.toVector(color), texture);
 	}
 
-	public Shape createRectagle(
-		int x,
-		int y,
-		int width,
-		int height,
-		Vec4 color,
-		Texture texture
-	) {
-		return new Shape(
-			Usage.STATIC,
-			FlatRenderProgram.getDefault(),
-			createRectagleFace(x, y, width, height, color, texture)
-		);
+	public Shape createRectagle(int x, int y, int width, int height, Vec4 color, Texture texture) {
+		return new Shape(Usage.STATIC, FlatRenderProgram.getDefault(),
+				createRectagleFace(x, y, width, height, color, texture));
 	}
 
-	public Shape createRectagle(
-		int x,
-		int y,
-		int width,
-		int height,
-		int color,
-		Texture texture
-	) {
+	public Shape createRectagle(int x, int y, int width, int height, int color, Texture texture) {
 		return createRectagle(x, y, width, height, Colors.toVector(color), texture);
 	}
 

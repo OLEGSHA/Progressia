@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.comms.localhost;
 
 import ru.windcorp.progressia.client.comms.ServerCommsChannel;
@@ -34,11 +34,7 @@ public class LocalServerCommsChannel extends ServerCommsChannel {
 	public void connect(String login) {
 		setState(State.CONNECTED);
 
-		this.localClient = new LocalClient(
-			server.getClientManager().grabClientId(),
-			login,
-			this
-		);
+		this.localClient = new LocalClient(server.getClientManager().grabClientId(), login, this);
 
 		server.getClientManager().addClient(localClient);
 	}

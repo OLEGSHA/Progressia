@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.functions;
 
 import java.util.function.BiConsumer;
@@ -44,9 +44,16 @@ public interface ThrowingBiConsumer<T, U, E extends Exception> {
 	}
 
 	public static <T, U, E extends Exception> ThrowingBiConsumer<T, U, E> concat(
-		ThrowingBiConsumer<? super T, ? super U, ? extends E> first,
-		ThrowingBiConsumer<? super T, ? super U, ? extends E> second
-	) {
+			ThrowingBiConsumer<? super T, ? super U, ? extends E> first,
+			ThrowingBiConsumer<? super T, ? super U, ? extends E> second) {
+		return (t, u) -> {
+			first.accept(t, u);
+			second.accept(t, u);
+		};
+	}
+
+	public static <T, U, E extends Exception> ThrowingBiConsumer<T, U, E> concat(BiConsumer<? super T, ? super U> first,
+			ThrowingBiConsumer<? super T, ? super U, E> second) {
 		return (t, u) -> {
 			first.accept(t, u);
 			second.accept(t, u);
@@ -54,19 +61,7 @@ public interface ThrowingBiConsumer<T, U, E extends Exception> {
 	}
 
 	public static <T, U, E extends Exception> ThrowingBiConsumer<T, U, E> concat(
-		BiConsumer<? super T, ? super U> first,
-		ThrowingBiConsumer<? super T, ? super U, E> second
-	) {
-		return (t, u) -> {
-			first.accept(t, u);
-			second.accept(t, u);
-		};
-	}
-
-	public static <T, U, E extends Exception> ThrowingBiConsumer<T, U, E> concat(
-		ThrowingBiConsumer<? super T, ? super U, E> first,
-		BiConsumer<? super T, ? super U> second
-	) {
+			ThrowingBiConsumer<? super T, ? super U, E> first, BiConsumer<? super T, ? super U> second) {
 		return (t, u) -> {
 			first.accept(t, u);
 			second.accept(t, u);

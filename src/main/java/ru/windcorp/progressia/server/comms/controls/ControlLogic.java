@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.comms.controls;
 
 import ru.windcorp.progressia.common.comms.controls.PacketControl;
@@ -27,22 +27,14 @@ public abstract class ControlLogic extends Namespaced {
 
 	@FunctionalInterface
 	public static interface Lambda {
-		void apply(
-			Server server,
-			PacketControl packet,
-			Client client
-		);
+		void apply(Server server, PacketControl packet, Client client);
 	}
 
 	public ControlLogic(String id) {
 		super(id);
 	}
 
-	public abstract void apply(
-		Server server,
-		PacketControl packet,
-		Client client
-	);
+	public abstract void apply(Server server, PacketControl packet, Client client);
 
 	public static ControlLogic of(String id, Lambda logic) {
 		return new ControlLogic(id) {

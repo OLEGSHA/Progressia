@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.tasks;
 
 import java.util.function.Consumer;
@@ -38,14 +38,13 @@ public class WorldAccessor {
 		MultiLOC mloc = new MultiLOC();
 		Consumer<TickerTask> disposer = mloc::release;
 
-		cache = mloc
-			.addClass(SetBlock.class, () -> new SetBlock(disposer))
-			.addClass(AddTile.class, () -> new AddTile(disposer))
-			.addClass(RemoveTile.class, () -> new RemoveTile(disposer))
-			.addClass(ChangeEntity.class, () -> new ChangeEntity(disposer))
+		cache = mloc.addClass(SetBlock.class, () -> new SetBlock(disposer))
+				.addClass(AddTile.class, () -> new AddTile(disposer))
+				.addClass(RemoveTile.class, () -> new RemoveTile(disposer))
+				.addClass(ChangeEntity.class, () -> new ChangeEntity(disposer))
 
-			.addClass(BlockTriggeredUpdate.class, () -> new BlockTriggeredUpdate(disposer))
-			.addClass(TileTriggeredUpdate.class, () -> new TileTriggeredUpdate(disposer));
+				.addClass(BlockTriggeredUpdate.class, () -> new BlockTriggeredUpdate(disposer))
+				.addClass(TileTriggeredUpdate.class, () -> new TileTriggeredUpdate(disposer));
 	}
 
 	private final Server server;
@@ -80,10 +79,7 @@ public class WorldAccessor {
 		server.requestChange(change);
 	}
 
-	public <T extends EntityData> void changeEntity(
-		T entity,
-		StateChange<T> stateChange
-	) {
+	public <T extends EntityData> void changeEntity(T entity, StateChange<T> stateChange) {
 		ChangeEntity change = cache.grab(ChangeEntity.class);
 		change.set(entity, stateChange);
 		server.requestChange(change);

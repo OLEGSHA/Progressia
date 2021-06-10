@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client;
 
 import ru.windcorp.progressia.Proxy;
@@ -42,10 +42,8 @@ public class ClientProxy implements Proxy {
 		try {
 			RenderTaskQueue.waitAndInvoke(FlatRenderProgram::init);
 			RenderTaskQueue.waitAndInvoke(WorldRenderProgram::init);
-			RenderTaskQueue.waitAndInvoke(
-				() -> Typefaces
-					.setDefault(GNUUnifontLoader.load(ResourceManager.getResource("assets/unifont-13.0.03.hex.gz")))
-			);
+			RenderTaskQueue.waitAndInvoke(() -> Typefaces
+					.setDefault(GNUUnifontLoader.load(ResourceManager.getResource("assets/unifont-13.0.03.hex.gz"))));
 		} catch (InterruptedException e) {
 			throw CrashReports.report(e, "ClientProxy failed");
 		}
@@ -60,7 +58,7 @@ public class ClientProxy implements Proxy {
 
 		ServerState.startServer();
 		ClientState.connectToLocalServer();
-		
+
 		TestMusicPlayer.start();
 	}
 

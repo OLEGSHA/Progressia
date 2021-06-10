@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world;
 
 import java.util.Collections;
@@ -34,8 +34,7 @@ import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.generic.GenericChunk;
 import ru.windcorp.progressia.common.world.tile.TileDataStack;
 
-public class ChunkRender
-	implements GenericChunk<ChunkRender, BlockRender, TileRender, TileRenderStack> {
+public class ChunkRender implements GenericChunk<ChunkRender, BlockRender, TileRender, TileRenderStack> {
 
 	private final WorldRender world;
 	private final ChunkData data;
@@ -43,7 +42,7 @@ public class ChunkRender
 	private final ChunkRenderModel model;
 
 	private final Map<TileDataStack, TileRenderStackImpl> tileRenderLists = Collections
-		.synchronizedMap(new WeakHashMap<>());
+			.synchronizedMap(new WeakHashMap<>());
 
 	public ChunkRender(WorldRender world, ChunkData data) {
 		this.world = world;
@@ -58,9 +57,7 @@ public class ChunkRender
 
 	@Override
 	public BlockRender getBlock(Vec3i posInChunk) {
-		return BlockRenderRegistry.getInstance().get(
-			getData().getBlock(posInChunk).getId()
-		);
+		return BlockRenderRegistry.getInstance().get(getData().getBlock(posInChunk).getId());
 	}
 
 	@Override
@@ -74,10 +71,7 @@ public class ChunkRender
 	}
 
 	private TileRenderStack getTileStackWrapper(TileDataStack tileDataList) {
-		return tileRenderLists.computeIfAbsent(
-			tileDataList,
-			TileRenderStackImpl::new
-		);
+		return tileRenderLists.computeIfAbsent(tileDataList, TileRenderStackImpl::new);
 	}
 
 	public WorldRender getWorld() {

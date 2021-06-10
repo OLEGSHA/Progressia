@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.iterators;
 
 import java.util.Iterator;
@@ -49,10 +49,8 @@ public class RangeIterator<E> implements Iterator<E> {
 	public E next() {
 		update();
 		if (nextIndex >= from + amount) {
-			throw new NoSuchElementException(
-				"RangeIterator about to retrieve element " + nextIndex
-					+ " which exceeds upper boundary " + (from + amount)
-			);
+			throw new NoSuchElementException("RangeIterator about to retrieve element " + nextIndex
+					+ " which exceeds upper boundary " + (from + amount));
 		}
 
 		E result = parent.next();

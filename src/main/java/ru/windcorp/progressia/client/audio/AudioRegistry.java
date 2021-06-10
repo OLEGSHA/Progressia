@@ -21,9 +21,9 @@ import ru.windcorp.progressia.client.audio.backend.SoundType;
 import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
 public class AudioRegistry extends NamespacedInstanceRegistry<SoundType> {
-	
+
 	private static final AudioRegistry INSTANCE = new AudioRegistry();
-	
+
 	/**
 	 * @return the instance
 	 */

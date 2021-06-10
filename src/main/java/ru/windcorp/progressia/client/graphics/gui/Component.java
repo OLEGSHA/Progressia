@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.gui;
 
 import java.util.Collections;
@@ -475,11 +475,8 @@ public class Component extends Named {
 		eventBus.post(event);
 	}
 
-	public <T extends InputEvent> void addListener(
-		Class<? extends T> type,
-		boolean handlesConsumed,
-		InputListener<T> listener
-	) {
+	public <T extends InputEvent> void addListener(Class<? extends T> type, boolean handlesConsumed,
+			InputListener<T> listener) {
 		if (inputBus == null) {
 			inputBus = new InputBus();
 		}

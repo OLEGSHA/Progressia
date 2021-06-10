@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.world;
 
 import glm.mat._4.Mat4;
@@ -24,10 +24,7 @@ import ru.windcorp.progressia.common.util.StashingStack;
 
 public class WorldRenderHelper extends ShapeRenderHelper {
 
-	private final StashingStack<Mat4> viewTransformStack = new StashingStack<>(
-		TRANSFORM_STACK_SIZE,
-		Mat4::new
-	);
+	private final StashingStack<Mat4> viewTransformStack = new StashingStack<>(TRANSFORM_STACK_SIZE, Mat4::new);
 
 	{
 		viewTransformStack.push().identity();

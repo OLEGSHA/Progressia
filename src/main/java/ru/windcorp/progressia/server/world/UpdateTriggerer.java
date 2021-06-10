@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world;
 
 import glm.vec._3.i.Vec3i;
@@ -36,23 +36,13 @@ public class UpdateTriggerer implements ChunkDataListener {
 	}
 
 	@Override
-	public void onChunkBlockChanged(
-		ChunkData chunk,
-		Vec3i blockInChunk,
-		BlockData previous,
-		BlockData current
-	) {
+	public void onChunkBlockChanged(ChunkData chunk, Vec3i blockInChunk, BlockData previous, BlockData current) {
 		server.getWorldAccessor().triggerUpdates(Coordinates.getInWorld(chunk.getPosition(), blockInChunk, null));
 	}
 
 	@Override
-	public void onChunkTilesChanged(
-		ChunkData chunk,
-		Vec3i blockInChunk,
-		BlockFace face,
-		TileData tile,
-		boolean wasAdded
-	) {
+	public void onChunkTilesChanged(ChunkData chunk, Vec3i blockInChunk, BlockFace face, TileData tile,
+			boolean wasAdded) {
 		server.getWorldAccessor().triggerUpdates(Coordinates.getInWorld(chunk.getPosition(), blockInChunk, null), face);
 	}
 

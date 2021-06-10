@@ -15,18 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.resource;
 
 public class ResourceManager {
-	
+
 	private static final ResourceReader CLASSPATH_READER = new ClasspathResourceReader();
 	private static final ResourceReader FILESYSTEM_READER = new FilesystemResourceReader();
 
 	public static Resource getResource(String name) {
 		return new Resource(name, CLASSPATH_READER);
 	}
-	
+
 	public static Resource getFileResource(String name) {
 		return new Resource(name, FILESYSTEM_READER);
 	}

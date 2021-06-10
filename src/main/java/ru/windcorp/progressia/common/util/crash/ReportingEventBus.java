@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util.crash;
 
 import com.google.common.eventbus.EventBus;
@@ -28,14 +28,11 @@ public class ReportingEventBus {
 	}
 
 	public static EventBus create(String identifier) {
-		return GuavaEventBusHijacker.newEventBus(
-			identifier,
-			(throwable, context) -> {
-				// Makes sense to append identifier to messageFormat because
-				// different EventBuses are completely unrelated
-				throw CrashReports.crash(throwable, "Unexpected exception in EventBus " + identifier);
-			}
-		);
+		return GuavaEventBusHijacker.newEventBus(identifier, (throwable, context) -> {
+			// Makes sense to append identifier to messageFormat because
+			// different EventBuses are completely unrelated
+			throw CrashReports.crash(throwable, "Unexpected exception in EventBus " + identifier);
+		});
 	}
 
 }

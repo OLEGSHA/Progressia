@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.model;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
@@ -38,9 +38,8 @@ public class FaceGroup {
 		for (int i = start; i < end; ++i) {
 			Face face = faces[i];
 
-			assert this.texture == null
-				? (face.getTexture() == null)
-				: (face.getTexture().getSprite().getPrimitive() == this.texture);
+			assert this.texture == null ? (face.getTexture() == null)
+					: (face.getTexture().getSprite().getPrimitive() == this.texture);
 
 			indexCount += face.getIndexCount();
 		}

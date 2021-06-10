@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.input;
 
 import java.lang.reflect.Field;
@@ -46,17 +46,12 @@ public class Keys {
 	private static final String MOUSE_BUTTON_PREFIX = "GLFW_MOUSE_BUTTON_";
 
 	private static final Set<String> IGNORE_FIELDS = new HashSet<>(
-		Arrays.asList(
-			"GLFW_KEY_UNKNOWN",
-			"GLFW_KEY_LAST",
-			"GLFW_MOUSE_BUTTON_LAST",
-			"GLFW_MOUSE_BUTTON_1", // Alias
-									// for
-									// LEFT
-			"GLFW_MOUSE_BUTTON_2", // Alias for RIGHT
-			"GLFW_MOUSE_BUTTON_3" // Alias for MIDDLE
-		)
-	);
+			Arrays.asList("GLFW_KEY_UNKNOWN", "GLFW_KEY_LAST", "GLFW_MOUSE_BUTTON_LAST", "GLFW_MOUSE_BUTTON_1", // Alias
+																												// for
+																												// LEFT
+					"GLFW_MOUSE_BUTTON_2", // Alias for RIGHT
+					"GLFW_MOUSE_BUTTON_3" // Alias for MIDDLE
+			));
 
 	static {
 		initializeDictionary();
@@ -100,14 +95,8 @@ public class Keys {
 		}
 
 		if (CODES_TO_NAMES.containsKey(value)) {
-			throw CrashReports.report(
-				null,
-				"Duplicate keys: %s and %s both map to %d(0x%s)",
-				CODES_TO_NAMES.get(value),
-				name,
-				value,
-				Integer.toHexString(value)
-			);
+			throw CrashReports.report(null, "Duplicate keys: %s and %s both map to %d(0x%s)", CODES_TO_NAMES.get(value),
+					name, value, Integer.toHexString(value));
 		}
 
 		CODES_TO_NAMES.put(value, name);

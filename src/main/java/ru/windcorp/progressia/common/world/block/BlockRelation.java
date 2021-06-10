@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.block;
 
 import static java.lang.Math.abs;
@@ -43,7 +43,7 @@ public class BlockRelation {
 	public Vec3i getVector() {
 		return vector;
 	}
-	
+
 	public Vec3 getFloatVector() {
 		return floatVector;
 	}
@@ -65,9 +65,9 @@ public class BlockRelation {
 	/**
 	 * Returns the Manhattan distance, also known as the taxicab distance,
 	 * between the source and the destination blocks. Manhattan distance is
-	 * defined as the sum of the absolute values of the coordinates,
-	 * which is also the minimum amount of block faces that need to be crossed
-	 * to move from source to destination.
+	 * defined as the sum of the absolute values of the coordinates, which is
+	 * also the minimum amount of block faces that need to be crossed to move
+	 * from source to destination.
 	 * 
 	 * @return the sum of the absolute values of the coordinates
 	 */

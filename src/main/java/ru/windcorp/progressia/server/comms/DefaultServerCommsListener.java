@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.comms;
 
 import java.io.IOException;
@@ -41,9 +41,8 @@ public class DefaultServerCommsListener implements CommsListener {
 			if (packet instanceof PacketControl) {
 				PacketControl packetControl = (PacketControl) packet;
 
-				ControlLogicRegistry.getInstance().get(
-					packetControl.getControl().getId()
-				).apply(manager.getServer(), packetControl, client);
+				ControlLogicRegistry.getInstance().get(packetControl.getControl().getId()).apply(manager.getServer(),
+						packetControl, client);
 			}
 		}
 	}

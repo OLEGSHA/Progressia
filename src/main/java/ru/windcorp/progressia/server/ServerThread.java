@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
 
 import java.util.concurrent.Executors;
@@ -51,9 +51,8 @@ public class ServerThread implements Runnable {
 	}
 
 	private final Server server;
-	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(
-		r -> new Thread(new ServerThreadTracker(r), "Server thread")
-	);
+	private final ScheduledExecutorService executor = Executors
+			.newSingleThreadScheduledExecutor(r -> new Thread(new ServerThreadTracker(r), "Server thread"));
 
 	private final TickerCoordinator ticker;
 

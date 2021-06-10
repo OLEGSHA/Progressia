@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.tile;
 
 import java.io.DataInput;
@@ -60,15 +60,8 @@ public class PacketRemoveTile extends PacketAffectTile {
 		int index = stack.getIndexByTag(getTag());
 
 		if (index < 0) {
-			throw CrashReports.report(
-				null,
-				"Could not find tile with tag %d at (%d; %d; %d; %s)",
-				getTag(),
-				getBlockInWorld().x,
-				getBlockInWorld().y,
-				getBlockInWorld().z,
-				getFace()
-			);
+			throw CrashReports.report(null, "Could not find tile with tag %d at (%d; %d; %d; %s)", getTag(),
+					getBlockInWorld().x, getBlockInWorld().y, getBlockInWorld().z, getFace());
 		}
 
 		stack.remove(index);

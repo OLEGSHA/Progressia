@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.chars;
 
 import java.io.IOException;
@@ -41,13 +41,8 @@ public class StringUtil {
 	private static final String EMPTY_PLACEHOLDER = "[empty]";
 	private static final String DEFAULT_SEPARATOR = "; ";
 
-	public static <T> String arrayToString(
-		T[] array,
-		String separator,
-		String empty,
-		String nullPlaceholder,
-		String nullArray
-	) {
+	public static <T> String arrayToString(T[] array, String separator, String empty, String nullPlaceholder,
+			String nullArray) {
 
 		if (separator == null) {
 			throw new IllegalArgumentException(new NullPointerException());
@@ -79,13 +74,8 @@ public class StringUtil {
 		return arrayToString(array, DEFAULT_SEPARATOR);
 	}
 
-	public static String iteratorToString(
-		Iterator<?> iterator,
-		String separator,
-		String empty,
-		String nullPlaceholder,
-		String nullIterator
-	) {
+	public static String iteratorToString(Iterator<?> iterator, String separator, String empty, String nullPlaceholder,
+			String nullIterator) {
 
 		if (separator == null) {
 			throw new IllegalArgumentException(new NullPointerException());
@@ -119,13 +109,8 @@ public class StringUtil {
 		return iteratorToString(iterator, DEFAULT_SEPARATOR);
 	}
 
-	public static String iterableToString(
-		Iterable<?> iterable,
-		String separator,
-		String empty,
-		String nullPlaceholder,
-		String nullIterable
-	) {
+	public static String iterableToString(Iterable<?> iterable, String separator, String empty, String nullPlaceholder,
+			String nullIterable) {
 
 		if (separator == null) {
 			throw new IllegalArgumentException(new NullPointerException());
@@ -146,14 +131,8 @@ public class StringUtil {
 		return iterableToString(iterable, DEFAULT_SEPARATOR);
 	}
 
-	public static <T> String supplierToString(
-		IntFunction<T> supplier,
-		int length,
-		String separator,
-		String empty,
-		String nullPlaceholder,
-		String nullSupplier
-	) {
+	public static <T> String supplierToString(IntFunction<T> supplier, int length, String separator, String empty,
+			String nullPlaceholder, String nullSupplier) {
 
 		if (separator == null)
 			throw new IllegalArgumentException(new NullPointerException());
@@ -163,28 +142,15 @@ public class StringUtil {
 			return empty;
 
 		if (length > 0) {
-			return supplierToStringExactly(
-				supplier,
-				length,
-				separator,
-				nullPlaceholder
-			);
+			return supplierToStringExactly(supplier, length, separator, nullPlaceholder);
 		} else {
-			return supplierToStringUntilNull(
-				supplier,
-				separator,
-				empty
-			);
+			return supplierToStringUntilNull(supplier, separator, empty);
 		}
 
 	}
 
-	private static <T> String supplierToStringExactly(
-		IntFunction<T> supplier,
-		int length,
-		String separator,
-		String nullPlaceholder
-	) {
+	private static <T> String supplierToStringExactly(IntFunction<T> supplier, int length, String separator,
+			String nullPlaceholder) {
 		T element = supplier.apply(0);
 
 		StringBuilder sb = new StringBuilder(element == null ? nullPlaceholder : element.toString());
@@ -198,11 +164,7 @@ public class StringUtil {
 		return sb.toString();
 	}
 
-	private static <T> String supplierToStringUntilNull(
-		IntFunction<T> supplier,
-		String separator,
-		String empty
-	) {
+	private static <T> String supplierToStringUntilNull(IntFunction<T> supplier, String separator, String empty) {
 		T element = supplier.apply(0);
 
 		if (element == null) {
@@ -366,11 +328,7 @@ public class StringUtil {
 		StringBuilder sb = new StringBuilder();
 
 		charLoop: for (char c : src.toCharArray()) {
-			if (
-				(resultIndex + 1) < arrayLength
-					&&
-					test.test(c)
-			) {
+			if ((resultIndex + 1) < arrayLength && test.test(c)) {
 				result[resultIndex] = resetStringBuilder(sb);
 				++resultIndex;
 				continue charLoop;
@@ -389,17 +347,17 @@ public class StringUtil {
 	 * index.
 	 * <p>
 	 * Indices {@code 0} and {@code src.length() - 1} produce {@code str}
-	 * excluding
-	 * the specified character and {@code ""}.
+	 * excluding the specified character and {@code ""}.
 	 * <p>
 	 * 
-	 * @param src the String to split
-	 * @param at  index to split at
-	 * @throws IllegalArgumentException if the index is out of bounds for
-	 *                                  {@code src}
+	 * @param src
+	 *            the String to split
+	 * @param at
+	 *            index to split at
+	 * @throws IllegalArgumentException
+	 *             if the index is out of bounds for {@code src}
 	 * @return an array containing the substrings, in order of encounter in
-	 *         {@code src}.
-	 *         Its length is always 2.
+	 *         {@code src}. Its length is always 2.
 	 */
 	public static String[] splitAt(String src, int at) {
 		Objects.requireNonNull(src, "src");
@@ -416,10 +374,7 @@ public class StringUtil {
 			return new String[] { src.substring(0, src.length() - 1), "" };
 		}
 
-		return new String[] {
-			src.substring(0, at),
-			src.substring(at + 1)
-		};
+		return new String[] { src.substring(0, at), src.substring(at + 1) };
 	}
 
 	/**
@@ -427,8 +382,7 @@ public class StringUtil {
 	 * indices.
 	 * <p>
 	 * Indices {@code 0} and {@code src.length() - 1} produce extra zero-length
-	 * outputs.
-	 * Duplicate indices produce extra zero-length outputs.
+	 * outputs. Duplicate indices produce extra zero-length outputs.
 	 * <p>
 	 * Examples:
 	 * 
@@ -439,13 +393,14 @@ public class StringUtil {
 	 * splitAt("a.b",   1, 1, 1) -> {"a", "", "", "b"}
 	 * </pre>
 	 * 
-	 * @param src the String to split
-	 * @param at  indices to split at, in any order
-	 * @throws IllegalArgumentException if some index is out of bounds for
-	 *                                  {@code src}
+	 * @param src
+	 *            the String to split
+	 * @param at
+	 *            indices to split at, in any order
+	 * @throws IllegalArgumentException
+	 *             if some index is out of bounds for {@code src}
 	 * @return an array containing the substrings, in order of encounter in
-	 *         {@code src}.
-	 *         Its length is always {@code at.length + 1}.
+	 *         {@code src}. Its length is always {@code at.length + 1}.
 	 */
 	public static String[] splitAt(String src, int... at) {
 		Objects.requireNonNull(src, "src");
@@ -553,10 +508,8 @@ public class StringUtil {
 		}
 
 		if (endPos < beginPos) {
-			throw new IllegalArgumentException(
-				"endPos must be greater than or equal to beginPos (endPos="
-					+ endPos + ", beginPos=" + beginPos + ")"
-			);
+			throw new IllegalArgumentException("endPos must be greater than or equal to beginPos (endPos=" + endPos
+					+ ", beginPos=" + beginPos + ")");
 		}
 
 		if (endPos >= Math.min(a.length, b.length)) {
@@ -592,8 +545,7 @@ public class StringUtil {
 
 	/**
 	 * Finds and returns the index of the specified appearance of the specified
-	 * character
-	 * in the given array. The search starts at index 0.
+	 * character in the given array. The search starts at index 0.
 	 * <p>
 	 * Examples:
 	 * <p>
@@ -630,10 +582,12 @@ public class StringUtil {
 	 * </tr>
 	 * </table>
 	 * 
-	 * @param src    - the array to search in.
-	 * @param target - the character to search for.
-	 * @param skip   - the amount of <code>target</code> characters to be
-	 *               skipped.
+	 * @param src
+	 *            - the array to search in.
+	 * @param target
+	 *            - the character to search for.
+	 * @param skip
+	 *            - the amount of <code>target</code> characters to be skipped.
 	 * @return The index of the <code>skip+1</code>th <code>target</code>
 	 *         character or -1, if none found.
 	 * @see StringUtil#indexFromEnd(char[], char, int)
@@ -653,8 +607,7 @@ public class StringUtil {
 
 	/**
 	 * Finds and returns the index of the specified appearance of the specified
-	 * character
-	 * in the given array. The search starts at index
+	 * character in the given array. The search starts at index
 	 * <code>src.length - 1</code>.
 	 * <p>
 	 * Examples:
@@ -692,13 +645,15 @@ public class StringUtil {
 	 * </tr>
 	 * </table>
 	 * 
-	 * @param src    - the array to search in.
-	 * @param target - the character to search for.
-	 * @param skip   - the amount of <code>target</code> characters to be
-	 *               skipped.
+	 * @param src
+	 *            - the array to search in.
+	 * @param target
+	 *            - the character to search for.
+	 * @param skip
+	 *            - the amount of <code>target</code> characters to be skipped.
 	 * @return The index of the <code>skip+1</code>th
-	 *         <code>target</code>character
-	 *         from the end of the array or -1, if none found.
+	 *         <code>target</code>character from the end of the array or -1, if
+	 *         none found.
 	 * @see StringUtil#indexFromBeginning(char[], char, int)
 	 */
 	public static int indexFromEnd(char[] src, char target, int skip) {
@@ -873,12 +828,8 @@ public class StringUtil {
 		return result;
 	}
 
-	private static void buildCombinations(
-		StringBuilder sb,
-		Collection<String> result,
-		Iterable<String>[] parts,
-		int index
-	) {
+	private static void buildCombinations(StringBuilder sb, Collection<String> result, Iterable<String>[] parts,
+			int index) {
 		if (index >= parts.length) {
 			result.add(sb.toString());
 		} else {
@@ -904,13 +855,8 @@ public class StringUtil {
 		return result;
 	}
 
-	private static void buildCombinations(
-		StringBuilder sb,
-		String[] result,
-		int[] resultIndex,
-		String[][] parts,
-		int index
-	) {
+	private static void buildCombinations(StringBuilder sb, String[] result, int[] resultIndex, String[][] parts,
+			int index) {
 		if (index >= parts.length) {
 			result[resultIndex[0]++] = sb.toString();
 		} else {
@@ -985,10 +931,7 @@ public class StringUtil {
 	}
 
 	private static char hexDigit(long value, int digit) {
-		return hexDigit(
-			(int) (value >>> (4 * digit))
-				& 0xF
-		);
+		return hexDigit((int) (value >>> (4 * digit)) & 0xF);
 	}
 
 	public static char hexDigit(int value) {

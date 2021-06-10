@@ -15,26 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.tile;
 
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.generic.GenericTileStack;
 
-public abstract class TileDataStack
-	extends GenericTileStack<TileDataStack, TileData, ChunkData> {
+public abstract class TileDataStack extends GenericTileStack<TileDataStack, TileData, ChunkData> {
 
 	/**
 	 * Inserts the specified tile at the specified position in this stack.
 	 * Shifts the tile currently at that position (if any) and any tiles above
-	 * to
-	 * the top (adds one to their indices).
+	 * to the top (adds one to their indices).
 	 * 
-	 * @param index index at which the specified tile is to be inserted
-	 * @param tile  tile to be inserted
-	 * @throws TileStackIsFullException if this stack is {@linkplain #isFull()
-	 *                                  full}
+	 * @param index
+	 *            index at which the specified tile is to be inserted
+	 * @param tile
+	 *            tile to be inserted
+	 * @throws TileStackIsFullException
+	 *             if this stack is {@linkplain #isFull() full}
 	 */
 	/*
 	 * Impl note: AbstractList provides a useless implementation of this method,
@@ -45,15 +45,15 @@ public abstract class TileDataStack
 
 	/**
 	 * Adds the specified tile at the end of this stack assigning it the
-	 * provided tag.
-	 * This method is useful for copying stacks when preserving tags is
-	 * necessary.
+	 * provided tag. This method is useful for copying stacks when preserving
+	 * tags is necessary.
 	 * 
-	 * @param tile the tile to add
-	 * @param tag  the tag to assign the new tile
-	 * @throws IllegalArgumentException if this stack already contains a tile
-	 *                                  with the
-	 *                                  provided tag
+	 * @param tile
+	 *            the tile to add
+	 * @param tag
+	 *            the tag to assign the new tile
+	 * @throws IllegalArgumentException
+	 *             if this stack already contains a tile with the provided tag
 	 */
 	public abstract void load(TileData tile, int tag);
 
@@ -61,8 +61,10 @@ public abstract class TileDataStack
 	 * Replaces the tile at the specified position in this stack with the
 	 * specified tile.
 	 * 
-	 * @param index index of the tile to replace
-	 * @param tile  tile to be stored at the specified position
+	 * @param index
+	 *            index of the tile to replace
+	 * @param tile
+	 *            tile to be stored at the specified position
 	 * @return the tile previously at the specified position
 	 */
 	/*
@@ -74,12 +76,11 @@ public abstract class TileDataStack
 
 	/**
 	 * Removes the tile at the specified position in this list. Shifts any
-	 * subsequent tiles
-	 * to the left (subtracts one from their indices). Returns the tile that was
-	 * removed
-	 * from the list.
+	 * subsequent tiles to the left (subtracts one from their indices). Returns
+	 * the tile that was removed from the list.
 	 * 
-	 * @param index the index of the tile to be removed
+	 * @param index
+	 *            the index of the tile to be removed
 	 * @return the tile previously at the specified position
 	 */
 	/*
@@ -108,12 +109,13 @@ public abstract class TileDataStack
 	}
 
 	/**
-	 * Attempts to {@link #add(int, TileData) add} the provided {@code tile}
-	 * at {@code index}. If the stack is {@linkplain #isFull() full}, does
-	 * nothing.
+	 * Attempts to {@link #add(int, TileData) add} the provided {@code tile} at
+	 * {@code index}. If the stack is {@linkplain #isFull() full}, does nothing.
 	 * 
-	 * @param index the index to insert the tile at
-	 * @param tile  the tile to try to add
+	 * @param index
+	 *            the index to insert the tile at
+	 * @param tile
+	 *            the tile to try to add
 	 * @return {@code true} iff this stack has changed
 	 */
 	public boolean offer(int index, TileData tile) {

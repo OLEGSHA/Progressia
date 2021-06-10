@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.model;
 
 import java.nio.ByteBuffer;
@@ -40,20 +40,13 @@ public class Face implements Comparable<Face> {
 	private ShortBuffer userIndices;
 	private boolean userIndicesUpdated = true;
 
-	public Face(
-		Texture texture,
-		ByteBuffer vertices,
-		ShortBuffer indices
-	) {
+	public Face(Texture texture, ByteBuffer vertices, ShortBuffer indices) {
 		setTexture(texture);
 		setVertices(vertices);
 		setIndices(indices);
 	}
 
-	public Face(
-		Texture texture,
-		ByteBuffer vertices
-	) {
+	public Face(Texture texture, ByteBuffer vertices) {
 		this(texture, vertices, null);
 	}
 
@@ -66,22 +59,16 @@ public class Face implements Comparable<Face> {
 
 	private void checkVertices() {
 		if (vertices.remaining() % getBytesPerVertex() != 0) {
-			throw new IllegalArgumentException(
-				"Invalid vertex buffer: " +
-					(vertices.remaining() % getBytesPerVertex()) +
-					" extra bytes after last vertex"
-			);
+			throw new IllegalArgumentException("Invalid vertex buffer: " + (vertices.remaining() % getBytesPerVertex())
+					+ " extra bytes after last vertex");
 		}
 	}
 
 	private void checkIndices() {
 		if (userIndices != GENERATE_SUCCESSIVE_LATER) {
 			if (userIndices.remaining() % 3 != 0) {
-				throw new IllegalArgumentException(
-					"Invalid vertex indices: " +
-						(userIndices.remaining() % 3) +
-						" extra indices after last triangle"
-				);
+				throw new IllegalArgumentException("Invalid vertex indices: " + (userIndices.remaining() % 3)
+						+ " extra indices after last triangle");
 			}
 
 			userIndices.mark();
@@ -91,21 +78,15 @@ public class Face implements Comparable<Face> {
 				short index = userIndices.get();
 				if (index < 0 || index >= vertexCount) {
 					throw new IllegalArgumentException(
-						"Invalid vertex index " + index +
-							" (" + vertexCount + " vertices available)"
-					);
+							"Invalid vertex index " + index + " (" + vertexCount + " vertices available)");
 				}
 			}
 
 			userIndices.reset();
 		} else {
 			if (getVertexCount() % 3 != 0) {
-				throw new IllegalArgumentException(
-					"Invalid vertices: " +
-						(getVertexCount() % 3) +
-						" extra indices after last triangle " +
-						"(indices are automatic)"
-				);
+				throw new IllegalArgumentException("Invalid vertices: " + (getVertexCount() % 3)
+						+ " extra indices after last triangle " + "(indices are automatic)");
 			}
 		}
 	}

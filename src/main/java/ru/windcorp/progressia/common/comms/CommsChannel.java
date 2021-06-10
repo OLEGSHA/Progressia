@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.comms;
 
 import java.io.IOException;
@@ -56,15 +56,9 @@ public abstract class CommsChannel {
 
 	protected abstract void doSendPacket(Packet packet) throws IOException;
 
-	private synchronized void sendPacket(
-		Packet packet,
-		State expectedState,
-		String errorMessage
-	) {
+	private synchronized void sendPacket(Packet packet, State expectedState, String errorMessage) {
 		if (getState() != expectedState) {
-			throw new IllegalStateException(
-				String.format(errorMessage, this, getState())
-			);
+			throw new IllegalStateException(String.format(errorMessage, this, getState()));
 		}
 
 		try {
@@ -75,27 +69,15 @@ public abstract class CommsChannel {
 	}
 
 	public synchronized void sendPacket(Packet packet) {
-		sendPacket(
-			packet,
-			State.CONNECTED,
-			"Client %s is in state %s and cannot receive packets normally"
-		);
+		sendPacket(packet, State.CONNECTED, "Client %s is in state %s and cannot receive packets normally");
 	}
 
 	public synchronized void sendConnectingPacket(Packet packet) {
-		sendPacket(
-			packet,
-			State.CONNECTING,
-			"Client %s is in state %s and is no longer connecting"
-		);
+		sendPacket(packet, State.CONNECTING, "Client %s is in state %s and is no longer connecting");
 	}
 
 	public synchronized void sendDisconnectingPacket(Packet packet) {
-		sendPacket(
-			packet,
-			State.CONNECTING,
-			"Client %s is in state %s and is no longer disconnecting"
-		);
+		sendPacket(packet, State.CONNECTING, "Client %s is in state %s and is no longer disconnecting");
 	}
 
 	public abstract void disconnect();

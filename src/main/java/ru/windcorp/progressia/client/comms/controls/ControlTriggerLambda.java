@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.comms.controls;
 
 import java.util.function.BiConsumer;
@@ -33,17 +33,12 @@ public class ControlTriggerLambda extends ControlTriggerInputBased {
 	private final Predicate<InputEvent> predicate;
 	private final BiConsumer<InputEvent, ControlData> dataWriter;
 
-	public ControlTriggerLambda(
-		String id,
-		Predicate<InputEvent> predicate,
-		BiConsumer<InputEvent, ControlData> dataWriter
-	) {
+	public ControlTriggerLambda(String id, Predicate<InputEvent> predicate,
+			BiConsumer<InputEvent, ControlData> dataWriter) {
 		super(id);
 
-		this.packetId = NamespacedUtil.getId(
-			NamespacedUtil.getNamespace(id),
-			"ControlKeyPress" + NamespacedUtil.getName(id)
-		);
+		this.packetId = NamespacedUtil.getId(NamespacedUtil.getNamespace(id),
+				"ControlKeyPress" + NamespacedUtil.getName(id));
 
 		this.predicate = predicate;
 		this.dataWriter = dataWriter;
@@ -54,10 +49,7 @@ public class ControlTriggerLambda extends ControlTriggerInputBased {
 		if (!predicate.test(event))
 			return null;
 
-		PacketControl packet = new PacketControl(
-			packetId,
-			ControlDataRegistry.getInstance().create(getId())
-		);
+		PacketControl packet = new PacketControl(packetId, ControlDataRegistry.getInstance().create(getId()));
 
 		dataWriter.accept(event, packet.getControl());
 

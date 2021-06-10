@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.ticking;
 
 import ru.windcorp.progressia.server.world.block.TickableBlock;
@@ -23,27 +23,24 @@ import ru.windcorp.progressia.server.world.tile.TickableTile;
 
 /**
  * Various ticking policies that {@link TickableBlock} or {@link TickableTile}
- * can have.
- * Ticking policy determines when, and if, the block or tile is ticked.
+ * can have. Ticking policy determines when, and if, the block or tile is
+ * ticked.
  * 
  * @author javapony
  */
 public enum TickingPolicy {
 
 	/**
-	 * The ticking policy that requests that no ticks happen.
-	 * This is typically used for blocks or tiles that only tick under certain
-	 * conditions,
-	 * which are not meant at the moment.
+	 * The ticking policy that requests that no ticks happen. This is typically
+	 * used for blocks or tiles that only tick under certain conditions, which
+	 * are not meant at the moment.
 	 */
 	NONE,
 
 	/**
 	 * The ticking policy that requests that the object is ticked every server
-	 * tick exactly once.
-	 * This should not be used for objects that only change rarely; consider
-	 * using {@link RANDOM}
-	 * instead.
+	 * tick exactly once. This should not be used for objects that only change
+	 * rarely; consider using {@link RANDOM} instead.
 	 */
 	REGULAR,
 

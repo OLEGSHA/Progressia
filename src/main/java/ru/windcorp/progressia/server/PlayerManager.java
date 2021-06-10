@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
 
 import java.util.ArrayList;
@@ -61,12 +61,7 @@ public class PlayerManager {
 
 		player.setEntityId(TestContent.PLAYER_ENTITY_ID);
 		player.setPosition(TestContent.SPAWN);
-		player.setDirection(
-			new Vec2(
-				Math.toRadians(40),
-				Math.toRadians(10)
-			)
-		);
+		player.setDirection(new Vec2(Math.toRadians(40), Math.toRadians(10)));
 
 		getServer().getWorld().getData().addEntity(player);
 

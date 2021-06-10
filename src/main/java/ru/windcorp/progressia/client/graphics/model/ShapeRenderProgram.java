@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.model;
 
 import java.nio.ByteBuffer;
@@ -43,19 +43,18 @@ import ru.windcorp.progressia.common.util.Vectors;
 public class ShapeRenderProgram extends Program {
 
 	private static final int DEFAULT_BYTES_PER_VERTEX = 3 * Float.BYTES + // Position
-		4 * Float.BYTES + // Color multiplier
-		2 * Float.BYTES; // Texture coordinates
+			4 * Float.BYTES + // Color multiplier
+			2 * Float.BYTES; // Texture coordinates
 
 	private static final String SHAPE_VERTEX_SHADER_RESOURCE = "Shape.vertex.glsl";
 	private static final String SHAPE_FRAGMENT_SHADER_RESOURCE = "Shape.fragment.glsl";
 
 	private static final String FINAL_TRANSFORM_UNIFORM_NAME = "finalTransform",
-		POSITIONS_ATTRIBUTE_NAME = "inputPositions",
-		UNIFORM_COLOR_MULTIPLER_ATTRIBUTE_NAME = "uniformColorMultiplier",
-		ATTRIBUTE_COLOR_MULTIPLER_ATTRIBUTE_NAME = "inputColorMultiplier",
-		TEXTURE_COORDS_ATTRIBUTE_NAME = "inputTextureCoords",
-		USE_TEXTURE_UNIFORM_NAME = "useTexture",
-		TEXTURE_SLOT_UNIFORM_NAME = "textureSlot";
+			POSITIONS_ATTRIBUTE_NAME = "inputPositions",
+			UNIFORM_COLOR_MULTIPLER_ATTRIBUTE_NAME = "uniformColorMultiplier",
+			ATTRIBUTE_COLOR_MULTIPLER_ATTRIBUTE_NAME = "inputColorMultiplier",
+			TEXTURE_COORDS_ATTRIBUTE_NAME = "inputTextureCoords", USE_TEXTURE_UNIFORM_NAME = "useTexture",
+			TEXTURE_SLOT_UNIFORM_NAME = "textureSlot";
 
 	private final Uniform4Matrix finalTransformUniform;
 	private final AttributeVertexArray positionsAttribute;
@@ -65,21 +64,11 @@ public class ShapeRenderProgram extends Program {
 	private final Uniform1Int useTextureUniform;
 	private final Uniform1Int textureSlotUniform;
 
-	public ShapeRenderProgram(
-		String[] vertexShaderResources,
-		String[] fragmentShaderResources
-	) {
-		super(
-			new CombinedShader(
-				attachVertexShader(vertexShaderResources)
-			),
-			new CombinedShader(
-				attachFragmentShader(fragmentShaderResources)
-			)
-		);
+	public ShapeRenderProgram(String[] vertexShaderResources, String[] fragmentShaderResources) {
+		super(new CombinedShader(attachVertexShader(vertexShaderResources)),
+				new CombinedShader(attachFragmentShader(fragmentShaderResources)));
 
-		this.finalTransformUniform = getUniform(FINAL_TRANSFORM_UNIFORM_NAME)
-			.as4Matrix();
+		this.finalTransformUniform = getUniform(FINAL_TRANSFORM_UNIFORM_NAME).as4Matrix();
 
 		this.positionsAttribute = getAttribute(POSITIONS_ATTRIBUTE_NAME).asVertexArray();
 
@@ -89,11 +78,9 @@ public class ShapeRenderProgram extends Program {
 
 		this.textureCoordsAttribute = getAttribute(TEXTURE_COORDS_ATTRIBUTE_NAME).asVertexArray();
 
-		this.useTextureUniform = getUniform(USE_TEXTURE_UNIFORM_NAME)
-			.as1Int();
+		this.useTextureUniform = getUniform(USE_TEXTURE_UNIFORM_NAME).as1Int();
 
-		this.textureSlotUniform = getUniform(TEXTURE_SLOT_UNIFORM_NAME)
-			.as1Int();
+		this.textureSlotUniform = getUniform(TEXTURE_SLOT_UNIFORM_NAME).as1Int();
 	}
 
 	private static String[] attachVertexShader(String[] others) {
@@ -104,10 +91,7 @@ public class ShapeRenderProgram extends Program {
 		return ObjectArrays.concat(SHAPE_FRAGMENT_SHADER_RESOURCE, others);
 	}
 
-	public void render(
-		ShapeRenderHelper helper,
-		Shape shape
-	) {
+	public void render(ShapeRenderHelper helper, Shape shape) {
 		use();
 		configure(helper);
 
@@ -145,34 +129,13 @@ public class ShapeRenderProgram extends Program {
 		int vertexStride = getBytesPerVertex();
 		int offset = 0;
 
-		positionsAttribute.set(
-			3,
-			GL11.GL_FLOAT,
-			false,
-			vertexStride,
-			vertices,
-			offset
-		);
+		positionsAttribute.set(3, GL11.GL_FLOAT, false, vertexStride, vertices, offset);
 		offset += 3 * Float.BYTES;
 
-		colorsAttribute.set(
-			4,
-			GL11.GL_FLOAT,
-			false,
-			vertexStride,
-			vertices,
-			offset
-		);
+		colorsAttribute.set(4, GL11.GL_FLOAT, false, vertexStride, vertices, offset);
 		offset += 4 * Float.BYTES;
 
-		textureCoordsAttribute.set(
-			2,
-			GL11.GL_FLOAT,
-			false,
-			vertexStride,
-			vertices,
-			offset
-		);
+		textureCoordsAttribute.set(2, GL11.GL_FLOAT, false, vertexStride, vertices, offset);
 		offset += 2 * Float.BYTES;
 
 		return offset;
@@ -193,12 +156,8 @@ public class ShapeRenderProgram extends Program {
 			useTextureUniform.set(0);
 		}
 
-		GL11.glDrawElements(
-			GL11.GL_TRIANGLES,
-			group.getIndexCount(),
-			GL11.GL_UNSIGNED_SHORT,
-			group.getByteOffsetOfIndices()
-		);
+		GL11.glDrawElements(GL11.GL_TRIANGLES, group.getIndexCount(), GL11.GL_UNSIGNED_SHORT,
+				group.getByteOffsetOfIndices());
 	}
 
 	public int getBytesPerVertex() {
@@ -220,13 +179,9 @@ public class ShapeRenderProgram extends Program {
 		Sprite sprite = face.getTexture().getSprite();
 
 		for (int i = 0; i < face.getVertexCount(); i++) {
-			int offset = vertices.position() + i * getBytesPerVertex() + (3 * Float.BYTES +
-				4 * Float.BYTES);
+			int offset = vertices.position() + i * getBytesPerVertex() + (3 * Float.BYTES + 4 * Float.BYTES);
 
-			v.set(
-				vertices.getFloat(offset + 0 * Float.BYTES),
-				vertices.getFloat(offset + 1 * Float.BYTES)
-			);
+			v.set(vertices.getFloat(offset + 0 * Float.BYTES), vertices.getFloat(offset + 1 * Float.BYTES));
 
 			v.mul(sprite.getSize()).add(sprite.getStart());
 
@@ -244,34 +199,11 @@ public class ShapeRenderProgram extends Program {
 	}
 
 	public static interface VertexBuilder {
-		VertexBuilder addVertex(
-			float x,
-			float y,
-			float z,
-			float r,
-			float g,
-			float b,
-			float tx,
-			float ty
-		);
+		VertexBuilder addVertex(float x, float y, float z, float r, float g, float b, float tx, float ty);
 
-		VertexBuilder addVertex(
-			float x,
-			float y,
-			float z,
-			float r,
-			float g,
-			float b,
-			float a,
-			float tx,
-			float ty
-		);
+		VertexBuilder addVertex(float x, float y, float z, float r, float g, float b, float a, float tx, float ty);
 
-		VertexBuilder addVertex(
-			Vec3 position,
-			Vec4 colorMultiplier,
-			Vec2 textureCoords
-		);
+		VertexBuilder addVertex(Vec3 position, Vec4 colorMultiplier, Vec2 textureCoords);
 
 		ByteBuffer assemble();
 	}
@@ -293,84 +225,35 @@ public class ShapeRenderProgram extends Program {
 		private final List<Vertex> vertices = new ArrayList<>();
 
 		@Override
-		public VertexBuilder addVertex(
-			float x,
-			float y,
-			float z,
-			float r,
-			float g,
-			float b,
-			float a,
-			float tx,
-			float ty
-		) {
-			vertices.add(
-				new Vertex(
-					new Vec3(x, y, z),
-					new Vec4(r, g, b, a),
-					new Vec2(tx, ty)
-				)
-			);
+		public VertexBuilder addVertex(float x, float y, float z, float r, float g, float b, float a, float tx,
+				float ty) {
+			vertices.add(new Vertex(new Vec3(x, y, z), new Vec4(r, g, b, a), new Vec2(tx, ty)));
 
 			return this;
 		}
 
 		@Override
-		public VertexBuilder addVertex(
-			float x,
-			float y,
-			float z,
-			float r,
-			float g,
-			float b,
-			float tx,
-			float ty
-		) {
-			vertices.add(
-				new Vertex(
-					new Vec3(x, y, z),
-					new Vec4(r, g, b, 1f),
-					new Vec2(tx, ty)
-				)
-			);
+		public VertexBuilder addVertex(float x, float y, float z, float r, float g, float b, float tx, float ty) {
+			vertices.add(new Vertex(new Vec3(x, y, z), new Vec4(r, g, b, 1f), new Vec2(tx, ty)));
 
 			return this;
 		}
 
 		@Override
-		public VertexBuilder addVertex(
-			Vec3 position,
-			Vec4 colorMultiplier,
-			Vec2 textureCoords
-		) {
-			vertices.add(
-				new Vertex(
-					new Vec3(position),
-					new Vec4(colorMultiplier),
-					new Vec2(textureCoords)
-				)
-			);
+		public VertexBuilder addVertex(Vec3 position, Vec4 colorMultiplier, Vec2 textureCoords) {
+			vertices.add(new Vertex(new Vec3(position), new Vec4(colorMultiplier), new Vec2(textureCoords)));
 
 			return this;
 		}
 
 		@Override
 		public ByteBuffer assemble() {
-			ByteBuffer result = BufferUtils.createByteBuffer(
-				DEFAULT_BYTES_PER_VERTEX * vertices.size()
-			);
+			ByteBuffer result = BufferUtils.createByteBuffer(DEFAULT_BYTES_PER_VERTEX * vertices.size());
 
 			for (Vertex v : vertices) {
-				result
-					.putFloat(v.position.x)
-					.putFloat(v.position.y)
-					.putFloat(v.position.z)
-					.putFloat(v.colorMultiplier.x)
-					.putFloat(v.colorMultiplier.y)
-					.putFloat(v.colorMultiplier.z)
-					.putFloat(v.colorMultiplier.w)
-					.putFloat(v.textureCoords.x)
-					.putFloat(v.textureCoords.y);
+				result.putFloat(v.position.x).putFloat(v.position.y).putFloat(v.position.z)
+						.putFloat(v.colorMultiplier.x).putFloat(v.colorMultiplier.y).putFloat(v.colorMultiplier.z)
+						.putFloat(v.colorMultiplier.w).putFloat(v.textureCoords.x).putFloat(v.textureCoords.y);
 			}
 
 			result.flip();

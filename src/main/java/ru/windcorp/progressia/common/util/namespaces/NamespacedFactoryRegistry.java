@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util.namespaces;
 
 import java.util.Collection;
@@ -28,7 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class NamespacedFactoryRegistry<E extends Namespaced>
-	implements Map<String, NamespacedFactoryRegistry.Factory<E>> {
+		implements Map<String, NamespacedFactoryRegistry.Factory<E>> {
 
 	@FunctionalInterface
 	public static interface Factory<E> {
@@ -86,8 +86,7 @@ public class NamespacedFactoryRegistry<E extends Namespaced>
 		E result = factory.build(id);
 		if (!result.getId().equals(id)) {
 			throw new IllegalStateException(
-				"Requested ID " + id + " but factory " + factory + " returned an object with ID " + result.getId()
-			);
+					"Requested ID " + id + " but factory " + factory + " returned an object with ID " + result.getId());
 		}
 		return result;
 	}

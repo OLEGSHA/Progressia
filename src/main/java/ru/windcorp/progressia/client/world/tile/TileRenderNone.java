@@ -28,12 +28,12 @@ public class TileRenderNone extends TileRender {
 	public TileRenderNone(String id) {
 		super(id);
 	}
-	
+
 	@Override
 	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk, BlockFace face) {
 		return EmptyModel.getInstance();
 	}
-	
+
 	@Override
 	public boolean needsOwnRenderable() {
 		return false;

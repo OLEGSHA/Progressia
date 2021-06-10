@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world;
 
 import java.util.Collection;
@@ -38,14 +38,13 @@ import ru.windcorp.progressia.server.world.ticking.Evaluation;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogicStack;
 
-public class WorldLogic
-	implements GenericWorld<BlockLogic, TileLogic, TileLogicStack, ChunkLogic, EntityData // not
-																							// using
-																							// EntityLogic
-																							// because
-																							// it
-																							// is
-																							// stateless
+public class WorldLogic implements GenericWorld<BlockLogic, TileLogic, TileLogicStack, ChunkLogic, EntityData // not
+																												// using
+																												// EntityLogic
+																												// because
+																												// it
+																												// is
+																												// stateless
 > {
 
 	private final WorldData data;

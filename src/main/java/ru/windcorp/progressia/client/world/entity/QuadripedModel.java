@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.entity;
 
 import static java.lang.Math.*;
@@ -33,11 +33,7 @@ public class QuadripedModel extends NPedModel {
 	public static class Leg extends BodyPart {
 		private final float animationOffset;
 
-		public Leg(
-			Renderable renderable,
-			Vec3 joint,
-			float animationOffset
-		) {
+		public Leg(Renderable renderable, Vec3 joint, float animationOffset) {
 			super(renderable, joint);
 			this.animationOffset = animationOffset;
 		}
@@ -57,18 +53,11 @@ public class QuadripedModel extends NPedModel {
 
 	private float walkingSwing = (float) toRadians(30);
 
-	public QuadripedModel(
-		EntityData entity,
+	public QuadripedModel(EntityData entity,
 
-		Body body,
-		Head head,
-		Leg leftForeLeg,
-		Leg rightForeLeg,
-		Leg leftHindLeg,
-		Leg rightHindLeg,
+			Body body, Head head, Leg leftForeLeg, Leg rightForeLeg, Leg leftHindLeg, Leg rightHindLeg,
 
-		float scale
-	) {
+			float scale) {
 		super(entity, body, head, scale);
 
 		this.leftForeLeg = leftForeLeg;

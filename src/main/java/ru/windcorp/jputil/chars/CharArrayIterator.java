@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.chars;
 
 import java.text.CharacterIterator;
@@ -108,7 +108,7 @@ public class CharArrayIterator implements CharacterIterator {
 		return pos;
 	}
 
-//	@SuppressWarnings("all") Just STFU, this _is_ terrific
+	// @SuppressWarnings("all") Just STFU, this _is_ terrific
 
 	// SonarLint: "clone" should not be overridden (java:S2975)
 	// And I wouldn't have done that if only CharacterIterator had not required

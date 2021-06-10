@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.font;
 
 import java.util.function.Supplier;
@@ -29,12 +29,8 @@ import ru.windcorp.progressia.common.util.Vectors;
 public abstract class Typeface extends Named {
 
 	public static class Style {
-		public static final int BOLD = 1 << 0,
-			ITALIC = 1 << 1,
-			UNDERLINED = 1 << 2,
-			STRIKETHRU = 1 << 3,
-			SHADOW = 1 << 4,
-			OUTLINED = 1 << 5;
+		public static final int BOLD = 1 << 0, ITALIC = 1 << 1, UNDERLINED = 1 << 2, STRIKETHRU = 1 << 3,
+				SHADOW = 1 << 4, OUTLINED = 1 << 5;
 
 		public static final int PLAIN = 0;
 
@@ -71,40 +67,19 @@ public abstract class Typeface extends Named {
 		super(name);
 	}
 
-	public abstract Renderable assembleStatic(
-		CharSequence chars,
-		int style,
-		float align,
-		float maxWidth,
-		Vec4 color
-	);
+	public abstract Renderable assembleStatic(CharSequence chars, int style, float align, float maxWidth, Vec4 color);
 
-	public abstract Renderable assembleDynamic(
-		Supplier<CharSequence> supplier,
-		int style,
-		float align,
-		float maxWidth,
-		Vec4 color
-	);
+	public abstract Renderable assembleDynamic(Supplier<CharSequence> supplier, int style, float align, float maxWidth,
+			Vec4 color);
 
-	public int getWidth(
-		CharSequence chars,
-		int style,
-		float align,
-		float maxWidth
-	) {
+	public int getWidth(CharSequence chars, int style, float align, float maxWidth) {
 		Vec2i v = Vectors.grab2i();
 		v = getSize(chars, style, align, maxWidth, v);
 		Vectors.release(v);
 		return v.x;
 	}
 
-	public int getHeight(
-		CharSequence chars,
-		int style,
-		float align,
-		float maxWidth
-	) {
+	public int getHeight(CharSequence chars, int style, float align, float maxWidth) {
 		Vec2i v = Vectors.grab2i();
 		v = getSize(chars, style, align, maxWidth, v);
 		Vectors.release(v);
@@ -113,13 +88,7 @@ public abstract class Typeface extends Named {
 
 	public abstract int getLineHeight();
 
-	public abstract Vec2i getSize(
-		CharSequence chars,
-		int style,
-		float align,
-		float maxWidth,
-		Vec2i result
-	);
+	public abstract Vec2i getSize(CharSequence chars, int style, float align, float maxWidth, Vec2i result);
 
 	public abstract boolean supports(char c);
 

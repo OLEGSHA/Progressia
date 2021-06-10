@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.io;
 
 import java.io.DataInputStream;
@@ -47,8 +47,7 @@ public abstract class ChunkCodec extends Namespaced {
 	}
 
 	public abstract ChunkData decode(WorldData world, Vec3i position, DataInputStream input, IOContext context)
-		throws DecodingException,
-		IOException;
+			throws DecodingException, IOException;
 
 	public abstract boolean shouldEncode(ChunkData chunk, IOContext context);
 

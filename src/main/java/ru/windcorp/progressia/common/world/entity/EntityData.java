@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.entity;
 
 import java.io.DataInput;
@@ -40,8 +40,8 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 
 	/**
 	 * The unique {@code long} value guaranteed to never be assigned to an
-	 * entity as its entity ID.
-	 * This can safely be used as a placeholder or a sentinel value.
+	 * entity as its entity ID. This can safely be used as a placeholder or a
+	 * sentinel value.
 	 */
 	public static final long NULL_ENTITY_ID = 0x0000_0000_0000_0000;
 
@@ -153,22 +153,16 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 	}
 
 	public Vec3 getLookingAtVector(Vec3 output) {
-		output.set(
-			Math.cos(getPitch()) * Math.cos(getYaw()),
-			Math.cos(getPitch()) * Math.sin(getYaw()),
-			-Math.sin(getPitch())
-		);
+		output.set(Math.cos(getPitch()) * Math.cos(getYaw()), Math.cos(getPitch()) * Math.sin(getYaw()),
+				-Math.sin(getPitch()));
 
 		return output;
 	}
 
 	@Override
 	public String toString() {
-		return new StringBuilder(super.toString())
-			.append(" (EntityID ")
-			.append(StringUtil.toFullHex(getEntityId()))
-			.append(")")
-			.toString();
+		return new StringBuilder(super.toString()).append(" (EntityID ").append(StringUtil.toFullHex(getEntityId()))
+				.append(")").toString();
 	}
 
 	public static String formatEntityId(long entityId) {
@@ -197,22 +191,11 @@ public class EntityData extends StatefulObject implements Collideable, GenericEn
 
 	@Override
 	public void read(DataInput input, IOContext context) throws IOException {
-		Vec3 position = new Vec3(
-			input.readFloat(),
-			input.readFloat(),
-			input.readFloat()
-		);
+		Vec3 position = new Vec3(input.readFloat(), input.readFloat(), input.readFloat());
 
-		Vec3 velocity = new Vec3(
-			input.readFloat(),
-			input.readFloat(),
-			input.readFloat()
-		);
+		Vec3 velocity = new Vec3(input.readFloat(), input.readFloat(), input.readFloat());
 
-		Vec2 direction = new Vec2(
-			input.readFloat(),
-			input.readFloat()
-		);
+		Vec2 direction = new Vec2(input.readFloat(), input.readFloat());
 
 		setPosition(position);
 		setVelocity(velocity);

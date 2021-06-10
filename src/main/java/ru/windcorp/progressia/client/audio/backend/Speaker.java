@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.audio.backend;
 
 import glm.vec._3.Vec3;
@@ -24,9 +24,7 @@ import static org.lwjgl.openal.AL11.*;
 public class Speaker {
 
 	public enum State {
-		NOT_PLAYING,
-		PLAYING,
-		PLAYING_LOOP
+		NOT_PLAYING, PLAYING, PLAYING_LOOP
 	}
 
 	// Buffers
@@ -49,13 +47,7 @@ public class Speaker {
 		setAudioData(audioData);
 	}
 
-	public Speaker(
-		int audioData,
-		Vec3 position,
-		Vec3 velocity,
-		float pitch,
-		float gain
-	) {
+	public Speaker(int audioData, Vec3 position, Vec3 velocity, float pitch, float gain) {
 		setAudioData(audioData);
 		setPosition(position);
 		setVelocity(velocity);
@@ -63,12 +55,7 @@ public class Speaker {
 		setGain(gain);
 	}
 
-	public Speaker(
-		Vec3 position,
-		Vec3 velocity,
-		float pitch,
-		float gain
-	) {
+	public Speaker(Vec3 position, Vec3 velocity, float pitch, float gain) {
 		setPosition(position);
 		setVelocity(velocity);
 		setPitch(pitch);

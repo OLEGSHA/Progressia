@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 	private final TickChunk tickTask = new TickChunk(this);
 
 	private final Map<TileDataStack, TileLogicStackImpl> tileLogicLists = Collections
-		.synchronizedMap(new WeakHashMap<>());
+			.synchronizedMap(new WeakHashMap<>());
 
 	public ChunkLogic(WorldLogic world, ChunkData data) {
 		this.world = world;
@@ -69,9 +69,7 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 
 	@Override
 	public BlockLogic getBlock(Vec3i blockInChunk) {
-		return BlockLogicRegistry.getInstance().get(
-			getData().getBlock(blockInChunk).getId()
-		);
+		return BlockLogicRegistry.getInstance().get(getData().getBlock(blockInChunk).getId());
 	}
 
 	@Override
@@ -85,10 +83,7 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 	}
 
 	private TileLogicStack getTileStackWrapper(TileDataStack tileDataList) {
-		return tileLogicLists.computeIfAbsent(
-			tileDataList,
-			TileLogicStackImpl::new
-		);
+		return tileLogicLists.computeIfAbsent(tileDataList, TileLogicStackImpl::new);
 	}
 
 	public WorldLogic getWorld() {
@@ -119,10 +114,7 @@ public class ChunkLogic implements GenericChunk<ChunkLogic, BlockLogic, TileLogi
 
 	public void forEachTickingTile(BiConsumer<TileReference, TileLogic> action) {
 		tickingTiles.forEach(ref -> {
-			action.accept(
-				ref,
-				TileLogicRegistry.getInstance().get(ref.get().getId())
-			);
+			action.accept(ref, TileLogicRegistry.getInstance().get(ref.get().getId()));
 		});
 	}
 

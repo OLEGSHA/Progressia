@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.flat;
 
 import java.nio.FloatBuffer;
@@ -24,9 +24,8 @@ import org.lwjgl.BufferUtils;
 
 public class MaskStack {
 
-	private final FloatBuffer buffer = BufferUtils.createFloatBuffer(
-		FlatRenderProgram.MASK_STACK_SIZE * TransformedMask.SIZE_IN_FLOATS
-	);
+	private final FloatBuffer buffer = BufferUtils
+			.createFloatBuffer(FlatRenderProgram.MASK_STACK_SIZE * TransformedMask.SIZE_IN_FLOATS);
 
 	public void pushMask(TransformedMask mask) {
 		mask.writeToBuffer(buffer);

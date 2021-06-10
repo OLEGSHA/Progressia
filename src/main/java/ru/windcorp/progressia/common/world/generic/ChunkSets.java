@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.generic;
 
 import java.util.Iterator;
@@ -219,10 +219,8 @@ public class ChunkSets {
 		}
 
 		@Override
-		public <C extends GenericChunk<C, ?, ?, ?>> void forEachIn(
-			GenericWorld<?, ?, ?, C, ?> world,
-			Consumer<? super C> action
-		) {
+		public <C extends GenericChunk<C, ?, ?, ?>> void forEachIn(GenericWorld<?, ?, ?, C, ?> world,
+				Consumer<? super C> action) {
 			synchronized (mutex) {
 				parent.forEachIn(world, action);
 			}

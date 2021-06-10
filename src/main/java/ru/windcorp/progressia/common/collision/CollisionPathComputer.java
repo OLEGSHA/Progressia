@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.collision;
 
 import java.util.function.Consumer;
@@ -30,11 +30,7 @@ public class CollisionPathComputer {
 
 	private static final float PADDING = 0.5f;
 
-	public static void forEveryBlockInCollisionPath(
-		Collideable coll,
-		float maxTime,
-		Consumer<Vec3i> action
-	) {
+	public static void forEveryBlockInCollisionPath(Collideable coll, float maxTime, Consumer<Vec3i> action) {
 		Vec3 displacement = Vectors.grab3();
 		coll.getCollideableVelocity(displacement);
 		displacement.mul(maxTime);
@@ -44,11 +40,7 @@ public class CollisionPathComputer {
 		Vectors.release(displacement);
 	}
 
-	private static void handleModel(
-		CollisionModel model,
-		Vec3 displacement,
-		Consumer<Vec3i> action
-	) {
+	private static void handleModel(CollisionModel model, Vec3 displacement, Consumer<Vec3i> action) {
 		if (model instanceof CompoundCollisionModel) {
 			for (CollisionModel subModel : ((CompoundCollisionModel) model).getModels()) {
 				handleModel(subModel, displacement, action);
@@ -71,21 +63,13 @@ public class CollisionPathComputer {
 
 		Vec3i pos = Vectors.grab3i();
 
-		for (
-			pos.x = (int) floor(origin.x + min(0, size.x) + min(0, displacement.x) - PADDING);
-			pos.x <= (int) ceil(origin.x + max(0, size.x) + max(0, displacement.x) + PADDING);
-			pos.x += 1
-		) {
-			for (
-				pos.y = (int) floor(origin.y + min(0, size.y) + min(0, displacement.y) - PADDING);
-				pos.y <= (int) ceil(origin.y + max(0, size.y) + max(0, displacement.y) + PADDING);
-				pos.y += 1
-			) {
-				for (
-					pos.z = (int) floor(origin.z + min(0, size.z) + min(0, displacement.z) - PADDING);
-					pos.z <= (int) ceil(origin.z + max(0, size.z) + max(0, displacement.z) + PADDING);
-					pos.z += 1
-				) {
+		for (pos.x = (int) floor(origin.x + min(0, size.x) + min(0, displacement.x) - PADDING); pos.x <= (int) ceil(
+				origin.x + max(0, size.x) + max(0, displacement.x) + PADDING); pos.x += 1) {
+			for (pos.y = (int) floor(origin.y + min(0, size.y) + min(0, displacement.y) - PADDING); pos.y <= (int) ceil(
+					origin.y + max(0, size.y) + max(0, displacement.y) + PADDING); pos.y += 1) {
+				for (pos.z = (int) floor(
+						origin.z + min(0, size.z) + min(0, displacement.z) - PADDING); pos.z <= (int) ceil(
+								origin.z + max(0, size.z) + max(0, displacement.z) + PADDING); pos.z += 1) {
 					action.accept(pos);
 				}
 			}

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world;
 
 import static ru.windcorp.progressia.common.world.block.BlockFace.*;
@@ -38,8 +38,7 @@ import ru.windcorp.progressia.common.world.tile.TileDataStack;
 import ru.windcorp.progressia.common.world.tile.TileReference;
 import ru.windcorp.progressia.common.world.tile.TileStackIsFullException;
 
-public class ChunkData
-	implements GenericChunk<ChunkData, BlockData, TileData, TileDataStack> {
+public class ChunkData implements GenericChunk<ChunkData, BlockData, TileData, TileDataStack> {
 
 	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
 
@@ -48,8 +47,8 @@ public class ChunkData
 
 	private final BlockData[] blocks = new BlockData[BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK];
 
-	private final TileDataStack[] tiles = new TileDataStack[BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK *
-		BLOCK_FACE_COUNT];
+	private final TileDataStack[] tiles = new TileDataStack[BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK
+			* BLOCK_FACE_COUNT];
 
 	private Object generationHint = null;
 
@@ -90,14 +89,9 @@ public class ChunkData
 	/**
 	 * Internal use only. Modify a list returned by
 	 * {@link #getTiles(Vec3i, BlockFace)} or
-	 * {@link #getTilesOrNull(Vec3i, BlockFace)}
-	 * to change tiles.
+	 * {@link #getTilesOrNull(Vec3i, BlockFace)} to change tiles.
 	 */
-	protected void setTiles(
-		Vec3i blockInChunk,
-		BlockFace face,
-		TileDataStack tiles
-	) {
+	protected void setTiles(Vec3i blockInChunk, BlockFace face, TileDataStack tiles) {
 		this.tiles[getTileIndex(blockInChunk, face)] = tiles;
 	}
 
@@ -137,51 +131,34 @@ public class ChunkData
 	private static int getBlockIndex(Vec3i posInChunk) {
 		checkLocalCoordinates(posInChunk);
 
-		return posInChunk.z * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK +
-			posInChunk.y * BLOCKS_PER_CHUNK +
-			posInChunk.x;
+		return posInChunk.z * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK + posInChunk.y * BLOCKS_PER_CHUNK + posInChunk.x;
 	}
 
 	private static int getTileIndex(Vec3i posInChunk, BlockFace face) {
-		return getBlockIndex(posInChunk) * BLOCK_FACE_COUNT +
-			face.getId();
+		return getBlockIndex(posInChunk) * BLOCK_FACE_COUNT + face.getId();
 	}
 
 	private static void checkLocalCoordinates(Vec3i posInChunk) {
 		if (!isInBounds(posInChunk)) {
 			throw new IllegalCoordinatesException(
-				"Coordinates " + str(posInChunk) + " "
-					+ "are not legal chunk coordinates"
-			);
+					"Coordinates " + str(posInChunk) + " " + "are not legal chunk coordinates");
 		}
 	}
 
 	public static boolean isInBounds(Vec3i posInChunk) {
-		return posInChunk.x >= 0 && posInChunk.x < BLOCKS_PER_CHUNK &&
-			posInChunk.y >= 0 && posInChunk.y < BLOCKS_PER_CHUNK &&
-			posInChunk.z >= 0 && posInChunk.z < BLOCKS_PER_CHUNK;
+		return posInChunk.x >= 0 && posInChunk.x < BLOCKS_PER_CHUNK && posInChunk.y >= 0
+				&& posInChunk.y < BLOCKS_PER_CHUNK && posInChunk.z >= 0 && posInChunk.z < BLOCKS_PER_CHUNK;
 	}
 
 	public boolean isBorder(Vec3i blockInChunk, BlockFace face) {
 		final int min = 0, max = BLOCKS_PER_CHUNK - 1;
-		return (blockInChunk.x == min && face == SOUTH) ||
-			(blockInChunk.x == max && face == NORTH) ||
-			(blockInChunk.y == min && face == EAST) ||
-			(blockInChunk.y == max && face == WEST) ||
-			(blockInChunk.z == min && face == BOTTOM) ||
-			(blockInChunk.z == max && face == TOP);
+		return (blockInChunk.x == min && face == SOUTH) || (blockInChunk.x == max && face == NORTH)
+				|| (blockInChunk.y == min && face == EAST) || (blockInChunk.y == max && face == WEST)
+				|| (blockInChunk.z == min && face == BOTTOM) || (blockInChunk.z == max && face == TOP);
 	}
 
 	public void forEachBlock(Consumer<Vec3i> action) {
-		VectorUtil.iterateCuboid(
-			0,
-			0,
-			0,
-			BLOCKS_PER_CHUNK,
-			BLOCKS_PER_CHUNK,
-			BLOCKS_PER_CHUNK,
-			action
-		);
+		VectorUtil.iterateCuboid(0, 0, 0, BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK, BLOCKS_PER_CHUNK, action);
 	}
 
 	public void forEachTileStack(Consumer<TileDataStack> action) {
@@ -198,8 +175,9 @@ public class ChunkData
 	/**
 	 * Iterates over all tiles in this chunk.
 	 * 
-	 * @param action the action to perform. {@code TileLocation} refers to each
-	 *               tile using its primary block
+	 * @param action
+	 *            the action to perform. {@code TileLocation} refers to each
+	 *            tile using its primary block
 	 */
 	public void forEachTile(BiConsumer<TileDataStack, TileData> action) {
 		forEachTileStack(stack -> stack.forEach(tileData -> action.accept(stack, tileData)));
@@ -243,10 +221,8 @@ public class ChunkData
 
 	/**
 	 * Implementation of {@link TileDataStack} used internally by
-	 * {@link ChunkData} to
-	 * actually store the tiles. This is basically an array wrapper with
-	 * reporting
-	 * capabilities.
+	 * {@link ChunkData} to actually store the tiles. This is basically an array
+	 * wrapper with reporting capabilities.
 	 * 
 	 * @author javapony
 	 */
@@ -412,8 +388,7 @@ public class ChunkData
 				return;
 			if (assignedTag == -1) {
 				throw new IllegalArgumentException(
-					"Tag " + tag + " already used by tile at index " + getIndexByTag(tag)
-				);
+						"Tag " + tag + " already used by tile at index " + getIndexByTag(tag));
 			}
 
 			indicesByTag[tagsByIndex[size() - 1]] = -1;
@@ -498,8 +473,7 @@ public class ChunkData
 
 			if (index >= TILES_PER_FACE)
 				throw new TileStackIsFullException(
-					"Index " + index + " is out of bounds: maximum tile stack size is " + TILES_PER_FACE
-				);
+						"Index " + index + " is out of bounds: maximum tile stack size is " + TILES_PER_FACE);
 		}
 
 		private void report(TileData previous, TileData current) {

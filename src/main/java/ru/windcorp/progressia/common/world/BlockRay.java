@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world;
 
 import glm.vec._3.Vec3;
@@ -159,7 +159,8 @@ public class BlockRay {
 	/**
 	 * Returns a smallest integer <i>a</i> such that <i>a</i> > <i>c</i>.
 	 * 
-	 * @param c the number to compute strict ceiling of
+	 * @param c
+	 *            the number to compute strict ceiling of
 	 * @return the strict ceiling of <i>c</i>
 	 */
 	private static float strictCeil(float c) {
@@ -169,7 +170,8 @@ public class BlockRay {
 	/**
 	 * Returns a largest integer <i>a</i> such that <i>a</i> < <i>c</i>.
 	 * 
-	 * @param c the number to compute strict ceiling of
+	 * @param c
+	 *            the number to compute strict ceiling of
 	 * @return the strict ceiling of <i>c</i>
 	 */
 	private static float strictFloor(float c) {

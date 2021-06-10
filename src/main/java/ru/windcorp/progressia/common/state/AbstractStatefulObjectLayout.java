@@ -15,15 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.state;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public abstract class AbstractStatefulObjectLayout
-	extends StatefulObjectLayout {
+public abstract class AbstractStatefulObjectLayout extends StatefulObjectLayout {
 
 	public AbstractStatefulObjectLayout(String objectId) {
 		super(objectId);
@@ -34,12 +33,7 @@ public abstract class AbstractStatefulObjectLayout
 	protected abstract StateField getField(int fieldIndex);
 
 	@Override
-	public void read(
-		StatefulObject object,
-		DataInput input,
-		IOContext context
-	)
-		throws IOException {
+	public void read(StatefulObject object, DataInput input, IOContext context) throws IOException {
 
 		int fieldCount = getFieldCount();
 		for (int i = 0; i < fieldCount; ++i) {
@@ -53,12 +47,7 @@ public abstract class AbstractStatefulObjectLayout
 	}
 
 	@Override
-	public void write(
-		StatefulObject object,
-		DataOutput output,
-		IOContext context
-	)
-		throws IOException {
+	public void write(StatefulObject object, DataOutput output, IOContext context) throws IOException {
 
 		int fieldCount = getFieldCount();
 		for (int i = 0; i < fieldCount; ++i) {

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.world;
 
 import static java.lang.Math.*;
@@ -42,10 +42,7 @@ public class Camera {
 
 			void applyCameraRotation(Mat4 output);
 
-			public static Mode of(
-				Consumer<Vec3> offsetGetter,
-				Consumer<Mat4> rotator
-			) {
+			public static Mode of(Consumer<Vec3> offsetGetter, Consumer<Mat4> rotator) {
 				return new Mode() {
 					@Override
 					public void getCameraOffset(Vec3 output) {
@@ -121,13 +118,8 @@ public class Camera {
 	private void applyPerspective(WorldRenderHelper helper) {
 		Mat4 previous = helper.getViewTransform();
 
-		Glm.perspective(
-			computeFovY(),
-			GraphicsInterface.getAspectRatio(),
-			0.01f,
-			150.0f,
-			helper.pushViewTransform()
-		).mul(previous);
+		Glm.perspective(computeFovY(), GraphicsInterface.getAspectRatio(), 0.01f, 150.0f, helper.pushViewTransform())
+				.mul(previous);
 	}
 
 	private void rotateCoordinateSystem(WorldRenderHelper helper) {
@@ -152,23 +144,14 @@ public class Camera {
 		float pitch = anchor.getCameraPitch();
 		float yaw = anchor.getCameraYaw();
 
-		helper.pushViewTransform()
-			.rotateY(-pitch)
-			.rotateZ(-yaw);
+		helper.pushViewTransform().rotateY(-pitch).rotateZ(-yaw);
 
 		this.lastAnchorYaw = yaw;
 		this.lastAnchorPitch = pitch;
 
-		this.lastAnchorLookingAt.set(
-			cos(pitch) * cos(yaw),
-			cos(pitch) * sin(yaw),
-			sin(pitch)
-		);
-		this.lastAnchorUp.set(
-			cos(pitch + PI_F / 2) * cos(yaw),
-			cos(pitch + PI_F / 2) * sin(yaw),
-			sin(pitch + PI_F / 2)
-		);
+		this.lastAnchorLookingAt.set(cos(pitch) * cos(yaw), cos(pitch) * sin(yaw), sin(pitch));
+		this.lastAnchorUp.set(cos(pitch + PI_F / 2) * cos(yaw), cos(pitch + PI_F / 2) * sin(yaw),
+				sin(pitch + PI_F / 2));
 	}
 
 	private void applyPosition(WorldRenderHelper helper) {
@@ -194,11 +177,7 @@ public class Camera {
 		if (widthOverHeight >= 1) {
 			return fieldOfView;
 		} else {
-			return (float) (2 * atan(
-				1 / widthOverHeight
-					*
-					tan(fieldOfView / 2)
-			));
+			return (float) (2 * atan(1 / widthOverHeight * tan(fieldOfView / 2)));
 		}
 	}
 
@@ -234,9 +213,7 @@ public class Camera {
 
 		if (modesCollection.isEmpty()) {
 			throw new IllegalArgumentException(
-				"Anchor " + anchor + " returned no camera modes,"
-					+ " at least one required"
-			);
+					"Anchor " + anchor + " returned no camera modes," + " at least one required");
 		}
 
 		this.anchor = anchor;
@@ -250,24 +227,8 @@ public class Camera {
 		this.lastAnchorYaw = Float.NaN;
 		this.lastAnchorPitch = Float.NaN;
 
-		this.lastCameraMatrix.set(
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN,
-			Float.NaN
-		);
+		this.lastCameraMatrix.set(Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN,
+				Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN);
 
 		this.lastAnchorLookingAt.set(Float.NaN);
 		this.lastAnchorUp.set(Float.NaN);

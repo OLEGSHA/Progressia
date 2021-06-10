@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util.crash.providers;
 
 import ru.windcorp.progressia.common.util.crash.ContextProvider;
@@ -29,11 +29,8 @@ public class RAMContextProvider implements ContextProvider {
 		output.put("Max Memory", Runtime.getRuntime().maxMemory() / 1024 / 1024 + " MB");
 		output.put("Total Memory", Runtime.getRuntime().totalMemory() / 1024 / 1024 + " MB");
 		output.put("Free Memory", Runtime.getRuntime().freeMemory() / 1024 / 1024 + " MB");
-		output.put(
-			"Used Memory",
-			(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024
-				+ " MB"
-		);
+		output.put("Used Memory",
+				(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024 + " MB");
 	}
 
 	@Override

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.block;
 
 import com.google.common.collect.ImmutableList;
@@ -26,11 +26,9 @@ import glm.vec._3.i.Vec3i;
 public final class BlockFace extends BlockRelation {
 
 	public static final BlockFace TOP = new BlockFace(0, 0, +1, true, "TOP"),
-		BOTTOM = new BlockFace(0, 0, -1, false, "BOTTOM"),
-		NORTH = new BlockFace(+1, 0, 0, true, "NORTH"),
-		SOUTH = new BlockFace(-1, 0, 0, false, "SOUTH"),
-		WEST = new BlockFace(0, +1, 0, false, "WEST"),
-		EAST = new BlockFace(0, -1, 0, true, "EAST");
+			BOTTOM = new BlockFace(0, 0, -1, false, "BOTTOM"), NORTH = new BlockFace(+1, 0, 0, true, "NORTH"),
+			SOUTH = new BlockFace(-1, 0, 0, false, "SOUTH"), WEST = new BlockFace(0, +1, 0, false, "WEST"),
+			EAST = new BlockFace(0, -1, 0, true, "EAST");
 
 	private static final ImmutableList<BlockFace> ALL_FACES = ImmutableList.of(TOP, BOTTOM, NORTH, SOUTH, WEST, EAST);
 
@@ -41,10 +39,10 @@ public final class BlockFace extends BlockRelation {
 	}
 
 	private static final ImmutableList<BlockFace> PRIMARY_FACES = ALL_FACES.stream().filter(BlockFace::isPrimary)
-		.collect(ImmutableList.toImmutableList());
+			.collect(ImmutableList.toImmutableList());
 
 	private static final ImmutableList<BlockFace> SECONDARY_FACES = ALL_FACES.stream().filter(BlockFace::isSecondary)
-		.collect(ImmutableList.toImmutableList());
+			.collect(ImmutableList.toImmutableList());
 
 	public static final int BLOCK_FACE_COUNT = ALL_FACES.size();
 	public static final int PRIMARY_BLOCK_FACE_COUNT = PRIMARY_FACES.size();
@@ -67,22 +65,9 @@ public final class BlockFace extends BlockRelation {
 		b.counterFace = a;
 	}
 
-	public static <E> ImmutableMap<BlockFace, E> mapToFaces(
-		E top,
-		E bottom,
-		E north,
-		E south,
-		E east,
-		E west
-	) {
-		return ImmutableMap.<BlockFace, E>builderWithExpectedSize(6)
-			.put(TOP, top)
-			.put(BOTTOM, bottom)
-			.put(NORTH, north)
-			.put(SOUTH, south)
-			.put(EAST, east)
-			.put(WEST, west)
-			.build();
+	public static <E> ImmutableMap<BlockFace, E> mapToFaces(E top, E bottom, E north, E south, E east, E west) {
+		return ImmutableMap.<BlockFace, E>builderWithExpectedSize(6).put(TOP, top).put(BOTTOM, bottom).put(NORTH, north)
+				.put(SOUTH, south).put(EAST, east).put(WEST, west).build();
 	}
 
 	private static int nextId = 0;

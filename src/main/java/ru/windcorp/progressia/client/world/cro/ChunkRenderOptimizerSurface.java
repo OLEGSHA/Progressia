@@ -56,32 +56,31 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		 * The coordinates of the face vertices must be in chunk coordinate
 		 * system.
 		 * 
-		 * @param chunk        the chunk that contains the requested face
-		 * @param blockInChunk the block in chunk
-		 * @param blockFace    the requested face
-		 * @param inner        whether this face should be visible from inside
-		 *                     ({@code true}) or outside ({@code false})
-		 * @param output       a consumer that the created faces must be given
-		 *                     to
-		 * @param offset       an additional offset that must be applied to all
-		 *                     vertices
+		 * @param chunk
+		 *            the chunk that contains the requested face
+		 * @param blockInChunk
+		 *            the block in chunk
+		 * @param blockFace
+		 *            the requested face
+		 * @param inner
+		 *            whether this face should be visible from inside
+		 *            ({@code true}) or outside ({@code false})
+		 * @param output
+		 *            a consumer that the created faces must be given to
+		 * @param offset
+		 *            an additional offset that must be applied to all vertices
 		 */
-		void getFaces(
-			ChunkData chunk,
-			Vec3i blockInChunk,
-			BlockFace blockFace,
-			boolean inner,
-			Consumer<Face> output,
-			Vec3 offset /* kostyl 156% */
+		void getFaces(ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace, boolean inner, Consumer<Face> output,
+				Vec3 offset /* kostyl 156% */
 		);
 
 		/**
 		 * Returns the opacity of the surface identified by the provided
-		 * {@link BlockFace}.
-		 * Opaque surfaces prevent surfaces behind them from being included in
-		 * chunk models.
+		 * {@link BlockFace}. Opaque surfaces prevent surfaces behind them from
+		 * being included in chunk models.
 		 * 
-		 * @param blockFace the face to query
+		 * @param blockFace
+		 *            the face to query
 		 * @return {@code true} iff the surface is opaque.
 		 */
 		boolean isOpaque(BlockFace blockFace);
@@ -95,8 +94,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		/**
 		 * Returns the opacity of the block. Opaque blocks do not expect that
 		 * the camera can be inside them. Opaque blocks prevent surfaces that
-		 * face them
-		 * from being included in chunk models.
+		 * face them from being included in chunk models.
 		 * 
 		 * @return {@code true} iff the block is opaque.
 		 */
@@ -207,9 +205,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 
 	@Override
 	public Renderable endRender() {
-		Collection<Face> shapeFaces = new ArrayList<>(
-			BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * 3
-		);
+		Collection<Face> shapeFaces = new ArrayList<>(BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * 3);
 
 		Vec3i cursor = new Vec3i();
 		Consumer<Face> consumer = shapeFaces::add;
@@ -227,17 +223,11 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 			return null;
 		}
 
-		return new Shape(
-			Usage.STATIC,
-			WorldRenderProgram.getDefault(),
-			shapeFaces.toArray(new Face[shapeFaces.size()])
-		);
+		return new Shape(Usage.STATIC, WorldRenderProgram.getDefault(),
+				shapeFaces.toArray(new Face[shapeFaces.size()]));
 	}
 
-	private void processOuterFaces(
-		Vec3i blockInChunk,
-		Consumer<Face> output
-	) {
+	private void processOuterFaces(Vec3i blockInChunk, Consumer<Face> output) {
 		for (BlockFace blockFace : BlockFace.getFaces()) {
 			processOuterFace(blockInChunk, blockFace, output);
 		}
@@ -255,11 +245,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		Vec3 faceOrigin = new Vec3(blockInChunk.x, blockInChunk.y, blockInChunk.z);
 		Vec3 offset = new Vec3(blockFace.getFloatVector()).mul(OVERLAY_OFFSET);
 
-		for (
-			int layer = info.topOpaqueSurface;
-			layer < info.tileCount;
-			++layer
-		) {
+		for (int layer = info.topOpaqueSurface; layer < info.tileCount; ++layer) {
 			OptimizedSurface surface = info.getSurface(layer);
 			if (surface == null)
 				continue; // layer may be BLOCK_LAYER, then block may be null
@@ -270,10 +256,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		}
 	}
 
-	private void processInnerFaces(
-		Vec3i blockInChunk,
-		Consumer<Face> output
-	) {
+	private void processInnerFaces(Vec3i blockInChunk, Consumer<Face> output) {
 		for (BlockFace blockFace : BlockFace.getFaces()) {
 			processInnerFace(blockInChunk, blockFace, output);
 		}
@@ -291,11 +274,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		Vec3 faceOrigin = new Vec3(blockInChunk.x, blockInChunk.y, blockInChunk.z);
 		Vec3 offset = new Vec3(blockFace.getFloatVector()).mul(OVERLAY_OFFSET);
 
-		for (
-			int layer = FaceInfo.BLOCK_LAYER;
-			layer <= info.bottomOpaqueSurface && layer < info.tileCount;
-			++layer
-		) {
+		for (int layer = FaceInfo.BLOCK_LAYER; layer <= info.bottomOpaqueSurface && layer < info.tileCount; ++layer) {
 			OptimizedSurface surface = info.getSurface(layer);
 			if (surface == null)
 				continue; // layer may be BLOCK_LAYER, then block may be null
@@ -365,12 +344,8 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 				blockInChunk.z = 0;
 				chunkPos.z += 1;
 			} else {
-				throw new AssertionError(
-					"Requested incorrent neighbor ("
-						+ blockInLocalChunk.x + "; "
-						+ blockInLocalChunk.y + "; "
-						+ blockInLocalChunk.z + ")"
-				);
+				throw new AssertionError("Requested incorrent neighbor (" + blockInLocalChunk.x + "; "
+						+ blockInLocalChunk.y + "; " + blockInLocalChunk.z + ")");
 			}
 
 			ChunkRender chunk = this.chunk.getWorld().getChunk(chunkPos);

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util.crash;
 
 import java.util.Map;
@@ -33,23 +33,20 @@ public interface ContextProvider {
 
 	/**
 	 * Provides human-readable description of the state of the game and the
-	 * system.
-	 * This information is {@link Map#put(Object, Object) put} into the provided
-	 * map
-	 * as key-value pairs. Keys are the characteristic being described, such as
-	 * "OS Name",
-	 * and should be Strings In Title Case With Spaces.
-	 * If this provider cannot provide any information at this moment, the map
-	 * is not
-	 * modified.
+	 * system. This information is {@link Map#put(Object, Object) put} into the
+	 * provided map as key-value pairs. Keys are the characteristic being
+	 * described, such as "OS Name", and should be Strings In Title Case With
+	 * Spaces. If this provider cannot provide any information at this moment,
+	 * the map is not modified.
 	 * 
-	 * @param output the map to append output to
+	 * @param output
+	 *            the map to append output to
 	 */
 	void provideContext(Map<String, String> output);
 
 	/**
-	 * Returns this provider's human-readable name.
-	 * It should be A String In Title Case With Spaces.
+	 * Returns this provider's human-readable name. It should be A String In
+	 * Title Case With Spaces.
 	 * 
 	 * @return this provider's name
 	 */

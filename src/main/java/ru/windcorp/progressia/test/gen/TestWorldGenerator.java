@@ -63,16 +63,16 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 					public void onChunkBlockChanged(ChunkData chunk, Vec3i blockInChunk, BlockData previous,
 							BlockData current) {
 						Vec3i chunkWorldPos = chunk.getPosition().mul_(16).add_(blockInChunk);
-						
-						if (TestEntityLogicFallingBlock.FallingBlocks.contains(chunk.getWorld()
-								.getBlock(chunkWorldPos.add_(0, 0, 1)).getId())) {
-							chunk.getWorld().setBlock(chunkWorldPos.add_(0, 0, 1), BlockDataRegistry.getInstance().get(chunk.getWorld().getBlock(chunkWorldPos.add_(0,0,1)).getId()), true);
+
+						if (TestEntityLogicFallingBlock.FallingBlocks
+								.contains(chunk.getWorld().getBlock(chunkWorldPos.add_(0, 0, 1)).getId())) {
+							chunk.getWorld().setBlock(chunkWorldPos.add_(0, 0, 1), BlockDataRegistry.getInstance()
+									.get(chunk.getWorld().getBlock(chunkWorldPos.add_(0, 0, 1)).getId()), true);
 						}
 						if (!TestEntityLogicFallingBlock.FallingBlocks.contains(current.getId())) {
 							return;
 						}
-						if (chunk.getWorld().getBlock(chunkWorldPos.add_(0, 0, -1))
-								.getId() == "Test:Air") {
+						if (chunk.getWorld().getBlock(chunkWorldPos.add_(0, 0, -1)).getId() == "Test:Air") {
 							LogManager.getLogger().info("Inserting FallingBlock");
 
 							TestEntityDataFallingBlock fallingBlock = new TestEntityDataFallingBlock();
@@ -87,7 +87,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 							chunk.getWorld().addEntity(fallingBlock);
 
 							chunk.setBlock(blockInChunk, previous, false);
-							
+
 							LogManager.getLogger().info(String.valueOf(chunkWorldPos.x) + " "
 									+ String.valueOf(chunkWorldPos.y) + " " + String.valueOf(chunkWorldPos.z));
 						}

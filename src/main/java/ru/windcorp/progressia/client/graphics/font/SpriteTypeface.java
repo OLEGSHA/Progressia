@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.font;
 
 import java.util.ArrayList;
@@ -105,13 +105,7 @@ public abstract class SpriteTypeface extends Typeface {
 	public abstract ShapeRenderProgram getProgram();
 
 	@Override
-	public Vec2i getSize(
-		CharSequence chars,
-		int style,
-		float align,
-		float maxWidth,
-		Vec2i output
-	) {
+	public Vec2i getSize(CharSequence chars, int style, float align, float maxWidth, Vec2i output) {
 		if (output == null)
 			output = new Vec2i();
 
@@ -141,19 +135,8 @@ public abstract class SpriteTypeface extends Typeface {
 	}
 
 	private Shape createCharShape(char c) {
-		return new Shape(
-			Usage.STATIC,
-			getProgram(),
-			Faces.createRectangle(
-				getProgram(),
-				getTexture(c),
-				Colors.WHITE,
-				Vectors.ZERO_3,
-				new Vec3(getWidth(c), 0, 0),
-				new Vec3(0, getHeight(), 0),
-				false
-			)
-		);
+		return new Shape(Usage.STATIC, getProgram(), Faces.createRectangle(getProgram(), getTexture(c), Colors.WHITE,
+				Vectors.ZERO_3, new Vec3(getWidth(c), 0, 0), new Vec3(0, getHeight(), 0), false));
 	}
 
 	private class DynamicText implements Renderable, Drawer {
@@ -164,19 +147,8 @@ public abstract class SpriteTypeface extends Typeface {
 		private final float maxWidth;
 		private final Vec4 color;
 
-		private final Renderable unitLine = new Shape(
-			Usage.STATIC,
-			getProgram(),
-			Faces.createRectangle(
-				getProgram(),
-				null,
-				Vectors.UNIT_4,
-				Vectors.ZERO_3,
-				new Vec3(1, 0, 0),
-				new Vec3(0, 1, 0),
-				false
-			)
-		);
+		private final Renderable unitLine = new Shape(Usage.STATIC, getProgram(), Faces.createRectangle(getProgram(),
+				null, Vectors.UNIT_4, Vectors.ZERO_3, new Vec3(1, 0, 0), new Vec3(0, 1, 0), false));
 
 		private class DynamicWorkspace extends Workspace {
 			private ShapeRenderHelper renderer;
@@ -190,13 +162,7 @@ public abstract class SpriteTypeface extends Typeface {
 
 		private final DynamicWorkspace workspace = new DynamicWorkspace();
 
-		public DynamicText(
-			Supplier<CharSequence> supplier,
-			int style,
-			float align,
-			float maxWidth,
-			Vec4 color
-		) {
+		public DynamicText(Supplier<CharSequence> supplier, int style, float align, float maxWidth, Vec4 color) {
 			this.supplier = supplier;
 			this.style = style;
 			this.align = align;
@@ -297,25 +263,12 @@ public abstract class SpriteTypeface extends Typeface {
 			workspace.width.sub(workspace.origin);
 			workspace.height.sub(workspace.origin);
 
-			workspace.faces.add(
-				Faces.createRectangle(
-					getProgram(),
-					texture,
-					color,
-					workspace.origin,
-					workspace.width,
-					workspace.height,
-					false
-				)
-			);
+			workspace.faces.add(Faces.createRectangle(getProgram(), texture, color, workspace.origin, workspace.width,
+					workspace.height, false));
 		}
 
 		public Renderable assemble() {
-			return new Shape(
-				Usage.STATIC,
-				getProgram(),
-				workspace.faces.toArray(new Face[workspace.faces.size()])
-			);
+			return new Shape(Usage.STATIC, getProgram(), workspace.faces.toArray(new Face[workspace.faces.size()]));
 		}
 
 	}
@@ -328,13 +281,8 @@ public abstract class SpriteTypeface extends Typeface {
 	}
 
 	@Override
-	public Renderable assembleDynamic(
-		Supplier<CharSequence> supplier,
-		int style,
-		float align,
-		float maxWidth,
-		Vec4 color
-	) {
+	public Renderable assembleDynamic(Supplier<CharSequence> supplier, int style, float align, float maxWidth,
+			Vec4 color) {
 		return new DynamicText(supplier, style, align, maxWidth, color);
 	}
 
@@ -424,15 +372,8 @@ public abstract class SpriteTypeface extends Typeface {
 		void drawRectangle(Vec2 size, Vec4 color, Mat4 transform);
 	}
 
-	protected void draw(
-		CharSequence text,
-		Drawer drawer,
-		Workspace workspace,
-		int style,
-		float align,
-		float maxWidth,
-		Vec4 color
-	) {
+	protected void draw(CharSequence text, Drawer drawer, Workspace workspace, int style, float align, float maxWidth,
+			Vec4 color) {
 		workspace.text = text;
 		workspace.toIndex = text.length();
 		workspace.align = align;
@@ -489,12 +430,7 @@ public abstract class SpriteTypeface extends Typeface {
 		return w.align * (w.totalSize.x - w.currentWidth);
 	}
 
-	private static final float[][] OUTLINE_DIRECTIONS = new float[][] {
-		{ 0, 1 },
-		{ 1, 0 },
-		{ -1, 0 },
-		{ 0, -1 }
-	};
+	private static final float[][] OUTLINE_DIRECTIONS = new float[][] { { 0, 1 }, { 1, 0 }, { -1, 0 }, { 0, -1 } };
 
 	private void drawLine(Drawer drawer, Workspace workspace) {
 		int style = workspace.styles.peek();
@@ -591,11 +527,8 @@ public abstract class SpriteTypeface extends Typeface {
 			workspace.styles.pop();
 
 		} else {
-			throw new IllegalArgumentException(
-				"Style contains unknown flags " + Integer.toBinaryString(
-					(style & ~(Style.BOLD | Style.ITALIC | Style.SHADOW | Style.STRIKETHRU | Style.UNDERLINED))
-				)
-			);
+			throw new IllegalArgumentException("Style contains unknown flags " + Integer.toBinaryString(
+					(style & ~(Style.BOLD | Style.ITALIC | Style.SHADOW | Style.STRIKETHRU | Style.UNDERLINED))));
 		}
 	}
 

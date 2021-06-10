@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util.namespaces;
 
 import java.util.Objects;
@@ -38,8 +38,8 @@ public class NamespacedUtil {
 	public static final int MIN_NAME_LENGTH = MIN_PART_LENGTH;
 
 	/*
-	 * This is the definition of the accepted pattern, but the value of
-	 * these constants is not actually consulted in the check* methods.
+	 * This is the definition of the accepted pattern, but the value of these
+	 * constants is not actually consulted in the check* methods.
 	 */
 	private static final String PART_CORE_REGEX = "[A-Z][a-zA-Z0-9]{2," + (MAX_PART_LENGTH - 1) + "}";
 	private static final String PART_REGEX = "^" + PART_CORE_REGEX + "$";
@@ -75,10 +75,8 @@ public class NamespacedUtil {
 		if (areSeparatorsInvalid) {
 			int separators = StringUtil.count(id, SEPARATOR);
 			throw new IllegalIdException(
-				"ID \"" + id + "\" is invalid. "
-					+ (separators == 0 ? "No " : "Too many (" + separators + ") ")
-					+ "separators '" + SEPARATOR + "' found, exactly one required"
-			);
+					"ID \"" + id + "\" is invalid. " + (separators == 0 ? "No " : "Too many (" + separators + ") ")
+							+ "separators '" + SEPARATOR + "' found, exactly one required");
 		}
 
 		checkPart(id, 0, firstSeparator, "namespace");
@@ -89,32 +87,20 @@ public class NamespacedUtil {
 		Objects.requireNonNull(data, nameForErrors);
 
 		if (length > MAX_PART_LENGTH) {
-			throw new IllegalIdException(
-				nameForErrors + " \"" + data.substring(offset, offset + length) + "\" is too long. "
-					+ "Expected at most " + MAX_PART_LENGTH
-					+ " characters"
-			);
+			throw new IllegalIdException(nameForErrors + " \"" + data.substring(offset, offset + length)
+					+ "\" is too long. " + "Expected at most " + MAX_PART_LENGTH + " characters");
 		} else if (length < MIN_PART_LENGTH) {
-			throw new IllegalIdException(
-				nameForErrors + " \"" + data.substring(offset, offset + length) + "\" is too short. "
-					+ "Expected at lest " + MIN_PART_LENGTH
-					+ " characters"
-			);
+			throw new IllegalIdException(nameForErrors + " \"" + data.substring(offset, offset + length)
+					+ "\" is too short. " + "Expected at lest " + MIN_PART_LENGTH + " characters");
 		}
 
 		// Don't actually use *_REGEX for speed
 
 		for (int i = 0; i < length; ++i) {
 			char c = data.charAt(i + offset);
-			if (
-				!((c >= 'A' && c <= 'Z') ||
-					(i != 0 && c >= 'a' && c <= 'z') ||
-					(i != 0 && c >= '0' && c <= '9'))
-			) {
-				throw new IllegalIdException(
-					nameForErrors + " \"" + data.substring(offset, offset + length) + "\" is invalid. "
-						+ "Allowed is: " + PART_REGEX
-				);
+			if (!((c >= 'A' && c <= 'Z') || (i != 0 && c >= 'a' && c <= 'z') || (i != 0 && c >= '0' && c <= '9'))) {
+				throw new IllegalIdException(nameForErrors + " \"" + data.substring(offset, offset + length)
+						+ "\" is invalid. " + "Allowed is: " + PART_REGEX);
 			}
 		}
 	}

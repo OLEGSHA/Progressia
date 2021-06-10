@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.gui.layout;
 
 import java.util.Arrays;
@@ -98,16 +98,13 @@ public class LayoutGrid implements Layout {
 			if (!isSummed)
 				throw new IllegalStateException("Not summed yet");
 
-			child.setBounds(
-				parent.getX() + columns[column],
-				parent.getY() + rows[row],
+			child.setBounds(parent.getX() + columns[column], parent.getY() + rows[row],
 
-				(column != (columns.length - 1) ? (columns[column + 1] - columns[column] - gap)
-					: (parent.getWidth() - margin - columns[column])),
+					(column != (columns.length - 1) ? (columns[column + 1] - columns[column] - gap)
+							: (parent.getWidth() - margin - columns[column])),
 
-				(row != (rows.length - 1) ? (rows[row + 1] - rows[row] - gap)
-					: (parent.getHeight() - margin - rows[row]))
-			);
+					(row != (rows.length - 1) ? (rows[row + 1] - rows[row] - gap)
+							: (parent.getHeight() - margin - rows[row])));
 		}
 	}
 

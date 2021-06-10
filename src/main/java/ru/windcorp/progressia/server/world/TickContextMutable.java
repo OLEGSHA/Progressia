@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world;
 
 import java.util.Objects;
@@ -138,9 +138,8 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 	 * Impl
 	 */
 
-	public static class Impl
-		extends TickContextMutable
-		implements Builder.Empty, Builder.World, Builder.Chunk, Builder.Block, Builder.TileStack {
+	public static class Impl extends TickContextMutable
+			implements Builder.Empty, Builder.World, Builder.Chunk, Builder.Block, Builder.TileStack {
 
 		protected Impl() {
 		}
@@ -214,8 +213,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		}
 
 		/*
-		 * Builder
-		 * memo: do NOT use Context getters, they throw ISEs
+		 * Builder memo: do NOT use Context getters, they throw ISEs
 		 */
 
 		@Override
@@ -425,8 +423,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 
 			if ((role == null) || (requiredRole.compareTo(role) > 0)) {
 				throw new IllegalStateException(
-					"This context is currently initialized as " + role + "; requested " + requiredRole
-				);
+						"This context is currently initialized as " + role + "; requested " + requiredRole);
 			}
 		}
 
@@ -442,8 +439,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 			} else {
 				if (role != requiredRole) {
 					throw new IllegalStateException(
-						"This context is currently initialized as " + role + "; requested " + requiredRole
-					);
+							"This context is currently initialized as " + role + "; requested " + requiredRole);
 				}
 			}
 		}
@@ -474,17 +470,8 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 				break;
 			}
 
-			return String.format(
-				format,
-				this.chunk.x,
-				this.chunk.y,
-				this.chunk.z,
-				this.blockInWorld.x,
-				this.blockInWorld.y,
-				this.blockInWorld.z,
-				this.face,
-				this.layer
-			);
+			return String.format(format, this.chunk.x, this.chunk.y, this.chunk.z, this.blockInWorld.x,
+					this.blockInWorld.y, this.blockInWorld.z, this.face, this.layer);
 		}
 	}
 

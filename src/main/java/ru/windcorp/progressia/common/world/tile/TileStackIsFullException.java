@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.tile;
 
 public class TileStackIsFullException extends RuntimeException {
@@ -26,12 +26,8 @@ public class TileStackIsFullException extends RuntimeException {
 
 	}
 
-	public TileStackIsFullException(
-		String message,
-		Throwable cause,
-		boolean enableSuppression,
-		boolean writableStackTrace
-	) {
+	public TileStackIsFullException(String message, Throwable cause, boolean enableSuppression,
+			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 

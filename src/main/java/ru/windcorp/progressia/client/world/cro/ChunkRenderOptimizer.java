@@ -35,10 +35,9 @@ import ru.windcorp.progressia.common.world.block.BlockFace;
  * tiles. An example of a CRO is {@link ChunkRenderOptimizerSurface}: it removes
  * block surfaces and tiles that it knows cannot be seen, thus significantly
  * reducing total polygon count.
- * <h3>CRO lifecycle</h3>
- * A CRO instance is created by {@link ChunkRenderOptimizerRegistry}. It may
- * then be used to work on multiple chunks sequentially. Each chunk is processed
- * in the following way:
+ * <h3>CRO lifecycle</h3> A CRO instance is created by
+ * {@link ChunkRenderOptimizerRegistry}. It may then be used to work on multiple
+ * chunks sequentially. Each chunk is processed in the following way:
  * <ol>
  * <li>{@link #setup(ChunkRender)} is invoked to provide the {@link ChunkRender}
  * instance.</li>
@@ -63,7 +62,8 @@ public abstract class ChunkRenderOptimizer extends Namespaced {
 	/**
 	 * Creates a new CRO instance with the specified ID.
 	 * 
-	 * @param id the ID of this CRO
+	 * @param id
+	 *            the ID of this CRO
 	 */
 	public ChunkRenderOptimizer(String id) {
 		super(id);
@@ -74,7 +74,8 @@ public abstract class ChunkRenderOptimizer extends Namespaced {
 	 * specify the chunk. When overriding, {@code super.setup(chunk)} must be
 	 * invoked.
 	 * 
-	 * @param chunk the chunk that will be processed next
+	 * @param chunk
+	 *            the chunk that will be processed next
 	 */
 	public void setup(ChunkRender chunk) {
 		this.chunk = chunk;
@@ -98,10 +99,11 @@ public abstract class ChunkRenderOptimizer extends Namespaced {
 	 * method is only invoked once per block. This method is not necessarily
 	 * invoked for each block.
 	 * 
-	 * @param block        a {@link BlockRender} instance describing the block.
-	 *                     It corresponds to
-	 *                     {@code getChunk().getBlock(blockInChunk)}.
-	 * @param blockInChunk the position of the block
+	 * @param block
+	 *            a {@link BlockRender} instance describing the block. It
+	 *            corresponds to {@code getChunk().getBlock(blockInChunk)}.
+	 * @param blockInChunk
+	 *            the position of the block
 	 */
 	public abstract void addBlock(BlockRender block, Vec3i blockInChunk);
 
@@ -112,9 +114,12 @@ public abstract class ChunkRenderOptimizer extends Namespaced {
 	 * invoked for each tile. When multiple tiles in a tile stack are requested,
 	 * this method is invoked for lower tiles first.
 	 * 
-	 * @param tile         a {@link BlockRender} instance describing the tile
-	 * @param blockInChunk the position of the block that the tile belongs to
-	 * @param blockFace    the face that the tile belongs to
+	 * @param tile
+	 *            a {@link BlockRender} instance describing the tile
+	 * @param blockInChunk
+	 *            the position of the block that the tile belongs to
+	 * @param blockFace
+	 *            the face that the tile belongs to
 	 */
 	public abstract void addTile(TileRender tile, Vec3i blockInChunk, BlockFace blockFace);
 

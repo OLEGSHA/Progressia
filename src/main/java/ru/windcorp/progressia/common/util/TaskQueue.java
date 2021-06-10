@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util;
 
 import java.util.Collection;
@@ -62,11 +62,7 @@ public class TaskQueue {
 	private final Object waitAndInvokeMonitor = new Object();
 
 	@SuppressWarnings("unchecked")
-	public <E extends Exception> void waitAndInvoke(
-		ThrowingRunnable<E> task
-	)
-		throws InterruptedException,
-		E {
+	public <E extends Exception> void waitAndInvoke(ThrowingRunnable<E> task) throws InterruptedException, E {
 
 		if (runNow.getAsBoolean()) {
 			task.run();

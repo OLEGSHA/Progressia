@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.block;
 
 import ru.windcorp.progressia.client.graphics.texture.Atlases;
@@ -37,11 +37,7 @@ public class BlockRenderRegistry extends NamespacedInstanceRegistry<BlockRender>
 
 	public static Texture getBlockTexture(String name) {
 		return new SimpleTexture(
-			Atlases.getSprite(
-				ResourceManager.getTextureResource("blocks/" + name),
-				BLOCKS_ATLAS_GROUP
-			)
-		);
+				Atlases.getSprite(ResourceManager.getTextureResource("blocks/" + name), BLOCKS_ATLAS_GROUP));
 	}
 
 	public static AtlasGroup getBlocksAtlasGroup() {

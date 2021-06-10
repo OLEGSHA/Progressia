@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.gui.layout;
 
 import static java.lang.Math.max;
@@ -26,9 +26,7 @@ import ru.windcorp.progressia.client.graphics.gui.Layout;
 
 public class LayoutBorderVertical implements Layout {
 
-	public static final String CENTER = "Center",
-		UP = "Up",
-		DOWN = "Down";
+	public static final String CENTER = "Center", UP = "Up", DOWN = "Down";
 
 	private final int margin;
 
@@ -51,32 +49,17 @@ public class LayoutBorderVertical implements Layout {
 				if (child.getLayoutHint() == UP) {
 					childSize = child.getPreferredSize();
 					top = childSize.y + margin;
-					child.setBounds(
-						c.getX(),
-						c.getY(),
-						c.getWidth(),
-						childSize.y
-					);
+					child.setBounds(c.getX(), c.getY(), c.getWidth(), childSize.y);
 				} else if (child.getLayoutHint() == DOWN) {
 					childSize = child.getPreferredSize();
 					bottom = childSize.y + margin;
-					child.setBounds(
-						c.getX(),
-						c.getY() + c.getHeight() - childSize.y,
-						c.getWidth(),
-						childSize.y
-					);
+					child.setBounds(c.getX(), c.getY() + c.getHeight() - childSize.y, c.getWidth(), childSize.y);
 				}
 			}
 
 			for (Component child : c.getChildren()) {
 				if (child.getLayoutHint() == CENTER) {
-					child.setBounds(
-						c.getX(),
-						c.getY() + top,
-						c.getWidth(),
-						c.getHeight() - top - bottom
-					);
+					child.setBounds(c.getX(), c.getY() + top, c.getWidth(), c.getHeight() - top - bottom);
 
 				}
 			}

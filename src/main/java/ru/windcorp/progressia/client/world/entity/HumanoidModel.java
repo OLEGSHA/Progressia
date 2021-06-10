@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.entity;
 
 import static java.lang.Math.*;
@@ -32,11 +32,7 @@ public class HumanoidModel extends NPedModel {
 	protected static abstract class Limb extends BodyPart {
 		private final float animationOffset;
 
-		public Limb(
-			Renderable renderable,
-			Vec3 joint,
-			float animationOffset
-		) {
+		public Limb(Renderable renderable, Vec3 joint, float animationOffset) {
 			super(renderable, joint);
 			this.animationOffset = animationOffset;
 		}
@@ -54,11 +50,7 @@ public class HumanoidModel extends NPedModel {
 	}
 
 	public static class Leg extends Limb {
-		public Leg(
-			Renderable renderable,
-			Vec3 joint,
-			float animationOffset
-		) {
+		public Leg(Renderable renderable, Vec3 joint, float animationOffset) {
 			super(renderable, joint, animationOffset);
 		}
 
@@ -69,11 +61,7 @@ public class HumanoidModel extends NPedModel {
 	}
 
 	public static class Arm extends Limb {
-		public Arm(
-			Renderable renderable,
-			Vec3 joint,
-			float animationOffset
-		) {
+		public Arm(Renderable renderable, Vec3 joint, float animationOffset) {
 			super(renderable, joint, animationOffset);
 		}
 
@@ -91,18 +79,11 @@ public class HumanoidModel extends NPedModel {
 	private float walkingLegSwing;
 	private float walkingArmSwing;
 
-	public HumanoidModel(
-		EntityData entity,
+	public HumanoidModel(EntityData entity,
 
-		Body body,
-		Head head,
-		Arm leftArm,
-		Arm rightArm,
-		Leg leftLeg,
-		Leg rightLeg,
+			Body body, Head head, Arm leftArm, Arm rightArm, Leg leftLeg, Leg rightLeg,
 
-		float scale
-	) {
+			float scale) {
 		super(entity, body, head, scale);
 		this.leftArm = leftArm;
 		this.rightArm = rightArm;

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world;
 
 import java.util.Collection;
@@ -47,7 +47,7 @@ import ru.windcorp.progressia.common.world.generic.ChunkSets;
 import ru.windcorp.progressia.common.world.generic.GenericWorld;
 
 public class WorldRender
-	implements GenericWorld<BlockRender, TileRender, TileRenderStack, ChunkRender, EntityRenderable> {
+		implements GenericWorld<BlockRender, TileRender, TileRenderStack, ChunkRender, EntityRenderable> {
 
 	private final WorldData data;
 	private final Client client;
@@ -207,15 +207,11 @@ public class WorldRender
 	}
 
 	public EntityRenderable getEntityRenderable(EntityData entity) {
-		return entityModels.computeIfAbsent(
-			entity,
-			WorldRender::createEntityRenderable
-		);
+		return entityModels.computeIfAbsent(entity, WorldRender::createEntityRenderable);
 	}
 
 	private static EntityRenderable createEntityRenderable(EntityData entity) {
-		return EntityRenderRegistry.getInstance().get(entity.getId())
-			.createRenderable(entity);
+		return EntityRenderRegistry.getInstance().get(entity.getId()).createRenderable(entity);
 	}
 
 	public void markChunkForUpdate(Vec3i chunkPos) {

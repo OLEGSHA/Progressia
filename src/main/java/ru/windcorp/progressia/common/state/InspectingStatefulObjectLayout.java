@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.state;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class InspectingStatefulObjectLayout
-	extends AbstractStatefulObjectLayout {
+public class InspectingStatefulObjectLayout extends AbstractStatefulObjectLayout {
 
 	private final List<StateField> fields = new ArrayList<>();
 
@@ -48,11 +47,7 @@ public class InspectingStatefulObjectLayout
 	}
 
 	public StatefulObjectLayout compile() {
-		return new OptimizedStatefulObjectLayout(
-			getObjectId(),
-			fields,
-			fieldIndexCounters
-		);
+		return new OptimizedStatefulObjectLayout(getObjectId(), fields, fieldIndexCounters);
 	}
 
 	private <T extends StateField> T registerField(T field) {
@@ -71,13 +66,7 @@ public class InspectingStatefulObjectLayout
 
 			@Override
 			public IntStateField build() {
-				return registerField(
-					new IntStateField(
-						id,
-						isLocal,
-						fieldIndexCounters.getIntsThenIncrement()
-					)
-				);
+				return registerField(new IntStateField(id, isLocal, fieldIndexCounters.getIntsThenIncrement()));
 			}
 
 		}
@@ -105,10 +94,7 @@ public class InspectingStatefulObjectLayout
 		public void setOrdinal(int ordinal) {
 			if (ordinal != fields.size()) {
 				throw new IllegalStateException(
-					"This field is going to receive ordinal "
-						+ fields.size() + ", requested ordinal "
-						+ ordinal
-				);
+						"This field is going to receive ordinal " + fields.size() + ", requested ordinal " + ordinal);
 			}
 		}
 

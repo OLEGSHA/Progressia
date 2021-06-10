@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test.gen;
 
 import kdotjpg.opensimplex2.areagen.OpenSimplex2S;
@@ -34,45 +34,13 @@ class TestTerrainGenerator {
 	public TestTerrainGenerator(TestWorldGenerator testWorldGenerator, WorldLogic world) {
 		this.noise = new OpenSimplex2S("We're getting somewhere".hashCode());
 
-		Func2D plainsHeight = tweak(
-			octaves(
-				tweak(primitive(), 0.01, 0.5),
-				2,
-				3
-			),
-			1,
-			0.2,
-			0.2
-		);
+		Func2D plainsHeight = tweak(octaves(tweak(primitive(), 0.01, 0.5), 2, 3), 1, 0.2, 0.2);
 
-		Func2D mountainsHeight = tweak(
-			octaves(
-				ridge(tweak(primitive(), 0.01, 1)),
-				2,
-				1.5,
-				12
-			),
-			1,
-			3
-		);
+		Func2D mountainsHeight = tweak(octaves(ridge(tweak(primitive(), 0.01, 1)), 2, 1.5, 12), 1, 3);
 
-		Func2D mountainousity = tweak(
-			octaves(
-				tweak(primitive(), 0.007, 1),
-				2,
-				3
-			),
-			1,
-			1,
-			-0.25
-		);
+		Func2D mountainousity = tweak(octaves(tweak(primitive(), 0.007, 1), 2, 3), 1, 1, -0.25);
 
-		shape = tweak(
-			add(multiply(squash(mountainousity, 10), mountainsHeight), plainsHeight),
-			0.001,
-			1000,
-			0
-		);
+		shape = tweak(add(multiply(squash(mountainousity, 10), mountainsHeight), plainsHeight), 0.001, 1000, 0);
 	}
 
 	public void compute(int startX, int startY, double[][] heightMap, double[][] slopeMap) {

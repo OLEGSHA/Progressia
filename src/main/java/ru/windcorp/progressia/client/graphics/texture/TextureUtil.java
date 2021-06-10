@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.texture;
 
 import java.awt.Color;
@@ -39,35 +39,28 @@ public class TextureUtil {
 
 	public static final Color CANVAS_BACKGROUND = new Color(0, true);
 
-	public static final ColorModel COLOR_MODEL = new ComponentColorModel(
-		ColorSpace.getInstance(ColorSpace.CS_sRGB), // Use RGB
-		null, // Use every bit
-		true, // Has alpha
-		false, // Not premultiplied
-		Transparency.TRANSLUCENT, // Can have any alpha
-		DataBuffer.TYPE_BYTE // Store bytewise
+	public static final ColorModel COLOR_MODEL = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), // Use
+																														// RGB
+			null, // Use every bit
+			true, // Has alpha
+			false, // Not premultiplied
+			Transparency.TRANSLUCENT, // Can have any alpha
+			DataBuffer.TYPE_BYTE // Store bytewise
 	);
 
 	private static final Hashtable<?, ?> BUFFERED_IMAGE_PROPERTIES = new Hashtable<>();
 
-	public static WritableRaster createRaster(
-		int bufferWidth,
-		int bufferHeight
-	) {
-		return Raster.createInterleavedRaster(
-			DataBuffer.TYPE_BYTE, // Storage model
-			bufferWidth, // Buffer width
-			bufferHeight, // Buffer height
-			BYTES_PER_PIXEL, // ARGB
-			null // Location (here (0; 0))
+	public static WritableRaster createRaster(int bufferWidth, int bufferHeight) {
+		return Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, // Storage
+																	// model
+				bufferWidth, // Buffer width
+				bufferHeight, // Buffer height
+				BYTES_PER_PIXEL, // ARGB
+				null // Location (here (0; 0))
 		);
 	}
 
-	public static WritableRaster createRaster(
-		ByteBuffer buffer,
-		int bufferWidth,
-		int bufferHeight
-	) {
+	public static WritableRaster createRaster(ByteBuffer buffer, int bufferWidth, int bufferHeight) {
 		final int bands = BYTES_PER_PIXEL;
 
 		byte[] bytes = new byte[bufferWidth * bufferHeight * bands];
@@ -77,23 +70,21 @@ public class TextureUtil {
 
 		DataBufferByte dataBuffer = new DataBufferByte(bytes, bytes.length);
 
-		return Raster.createInterleavedRaster(
-			dataBuffer, // The buffer
-			bufferWidth, // Buffer width
-			bufferHeight, // Buffer height
-			bands * bufferWidth, // Scanline stride
-			bands, // Pixel stride
-			new int[] { 0, 1, 2, 3 }, // Band offsets
-			null // Location (here (0; 0))
+		return Raster.createInterleavedRaster(dataBuffer, // The buffer
+				bufferWidth, // Buffer width
+				bufferHeight, // Buffer height
+				bands * bufferWidth, // Scanline stride
+				bands, // Pixel stride
+				new int[] { 0, 1, 2, 3 }, // Band offsets
+				null // Location (here (0; 0))
 		);
 	}
 
 	public static BufferedImage createCanvas(WritableRaster raster) {
-		return new BufferedImage(
-			COLOR_MODEL, // Color model
-			raster, // Backing raster
-			false, // Raster is not premultipied
-			BUFFERED_IMAGE_PROPERTIES // Properties
+		return new BufferedImage(COLOR_MODEL, // Color model
+				raster, // Backing raster
+				false, // Raster is not premultipied
+				BUFFERED_IMAGE_PROPERTIES // Properties
 		);
 	}
 
@@ -107,10 +98,7 @@ public class TextureUtil {
 		return buffer;
 	}
 
-	public static ByteBuffer extractBytes(
-		WritableRaster raster,
-		ByteBuffer output
-	) {
+	public static ByteBuffer extractBytes(WritableRaster raster, ByteBuffer output) {
 		byte[] data = ((DataBufferByte) raster.getDataBuffer()).getData();
 
 		output.put(data);

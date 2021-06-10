@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.gui;
 
 import glm.mat._4.Mat4;
@@ -95,13 +95,13 @@ public class Label extends Component {
 	protected void assembleSelf(RenderTarget target) {
 		float startX = getX() + font.getAlign() * (getWidth() - currentSize.x);
 
-		target.pushTransform(
-			new Mat4().identity().translate(startX, getY(), -1000) // TODO wtf
-																	// is this
-																	// magic
-																	// <---
-				.scale(2)
-		);
+		target.pushTransform(new Mat4().identity().translate(startX, getY(), -1000) // TODO
+																					// wtf
+																					// is
+																					// this
+																					// magic
+																					// <---
+				.scale(2));
 
 		target.addCustomRenderer(font.assemble(currentText, maxWidth));
 

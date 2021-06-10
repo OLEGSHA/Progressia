@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend;
 
 import glm.vec._2.d.Vec2d;
@@ -24,10 +24,7 @@ import gnu.trove.set.hash.TIntHashSet;
 
 public class InputTracker {
 
-	private static final Vec2d CURSOR_POSITION = new Vec2d(
-		Double.NaN,
-		Double.NaN
-	);
+	private static final Vec2d CURSOR_POSITION = new Vec2d(Double.NaN, Double.NaN);
 
 	private static final TIntSet PRESSED_KEYS = new TIntHashSet(256);
 

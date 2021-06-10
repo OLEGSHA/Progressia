@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.collision.colliders;
 
 import ru.windcorp.progressia.common.collision.Collideable;
@@ -26,26 +26,13 @@ import ru.windcorp.progressia.common.collision.colliders.Collider.Collision;
 
 class AnythingWithCompoundCollider {
 
-	static Collider.Collision computeModelCollision(
-		Collideable aBody,
-		Collideable bBody,
-		CompoundCollisionModel aModel,
-		CollisionModel bModel,
-		float tickLength,
-		ColliderWorkspace workspace
-	) {
+	static Collider.Collision computeModelCollision(Collideable aBody, Collideable bBody, CompoundCollisionModel aModel,
+			CollisionModel bModel, float tickLength, ColliderWorkspace workspace) {
 		Collision result = null;
 
 		for (CollisionModel aModelPart : aModel.getModels()) {
 
-			Collision collision = Collider.getCollision(
-				aBody,
-				bBody,
-				aModelPart,
-				bModel,
-				tickLength,
-				workspace
-			);
+			Collision collision = Collider.getCollision(aBody, bBody, aModelPart, bModel, tickLength, workspace);
 
 			// Update result
 			if (collision != null) {

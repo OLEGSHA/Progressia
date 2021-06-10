@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.resource;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ import ru.windcorp.progressia.common.util.Named;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class Resource extends Named {
-	
+
 	private final ResourceReader resourceReader;
 
 	public Resource(String name, ResourceReader resourceReader) {
@@ -45,7 +45,7 @@ public class Resource extends Named {
 	public InputStream getInputStream() {
 		return getResourceReader().read(getName());
 	}
-	
+
 	public ResourceReader getResourceReader() {
 		return resourceReader;
 	}

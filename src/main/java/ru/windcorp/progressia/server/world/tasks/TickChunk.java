@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.tasks;
 
 import java.util.ArrayList;
@@ -44,9 +44,8 @@ import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
 
 public class TickChunk extends Evaluation {
 
-	private static final int CHUNK_VOLUME = ChunkData.BLOCKS_PER_CHUNK *
-		ChunkData.BLOCKS_PER_CHUNK *
-		ChunkData.BLOCKS_PER_CHUNK;
+	private static final int CHUNK_VOLUME = ChunkData.BLOCKS_PER_CHUNK * ChunkData.BLOCKS_PER_CHUNK
+			* ChunkData.BLOCKS_PER_CHUNK;
 
 	private final List<Consumer<Server>> randomTickMethods;
 
@@ -106,9 +105,9 @@ public class TickChunk extends Evaluation {
 		float ticks = computeRandomTicks(server);
 
 		/*
-		 * If we are expected to run 3.25 random ticks per tick
-		 * on average, then run 3 random ticks unconditionally
-		 * and run one extra random tick with 0.25 chance
+		 * If we are expected to run 3.25 random ticks per tick on average, then
+		 * run 3 random ticks unconditionally and run one extra random tick with
+		 * 0.25 chance
 		 */
 		float unconditionalTicks = FloatMathUtil.floor(ticks);
 		float extraTickChance = ticks - unconditionalTicks;
@@ -124,19 +123,14 @@ public class TickChunk extends Evaluation {
 
 	private void tickRandomOnce(Server server) {
 		// Pick a target at random: a block or one of 3 primary block faces
-		randomTickMethods.get(
-			server.getAdHocRandom().nextInt(randomTickMethods.size())
-		).accept(server);
+		randomTickMethods.get(server.getAdHocRandom().nextInt(randomTickMethods.size())).accept(server);
 	}
 
 	private void tickRandomBlock(Server server) {
 		Random random = server.getAdHocRandom();
 
-		Vec3i blockInChunk = new Vec3i(
-			random.nextInt(BLOCKS_PER_CHUNK),
-			random.nextInt(BLOCKS_PER_CHUNK),
-			random.nextInt(BLOCKS_PER_CHUNK)
-		);
+		Vec3i blockInChunk = new Vec3i(random.nextInt(BLOCKS_PER_CHUNK), random.nextInt(BLOCKS_PER_CHUNK),
+				random.nextInt(BLOCKS_PER_CHUNK));
 
 		BlockLogic block = this.chunk.getBlock(blockInChunk);
 
@@ -154,11 +148,8 @@ public class TickChunk extends Evaluation {
 	private void tickRandomTile(Server server, BlockFace face) {
 		Random random = server.getAdHocRandom();
 
-		Vec3i blockInChunk = new Vec3i(
-			random.nextInt(BLOCKS_PER_CHUNK),
-			random.nextInt(BLOCKS_PER_CHUNK),
-			random.nextInt(BLOCKS_PER_CHUNK)
-		);
+		Vec3i blockInChunk = new Vec3i(random.nextInt(BLOCKS_PER_CHUNK), random.nextInt(BLOCKS_PER_CHUNK),
+				random.nextInt(BLOCKS_PER_CHUNK));
 
 		TileDataStack tiles = this.chunk.getData().getTilesOrNull(blockInChunk, face);
 		if (tiles == null || tiles.isEmpty())
@@ -179,9 +170,8 @@ public class TickChunk extends Evaluation {
 	}
 
 	private float computeRandomTicks(Server server) {
-		return (float) (server.getTickingSettings().getRandomTickFrequency() *
-			CHUNK_VOLUME * randomTickMethods.size() *
-			server.getTickLength());
+		return (float) (server.getTickingSettings().getRandomTickFrequency() * CHUNK_VOLUME * randomTickMethods.size()
+				* server.getTickLength());
 	}
 
 	@Override

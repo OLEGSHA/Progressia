@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.model;
 
 import java.util.ArrayList;
@@ -37,23 +37,13 @@ public class LambdaModel extends DynamicModel {
 
 	private final TransformGetter[] getters;
 
-	public LambdaModel(
-		Renderable[] parts,
-		Mat4[] transforms,
-		boolean[] dynamic,
-		TransformGetter[] getters
-	) {
+	public LambdaModel(Renderable[] parts, Mat4[] transforms, boolean[] dynamic, TransformGetter[] getters) {
 		super(parts, transforms, dynamic);
 		this.getters = getters;
 	}
 
 	public LambdaModel(Builder builder) {
-		this(
-			builder.getParts(),
-			builder.getTransforms(),
-			builder.getDynamics(),
-			builder.getGetters()
-		);
+		this(builder.getParts(), builder.getTransforms(), builder.getDynamics(), builder.getGetters());
 	}
 
 	@Override
@@ -75,11 +65,7 @@ public class LambdaModel extends DynamicModel {
 		protected Builder() {
 		}
 
-		private Builder addPart(
-			Renderable part,
-			Mat4 transform,
-			TransformGetter getter
-		) {
+		private Builder addPart(Renderable part, Mat4 transform, TransformGetter getter) {
 			parts.add(Objects.requireNonNull(part, "part"));
 			transforms.add(Objects.requireNonNull(transform, "transform"));
 			dynamics.add(getter != null);
@@ -88,23 +74,15 @@ public class LambdaModel extends DynamicModel {
 			return this;
 		}
 
-		public Builder addStaticPart(
-			Renderable part,
-			Mat4 transform
-		) {
+		public Builder addStaticPart(Renderable part, Mat4 transform) {
 			return addPart(part, new Mat4(transform), null);
 		}
 
-		public Builder addDynamicPart(
-			Renderable part,
-			TransformGetter getter
-		) {
+		public Builder addDynamicPart(Renderable part, TransformGetter getter) {
 			return addPart(part, new Mat4(), getter);
 		}
 
-		public Builder addStaticPart(
-			Renderable part
-		) {
+		public Builder addStaticPart(Renderable part) {
 			return addStaticPart(part, IDENTITY);
 		}
 
@@ -127,12 +105,8 @@ public class LambdaModel extends DynamicModel {
 	}
 
 	public static LambdaModel animate(Renderable model, TransformGetter transform) {
-		return new LambdaModel(
-			new Renderable[] { model },
-			new Mat4[] { new Mat4() },
-			new boolean[] { true },
-			new TransformGetter[] { transform }
-		);
+		return new LambdaModel(new Renderable[] { model }, new Mat4[] { new Mat4() }, new boolean[] { true },
+				new TransformGetter[] { transform });
 	}
 
 }

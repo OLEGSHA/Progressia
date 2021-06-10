@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world;
 
 import glm.vec._3.i.Vec3i;
@@ -39,7 +39,7 @@ class ChunkUpdateListener implements ChunkDataListener {
 	public void onChunkChanged(ChunkData chunk) {
 		world.getChunk(chunk).markForUpdate();
 	}
-	
+
 	@Override
 	public void onChunkLoaded(ChunkData chunk) {
 		Vec3i cursor = new Vec3i();
@@ -49,37 +49,32 @@ class ChunkUpdateListener implements ChunkDataListener {
 			world.markChunkForUpdate(cursor);
 		}
 	}
-	
+
 	@Override
 	public void onChunkBlockChanged(ChunkData chunk, Vec3i blockInChunk, BlockData previous, BlockData current) {
 		onLocationChanged(chunk, blockInChunk);
 	}
-	
+
 	@Override
-	public void onChunkTilesChanged(
-		ChunkData chunk,
-		Vec3i blockInChunk,
-		BlockFace face,
-		TileData tile,
-		boolean wasAdded
-	) {
+	public void onChunkTilesChanged(ChunkData chunk, Vec3i blockInChunk, BlockFace face, TileData tile,
+			boolean wasAdded) {
 		onLocationChanged(chunk, blockInChunk);
 	}
 
 	private void onLocationChanged(ChunkData chunk, Vec3i blockInChunk) {
 		Vec3i chunkPos = Vectors.grab3i().set(chunk.getX(), chunk.getY(), chunk.getZ());
-		
+
 		checkCoordinate(blockInChunk, chunkPos, VectorUtil.Axis.X);
 		checkCoordinate(blockInChunk, chunkPos, VectorUtil.Axis.Y);
 		checkCoordinate(blockInChunk, chunkPos, VectorUtil.Axis.Z);
-		
+
 		Vectors.release(chunkPos);
 	}
 
 	private void checkCoordinate(Vec3i blockInChunk, Vec3i chunkPos, VectorUtil.Axis axis) {
 		int block = VectorUtil.get(blockInChunk, axis);
 		int diff = 0;
-		
+
 		if (block == 0) {
 			diff = -1;
 		} else if (block == ChunkData.BLOCKS_PER_CHUNK - 1) {
@@ -87,12 +82,12 @@ class ChunkUpdateListener implements ChunkDataListener {
 		} else {
 			return;
 		}
-		
+
 		int previousChunkPos = VectorUtil.get(chunkPos, axis);
 		VectorUtil.set(chunkPos, axis, previousChunkPos + diff);
 
 		world.markChunkForUpdate(chunkPos);
-		
+
 		VectorUtil.set(chunkPos, axis, previousChunkPos);
 	}
 

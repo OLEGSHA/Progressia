@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.input.bus;
 
 import java.util.ArrayList;
@@ -31,28 +31,21 @@ public class InputBus {
 		private final boolean handleConsumed;
 		private final InputListener<?> listener;
 
-		public WrappedListener(
-			Class<?> type,
-			boolean handleConsumed,
-			InputListener<?> listener
-		) {
+		public WrappedListener(Class<?> type, boolean handleConsumed, InputListener<?> listener) {
 			this.type = type;
 			this.handleConsumed = handleConsumed;
 			this.listener = listener;
 		}
 
 		private boolean handles(Input input) {
-			return (!input.isConsumed() || handleConsumed) &&
-				type.isInstance(input.getEvent());
+			return (!input.isConsumed() || handleConsumed) && type.isInstance(input.getEvent());
 		}
 
 		@SuppressWarnings("unchecked")
 		public void handle(Input input) {
 			if (handles(input)) {
 				boolean consumed = ((InputListener<InputEvent>) listener)
-					.handle(
-						(InputEvent) type.cast(input.getEvent())
-					);
+						.handle((InputEvent) type.cast(input.getEvent()));
 
 				input.setConsumed(consumed);
 			}
@@ -66,18 +59,12 @@ public class InputBus {
 		listeners.forEach(l -> l.handle(input));
 	}
 
-	public <T extends InputEvent> void register(
-		Class<? extends T> type,
-		boolean handlesConsumed,
-		InputListener<T> listener
-	) {
+	public <T extends InputEvent> void register(Class<? extends T> type, boolean handlesConsumed,
+			InputListener<T> listener) {
 		listeners.add(new WrappedListener(type, handlesConsumed, listener));
 	}
 
-	public <T extends InputEvent> void register(
-		Class<? extends T> type,
-		InputListener<T> listener
-	) {
+	public <T extends InputEvent> void register(Class<? extends T> type, InputListener<T> listener) {
 		register(type, false, listener);
 	}
 
