@@ -82,7 +82,6 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 							chunk.setBlock(blockInChunk, previous, false);
 							Vec3i chunkWorldPos = chunk.getPosition().mul_(16).add_(blockInChunk);
 							LogManager.getLogger().info(String.valueOf(chunkWorldPos.x)+" "+String.valueOf(chunkWorldPos.y)+" "+String.valueOf(chunkWorldPos.z));
-							world.setBlock(chunkWorldPos, BlockDataRegistry.getInstance().get("Test:Glass"), false);
 						}
 					}
 				});

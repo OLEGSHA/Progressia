@@ -13,6 +13,7 @@ public class TestEntityDataFallingBlock extends EntityData {
 	
 	private BlockData block;
 	private boolean isDone = false;
+	private boolean hasDeleted = false;
 
 	public TestEntityDataFallingBlock() {
 		this("Test:FallingBlock",new BlockData("Test:Sand"));
@@ -22,6 +23,16 @@ public class TestEntityDataFallingBlock extends EntityData {
 		super(id);
 		setCollisionModel(new AABB(0,0,0,1,1,1));
 		block = blockInput;
+	}
+	
+	public void setDestroyed()
+	{
+		hasDeleted = true;
+	}
+	
+	public boolean hasDestroyed()
+	{
+		return hasDeleted;
 	}
 	
 	public BlockData getBlock()

@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
+import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.world.TickContext;
 import ru.windcorp.progressia.server.world.entity.EntityLogic;
@@ -49,12 +50,13 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 		{
 			return;
 		}
+		
 		//LogManager.getLogger().info("NotNull "+entity.toString() + " " + context.toString());
 		super.tick(entity, context);
 		
 		//friction
 		Vec3 vel = entity.getVelocity();
-		float friction = .8f;
+		float friction = 0f;
 		vel = new Vec3(vel.x*friction,vel.y*friction,vel.z);
 		entity.setVelocity(vel);
 		
@@ -64,6 +66,13 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 		if (fallBlock.isDone() || !context.getWorld().isBlockLoaded(fallBlock.getBlockInWorld(null)))
 		{
 			return;
+		}
+		
+		if (!fallBlock.hasDestroyed())
+		{
+			//LogManager.getLogger().info(fallBlock.getStartPos());
+			context.getAccessor().setBlock(fallBlock.getBlockInWorld(null), BlockDataRegistry.getInstance().get("Test:Air"));
+			fallBlock.setDestroyed();
 		}
 		
 		Vec3i occupiedBlock = fallBlock.getBlockInWorld(null);
@@ -81,8 +90,8 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 			LogManager.getLogger().info("Deleting FallingBlock at " + String.valueOf(occupiedBlock.x));
 			//ClientState.getInstance().getWorld().getData().setBlock(occupiedBlock, fallBlock.getBlock(),true);
 			context.getAccessor().setBlock(occupiedBlock, fallBlock.getBlock());
-			//fallBlock.setInvisible(); //Until I know how to properly delete it.
-			context.getWorldData().removeEntity(entity.getEntityId());
+			fallBlock.setInvisible(); //Until I know how to properly delete it.
+			//context.getWorldData().removeEntity(entity.getEntityId());
 		}
 	}
 }
