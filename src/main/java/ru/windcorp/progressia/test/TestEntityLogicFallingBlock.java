@@ -53,8 +53,8 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 			return;
 		}
 
-		// LogManager.getLogger().info("NotNull "+entity.toString() + " " +
-		// context.toString());
+		//LogManager.getLogger().info("NotNull "+entity.toString()+" "+String.valueOf(entity!=null) + " " +
+		//context.toString());
 		super.tick(entity, context);
 
 		// friction
@@ -66,7 +66,13 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 		TestEntityDataFallingBlock fallBlock = (TestEntityDataFallingBlock) ClientState.getInstance().getWorld()
 				.getData().getEntity(entity.getEntityId()); // ClientState.getInstance().getWorld().getData().getEntity(entity.getEntityId());
 		// fallBlock = (TestEntityDataFallingBlock) entity;
-
+		
+		//LogManager.getLogger().info("NotNull FB "+String.valueOf(fallBlock!=null));
+		if (fallBlock==null)
+		{
+			return;
+		}
+		
 		if (fallBlock.isDone() || !context.getWorld().isBlockLoaded(fallBlock.getBlockInWorld(null))) {
 			return;
 		}
@@ -95,14 +101,14 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 		// "+String.valueOf(occupiedBlock.z));
 		// LogManager.getLogger().info("Block is of type " +
 		// context.getWorldData().getChunk(chunkCoords).getBlock(inChunkCoords).getId());
-
-		if (context.getWorldData().getChunk(chunkCoords).getBlock(inChunkCoords).getId() != "Test:Air") {
+		
+		if (context.getWorldData().isBlockLoaded(occupiedBlock) && context.getWorldData().getChunk(chunkCoords).getBlock(inChunkCoords).getId() != "Test:Air") {
 			LogManager.getLogger().info("Deleting FallingBlock at " + String.valueOf(occupiedBlock.x));
 			// ClientState.getInstance().getWorld().getData().setBlock(occupiedBlock,
 			// fallBlock.getBlock(),true);
 			context.getAccessor().setBlock(occupiedBlock, fallBlock.getBlock());
 			fallBlock.setInvisible(); // Until I know how to properly delete it.
-			// context.getWorldData().removeEntity(entity.getEntityId());
+			ClientState.getInstance().getWorld().getData().removeEntity(entity.getEntityId());//context.getWorldData().removeEntity(entity.getEntityId());
 		}
 	}
 }
