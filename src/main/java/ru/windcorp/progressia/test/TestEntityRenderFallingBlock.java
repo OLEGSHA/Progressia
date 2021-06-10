@@ -41,11 +41,13 @@ public class TestEntityRenderFallingBlock extends EntityRender {
 				// LogManager.getLogger().info("Rendering FallingBlock");
 				if (((TestEntityDataFallingBlock) entity).isDone()) {
 					return;
-					//setTexture(new SimpleTexture(Atlases.getSprite(ResourceManager.getTextureResource("blocks/LogSide"),
-					//		new AtlasGroup("Blocks", 1 << 12))));
+					// setTexture(new
+					// SimpleTexture(Atlases.getSprite(ResourceManager.getTextureResource("blocks/LogSide"),
+					// new AtlasGroup("Blocks", 1 << 12))));
 				}
-				//setTexture(new SimpleTexture(Atlases.getSprite(ResourceManager.getTextureResource("blocks/Sand"),
-				//			new AtlasGroup("Blocks", 1 << 12))));
+				// setTexture(new
+				// SimpleTexture(Atlases.getSprite(ResourceManager.getTextureResource("blocks/Sand"),
+				// new AtlasGroup("Blocks", 1 << 12))));
 				cube.render(renderer);
 			}
 		};

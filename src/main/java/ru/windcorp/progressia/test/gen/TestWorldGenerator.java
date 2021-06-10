@@ -57,15 +57,22 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 			@Override
 			public void onChunkLoaded(WorldData world, ChunkData chunk) {
 				findAndPopulate(chunk.getPosition(), world);
-				chunk.addListener(new ChunkDataListener() { //Falling Block spawning logic
+				chunk.addListener(new ChunkDataListener() { // Falling Block
+															// spawning logic
 					@Override
 					public void onChunkBlockChanged(ChunkData chunk, Vec3i blockInChunk, BlockData previous,
 							BlockData current) {
+						Vec3i chunkWorldPos = chunk.getPosition().mul_(16).add_(blockInChunk);
+						
+						if (TestEntityLogicFallingBlock.FallingBlocks.contains(chunk.getWorld()
+								.getBlock(chunkWorldPos.add_(0, 0, 1)).getId())) {
+							chunk.getWorld().setBlock(chunkWorldPos.add_(0, 0, 1), BlockDataRegistry.getInstance().get(chunk.getWorld().getBlock(chunkWorldPos.add_(0,0,1)).getId()), true);
+						}
 						if (!TestEntityLogicFallingBlock.FallingBlocks.contains(current.getId())) {
 							return;
 						}
-						if (chunk.getWorld().getBlock(chunk.getPosition().mul_(16).add_(blockInChunk.add_(0, 0, -1))).getId() == "Test:Air")
-						{
+						if (chunk.getWorld().getBlock(chunkWorldPos.add_(0, 0, -1))
+								.getId() == "Test:Air") {
 							LogManager.getLogger().info("Inserting FallingBlock");
 
 							TestEntityDataFallingBlock fallingBlock = new TestEntityDataFallingBlock();
@@ -78,10 +85,11 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 									+ String.valueOf(new Random().nextFloat())).hashCode());
 
 							chunk.getWorld().addEntity(fallingBlock);
-							
+
 							chunk.setBlock(blockInChunk, previous, false);
-							Vec3i chunkWorldPos = chunk.getPosition().mul_(16).add_(blockInChunk);
-							LogManager.getLogger().info(String.valueOf(chunkWorldPos.x)+" "+String.valueOf(chunkWorldPos.y)+" "+String.valueOf(chunkWorldPos.z));
+							
+							LogManager.getLogger().info(String.valueOf(chunkWorldPos.x) + " "
+									+ String.valueOf(chunkWorldPos.y) + " " + String.valueOf(chunkWorldPos.z));
 						}
 					}
 				});

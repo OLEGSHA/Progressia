@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import java.io.DataInput;
@@ -85,8 +85,7 @@ public class TestChunkCodec extends ChunkCodec {
 
 	@Override
 	public ChunkData decode(WorldData world, Vec3i position, DataInputStream input, IOContext context)
-		throws DecodingException,
-		IOException {
+			throws DecodingException, IOException {
 		BlockData[] blockPalette = readBlockPalette(input);
 		TileData[] tilePalette = readTilePalette(input);
 

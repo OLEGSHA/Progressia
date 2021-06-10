@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import ru.windcorp.progressia.client.graphics.model.Renderable;
@@ -29,12 +29,8 @@ import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class TestEntityRenderStatie extends EntityRender {
 
-	private final Renderable cube = new Shapes.PppBuilder(
-		WorldRenderProgram.getDefault(),
-		(Texture) null
-	)
-		.setColorMultiplier(1, 1, 0)
-		.create();
+	private final Renderable cube = new Shapes.PppBuilder(WorldRenderProgram.getDefault(), (Texture) null)
+			.setColorMultiplier(1, 1, 0).create();
 
 	public TestEntityRenderStatie(String id) {
 		super(id);
@@ -45,9 +41,7 @@ public class TestEntityRenderStatie extends EntityRender {
 		return new EntityRenderable(entity) {
 			@Override
 			public void render(ShapeRenderHelper renderer) {
-				renderer.pushTransform().scale(
-					((TestEntityDataStatie) entity).getSize() / 24.0f
-				);
+				renderer.pushTransform().scale(((TestEntityDataStatie) entity).getSize() / 24.0f);
 
 				cube.render(renderer);
 

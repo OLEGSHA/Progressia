@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import static ru.windcorp.progressia.client.world.block.BlockRenderRegistry.getBlockTexture;
@@ -129,17 +129,9 @@ public class TestContent {
 		register(new BlockLogic("Test:Concrete"));
 
 		register(new BlockData("Test:Log"));
-		register(
-			new BlockRenderOpaqueCube(
-				"Test:Log",
-				getBlockTexture("LogTop"),
-				getBlockTexture("LogTop"),
-				getBlockTexture("LogSide"),
-				getBlockTexture("LogSide"),
-				getBlockTexture("LogSide"),
-				getBlockTexture("LogSide")
-			)
-		);
+		register(new BlockRenderOpaqueCube("Test:Log", getBlockTexture("LogTop"), getBlockTexture("LogTop"),
+				getBlockTexture("LogSide"), getBlockTexture("LogSide"), getBlockTexture("LogSide"),
+				getBlockTexture("LogSide")));
 		register(new BlockLogic("Test:Log"));
 
 		register(new BlockData("Test:WoodenPlank"));
@@ -257,49 +249,24 @@ public class TestContent {
 		ControlLogicRegistry logic = ControlLogicRegistry.getInstance();
 
 		data.register("Test:BreakBlock", ControlBreakBlockData::new);
-		triggers.register(
-			ControlTriggers.of(
-				"Test:BreakBlock",
-				KeyEvent.class,
-				TestContent::onBlockBreakTrigger,
-				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_LEFT).matcher(),
-				i -> isAnythingSelected()
-			)
-		);
+		triggers.register(ControlTriggers.of("Test:BreakBlock", KeyEvent.class, TestContent::onBlockBreakTrigger,
+				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_LEFT).matcher(), i -> isAnythingSelected()));
 		logic.register(ControlLogic.of("Test:BreakBlock", TestContent::onBlockBreakReceived));
 
 		data.register("Test:PlaceBlock", ControlPlaceBlockData::new);
-		triggers.register(
-			ControlTriggers.of(
-				"Test:PlaceBlock",
-				KeyEvent.class,
-				TestContent::onBlockPlaceTrigger,
+		triggers.register(ControlTriggers.of("Test:PlaceBlock", KeyEvent.class, TestContent::onBlockPlaceTrigger,
 				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
-				i -> isAnythingSelected() && TestPlayerControls.getInstance().isBlockSelected()
-			)
-		);
+				i -> isAnythingSelected() && TestPlayerControls.getInstance().isBlockSelected()));
 		logic.register(ControlLogic.of("Test:PlaceBlock", TestContent::onBlockPlaceReceived));
 
 		data.register("Test:PlaceTile", ControlPlaceTileData::new);
-		triggers.register(
-			ControlTriggers.of(
-				"Test:PlaceTile",
-				KeyEvent.class,
-				TestContent::onTilePlaceTrigger,
+		triggers.register(ControlTriggers.of("Test:PlaceTile", KeyEvent.class, TestContent::onTilePlaceTrigger,
 				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
-				i -> isAnythingSelected() && !TestPlayerControls.getInstance().isBlockSelected()
-			)
-		);
+				i -> isAnythingSelected() && !TestPlayerControls.getInstance().isBlockSelected()));
 		logic.register(ControlLogic.of("Test:PlaceTile", TestContent::onTilePlaceReceived));
-		
-		triggers.register(
-			ControlTriggers.localOf(
-				"Test:StartNextMusic",
-				KeyEvent.class,
-				TestMusicPlayer::startNextNow,
-				KeyMatcher.of(GLFW.GLFW_KEY_M).matcher()
-			)
-		);
+
+		triggers.register(ControlTriggers.localOf("Test:StartNextMusic", KeyEvent.class, TestMusicPlayer::startNextNow,
+				KeyMatcher.of(GLFW.GLFW_KEY_M).matcher()));
 	}
 
 	private static void register(BlockData x) {
@@ -310,17 +277,11 @@ public class TestContent {
 		TileDataRegistry.getInstance().register(x);
 	}
 
-	private static void register(
-		String id,
-		Factory<EntityData> factory
-	) {
+	private static void register(String id, Factory<EntityData> factory) {
 		EntityDataRegistry.getInstance().register(id, factory);
 	}
 
-	private static void registerEntityData(
-		String id,
-		Consumer<EntityData> transform
-	) {
+	private static void registerEntityData(String id, Consumer<EntityData> transform) {
 		EntityDataRegistry.getInstance().register(id, new Factory<EntityData>() {
 			@Override
 			public EntityData build() {
@@ -379,27 +340,19 @@ public class TestContent {
 		sfx.play(false);
 	}
 
-	private static void onBlockBreakReceived(
-		Server server,
-		PacketControl packet,
-		ru.windcorp.progressia.server.comms.Client client
-	) {
+	private static void onBlockBreakReceived(Server server, PacketControl packet,
+			ru.windcorp.progressia.server.comms.Client client) {
 		Vec3i blockInWorld = ((ControlBreakBlockData) packet.getControl()).getBlockInWorld();
 		server.getWorldAccessor().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
 	}
 
 	private static void onBlockPlaceTrigger(ControlData control) {
-		((ControlPlaceBlockData) control).set(
-			TestPlayerControls.getInstance().getSelectedBlock(),
-			getSelection().getBlock().add_(getSelection().getSurface().getVector())
-		);
+		((ControlPlaceBlockData) control).set(TestPlayerControls.getInstance().getSelectedBlock(),
+				getSelection().getBlock().add_(getSelection().getSurface().getVector()));
 	}
 
-	private static void onBlockPlaceReceived(
-		Server server,
-		PacketControl packet,
-		ru.windcorp.progressia.server.comms.Client client
-	) {
+	private static void onBlockPlaceReceived(Server server, PacketControl packet,
+			ru.windcorp.progressia.server.comms.Client client) {
 		ControlPlaceBlockData controlData = ((ControlPlaceBlockData) packet.getControl());
 		BlockData block = controlData.getBlock();
 		Vec3i blockInWorld = controlData.getBlockInWorld();
@@ -409,18 +362,12 @@ public class TestContent {
 	}
 
 	private static void onTilePlaceTrigger(ControlData control) {
-		((ControlPlaceTileData) control).set(
-			TestPlayerControls.getInstance().getSelectedTile(),
-			getSelection().getBlock(),
-			getSelection().getSurface()
-		);
+		((ControlPlaceTileData) control).set(TestPlayerControls.getInstance().getSelectedTile(),
+				getSelection().getBlock(), getSelection().getSurface());
 	}
 
-	private static void onTilePlaceReceived(
-		Server server,
-		PacketControl packet,
-		ru.windcorp.progressia.server.comms.Client client
-	) {
+	private static void onTilePlaceReceived(Server server, PacketControl packet,
+			ru.windcorp.progressia.server.comms.Client client) {
 		ControlPlaceTileData controlData = ((ControlPlaceTileData) packet.getControl());
 		TileData tile = controlData.getTile();
 		Vec3i blockInWorld = controlData.getBlockInWorld();

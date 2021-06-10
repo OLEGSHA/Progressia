@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import glm.vec._3.Vec3;
@@ -58,146 +58,51 @@ public class LayerTestGUI extends GUILayer {
 		TestPlayerControls tpc = TestPlayerControls.getInstance();
 
 		panel.addChild(
-			new Label(
-				"IsFlyingDisplay",
-				font,
-				tmp_dynFormat("LayerTestGUI.IsFlyingDisplay", tpc::isFlying)
-			)
-		);
+				new Label("IsFlyingDisplay", font, tmp_dynFormat("LayerTestGUI.IsFlyingDisplay", tpc::isFlying)));
+
+		panel.addChild(new Label("IsSprintingDisplay", font,
+				tmp_dynFormat("LayerTestGUI.IsSprintingDisplay", tpc::isSprinting)));
+
+		panel.addChild(new Label("IsMouseCapturedDisplay", font,
+				tmp_dynFormat("LayerTestGUI.IsMouseCapturedDisplay", tpc::isMouseCaptured)));
+
+		panel.addChild(new Label("CameraModeDisplay", font, tmp_dynFormat("LayerTestGUI.CameraModeDisplay",
+				ClientState.getInstance().getCamera()::getCurrentModeIndex)));
+
+		panel.addChild(new Label("GravityModeDisplay", font, tmp_dynFormat("LayerTestGUI.GravityModeDisplay",
+				() -> tpc.useMinecraftGravity() ? "Minecraft" : "Realistic")));
+
+		panel.addChild(new Label("LanguageDisplay", font,
+				tmp_dynFormat("LayerTestGUI.LanguageDisplay", Localizer.getInstance()::getLanguage)));
+
+		panel.addChild(new Label("FullscreenDisplay", font,
+				tmp_dynFormat("LayerTestGUI.IsFullscreen", GraphicsBackend::isFullscreen)));
+
+		panel.addChild(new Label("VSyncDisplay", font,
+				tmp_dynFormat("LayerTestGUI.IsVSync", GraphicsBackend::isVSyncEnabled)));
 
 		panel.addChild(
-			new Label(
-				"IsSprintingDisplay",
-				font,
-				tmp_dynFormat("LayerTestGUI.IsSprintingDisplay", tpc::isSprinting)
-			)
-		);
+				new DynamicLabel("FPSDisplay", font,
+						DynamicStrings.builder().addDyn(new MutableStringLocalized("LayerTestGUI.FPSDisplay"))
+								.addDyn(() -> FPS_RECORD.update(GraphicsInterface.getFPS()), 5, 1).buildSupplier(),
+						128));
+
+		panel.addChild(new DynamicLabel("TPSDisplay", font, LayerTestGUI::getTPS, 128));
 
 		panel.addChild(
-			new Label(
-				"IsMouseCapturedDisplay",
-				font,
-				tmp_dynFormat("LayerTestGUI.IsMouseCapturedDisplay", tpc::isMouseCaptured)
-			)
-		);
+				new DynamicLabel("ChunkUpdatesDisplay", font,
+						DynamicStrings.builder().addDyn(new MutableStringLocalized("LayerTestGUI.ChunkUpdatesDisplay"))
+								.addDyn(ClientState.getInstance().getWorld()::getPendingChunkUpdates).buildSupplier(),
+						128));
 
-		panel.addChild(
-			new Label(
-				"CameraModeDisplay",
-				font,
-				tmp_dynFormat(
-					"LayerTestGUI.CameraModeDisplay",
-					ClientState.getInstance().getCamera()::getCurrentModeIndex
-				)
-			)
-		);
+		panel.addChild(new DynamicLabel("PosDisplay", font, LayerTestGUI::getPos, 128));
 
-		panel.addChild(
-			new Label(
-				"GravityModeDisplay",
-				font,
-				tmp_dynFormat(
-					"LayerTestGUI.GravityModeDisplay",
-					() -> tpc.useMinecraftGravity() ? "Minecraft" : "Realistic"
-				)
-			)
-		);
-
-		panel.addChild(
-			new Label(
-				"LanguageDisplay",
-				font,
-				tmp_dynFormat("LayerTestGUI.LanguageDisplay", Localizer.getInstance()::getLanguage)
-			)
-		);
-
-		panel.addChild(
-			new Label(
-				"FullscreenDisplay",
-				font,
-				tmp_dynFormat("LayerTestGUI.IsFullscreen", GraphicsBackend::isFullscreen)
-			)
-		);
-
-		panel.addChild(
-			new Label(
-				"VSyncDisplay",
-				font,
-				tmp_dynFormat("LayerTestGUI.IsVSync", GraphicsBackend::isVSyncEnabled)
-			)
-		);
-
-		panel.addChild(
-			new DynamicLabel(
-				"FPSDisplay",
-				font,
-				DynamicStrings.builder()
-					.addDyn(new MutableStringLocalized("LayerTestGUI.FPSDisplay"))
-					.addDyn(() -> FPS_RECORD.update(GraphicsInterface.getFPS()), 5, 1)
-					.buildSupplier(),
-				128
-			)
-		);
-
-		panel.addChild(
-			new DynamicLabel(
-				"TPSDisplay",
-				font,
-				LayerTestGUI::getTPS,
-				128
-			)
-		);
-
-		panel.addChild(
-			new DynamicLabel(
-				"ChunkUpdatesDisplay",
-				font,
-				DynamicStrings.builder()
-					.addDyn(new MutableStringLocalized("LayerTestGUI.ChunkUpdatesDisplay"))
-					.addDyn(ClientState.getInstance().getWorld()::getPendingChunkUpdates)
-					.buildSupplier(),
-				128
-			)
-		);
-
-		panel.addChild(
-			new DynamicLabel(
-				"PosDisplay",
-				font,
-				LayerTestGUI::getPos,
-				128
-			)
-		);
-
-		panel.addChild(
-			new Label(
-				"SelectedBlockDisplay",
-				font,
-				tmp_dynFormat(
-					"LayerTestGUI.SelectedBlockDisplay",
-					() -> tpc.isBlockSelected() ? ">" : " ",
-					() -> tpc.getSelectedBlock().getId()
-				)
-			)
-		);
-		panel.addChild(
-			new Label(
-				"SelectedTileDisplay",
-				font,
-				tmp_dynFormat(
-					"LayerTestGUI.SelectedTileDisplay",
-					() -> tpc.isBlockSelected() ? " " : ">",
-					() -> tpc.getSelectedTile().getId()
-				)
-			)
-		);
-		panel.addChild(
-			new Label(
-				"PlacementModeHint",
-				font,
-				new MutableStringLocalized("LayerTestGUI.PlacementModeHint").format("\u2B04")
-			)
-		);
+		panel.addChild(new Label("SelectedBlockDisplay", font, tmp_dynFormat("LayerTestGUI.SelectedBlockDisplay",
+				() -> tpc.isBlockSelected() ? ">" : " ", () -> tpc.getSelectedBlock().getId())));
+		panel.addChild(new Label("SelectedTileDisplay", font, tmp_dynFormat("LayerTestGUI.SelectedTileDisplay",
+				() -> tpc.isBlockSelected() ? " " : ">", () -> tpc.getSelectedTile().getId())));
+		panel.addChild(new Label("PlacementModeHint", font,
+				new MutableStringLocalized("LayerTestGUI.PlacementModeHint").format("\u2B04")));
 
 		getRoot().addChild(panel);
 	}
@@ -265,16 +170,14 @@ public class LayerTestGUI extends GUILayer {
 	private static final Averager TPS_RECORD = new Averager();
 
 	private static final Supplier<CharSequence> TPS_STRING = DynamicStrings.builder()
-		.addDyn(new MutableStringLocalized("LayerTestGUI.TPSDisplay"))
-		.addDyn(() -> TPS_RECORD.update(ServerState.getInstance().getTPS()), 5, 1)
-		.buildSupplier();
+			.addDyn(new MutableStringLocalized("LayerTestGUI.TPSDisplay"))
+			.addDyn(() -> TPS_RECORD.update(ServerState.getInstance().getTPS()), 5, 1).buildSupplier();
 
 	private static final Supplier<CharSequence> POS_STRING = DynamicStrings.builder()
-		.addDyn(new MutableStringLocalized("LayerTestGUI.PosDisplay"))
-		.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().x, 7, 1)
-		.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().y, 7, 1)
-		.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().z, 7, 1)
-		.buildSupplier();
+			.addDyn(new MutableStringLocalized("LayerTestGUI.PosDisplay"))
+			.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().x, 7, 1)
+			.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().y, 7, 1)
+			.addDyn(() -> ClientState.getInstance().getCamera().getLastAnchorPosition().z, 7, 1).buildSupplier();
 
 	private static CharSequence getTPS() {
 		Server server = ServerState.getInstance();
@@ -316,93 +219,95 @@ public class LayerTestGUI extends GUILayer {
 		});
 	}
 
-//	private static class DebugComponent extends Component {
-//		private final int color;
-//		
-//		public DebugComponent(String name, Vec2i size, int color) {
-//			super(name);
-//			this.color = color;
-//			
-//			setPreferredSize(size);
-//			
-//			addListener(new Object() {
-//				@Subscribe
-//				public void onHoverChanged(HoverEvent e) {
-//					requestReassembly();
-//				}
-//			});
-//			
-//			addListener(KeyEvent.class, this::onClicked);
-//		}
-//		
-//		private boolean onClicked(KeyEvent event) {
-//			if (!event.isMouse()) {
-//				return false;
-//			} else if (event.isPress() && event.isLeftMouseButton()) {
-//				System.out.println("You pressed a Component!");
-//			}
-//			return true;
-//		}
-//		
-//		@Override
-//		protected void assembleSelf(RenderTarget target) {
-//			target.fill(getX(), getY(), getWidth(), getHeight(), Colors.BLACK);
-//			
-//			target.fill(
-//					getX() + 2, getY() + 2,
-//					getWidth() - 4, getHeight() - 4,
-//					isHovered() ? Colors.DEBUG_YELLOW : color
-//			);
-//		}
-//	}
-//
-//	public LayerTestGUI() {
-//		super("LayerTestGui", new LayoutAlign(1, 0.75, 5));
-//		
-//		Panel panel = new Panel("Alex", new LayoutVertical(5));
-//		
-//		panel.addChild(new DebugComponent("Bravo", new Vec2i(200, 100), 0x44FF44));
-//		
-//		Component charlie = new DebugComponent("Charlie", null, 0x222222);
-//		charlie.setLayout(new LayoutVertical(5));
-//
-//		//Debug
-//		Localizer.getInstance().setLanguage("ru-RU");
-//		MutableString epsilon = new MutableStringLocalized("Epsilon")
-//				.addListener(() -> ((Label)charlie.getChild(0)).update()).format(34, "thirty-four");
-//		// These two are swapped in code due to a bug in layouts, fixing ATM
-//		charlie.addChild(
-//				new Label(
-//						"Delta",
-//						new Font().withColor(0xCCBB44).deriveShadow().deriveBold(),
-//						"Пре-альфа!"
-//				)
-//		);
-//		charlie.addChild(
-//				new Label(
-//						"Epsilon",
-//						new Font().withColor(0x4444BB).deriveItalic(),
-//						() -> epsilon.get().concat("\u269b")
-//				)
-//		);
-//		panel.addChild(charlie);
-//
-//
-//		charlie.addListener(KeyEvent.class, e -> {
-//			if(e.isPress() && e.getKey() == GLFW.GLFW_KEY_L) {
-//				Localizer localizer = Localizer.getInstance();
-//				if (localizer.getLanguage().equals("ru-RU")) {
-//					localizer.setLanguage("en-US");
-//				} else {
-//					localizer.setLanguage("ru-RU");
-//				}
-//				return true;
-//			} return false;
-//		});
-//		charlie.setFocusable(true);
-//		charlie.takeFocus();
-//
-//		getRoot().addChild(panel);
-//	}
+	// private static class DebugComponent extends Component {
+	// private final int color;
+	//
+	// public DebugComponent(String name, Vec2i size, int color) {
+	// super(name);
+	// this.color = color;
+	//
+	// setPreferredSize(size);
+	//
+	// addListener(new Object() {
+	// @Subscribe
+	// public void onHoverChanged(HoverEvent e) {
+	// requestReassembly();
+	// }
+	// });
+	//
+	// addListener(KeyEvent.class, this::onClicked);
+	// }
+	//
+	// private boolean onClicked(KeyEvent event) {
+	// if (!event.isMouse()) {
+	// return false;
+	// } else if (event.isPress() && event.isLeftMouseButton()) {
+	// System.out.println("You pressed a Component!");
+	// }
+	// return true;
+	// }
+	//
+	// @Override
+	// protected void assembleSelf(RenderTarget target) {
+	// target.fill(getX(), getY(), getWidth(), getHeight(), Colors.BLACK);
+	//
+	// target.fill(
+	// getX() + 2, getY() + 2,
+	// getWidth() - 4, getHeight() - 4,
+	// isHovered() ? Colors.DEBUG_YELLOW : color
+	// );
+	// }
+	// }
+	//
+	// public LayerTestGUI() {
+	// super("LayerTestGui", new LayoutAlign(1, 0.75, 5));
+	//
+	// Panel panel = new Panel("Alex", new LayoutVertical(5));
+	//
+	// panel.addChild(new DebugComponent("Bravo", new Vec2i(200, 100),
+	// 0x44FF44));
+	//
+	// Component charlie = new DebugComponent("Charlie", null, 0x222222);
+	// charlie.setLayout(new LayoutVertical(5));
+	//
+	// //Debug
+	// Localizer.getInstance().setLanguage("ru-RU");
+	// MutableString epsilon = new MutableStringLocalized("Epsilon")
+	// .addListener(() -> ((Label)charlie.getChild(0)).update()).format(34,
+	// "thirty-four");
+	// // These two are swapped in code due to a bug in layouts, fixing ATM
+	// charlie.addChild(
+	// new Label(
+	// "Delta",
+	// new Font().withColor(0xCCBB44).deriveShadow().deriveBold(),
+	// "Пре-альфа!"
+	// )
+	// );
+	// charlie.addChild(
+	// new Label(
+	// "Epsilon",
+	// new Font().withColor(0x4444BB).deriveItalic(),
+	// () -> epsilon.get().concat("\u269b")
+	// )
+	// );
+	// panel.addChild(charlie);
+	//
+	//
+	// charlie.addListener(KeyEvent.class, e -> {
+	// if(e.isPress() && e.getKey() == GLFW.GLFW_KEY_L) {
+	// Localizer localizer = Localizer.getInstance();
+	// if (localizer.getLanguage().equals("ru-RU")) {
+	// localizer.setLanguage("en-US");
+	// } else {
+	// localizer.setLanguage("ru-RU");
+	// }
+	// return true;
+	// } return false;
+	// });
+	// charlie.setFocusable(true);
+	// charlie.takeFocus();
+	//
+	// getRoot().addChild(panel);
+	// }
 
 }

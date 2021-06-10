@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import ru.windcorp.progressia.client.graphics.Colors;
@@ -38,29 +38,12 @@ public class LayerAbout extends GUILayer {
 		Font font = new Font().withColor(Colors.WHITE).deriveOutlined().withAlign(Typeface.ALIGN_RIGHT);
 		Font aboutFont = font.withColor(0xFF37A3E6).deriveBold();
 
-		panel.addChild(
-			new Label(
-				"About",
-				aboutFont,
-				new MutableStringLocalized("LayerAbout.Title")
-			)
-		);
+		panel.addChild(new Label("About", aboutFont, new MutableStringLocalized("LayerAbout.Title")));
 
 		panel.addChild(
-			new Label(
-				"Version",
-				font,
-				new MutableStringLocalized("LayerAbout.Version").format("pre-alpha 1")
-			)
-		);
+				new Label("Version", font, new MutableStringLocalized("LayerAbout.Version").format("pre-alpha 1")));
 
-		panel.addChild(
-			new Label(
-				"DebugHint",
-				font,
-				new MutableStringLocalized("LayerAbout.DebugHint")
-			)
-		);
+		panel.addChild(new Label("DebugHint", font, new MutableStringLocalized("LayerAbout.DebugHint")));
 
 		getRoot().addChild(panel);
 

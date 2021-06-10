@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import java.io.BufferedInputStream;
@@ -52,29 +52,15 @@ public class TestWorldDiskIO {
 			return;
 
 		try {
-			LOG.debug(
-				"Saving {} {} {}",
-				chunk.getPosition().x,
-				chunk.getPosition().y,
-				chunk.getPosition().z
-			);
+			LOG.debug("Saving {} {} {}", chunk.getPosition().x, chunk.getPosition().y, chunk.getPosition().z);
 
 			Files.createDirectories(SAVE_DIR);
 
-			Path path = SAVE_DIR.resolve(
-				String.format(
-					"chunk_%+d_%+d_%+d.progressia_chunk",
-					chunk.getPosition().x,
-					chunk.getPosition().y,
-					chunk.getPosition().z
-				)
-			);
+			Path path = SAVE_DIR.resolve(String.format("chunk_%+d_%+d_%+d.progressia_chunk", chunk.getPosition().x,
+					chunk.getPosition().y, chunk.getPosition().z));
 
-			try (
-				DataOutputStream output = new DataOutputStream(
-					new DeflaterOutputStream(new BufferedOutputStream(Files.newOutputStream(path)))
-				)
-			) {
+			try (DataOutputStream output = new DataOutputStream(
+					new DeflaterOutputStream(new BufferedOutputStream(Files.newOutputStream(path))))) {
 				ChunkIO.save(chunk, output, IOContext.SAVE);
 				writeGenerationHint(chunk, output, server);
 			}
@@ -84,7 +70,7 @@ public class TestWorldDiskIO {
 	}
 
 	private static void writeGenerationHint(ChunkData chunk, DataOutputStream output, Server server)
-		throws IOException {
+			throws IOException {
 		server.getWorld().getGenerator().writeGenerationHint(output, chunk.getGenerationHint());
 	}
 
@@ -92,22 +78,11 @@ public class TestWorldDiskIO {
 		if (!ENABLE)
 			return null;
 
-		Path path = SAVE_DIR.resolve(
-			String.format(
-				"chunk_%+d_%+d_%+d.progressia_chunk",
-				chunkPos.x,
-				chunkPos.y,
-				chunkPos.z
-			)
-		);
+		Path path = SAVE_DIR
+				.resolve(String.format("chunk_%+d_%+d_%+d.progressia_chunk", chunkPos.x, chunkPos.y, chunkPos.z));
 
 		if (!Files.exists(path)) {
-			LOG.debug(
-				"Not found {} {} {}",
-				chunkPos.x,
-				chunkPos.y,
-				chunkPos.z
-			);
+			LOG.debug("Not found {} {} {}", chunkPos.x, chunkPos.y, chunkPos.z);
 
 			return null;
 		}
@@ -115,34 +90,20 @@ public class TestWorldDiskIO {
 		try {
 			ChunkData result = load(path, chunkPos, world, server);
 
-			LOG.debug(
-				"Loaded {} {} {}",
-				chunkPos.x,
-				chunkPos.y,
-				chunkPos.z
-			);
+			LOG.debug("Loaded {} {} {}", chunkPos.x, chunkPos.y, chunkPos.z);
 
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
-			LOG.debug(
-				"Could not load {} {} {}",
-				chunkPos.x,
-				chunkPos.y,
-				chunkPos.z
-			);
+			LOG.debug("Could not load {} {} {}", chunkPos.x, chunkPos.y, chunkPos.z);
 			return null;
 		}
 	}
 
 	private static ChunkData load(Path path, Vec3i chunkPos, WorldData world, Server server)
-		throws IOException,
-		DecodingException {
-		try (
-			DataInputStream input = new DataInputStream(
-				new InflaterInputStream(new BufferedInputStream(Files.newInputStream(path)))
-			)
-		) {
+			throws IOException, DecodingException {
+		try (DataInputStream input = new DataInputStream(
+				new InflaterInputStream(new BufferedInputStream(Files.newInputStream(path))))) {
 			ChunkData chunk = ChunkIO.load(world, chunkPos, input, IOContext.SAVE);
 			readGenerationHint(chunk, input, server);
 			return chunk;
@@ -150,8 +111,7 @@ public class TestWorldDiskIO {
 	}
 
 	private static void readGenerationHint(ChunkData chunk, DataInputStream input, Server server)
-		throws IOException,
-		DecodingException {
+			throws IOException, DecodingException {
 		chunk.setGenerationHint(server.getWorld().getGenerator().readGenerationHint(input));
 	}
 
