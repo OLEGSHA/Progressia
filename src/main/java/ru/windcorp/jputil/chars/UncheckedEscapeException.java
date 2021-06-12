@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.chars;
 
 public class UncheckedEscapeException extends RuntimeException {
@@ -28,7 +29,7 @@ public class UncheckedEscapeException extends RuntimeException {
 	public UncheckedEscapeException(EscapeException cause) {
 		super(cause);
 	}
-	
+
 	@Override
 	public synchronized EscapeException getCause() {
 		return (EscapeException) super.getCause();

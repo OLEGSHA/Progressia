@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.functions;
 
 import java.util.function.Consumer;
@@ -23,7 +24,7 @@ import java.util.function.Consumer;
 public interface ThrowingRunnable<E extends Exception> {
 
 	void run() throws E;
-	
+
 	@SuppressWarnings("unchecked")
 	default Runnable withHandler(Consumer<? super E> handler) {
 		return () -> {
@@ -36,29 +37,29 @@ public interface ThrowingRunnable<E extends Exception> {
 			}
 		};
 	}
-	
+
 	public static <E extends Exception> ThrowingRunnable<E> concat(
-			ThrowingRunnable<? extends E> first,
-			ThrowingRunnable<? extends E> second
+		ThrowingRunnable<? extends E> first,
+		ThrowingRunnable<? extends E> second
 	) {
 		return () -> {
 			first.run();
 			second.run();
 		};
 	}
-	
+
 	public static <E extends Exception> ThrowingRunnable<E> concat(Runnable first, ThrowingRunnable<E> second) {
 		return () -> {
 			first.run();
 			second.run();
 		};
 	}
-	
+
 	public static <E extends Exception> ThrowingRunnable<E> concat(ThrowingRunnable<E> first, Runnable second) {
 		return () -> {
 			first.run();
 			second.run();
 		};
 	}
-	
+
 }

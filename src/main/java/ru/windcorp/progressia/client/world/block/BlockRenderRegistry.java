@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.world.block;
 
 import ru.windcorp.progressia.client.graphics.texture.Atlases;
@@ -25,26 +26,24 @@ import ru.windcorp.progressia.common.resource.ResourceManager;
 import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
 public class BlockRenderRegistry extends NamespacedInstanceRegistry<BlockRender> {
-	
-	private static final BlockRenderRegistry INSTANCE =
-			new BlockRenderRegistry();
-	
-	private static final AtlasGroup BLOCKS_ATLAS_GROUP =
-			new AtlasGroup("Blocks", 1 << 12);
-	
+
+	private static final BlockRenderRegistry INSTANCE = new BlockRenderRegistry();
+
+	private static final AtlasGroup BLOCKS_ATLAS_GROUP = new AtlasGroup("Blocks", 1 << 12);
+
 	public static BlockRenderRegistry getInstance() {
 		return INSTANCE;
 	}
-	
+
 	public static Texture getBlockTexture(String name) {
 		return new SimpleTexture(
-				Atlases.getSprite(
-						ResourceManager.getTextureResource("blocks/" + name),
-						BLOCKS_ATLAS_GROUP
-				)
+			Atlases.getSprite(
+				ResourceManager.getTextureResource("blocks/" + name),
+				BLOCKS_ATLAS_GROUP
+			)
 		);
 	}
-	
+
 	public static AtlasGroup getBlocksAtlasGroup() {
 		return BLOCKS_ATLAS_GROUP;
 	}

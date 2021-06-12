@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,14 +14,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.input.bus;
 
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 
 @FunctionalInterface
 public interface InputListener<T extends InputEvent> {
-	
+
 	boolean handle(T event);
 
 }

@@ -3,9 +3,11 @@ package kdotjpg.opensimplex2.areagen;
  * This file has been modified in the following ways:
  * - added a package declaration at line 1;
  * - added missing @Override annotations;
- * - commented out line 965 due to unused variables.
+ * - commented out line 967 due to unused variables.
  * The original version of this file can be found at
  * https://raw.githubusercontent.com/KdotJPG/OpenSimplex2/master/java/areagen/OpenSimplex2S.java
+ * 
+ * @formatter:off
  */
 
 /**
@@ -983,16 +985,3 @@ public class OpenSimplex2S {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

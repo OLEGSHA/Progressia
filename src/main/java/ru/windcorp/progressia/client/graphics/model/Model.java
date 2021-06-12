@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,31 +14,32 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.model;
 
 import glm.mat._4.Mat4;
 
 public abstract class Model implements Renderable {
-	
+
 	private final Renderable[] parts;
-	
+
 	public Model(Renderable[] parts) {
 		this.parts = parts;
 	}
 
 	protected abstract Mat4 getTransform(int partIndex);
-	
+
 	@Override
 	public void render(ShapeRenderHelper helper) {
 		for (int i = 0; i < parts.length; ++i) {
 			Renderable part = parts[i];
 			Mat4 transform = getTransform(i);
-			
+
 			try {
 				helper.pushTransform().mul(transform);
 				part.render(helper);
-			} finally {	
+			} finally {
 				helper.popTransform();
 			}
 		}

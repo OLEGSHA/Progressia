@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.texture;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -35,7 +36,7 @@ public class TexturePrimitive implements OpenGLDeletable {
 	static {
 		Arrays.fill(currentlyBound, NOT_LOADED);
 	}
-	
+
 	private static int nextId = 0;
 
 	private int id = nextId++;
@@ -88,8 +89,9 @@ public class TexturePrimitive implements OpenGLDeletable {
 	}
 
 	public void load() {
-		if (isLoaded()) return;
-		
+		if (isLoaded())
+			return;
+
 		handle = pixels.load();
 		OpenGLObjectTracker.register(this, GL11::glDeleteTextures);
 
@@ -102,9 +104,9 @@ public class TexturePrimitive implements OpenGLDeletable {
 	public int getHandle() {
 		return handle;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
-	
+
 }

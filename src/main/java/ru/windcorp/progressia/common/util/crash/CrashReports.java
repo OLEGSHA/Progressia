@@ -1,3 +1,21 @@
+/*
+ * Progressia
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+ 
 package ru.windcorp.progressia.common.util.crash;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,333 +37,397 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * A utility for reporting critical problems, gathering system context and terminating the application consequently (crashing).
- * Do not hesitate to use {@link #report(Throwable, String, Object...)} at every other line.
+ * A utility for reporting critical problems, gathering system context and
+ * terminating the application consequently (crashing).
+ * Do not hesitate to use {@link #report(Throwable, String, Object...)} at every
+ * other line.
  * 
  * @author serega404
  */
 public class CrashReports {
 
-    private static final Path CRASH_REPORTS_PATH = Paths.get("crash-reports");
+	private static final Path CRASH_REPORTS_PATH = Paths.get("crash-reports");
 
-    private static final Collection<ContextProvider> PROVIDERS = Collections.synchronizedCollection(new ArrayList<>());
+	private static final Collection<ContextProvider> PROVIDERS = Collections.synchronizedCollection(new ArrayList<>());
 
-    private static final Collection<Analyzer> ANALYZERS = Collections.synchronizedCollection(new ArrayList<>());
+	private static final Collection<Analyzer> ANALYZERS = Collections.synchronizedCollection(new ArrayList<>());
 
-    private static final Logger LOGGER = LogManager.getLogger("crash");
-    
-    /**
-     * Creates a {@link ReportedException} that describes the provided problem so the program can crash later.
-     * This method is intended to be used like so:
-     * 
-     * <pre>
-     * try {
-     *     doSomethingDifficult(x);
-     * } catch (CouldntMakeItException e) {
-     *     throw CrashReports.report(e, "We couldn't make it at x = %d", x);
-     * }
-     * </pre>
-     * 
-     * <p>Such usage ensures that the report will be dealt with at the top of the call stack
-     * (at least in methods that have a properly set up
-     * {@linkplain #crash(Throwable, String, Object...) crash handler}). Not throwing the returned
-     * exception is pointless; using this in a thread without a crash handler will not produce a crash.
-     * 
-     * <p>Avoid inserting variable information into {@code messageFormat} directly; use
-     * {@linkplain Formatter#summary format string} syntax and {@code args}. Different Strings
-     * in {@code messageFormat} may be interpreted as unrelated problems by {@linkplain Analyzer crash analyzers}.
-     * 
-     * @param throwable a {@link Throwable} that caused the problem, if any; {@code null} otherwise
-     * @param messageFormat a human-readable description of the problem displayed in the crash report
-     * @param args an array of arguments for formatting {@code messageFormat}
-     * @return an exception containing the provided information that must be thrown
-     */
-    public static ReportedException report(Throwable throwable, String messageFormat, Object... args) {
-        if (throwable instanceof ReportedException) return (ReportedException) throwable;
+	private static final Logger LOGGER = LogManager.getLogger("crash");
 
-        return new ReportedException(throwable, messageFormat, args);
-    }
+	/**
+	 * Creates a {@link ReportedException} that describes the provided problem
+	 * so the program can crash later.
+	 * This method is intended to be used like so:
+	 * 
+	 * <pre>
+	 * try {
+	 * 	doSomethingDifficult(x);
+	 * } catch (CouldntMakeItException e) {
+	 * 	throw CrashReports.report(e, "We couldn't make it at x = %d", x);
+	 * }
+	 * </pre>
+	 * <p>
+	 * Such usage ensures that the report will be dealt with at the top of the
+	 * call stack
+	 * (at least in methods that have a properly set up
+	 * {@linkplain #crash(Throwable, String, Object...) crash handler}). Not
+	 * throwing the returned
+	 * exception is pointless; using this in a thread without a crash handler
+	 * will not produce a crash.
+	 * <p>
+	 * Avoid inserting variable information into {@code messageFormat} directly;
+	 * use
+	 * {@linkplain Formatter#summary format string} syntax and {@code args}.
+	 * Different Strings
+	 * in {@code messageFormat} may be interpreted as unrelated problems by
+	 * {@linkplain Analyzer crash analyzers}.
+	 * 
+	 * @param throwable     a {@link Throwable} that caused the problem, if any;
+	 *                      {@code null} otherwise
+	 * @param messageFormat a human-readable description of the problem
+	 *                      displayed in the crash report
+	 * @param args          an array of arguments for formatting
+	 *                      {@code messageFormat}
+	 * @return an exception containing the provided information that must be
+	 *         thrown
+	 */
+	public static ReportedException report(Throwable throwable, String messageFormat, Object... args) {
+		if (throwable instanceof ReportedException)
+			return (ReportedException) throwable;
 
-    /**
-     * Crashes the program due to the supplied problem.
-     * 
-     * <p><em>Use {@link #report(Throwable, String, Object...)} unless you are creating a catch-all handler for a
-     * thread.</em>
-     * 
-     * <p>This method recovers information about the problem by casting {@code throwable} to {@link ReportedException},
-     * or, failing that, uses the provided arguments as the information instead. It then constructs a full crash
-     * report, exports it and terminates the program by invoking {@link System#exit(int)}.
-     * 
-     * <p>Such behavior can be dangerous or lead to unwanted consequences in the middle of the call stack, so it is
-     * necessary to invoke this method as high on the call stack as possible, usually in a {@code catch} clause
-     * of a {@code try} statement enveloping the thread's main method(s).
-     * 
-     * @param throwable a {@link ReportedException} or another {@link Throwable} that caused the problem, if any;
-     * {@code null} otherwise
-     * @param messageFormat a human-readable description of the problem used when {@code throwable} is not a
-     * {@link ReportedException}. See {@link #report(Throwable, String, Object...)} for details.
-     * @param args an array of arguments for formatting {@code messageFormat}
-     * @return {@code null}, although this method never returns normally. Provided for convenience.
-     */
-    public static RuntimeException crash(Throwable throwable, String messageFormat, Object... args) {
-    	if (throwable instanceof ReportedException) {
-    		ReportedException reportedException = (ReportedException) throwable;
-    		
-    		// Discard provided arguments
-    		throwable = reportedException.getCause();
-            messageFormat = reportedException.getMessageFormat();
-            args = reportedException.getArgs();
-    	}
+		return new ReportedException(throwable, messageFormat, args);
+	}
 
-        StringBuilder output = new StringBuilder();
+	/**
+	 * Crashes the program due to the supplied problem.
+	 * <p>
+	 * <em>Use {@link #report(Throwable, String, Object...)} unless you are
+	 * creating a catch-all handler for a
+	 * thread.</em>
+	 * <p>
+	 * This method recovers information about the problem by casting
+	 * {@code throwable} to {@link ReportedException},
+	 * or, failing that, uses the provided arguments as the information instead.
+	 * It then constructs a full crash
+	 * report, exports it and terminates the program by invoking
+	 * {@link System#exit(int)}.
+	 * <p>
+	 * Such behavior can be dangerous or lead to unwanted consequences in the
+	 * middle of the call stack, so it is
+	 * necessary to invoke this method as high on the call stack as possible,
+	 * usually in a {@code catch} clause
+	 * of a {@code try} statement enveloping the thread's main method(s).
+	 * 
+	 * @param throwable     a {@link ReportedException} or another
+	 *                      {@link Throwable} that caused the problem, if any;
+	 *                      {@code null} otherwise
+	 * @param messageFormat a human-readable description of the problem used
+	 *                      when {@code throwable} is not a
+	 *                      {@link ReportedException}. See
+	 *                      {@link #report(Throwable, String, Object...)} for
+	 *                      details.
+	 * @param args          an array of arguments for formatting
+	 *                      {@code messageFormat}
+	 * @return {@code null}, although this method never returns normally.
+	 *         Provided for convenience.
+	 */
+	public static RuntimeException crash(Throwable throwable, String messageFormat, Object... args) {
+		final StackTraceElement[] reportStackTrace;
 
-        try {
-            String.format(messageFormat, args);
-        } catch (IllegalFormatException e) {
-            messageFormat = StringUtil.replaceAll(messageFormat, "%", "%%");
+		if (throwable instanceof ReportedException) {
+			ReportedException reportedException = (ReportedException) throwable;
 
-            if (args.length != 0) {
-                messageFormat += "\nArgs:";
-                for (Object arg : args) {
-                    try {
-                        messageFormat += " \"" + arg.toString() + "\"";
-                    } catch (Throwable t) {
-                        messageFormat += " exc: \"" + t.getClass().toString() + "\"";
-                    }
-                }
-                args = new Object[0]; // clear args
-            }
+			// Discard provided arguments
+			throwable = reportedException.getCause();
+			messageFormat = reportedException.getMessageFormat();
+			args = reportedException.getArgs();
 
-            messageFormat += "\nCould not format provided description";
-        }
+			reportStackTrace = reportedException.getStackTrace();
+		} else {
+			reportStackTrace = getCurrentStackTrace();
+		}
 
-        appendContextProviders(output);
-        addSeparator(output);
-        if (appendAnalyzers(output, throwable, messageFormat, args)) {
-            addSeparator(output);
-        }
+		StringBuilder output = new StringBuilder();
 
-        appendMessageFormat(output, messageFormat, args);
+		try {
+			String.format(messageFormat, args);
+		} catch (IllegalFormatException e) {
+			messageFormat = StringUtil.replaceAll(messageFormat, "%", "%%");
 
-        appendStackTrace(output, throwable);
+			if (args.length != 0) {
+				messageFormat += "\nArgs:";
+				for (Object arg : args) {
+					try {
+						messageFormat += " \"" + arg.toString() + "\"";
+					} catch (Throwable t) {
+						messageFormat += " exc: \"" + t.getClass().toString() + "\"";
+					}
+				}
+				args = new Object[0]; // clear args
+			}
 
-        export(output.toString());
+			messageFormat += "\nCould not format provided description";
+		}
 
-        System.exit(0);
-        return null;
-    }
+		appendContextProviders(output);
+		addSeparator(output);
+		if (appendAnalyzers(output, throwable, messageFormat, args)) {
+			addSeparator(output);
+		}
 
-    private static void appendContextProviders(StringBuilder output) {
+		appendMessageFormat(output, messageFormat, args);
 
-        // Do a local copy to avoid deadlocks -OLEGSHA
-        ContextProvider[] localProvidersCopy = PROVIDERS.toArray(new ContextProvider[PROVIDERS.size()]);
+		appendStackTrace(output, reportStackTrace, "Reported at:");
+		output.append('\n');
+		appendThrowable(output, throwable);
 
-        for (ContextProvider provider : localProvidersCopy) {
-            if (provider == null)
-                continue;
+		export(output.toString());
 
-            addSeparator(output);
+		System.exit(0);
+		return null;
+	}
 
-            try {
-                Map<String, String> buf = new HashMap<>();
-                provider.provideContext(buf);
+	private static StackTraceElement[] getCurrentStackTrace() {
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		final int trim = 3;
 
-                if (!buf.isEmpty()) {
-                    output.append(StringUtil.center(provider.getName(), 80)).append("\n");
-                    for (Map.Entry<String, String> entry : buf.entrySet()) {
-                        output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
-                    }
-                }
-            } catch (Throwable t) {
-                String providerName;
+		return Arrays.copyOfRange(stackTrace, trim, stackTrace.length);
+	}
 
-                try {
-                    providerName = provider.getName();
-                } catch (Throwable t1) {
-                    providerName = provider.getClass().getName();
-                }
+	private static void appendContextProviders(StringBuilder output) {
 
-                output.append(providerName).append(" is broken").append("\n");
-                // ContextProvider is broken
-            }
-        }
-    }
+		// Do a local copy to avoid deadlocks -OLEGSHA
+		ContextProvider[] localProvidersCopy = PROVIDERS.toArray(new ContextProvider[PROVIDERS.size()]);
 
-    private static boolean appendAnalyzers(StringBuilder output, Throwable throwable, String messageFormat,
-                                           Object[] args) {
-        boolean analyzerResponsesExist = false;
+		for (ContextProvider provider : localProvidersCopy) {
+			if (provider == null)
+				continue;
 
-        // Do a local copy to avoid deadlocks -OLEGSHA
-        Analyzer[] localAnalyzersCopy = ANALYZERS.toArray(new Analyzer[ANALYZERS.size()]);
+			try {
+				Map<String, String> buf = new HashMap<>();
+				provider.provideContext(buf);
 
-        if (localAnalyzersCopy.length > 0) {
-            output.append(StringUtil.center("Analyzers", 80)).append("\n");
-        }
+				if (!buf.isEmpty()) {
+					addSeparator(output);
+					output.append(StringUtil.center(provider.getName(), 80)).append("\n");
+					for (Map.Entry<String, String> entry : buf.entrySet()) {
+						output.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+					}
+				}
+			} catch (Throwable t) {
+				String providerName;
 
-        for (Analyzer analyzer : localAnalyzersCopy) {
-            if (analyzer == null)
-                continue;
+				try {
+					providerName = provider.getName();
+				} catch (Throwable t1) {
+					providerName = provider.getClass().getName();
+				}
 
-            String answer;
-            try {
-                answer = analyzer.analyze(throwable, messageFormat, args);
+				output.append(providerName).append(" is broken").append("\n");
+				// ContextProvider is broken
+			}
+		}
+	}
 
-                if (answer != null && !answer.isEmpty()) {
-                    analyzerResponsesExist = true;
-                    output.append(analyzer.getName()).append(": ").append(answer).append("\n");
-                }
-            } catch (Throwable t) {
-                analyzerResponsesExist = true;
+	private static boolean appendAnalyzers(
+		StringBuilder output,
+		Throwable throwable,
+		String messageFormat,
+		Object[] args
+	) {
+		boolean analyzerResponsesExist = false;
 
-                output.append("\n");
+		// Do a local copy to avoid deadlocks -OLEGSHA
+		Analyzer[] localAnalyzersCopy = ANALYZERS.toArray(new Analyzer[ANALYZERS.size()]);
 
-                String analyzerName;
+		if (localAnalyzersCopy.length > 0) {
+			output.append(StringUtil.center("Analyzers", 80)).append("\n");
+		}
 
-                try {
-                    analyzerName = analyzer.getName();
-                } catch (Throwable t1) {
-                    analyzerName = analyzer.getClass().getName();
-                }
+		for (Analyzer analyzer : localAnalyzersCopy) {
+			if (analyzer == null)
+				continue;
 
-                output.append(analyzerName).append(" is broken").append("\n");
-                // Analyzer is broken
-            }
-        }
+			String answer;
+			try {
+				answer = analyzer.analyze(throwable, messageFormat, args);
 
-        return analyzerResponsesExist;
-    }
+				if (answer != null && !answer.isEmpty()) {
+					analyzerResponsesExist = true;
+					output.append(analyzer.getName()).append(": ").append(answer).append("\n");
+				}
+			} catch (Throwable t) {
+				analyzerResponsesExist = true;
 
-    private static void appendMessageFormat(StringBuilder output, String messageFormat, Object... arg) {
-        output.append("Provided description: \n");
-        if (messageFormat.isEmpty())
-            output.append("none").append("\n");
-        else
-            output.append(String.format(messageFormat, arg)).append("\n");
+				output.append("\n");
 
-        addSeparator(output);
-    }
+				String analyzerName;
 
-    private static void appendStackTrace(StringBuilder output, Throwable throwable) {
-        output.append("Stacktrace: \n");
+				try {
+					analyzerName = analyzer.getName();
+				} catch (Throwable t1) {
+					analyzerName = analyzer.getClass().getName();
+				}
 
-        if (throwable == null) {
-            output.append("no Throwable provided").append("\n");
-            return;
-        }
+				output.append(analyzerName).append(" is broken").append("\n");
+				// Analyzer is broken
+			}
+		}
 
-        // Formatting to a human-readable string
-        Writer sink = new StringBuilderWriter(output);
-        try {
-            throwable.printStackTrace(new PrintWriter(sink));
-        } catch (Exception e) {
-            // PLAK
-        }
-        output.append("\n");
-    }
+		return analyzerResponsesExist;
+	}
 
-    private static void export(String report) {
-        try {
-            LOGGER.fatal("\n" + report);
-        } catch (Exception e) {
-            // PLAK
-        }
+	private static void appendMessageFormat(StringBuilder output, String messageFormat, Object... arg) {
+		output.append("Provided description: \n");
+		if (messageFormat.isEmpty())
+			output.append("none").append("\n");
+		else
+			output.append(String.format(messageFormat, arg)).append("\n");
 
-        System.err.println(report);
+		addSeparator(output);
+	}
 
-        generateCrashReportFiles(report);
-    }
+	private static void appendThrowable(StringBuilder output, Throwable throwable) {
+		if (throwable == null) {
+			output.append("No Throwable provided").append("\n");
+			return;
+		}
 
-    private static void generateCrashReportFiles(String output) {
-        Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
+		output.append("Reported Throwable:\n");
 
-        try {
-            if (!Files.exists(CRASH_REPORTS_PATH))
-                Files.createDirectory(CRASH_REPORTS_PATH);
+		// Formatting to a human-readable string
+		Writer sink = new StringBuilderWriter(output);
+		try {
+			throwable.printStackTrace(new PrintWriter(sink));
+		} catch (Exception e) {
+			// PLAK
+		}
+		output.append('\n');
+	}
 
-            createFileForCrashReport(output, CRASH_REPORTS_PATH.toString() + "/latest.log");
-            createFileForCrashReport(output,
-                    CRASH_REPORTS_PATH.toString() + "/crash-" + dateFormat.format(date) + ".log");
-        } catch (Throwable t) {
-            // Crash Report not created
-        }
-    }
+	private static void appendStackTrace(StringBuilder output, StackTraceElement[] stackTrace, String header) {
+		output.append(header).append('\n');
 
-    private static void createFileForCrashReport(String buffer, String filename) {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename), StandardCharsets.UTF_8)) {
-            writer.write(buffer);
-        } catch (IOException ex) {
-            // Crash Report not created
-        }
-    }
+		for (StackTraceElement element : stackTrace) {
+			output.append("\tat ").append(element).append('\n');
+		}
+	}
 
-    private static void addSeparator(StringBuilder sb) {
-        sb.append(StringUtil.sequence('-', 80)).append("\n");
-    }
+	private static void export(String report) {
+		try {
+			LOGGER.fatal("\n" + report);
+		} catch (Exception e) {
+			// PLAK
+		}
 
-    /**
-     * Registers the provided {@link ContextProvider} so it is consulted in the case of a crash.
-     * @param provider the provider to register
-     */
-    public static void registerProvider(ContextProvider provider) {
-        PROVIDERS.add(provider);
-    }
+		System.err.println(report);
 
-    /**
-     * Registers the provided {@link Analyzer} so it is consulted in the case of a crash.
-     * @param analyzer the analyzer to register
-     */
-    public static void registerAnalyzer(Analyzer analyzer) {
-        ANALYZERS.add(analyzer);
-    }
+		generateCrashReportFiles(report);
+	}
 
-    /**
-     * A wrapper used by {@link CrashReports} to transfer problem details from the place of
-     * occurrence to the handler at the top of the stack. Rethrow if caught
-     * (unless using {@link CrashReports#report(Throwable, String, Object...)}, which does
-     * so automatically).
-     * 
-     * @author serega404
-     */
-    public static class ReportedException extends RuntimeException {
+	private static void generateCrashReportFiles(String output) {
+		Date date = new Date();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
+
+		try {
+			if (!Files.exists(CRASH_REPORTS_PATH))
+				Files.createDirectory(CRASH_REPORTS_PATH);
+
+			createFileForCrashReport(output, CRASH_REPORTS_PATH.toString() + "/latest.log");
+			createFileForCrashReport(
+				output,
+				CRASH_REPORTS_PATH.toString() + "/crash-" + dateFormat.format(date) + ".log"
+			);
+		} catch (Throwable t) {
+			// Crash Report not created
+		}
+	}
+
+	private static void createFileForCrashReport(String buffer, String filename) {
+		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename), StandardCharsets.UTF_8)) {
+			writer.write(buffer);
+		} catch (IOException ex) {
+			// Crash Report not created
+		}
+	}
+
+	private static void addSeparator(StringBuilder sb) {
+		sb.append(StringUtil.sequence('-', 80)).append("\n");
+	}
+
+	/**
+	 * Registers the provided {@link ContextProvider} so it is consulted in the
+	 * case of a crash.
+	 * 
+	 * @param provider the provider to register
+	 */
+	public static void registerProvider(ContextProvider provider) {
+		PROVIDERS.add(provider);
+	}
+
+	/**
+	 * Registers the provided {@link Analyzer} so it is consulted in the case of
+	 * a crash.
+	 * 
+	 * @param analyzer the analyzer to register
+	 */
+	public static void registerAnalyzer(Analyzer analyzer) {
+		ANALYZERS.add(analyzer);
+	}
+
+	/**
+	 * A wrapper used by {@link CrashReports} to transfer problem details from
+	 * the place of
+	 * occurrence to the handler at the top of the stack. Rethrow if caught
+	 * (unless using {@link CrashReports#report(Throwable, String, Object...)},
+	 * which does
+	 * so automatically).
+	 * 
+	 * @author serega404
+	 */
+	public static class ReportedException extends RuntimeException {
 
 		private static final long serialVersionUID = 223720835231091533L;
-		
+
 		private final String messageFormat;
-        private final Object[] args;
+		private final Object[] args;
 
-        /**
-         * Constructs a {@link ReportedException}.
-         * @param throwable the reported {@link Throwable} or {@code null}
-         * @param messageFormat the reported message format.
-         * <em>This is not the message of the constructed Exception</em>.
-         * @param args the reported message format arguments
-         */
-        public ReportedException(Throwable throwable, String messageFormat, Object... args) {
-            super(throwable);
-            this.messageFormat = messageFormat;
-            this.args = args;
-        }
+		/**
+		 * Constructs a {@link ReportedException}.
+		 * 
+		 * @param throwable     the reported {@link Throwable} or {@code null}
+		 * @param messageFormat the reported message format.
+		 *                      <em>This is not the message of the constructed
+		 *                      Exception</em>.
+		 * @param args          the reported message format arguments
+		 */
+		public ReportedException(Throwable throwable, String messageFormat, Object... args) {
+			super(throwable);
+			this.messageFormat = messageFormat;
+			this.args = args;
+		}
 
-        /**
-         * Returns the reported message format.
-         * @return message format
-         */
-        public String getMessageFormat() {
-            return messageFormat;
-        }
+		/**
+		 * Returns the reported message format.
+		 * 
+		 * @return message format
+		 */
+		public String getMessageFormat() {
+			return messageFormat;
+		}
 
-        /**
-         * Returns the reported message format arguments.
-         * @return message format arguments
-         */
-        public Object[] getArgs() {
-            return args;
-        }
-    }
+		/**
+		 * Returns the reported message format arguments.
+		 * 
+		 * @return message format arguments
+		 */
+		public Object[] getArgs() {
+			return args;
+		}
+	}
 
-    private CrashReports() {
-    	
-    }
+	private CrashReports() {
+
+	}
 
 }

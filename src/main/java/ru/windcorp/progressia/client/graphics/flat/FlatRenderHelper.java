@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.flat;
 
 import java.nio.FloatBuffer;
@@ -24,21 +25,21 @@ import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 
 public abstract class FlatRenderHelper extends ShapeRenderHelper {
-	
+
 	protected static final float MAX_DEPTH = 1 << 16;
-	
+
 	protected final Mat4 finalTransform = new Mat4();
-	
+
 	protected abstract FloatBuffer getMasks();
-	
+
 	@Override
 	public Mat4 getFinalTransform() {
 		float width = GraphicsInterface.getFrameWidth();
 		float height = GraphicsInterface.getFrameHeight();
-		
+
 		return finalTransform.identity().translate(-1, -1, 0)
-	              .scale(2 / width, 2 / height, 1 / MAX_DEPTH)
-	              .mul(getTransform());
+			.scale(2 / width, 2 / height, 1 / MAX_DEPTH)
+			.mul(getTransform());
 	}
 
 }

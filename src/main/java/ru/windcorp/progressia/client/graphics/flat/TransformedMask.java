@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.flat;
 
 import java.nio.FloatBuffer;
@@ -24,30 +25,34 @@ import glm.vec._2.Vec2;
 import glm.vec._4.Vec4;
 
 public class TransformedMask {
-	
+
 	public static final int SIZE_IN_FLOATS = 2 * 3 * 2;
-	
+
 	private final Vec2 origin = new Vec2();
 	private final Vec2 width = new Vec2();
 	private final Vec2 height = new Vec2();
-	
+
 	private final Vec2 counterOrigin = new Vec2();
 	private final Vec2 counterWidth = new Vec2();
 	private final Vec2 counterHeight = new Vec2();
-	
+
 	// Temporary values, objects cached for efficiency
 	private Vec4 startXstartY = null;
 	private Vec4 startXendY = null;
 	private Vec4 endXstartY = null;
 	private Vec4 endXendY = null;
-	
+
 	public TransformedMask(
-			Vec2 origin, Vec2 width, Vec2 height,
-			Vec2 counterOrigin, Vec2 counterWidth, Vec2 counterHeight
+		Vec2 origin,
+		Vec2 width,
+		Vec2 height,
+		Vec2 counterOrigin,
+		Vec2 counterWidth,
+		Vec2 counterHeight
 	) {
 		set(origin, width, height, counterOrigin, counterWidth, counterHeight);
 	}
-	
+
 	public TransformedMask(Mask mask, Mat4 transform) {
 		set(mask, transform);
 	}
@@ -55,10 +60,14 @@ public class TransformedMask {
 	public TransformedMask() {
 		// Do nothing
 	}
-	
+
 	public TransformedMask set(
-			Vec2 origin, Vec2 width, Vec2 height,
-			Vec2 counterOrigin, Vec2 counterWidth, Vec2 counterHeight
+		Vec2 origin,
+		Vec2 width,
+		Vec2 height,
+		Vec2 counterOrigin,
+		Vec2 counterWidth,
+		Vec2 counterHeight
 	) {
 		this.origin.set(origin.x, origin.y);
 		this.width.set(width.x, width.y);
@@ -66,10 +75,10 @@ public class TransformedMask {
 		this.counterOrigin.set(counterOrigin.x, counterOrigin.y);
 		this.counterWidth.set(counterWidth.x, counterWidth.y);
 		this.counterHeight.set(counterHeight.x, counterHeight.y);
-		
+
 		return this;
 	}
-	
+
 	public TransformedMask set(Mask mask, Mat4 transform) {
 		applyTransform(mask, transform);
 		setFields();
@@ -78,15 +87,15 @@ public class TransformedMask {
 
 	private void applyTransform(Mask mask, Mat4 transform) {
 		ensureTemporaryVariablesExist();
-		
+
 		int relX = mask.getWidth();
 		int relY = mask.getHeight();
-		
-		startXstartY.set(   0,    0, 0, 1);
-		startXendY  .set(   0, relY, 0, 1);
-		endXstartY  .set(relX,    0, 0, 1);
-		endXendY    .set(relX, relY, 0, 1);
-		
+
+		startXstartY.set(0, 0, 0, 1);
+		startXendY.set(0, relY, 0, 1);
+		endXstartY.set(relX, 0, 0, 1);
+		endXendY.set(relX, relY, 0, 1);
+
 		transform.mul(startXstartY);
 		transform.mul(startXendY);
 		transform.mul(endXstartY);
@@ -104,36 +113,36 @@ public class TransformedMask {
 
 	private void setFields() {
 		origin.set(
-				startXstartY.x,
-				startXstartY.y
+			startXstartY.x,
+			startXstartY.y
 		);
-		
+
 		width.set(
-				endXstartY.x - startXstartY.x,
-				endXstartY.y - startXstartY.y
+			endXstartY.x - startXstartY.x,
+			endXstartY.y - startXstartY.y
 		);
-		
+
 		height.set(
-				startXendY.x - startXstartY.x,
-				startXendY.y - startXstartY.y
+			startXendY.x - startXstartY.x,
+			startXendY.y - startXstartY.y
 		);
-		
+
 		counterOrigin.set(
-				endXendY.x,
-				endXendY.y
+			endXendY.x,
+			endXendY.y
 		);
-		
+
 		counterWidth.set(
-				startXendY.x - endXendY.x,
-				startXendY.y - endXendY.y
+			startXendY.x - endXendY.x,
+			startXendY.y - endXendY.y
 		);
-		
+
 		counterHeight.set(
-				endXstartY.x - endXendY.x,
-				endXstartY.y - endXendY.y
+			endXstartY.x - endXendY.x,
+			endXstartY.y - endXendY.y
 		);
 	}
-	
+
 	public void writeToBuffer(FloatBuffer output) {
 		output.put(origin.x).put(origin.y);
 		output.put(width.x).put(width.y);

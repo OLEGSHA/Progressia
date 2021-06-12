@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.chars.reader;
 
 import java.io.InputStream;
@@ -29,28 +30,28 @@ import ru.windcorp.jputil.chars.CharSupplier;
 
 /**
  * @author Javapony
- *
  */
 public class CharReaders {
-	
-	private CharReaders() {}
-	
+
+	private CharReaders() {
+	}
+
 	public static CharReader wrap(char[] array, int offset, int length) {
 		return new ArrayCharReader(array, offset, length);
 	}
-	
+
 	public static CharReader wrap(char[] array) {
 		return wrap(array, 0, array.length);
 	}
-	
+
 	public static CharReader wrap(String str, int offset, int length) {
 		return new StringCharReader(str, offset, length);
 	}
-	
+
 	public static CharReader wrap(String str) {
 		return wrap(str, 0, str.length());
 	}
-	
+
 	public static CharReader wrap(CharSupplier supplier) {
 		return new BufferedCharReader() {
 			@Override
@@ -63,7 +64,7 @@ public class CharReaders {
 			}
 		};
 	}
-	
+
 	public static CharReader wrap(IntSupplier supplier) {
 		return new BufferedCharReader() {
 			@Override
@@ -81,7 +82,7 @@ public class CharReaders {
 			}
 		};
 	}
-	
+
 	public static CharReader wrap(CharacterIterator it) {
 		return new BufferedCharReader() {
 			@Override
@@ -92,19 +93,19 @@ public class CharReaders {
 			}
 		};
 	}
-	
+
 	public static CharReader wrap(Reader reader) {
 		return new ReaderCharReader(reader);
 	}
-	
+
 	public static CharReader wrap(InputStream is, Charset charset) {
 		return wrap(new InputStreamReader(is, charset));
 	}
-	
+
 	public static CharReader wrapDefaultCS(InputStream is) {
 		return wrap(new InputStreamReader(is));
 	}
-	
+
 	public static CharReader wrapUTF8(InputStream is) {
 		return wrap(new InputStreamReader(is, StandardCharsets.UTF_8));
 	}

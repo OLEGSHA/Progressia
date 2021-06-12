@@ -1,3 +1,21 @@
+/*
+ * Progressia
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+ 
 package ru.windcorp.progressia.common.world.generic;
 
 import java.util.Collection;
@@ -10,7 +28,7 @@ import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.util.Vectors;
 
 public class LongBasedChunkMap<V> implements ChunkMap<V> {
-	
+
 	protected final TLongObjectMap<V> impl;
 	private final ChunkSet keys;
 
@@ -22,7 +40,7 @@ public class LongBasedChunkMap<V> implements ChunkMap<V> {
 	private static long getKey(Vec3i v) {
 		return CoordinatePacker.pack3IntsIntoLong(v);
 	}
-	
+
 	private static Vec3i getVector(long key, Vec3i output) {
 		return CoordinatePacker.unpack3IntsFromLong(key, output);
 	}
@@ -65,11 +83,11 @@ public class LongBasedChunkMap<V> implements ChunkMap<V> {
 	@Override
 	public boolean removeIf(BiPredicate<? super Vec3i, ? super V> condition) {
 		Vec3i v = Vectors.grab3i();
-		
+
 		boolean result = impl.retainEntries((key, value) -> {
 			return !condition.test(getVector(key, v), value);
 		});
-		
+
 		Vectors.release(v);
 		return result;
 	}
@@ -77,12 +95,12 @@ public class LongBasedChunkMap<V> implements ChunkMap<V> {
 	@Override
 	public void forEach(BiConsumer<? super Vec3i, ? super V> action) {
 		Vec3i v = Vectors.grab3i();
-		
+
 		impl.forEachEntry((key, value) -> {
 			action.accept(getVector(key, v), value);
 			return true;
 		});
-		
+
 		Vectors.release(v);
 	}
 

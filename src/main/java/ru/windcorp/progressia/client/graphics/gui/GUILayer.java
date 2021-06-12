@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.gui;
 
 import ru.windcorp.progressia.client.graphics.flat.AssembledFlatLayer;
@@ -22,7 +23,7 @@ import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
 
 public abstract class GUILayer extends AssembledFlatLayer {
-	
+
 	private final Component root = new Component("Root") {
 		@Override
 		protected void handleReassemblyRequest() {
@@ -34,7 +35,7 @@ public abstract class GUILayer extends AssembledFlatLayer {
 		super(name);
 		getRoot().setLayout(layout);
 	}
-	
+
 	public Component getRoot() {
 		return root;
 	}
@@ -50,7 +51,7 @@ public abstract class GUILayer extends AssembledFlatLayer {
 	protected void handleInput(Input input) {
 		getRoot().dispatchInput(input);
 	}
-	
+
 	@Override
 	public void invalidate() {
 		super.invalidate();

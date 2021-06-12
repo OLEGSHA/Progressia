@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,24 +14,25 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.gui.event;
 
 import ru.windcorp.progressia.client.graphics.gui.Component;
 
 public class HoverEvent extends ComponentEvent {
-	
+
 	private final boolean newState;
 
 	public HoverEvent(Component component, boolean newState) {
 		super(component);
 		this.newState = newState;
 	}
-	
+
 	public boolean isNowHovered() {
 		return newState;
 	}
-	
+
 	public boolean wasHovered() {
 		return !isNowHovered();
 	}

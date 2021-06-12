@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,18 +14,19 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.iterators;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class RangeIterator<E> implements Iterator<E> {
-	
+
 	private final Iterator<E> parent;
 	private final int from;
 	private final int amount;
-	
+
 	private int nextIndex = 0;
 
 	public RangeIterator(Iterator<E> iterator, int from, int amount) {
@@ -33,7 +34,7 @@ public class RangeIterator<E> implements Iterator<E> {
 		this.from = from;
 		this.amount = amount < 0 ? Integer.MAX_VALUE : amount;
 	}
-	
+
 	public RangeIterator(Iterator<E> iterator, int from) {
 		this(iterator, from, -1);
 	}
@@ -48,15 +49,17 @@ public class RangeIterator<E> implements Iterator<E> {
 	public E next() {
 		update();
 		if (nextIndex >= from + amount) {
-			throw new NoSuchElementException("RangeIterator about to retrieve element " + nextIndex 
-					+ " which exceeds upper boundary " + (from + amount));
+			throw new NoSuchElementException(
+				"RangeIterator about to retrieve element " + nextIndex
+					+ " which exceeds upper boundary " + (from + amount)
+			);
 		}
-		
+
 		E result = parent.next();
 		nextIndex++;
 		return result;
 	}
-	
+
 	protected void update() {
 		while (nextIndex < from && parent.hasNext()) {
 			parent.next();

@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.common.resource;
 
 import java.io.IOException;
@@ -22,29 +23,35 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 import org.lwjgl.BufferUtils;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 
-import ru.windcorp.progressia.Progressia;
 import ru.windcorp.progressia.common.util.Named;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class Resource extends Named {
+	
+	private final ResourceReader resourceReader;
 
-	public Resource(String name) {
+	public Resource(String name, ResourceReader resourceReader) {
 		super(name);
+		this.resourceReader = resourceReader;
 	}
 
 	public InputStream getInputStream() {
-		// TODO Do proper resource lookup
-		return Progressia.class.getClassLoader().getResourceAsStream(getName());
+		return getResourceReader().read(getName());
+	}
+	
+	public ResourceReader getResourceReader() {
+		return resourceReader;
 	}
 
 	public Reader getReader() {
-		return new InputStreamReader(getInputStream());
+		return new InputStreamReader(getInputStream(), StandardCharsets.UTF_8);
 	}
 
 	public String readAsString() {

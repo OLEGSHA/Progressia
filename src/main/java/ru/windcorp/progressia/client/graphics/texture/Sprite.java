@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.texture;
 
 import java.util.Objects;
@@ -22,43 +23,47 @@ import java.util.Objects;
 import glm.vec._2.Vec2;
 
 public class Sprite {
-	
+
 	private static final Vec2 ORIGIN = new Vec2(0, 0);
-	
+
 	private final TexturePrimitive primitive;
-	
+
 	private final Vec2 start;
 	private final Vec2 size;
-	
+
 	public Sprite(TexturePrimitive primitive, Vec2 start, Vec2 size) {
 		this.primitive = Objects.requireNonNull(primitive, "primitive");
 		this.start = Objects.requireNonNull(start, "start");
 		this.size = Objects.requireNonNull(size, "size");
 	}
-	
+
 	public Sprite(TexturePrimitive primitive) {
-		this(primitive, ORIGIN, new Vec2(
+		this(
+			primitive,
+			ORIGIN,
+			new Vec2(
 				primitive.getWidth() / (float) primitive.getBufferWidth(),
 				primitive.getHeight() / (float) primitive.getBufferHeight()
-		));
+			)
+		);
 	}
-	
+
 	public TexturePrimitive getPrimitive() {
 		return primitive;
 	}
-	
+
 	public Vec2 getStart() {
 		return start;
 	}
-	
+
 	public Vec2 getSize() {
 		return size;
 	}
-	
+
 	public int getWidth() {
 		return (int) (size.x * primitive.getBufferWidth());
 	}
-	
+
 	public int getHeight() {
 		return (int) (size.y * primitive.getBufferHeight());
 	}

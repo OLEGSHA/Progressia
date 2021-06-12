@@ -1,6 +1,25 @@
+/*
+ * Progressia
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+ 
 package ru.windcorp.progressia.client.localization;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -14,11 +33,13 @@ public abstract class MutableString {
 
 	protected String data;
 
-	protected final Collection<WeakReference<Listener>> listeners =
-			Collections.synchronizedCollection(new LinkedList<>());
+	protected final Collection<WeakReference<Listener>> listeners = Collections
+		.synchronizedCollection(new LinkedList<>());
+
+	private Collection<Listener> myListeners = null;
 
 	protected void pokeListeners() {
-		//TODO extract as weak bus listener class
+		// TODO extract as weak bus listener class
 		synchronized (listeners) {
 			Iterator<WeakReference<Listener>> iterator = listeners.iterator();
 			while (iterator.hasNext()) {
@@ -44,7 +65,13 @@ public abstract class MutableString {
 
 	protected void listen(Object obj) {
 		if (obj instanceof MutableString) {
-			((MutableString) obj).addListener(this::update);
+			if (myListeners == null) {
+				myListeners = new ArrayList<>();
+			}
+
+			Listener listener = this::update;
+			myListeners.add(listener);
+			((MutableString) obj).addListener(listener);
 		}
 	}
 
@@ -68,6 +95,7 @@ public abstract class MutableString {
 		data = compute();
 		pokeListeners();
 	}
+
 	protected abstract String compute();
 
 	public static MutableString formatted(Object format, Object... args) {

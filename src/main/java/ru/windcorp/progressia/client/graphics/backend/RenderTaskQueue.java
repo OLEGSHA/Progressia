@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,21 +14,21 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.backend;
 
 import ru.windcorp.jputil.functions.ThrowingRunnable;
 import ru.windcorp.progressia.common.util.TaskQueue;
 
 public class RenderTaskQueue {
-	
-	private static final TaskQueue HANDLER =
-			new TaskQueue(GraphicsInterface::isRenderThread);
-	
+
+	private static final TaskQueue HANDLER = new TaskQueue(GraphicsInterface::isRenderThread);
+
 	public static void schedule(Runnable task) {
 		HANDLER.schedule(task);
 	}
-	
+
 	public static void removeScheduled(Runnable task) {
 		HANDLER.removeScheduled(task);
 	}
@@ -42,8 +42,10 @@ public class RenderTaskQueue {
 	}
 
 	public static <E extends Exception> void waitAndInvoke(
-			ThrowingRunnable<E> task
-	) throws InterruptedException, E {
+		ThrowingRunnable<E> task
+	)
+		throws InterruptedException,
+		E {
 		HANDLER.waitAndInvoke(task);
 	}
 

@@ -16,7 +16,12 @@ bin
 # Ignore MacOS
 **/.DS_Store
 .idea/
-run/
+
+# Ignore the dedicated working directory
+run/*
+
+# ... Except the dummy file inside to make sure that the directory exists
+!run/.dummy
 
 # Ignore package building artifacts
 build_packages/*
@@ -25,12 +30,10 @@ build_packages/*
 !build_packages/NSIS
 build_packages/NSIS/*
 !build_packages/NSIS/ProgressiaInstaller.nsi
+!build_packages/NSIS/logo.ico
+!build_packages/NSIS/left_side.bmp
 
-# ... and except build_packages/DEB/progressia-*/DEBIAN/control
+# ... and except build_packages/DEB/template
 !build_packages/DEB
 build_packages/DEB/*
-!build_packages/DEB/progressia-*
-build_packages/DEB/progressia-*/*
-!build_packages/DEB/progressia-*/DEBIAN
-build_packages/DEB/progressia-*/DEBIAN/*
-!build_packages/DEB/progressia-*/DEBIAN/control
+!build_packages/DEB/template

@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.chars;
 
 import java.util.function.IntConsumer;
@@ -23,20 +24,20 @@ import java.util.function.IntConsumer;
 public interface CharConsumer {
 
 	void accept(char c);
-	
+
 	public static CharConsumer andThen(CharConsumer first, CharConsumer second) {
 		return c -> {
 			first.accept(c);
 			second.accept(c);
 		};
 	}
-	
+
 	public static IntConsumer toInt(CharConsumer consumer) {
 		return i -> consumer.accept((char) i);
 	}
-	
+
 	public static CharConsumer toChar(IntConsumer consumer) {
 		return consumer::accept;
 	}
-	
+
 }

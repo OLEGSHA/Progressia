@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.world;
 
 import java.util.Collection;
@@ -46,35 +47,27 @@ import ru.windcorp.progressia.common.world.generic.ChunkSets;
 import ru.windcorp.progressia.common.world.generic.GenericWorld;
 
 public class WorldRender
-implements GenericWorld<
-	BlockRender,
-	TileRender,
-	TileRenderStack,
-	ChunkRender,
-	EntityRenderable
-> {
+	implements GenericWorld<BlockRender, TileRender, TileRenderStack, ChunkRender, EntityRenderable> {
 
 	private final WorldData data;
 	private final Client client;
-	
-	private final Map<ChunkData, ChunkRender> chunks =
-			Collections.synchronizedMap(new HashMap<>());
-	private final Map<EntityData, EntityRenderable> entityModels =
-			Collections.synchronizedMap(new WeakHashMap<>());
-	
+
+	private final Map<ChunkData, ChunkRender> chunks = Collections.synchronizedMap(new HashMap<>());
+	private final Map<EntityData, EntityRenderable> entityModels = Collections.synchronizedMap(new WeakHashMap<>());
+
 	private final ChunkSet chunksToUpdate = ChunkSets.newSyncHashSet();
-	
+
 	public WorldRender(WorldData data, Client client) {
 		this.data = data;
 		this.client = client;
-		
+
 		data.addListener(ChunkDataListeners.createAdder(new ChunkUpdateListener(this)));
 		data.addListener(new WorldDataListener() {
 			@Override
 			public void onChunkLoaded(WorldData world, ChunkData chunk) {
 				addChunk(chunk);
 			}
-			
+
 			@Override
 			public void beforeChunkUnloaded(WorldData world, ChunkData chunk) {
 				removeChunk(chunk);
@@ -86,7 +79,7 @@ implements GenericWorld<
 		chunks.put(chunk, new ChunkRender(WorldRender.this, chunk));
 		markChunkForUpdate(chunk.getPosition());
 	}
-	
+
 	protected void removeChunk(ChunkData chunk) {
 		chunks.remove(chunk);
 	}
@@ -94,82 +87,87 @@ implements GenericWorld<
 	public WorldData getData() {
 		return data;
 	}
-	
+
 	public Client getClient() {
 		return client;
 	}
-	
+
 	public ChunkRender getChunk(ChunkData chunkData) {
 		return chunks.get(chunkData);
 	}
-	
+
 	@Override
 	public ChunkRender getChunk(Vec3i pos) {
 		return chunks.get(getData().getChunk(pos));
 	}
-	
+
 	@Override
 	public Collection<ChunkRender> getChunks() {
 		return chunks.values();
 	}
-	
+
 	@Override
 	public Collection<EntityRenderable> getEntities() {
 		return entityModels.values();
 	}
-	
+
 	public void render(ShapeRenderHelper renderer) {
 		updateChunks();
-		
+
 		getChunks().forEach(chunk -> chunk.render(renderer));
 		renderEntities(renderer);
 	}
-	
+
 	private void updateChunks() {
 		synchronized (chunksToUpdate) {
-			if (chunksToUpdate.isEmpty()) return;
-			
+			if (chunksToUpdate.isEmpty())
+				return;
+
 			int updates = updateChunksNearLocalPlayer();
-			if (updates > 0 || chunksToUpdate.isEmpty()) return;
-			
+			if (updates > 0 || chunksToUpdate.isEmpty())
+				return;
+
 			updateRandomChunk();
 		}
 	}
 
 	private int updateChunksNearLocalPlayer() {
 		EntityData entity = getClient().getLocalPlayer().getEntity();
-		if (entity == null) return 0;
-		
+		if (entity == null)
+			return 0;
+
 		int[] updates = new int[] { 0 };
-		
+
 		VectorUtil.iterateCuboidAround(entity.getChunkCoords(null), 3, chunkPos -> {
-			if (!chunksToUpdate.contains(chunkPos)) return;
-			
+			if (!chunksToUpdate.contains(chunkPos))
+				return;
+
 			ChunkRender chunk = getChunk(chunkPos);
-			if (chunk == null) return;
-			
+			if (chunk == null)
+				return;
+
 			chunk.update();
 			chunksToUpdate.remove(chunkPos);
 			updates[0]++;
 		});
-		
+
 		return updates[0];
 	}
-	
+
 	private void updateRandomChunk() {
 		EntityData entity = getClient().getLocalPlayer().getEntity();
-		
+
 		Vec3 playerPos = entity == null ? Vectors.ZERO_3 : entity.getPosition();
-		
+
 		ChunkRender nearest = null;
 		float nearestDistSq = Float.POSITIVE_INFINITY;
-		
+
 		Vec3 v = Vectors.grab3();
-		
+
 		for (Iterator<Vec3i> it = chunksToUpdate.iterator(); it.hasNext();) {
 			Vec3i chunkPos = it.next();
 			ChunkRender chunk = getChunk(chunkPos);
-			
+
 			if (chunk == null) {
 				it.remove();
 				continue;
@@ -177,49 +175,49 @@ implements GenericWorld<
 
 			v.set(chunk.getMinX(), chunk.getMinY(), chunk.getMinZ()).sub(playerPos);
 			float distSq = v.x * v.x + v.y * v.y + v.z * v.z;
-			
+
 			if (nearest == null || distSq < nearestDistSq) {
 				nearest = chunk;
 				nearestDistSq = distSq;
 			}
 		}
-		
+
 		if (nearest != null) {
 			nearest.update();
 			chunksToUpdate.remove(nearest.getPosition());
 		}
-		
+
 		Vectors.release(v);
 	}
-	
+
 	public int getPendingChunkUpdates() {
 		return chunksToUpdate.size();
 	}
 
 	private void renderEntities(ShapeRenderHelper renderer) {
 		FaceCulling.push(false);
-		
+
 		getData().forEachEntity(entity -> {
 			renderer.pushTransform().translate(entity.getPosition());
 			getEntityRenderable(entity).render(renderer);
 			renderer.popTransform();
 		});
-		
+
 		FaceCulling.pop();
 	}
 
 	public EntityRenderable getEntityRenderable(EntityData entity) {
 		return entityModels.computeIfAbsent(
-				entity,
-				WorldRender::createEntityRenderable
+			entity,
+			WorldRender::createEntityRenderable
 		);
 	}
-	
+
 	private static EntityRenderable createEntityRenderable(EntityData entity) {
 		return EntityRenderRegistry.getInstance().get(entity.getId())
-				.createRenderable(entity);
+			.createRenderable(entity);
 	}
-	
+
 	public void markChunkForUpdate(Vec3i chunkPos) {
 		if (getData().getChunk(chunkPos) != null) {
 			chunksToUpdate.add(chunkPos);

@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,34 +14,36 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.chars.reader;
 
 /**
  * @author Javapony
- *
  */
 public abstract class AbstractCharReader implements CharReader {
 
 	protected static final int DEFAULT_MARK_STACK_SIZE = 8;
-	
+
 	/**
-	 * Current position of this CharReader. The reader maps its input to positions starting from 0.
-	 * Positions that are negative or lower than 0 are invalid. {@link #current()}
+	 * Current position of this CharReader. The reader maps its input to
+	 * positions starting from 0.
+	 * Positions that are negative or lower than 0 are invalid.
+	 * {@link #current()}
 	 * will throw an exception if position is invalid.
 	 */
 	protected int position = 0;
-	
+
 	private int[] marks = new int[DEFAULT_MARK_STACK_SIZE];
 	private int nextMark = 0;
 
 	protected static int closestGreaterPowerOf2(int x) {
-	    x |= x >> 1;
-	    x |= x >> 2;
-	    x |= x >> 4;
-	    x |= x >> 8;
-	    x |= x >> 16;
-	    return x + 1;
+		x |= x >> 1;
+		x |= x >> 2;
+		x |= x >> 4;
+		x |= x >> 8;
+		x |= x >> 16;
+		return x + 1;
 	}
 
 	/**
@@ -80,23 +82,25 @@ public abstract class AbstractCharReader implements CharReader {
 	}
 
 	private void ensureMarksCapacity() {
-		if (nextMark < marks.length) return;
+		if (nextMark < marks.length)
+			return;
 		int[] newMarks = new int[closestGreaterPowerOf2(nextMark)];
 		System.arraycopy(marks, 0, newMarks, 0, nextMark);
 		marks = newMarks;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("\"");
-		
+
 		mark();
 		position = 0;
 		sb.append(getChars());
 		reset();
-		
+
 		sb.append("\"\n ");
-		for (int i = 0; i < position; ++i) sb.append(' ');
+		for (int i = 0; i < position; ++i)
+			sb.append(' ');
 		sb.append("^ (pos " + position + ")");
 		return sb.toString();
 	}

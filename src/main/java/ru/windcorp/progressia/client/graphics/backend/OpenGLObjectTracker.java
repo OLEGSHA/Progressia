@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.backend;
 
 import java.lang.ref.PhantomReference;
@@ -28,20 +29,24 @@ public class OpenGLObjectTracker {
 	public interface OpenGLDeletable {
 		int getHandle();
 	}
-	
+
 	private static final Collection<GLPhantomReference<OpenGLDeletable>> TO_DELETE = new ArrayList<>();
 	private static final ReferenceQueue<OpenGLDeletable> DELETE_QUEUE = new ReferenceQueue<>();
-	
+
 	public synchronized static void register(OpenGLDeletable object, IntConsumer glDeleter) {
-		GLPhantomReference<OpenGLDeletable> glRef =
-				new GLPhantomReference<>(object, DELETE_QUEUE, object.getHandle(), glDeleter);
+		GLPhantomReference<OpenGLDeletable> glRef = new GLPhantomReference<>(
+			object,
+			DELETE_QUEUE,
+			object.getHandle(),
+			glDeleter
+		);
 		TO_DELETE.add(glRef);
 	}
 
 	public static void deleteAllObjects() {
-		for (GLPhantomReference<OpenGLDeletable> glRef
-				: TO_DELETE
-			 ) {
+		for (
+			GLPhantomReference<OpenGLDeletable> glRef : TO_DELETE
+		) {
 			glRef.clear();
 		}
 	}
@@ -66,20 +71,24 @@ public class OpenGLObjectTracker {
 		/**
 		 * Creates a new phantom reference that refers to the given object and
 		 * is registered with the given queue.
-		 *
-		 * <p> It is possible to create a phantom reference with a {@code null}
+		 * <p>
+		 * It is possible to create a phantom reference with a {@code null}
 		 * queue, but such a reference is completely useless: Its {@code get}
-		 * method will always return {@code null} and, since it does not have a queue,
+		 * method will always return {@code null} and, since it does not have a
+		 * queue,
 		 * it will never be enqueued.
 		 *
 		 * @param referent the object the new phantom reference will refer to
-		 * @param q        the queue with which the reference is to be registered,
+		 * @param q        the queue with which the reference is to be
+		 *                 registered,
 		 *                 or {@code null} if registration is not required
 		 */
-		public GLPhantomReference(T referent,
-								  ReferenceQueue<? super T> q,
-								  int referentGLhandle,
-								  IntConsumer GLDeleter) {
+		public GLPhantomReference(
+			T referent,
+			ReferenceQueue<? super T> q,
+			int referentGLhandle,
+			IntConsumer GLDeleter
+		) {
 			super(referent, q);
 			this.referentGLhandle = referentGLhandle;
 			this.GLDeleter = GLDeleter;

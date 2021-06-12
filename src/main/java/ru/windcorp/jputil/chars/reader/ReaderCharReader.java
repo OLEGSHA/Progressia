@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * JPUtil
- * Copyright (C) 2019  Javapony/OLEGSHA
+ * Copyright (C)  2019-2021  OLEGSHA/Javapony and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.jputil.chars.reader;
 
 import java.io.IOException;
@@ -22,10 +23,9 @@ import java.io.Reader;
 
 /**
  * @author Javapony
- *
  */
 public class ReaderCharReader extends BufferedCharReader {
-	
+
 	private final Reader src;
 	private IOException lastException = null;
 
@@ -45,9 +45,10 @@ public class ReaderCharReader extends BufferedCharReader {
 			return DONE;
 		}
 	}
-	
+
 	/**
-	 * @see ru.windcorp.jputil.chars.reader.BufferedCharReader#pullChars(char[], int, int)
+	 * @see ru.windcorp.jputil.chars.reader.BufferedCharReader#pullChars(char[],
+	 *      int, int)
 	 */
 	@Override
 	protected int pullChars(char[] buffer, int offset, int length) {

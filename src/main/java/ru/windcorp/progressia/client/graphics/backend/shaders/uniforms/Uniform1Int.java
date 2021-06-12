@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.backend.shaders.uniforms;
 
 import static org.lwjgl.opengl.GL20.*;
@@ -27,15 +28,15 @@ public class Uniform1Int extends Uniform {
 	public Uniform1Int(int handle, Program program) {
 		super(handle, program);
 	}
-	
+
 	public void set(int value) {
 		glUniform1i(handle, value);
 	}
-	
+
 	public void set(int[] value) {
 		glUniform1iv(handle, value);
 	}
-	
+
 	public void set(IntBuffer value) {
 		glUniform1iv(handle, value);
 	}

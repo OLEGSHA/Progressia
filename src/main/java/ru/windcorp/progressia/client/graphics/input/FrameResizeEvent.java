@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.input;
 
 import glm.vec._2.i.Vec2i;
@@ -28,7 +29,7 @@ public class FrameResizeEvent extends InputEvent {
 		super(time);
 		this.newSize.set(newWidth, newHeight);
 	}
-	
+
 	protected FrameResizeEvent(Vec2i newSize, double time) {
 		this(newSize.x, newSize.y, time);
 	}
@@ -36,23 +37,23 @@ public class FrameResizeEvent extends InputEvent {
 	public int getNewWidth() {
 		return getNewSize().x;
 	}
-	
+
 	public int getNewHeight() {
 		return getNewSize().y;
 	}
-	
+
 	public Vec2i getNewSize() {
 		return newSize;
 	}
-	
+
 	public int getPreviousWidth() {
 		return getPreviousSize().x;
 	}
-	
+
 	public int getPreviousHeight() {
 		return getPreviousSize().y;
 	}
-	
+
 	public Vec2i getPreviousSize() {
 		return GraphicsInterface.getFrameSize();
 	}
@@ -61,20 +62,20 @@ public class FrameResizeEvent extends InputEvent {
 	public FrameResizeEvent snapshot() {
 		return new StaticFrameResizeEvent(getNewSize(), getPreviousSize(), getTime());
 	}
-	
+
 	private static class StaticFrameResizeEvent extends FrameResizeEvent {
-		
+
 		private final Vec2i previousSize;
 
 		public StaticFrameResizeEvent(
-				Vec2i newSize,
-				Vec2i previousSize,
-				double time
+			Vec2i newSize,
+			Vec2i previousSize,
+			double time
 		) {
 			super(newSize, time);
 			this.previousSize = previousSize;
 		}
-		
+
 		@Override
 		public Vec2i getPreviousSize() {
 			return previousSize;

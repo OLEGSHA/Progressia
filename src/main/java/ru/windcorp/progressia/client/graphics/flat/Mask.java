@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * Progressia
- * Copyright (C) 2020  Wind Corporation
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,24 +14,26 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+ 
 package ru.windcorp.progressia.client.graphics.flat;
 
 public class Mask {
-	
+
 	private int startX;
 	private int startY;
 	private int endX;
 	private int endY;
-	
+
 	public Mask(int startX, int startY, int endX, int endY) {
 		this.startX = startX;
 		this.startY = startY;
 		this.endX = endX;
 		this.endY = endY;
 	}
-	
-	public Mask() {}
+
+	public Mask() {
+	}
 
 	public int getStartX() {
 		return startX;
@@ -64,30 +66,30 @@ public class Mask {
 	public void setEndY(int endY) {
 		this.endY = endY;
 	}
-	
+
 	public int getWidth() {
 		return getEndX() - getStartX();
 	}
-	
+
 	public int getHeight() {
 		return getEndY() - getStartY();
 	}
-	
+
 	public void set(int startX, int startY, int endX, int endY) {
 		this.startX = startX;
 		this.startY = startY;
 		this.endX = endX;
 		this.endY = endY;
 	}
-	
+
 	public void set(Mask copyFrom) {
 		set(copyFrom.startX, copyFrom.startY, copyFrom.endX, copyFrom.endY);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "(" + getStartX() + "; " + getStartY() +
-				") -> (" + getEndX() + "; " + getEndY() + ")";
+			") -> (" + getEndX() + "; " + getEndY() + ")";
 	}
 
 }
