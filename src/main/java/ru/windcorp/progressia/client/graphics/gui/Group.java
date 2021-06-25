@@ -15,21 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+ 
 package ru.windcorp.progressia.client.graphics.gui;
 
-import ru.windcorp.progressia.client.graphics.Colors;
-import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
+public class Group extends Component {
 
-public class Panel extends Group {
-
-	public Panel(String name, Layout layout) {
-		super(name, layout);
-	}
-	
-	@Override
-	protected void assembleSelf(RenderTarget target) {
-		target.fill(getX(), getY(), getWidth(), getHeight(), Colors.LIGHT_GRAY);
-		target.fill(getX() + 2, getY() + 2, getWidth() - 4, getHeight() - 4, Colors.WHITE);
+	public Group(String name, Layout layout) {
+		super(name);
+		setLayout(layout);
 	}
 
 }

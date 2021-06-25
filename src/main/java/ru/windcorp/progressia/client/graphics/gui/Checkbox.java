@@ -85,13 +85,13 @@ public class Checkbox extends BasicButton {
 		assert getChildren().size() == 1 : "Checkbox expects that BasicButton contains exactly one child";
 		Component basicChild = getChild(0);
 		
-		Panel panel = new Panel(getName() + ".LabelAndTick", new LayoutHorizontal(0, 10));
+		Group group = new Group(getName() + ".LabelAndTick", new LayoutHorizontal(0, 10));
 		removeChild(basicChild);
 		setLayout(new LayoutAlign(0, 0.5f, 10));
-		panel.setLayoutHint(basicChild.getLayoutHint());
-		panel.addChild(new Tick());
-		panel.addChild(basicChild);
-		addChild(panel);
+		group.setLayoutHint(basicChild.getLayoutHint());
+		group.addChild(new Tick());
+		group.addChild(basicChild);
+		addChild(group);
 		
 		addAction(b -> switchState());
 	}

@@ -29,7 +29,7 @@ import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.Label;
-import ru.windcorp.progressia.client.graphics.gui.Panel;
+import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.localization.Localizer;
@@ -50,14 +50,14 @@ public class LayerTestGUI extends GUILayer {
 	public LayerTestGUI() {
 		super("LayerTestGui", new LayoutAlign(0, 1, 5));
 
-		Panel panel = new Panel("ControlDisplays", new LayoutVertical(5));
+		Group group = new Group("ControlDisplays", new LayoutVertical(5));
 
 		Vec4 color = Colors.WHITE;
 		Font font = new Font().withColor(color).deriveOutlined();
 
 		TestPlayerControls tpc = TestPlayerControls.getInstance();
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"IsFlyingDisplay",
 				font,
@@ -65,7 +65,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"IsSprintingDisplay",
 				font,
@@ -73,7 +73,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"IsMouseCapturedDisplay",
 				font,
@@ -81,7 +81,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"CameraModeDisplay",
 				font,
@@ -92,7 +92,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"GravityModeDisplay",
 				font,
@@ -103,7 +103,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"LanguageDisplay",
 				font,
@@ -111,7 +111,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"FullscreenDisplay",
 				font,
@@ -119,7 +119,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"VSyncDisplay",
 				font,
@@ -127,7 +127,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new DynamicLabel(
 				"FPSDisplay",
 				font,
@@ -139,7 +139,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new DynamicLabel(
 				"TPSDisplay",
 				font,
@@ -148,7 +148,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new DynamicLabel(
 				"ChunkUpdatesDisplay",
 				font,
@@ -160,7 +160,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new DynamicLabel(
 				"PosDisplay",
 				font,
@@ -169,7 +169,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"SelectedBlockDisplay",
 				font,
@@ -180,7 +180,7 @@ public class LayerTestGUI extends GUILayer {
 				)
 			)
 		);
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"SelectedTileDisplay",
 				font,
@@ -191,7 +191,7 @@ public class LayerTestGUI extends GUILayer {
 				)
 			)
 		);
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"PlacementModeHint",
 				font,
@@ -199,7 +199,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		getRoot().addChild(panel);
+		getRoot().addChild(group);
 	}
 
 	public Runnable getUpdateCallback() {

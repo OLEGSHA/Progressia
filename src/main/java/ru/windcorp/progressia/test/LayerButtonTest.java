@@ -26,6 +26,7 @@ import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.gui.Button;
 import ru.windcorp.progressia.client.graphics.gui.Checkbox;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
+import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.Panel;
 import ru.windcorp.progressia.client.graphics.gui.RadioButton;
 import ru.windcorp.progressia.client.graphics.gui.RadioButtonGroup;
@@ -41,20 +42,14 @@ public class LayerButtonTest extends GUILayer {
 	public LayerButtonTest() {
 		super("LayerButtonTest", new LayoutBorderHorizontal(0));
 		
-		Panel background = new Panel("Background", new LayoutAlign(10)) {
+		Group background = new Group("Background", new LayoutAlign(10)) {
 			@Override
 			protected void assembleSelf(RenderTarget target) {
 				target.fill(Colors.toVector(0x88FFFFFF));
 			}
 		};
 		
-		Panel panel = new Panel("Panel", new LayoutVertical(10)) {
-			@Override
-			protected void assembleSelf(RenderTarget target) {
-				target.fill(getX(), getY(), getWidth(), getHeight(), Colors.LIGHT_GRAY);
-				target.fill(getX() + 2, getY() + 2, getWidth() - 4, getHeight() - 4, Colors.WHITE);
-			}
-		};
+		Panel panel = new Panel("Panel", new LayoutVertical(10));
 		
 		Button blockableButton;
 		panel.addChild((blockableButton = new Button("BlockableButton", "Blockable")).addAction(b -> {
