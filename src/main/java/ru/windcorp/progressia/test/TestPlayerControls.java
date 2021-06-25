@@ -184,6 +184,7 @@ public class TestPlayerControls {
 		case GLFW.GLFW_KEY_ESCAPE:
 			if (!event.isPress())
 				return false;
+			
 			handleEscape();
 			break;
 
@@ -293,13 +294,20 @@ public class TestPlayerControls {
 	}
 
 	private void handleEscape() {
-		if (captureMouse) {
-			GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
-		} else {
-			GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
-		}
+//		if (captureMouse) {
+//			GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+//		} else {
+//			GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
+//		}
+//
+//		captureMouse = !captureMouse;
 
-		captureMouse = !captureMouse;
+		movementForward = 0;
+		movementRight = 0;
+		movementUp = 0;
+		GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+		GUI.addTopLayer(new LayerButtonTest());
+		
 		updateGUI();
 	}
 

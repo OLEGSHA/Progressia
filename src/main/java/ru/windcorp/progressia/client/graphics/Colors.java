@@ -34,7 +34,13 @@ public class Colors {
 		DEBUG_BLUE = toVector(0xFF0000FF),
 		DEBUG_CYAN = toVector(0xFF00FFFF),
 		DEBUG_MAGENTA = toVector(0xFFFF00FF),
-		DEBUG_YELLOW = toVector(0xFFFFFF00);
+		DEBUG_YELLOW = toVector(0xFFFFFF00),
+	
+		LIGHT_GRAY = toVector(0xFFCBCBD0),
+		BLUE = toVector(0xFF37A2E6),
+		HOVER_BLUE = toVector(0xFFC3E4F7),
+		DISABLED_GRAY = toVector(0xFFE5E5E5),
+		DISABLED_BLUE = toVector(0xFFB2D8ED);
 
 	public static Vec4 toVector(int argb) {
 		return toVector(argb, new Vec4());

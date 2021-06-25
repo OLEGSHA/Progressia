@@ -82,6 +82,11 @@ public class Label extends Component {
 	public Font getFont() {
 		return font;
 	}
+	
+	public void setFont(Font font) {
+		this.font = font;
+		requestReassembly();
+	}
 
 	public String getCurrentText() {
 		return currentText;
@@ -96,11 +101,7 @@ public class Label extends Component {
 		float startX = getX() + font.getAlign() * (getWidth() - currentSize.x);
 
 		target.pushTransform(
-			new Mat4().identity().translate(startX, getY(), -1000) // TODO wtf
-																	// is this
-																	// magic
-																	// <---
-				.scale(2)
+			new Mat4().identity().translate(startX, getY(), 0).scale(2)
 		);
 
 		target.addCustomRenderer(font.assemble(currentText, maxWidth));
