@@ -18,6 +18,8 @@
  
 package ru.windcorp.progressia;
 
+import ru.windcorp.progressia.common.modules.Task;
+import ru.windcorp.progressia.common.modules.TaskManager;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.crash.analyzers.OutOfMemoryAnalyzer;
 import ru.windcorp.progressia.common.util.crash.providers.*;
@@ -30,6 +32,7 @@ public class ProgressiaLauncher {
 		arguments = args.clone();
 		setupCrashReports();
 		proxy.initialize();
+		TaskManager.startLoading();
 	}
 
 	private static void setupCrashReports() {

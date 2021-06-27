@@ -25,6 +25,9 @@ public class Module extends Namespaced {
 	public List<Task> getTasks() {
 		return tasks;
 	}
+	public void addTask(Task task) {
+		tasks.add(task);
+	}
 	
 	/**
 	 * @return false - not all tasks are done

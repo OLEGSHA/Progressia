@@ -12,7 +12,8 @@ public abstract class Task
 	implements Runnable
 	{
 	
-	private boolean done = false;
+	private boolean isDone = false;
+	private boolean isActive = false;
 	
 	List<Task> requiredTasks = new ArrayList<>();
 
@@ -34,19 +35,22 @@ public abstract class Task
 			throw CrashReports.report(new Throwable(),
 					"The following required Tasks are not done:\n%s",
 					StringUtil.iterableToString(undoneTasks, "\n"));
+		} else {
+			perform();
+			isDone = true;
 		}
-		
-		perform();
-		
-		done = true;
 	}
-	
+
 	// This method will be invoked by Run()
 	protected abstract void perform();
 	
 	public boolean isDone() {
-		return done;
+		return isDone;
 	}
+
+	public boolean isActive() { return isActive; }
+
+	public void setActive(boolean value) { isActive = value; }
 	
 	public boolean canRun() {
 		for (Task t : requiredTasks) {

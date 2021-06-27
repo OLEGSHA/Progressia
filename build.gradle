@@ -111,7 +111,9 @@ switch (OperatingSystem.current()) {
 }
 
 dependencies {
-	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    implementation 'org.jetbrains:annotations:20.1.0'
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
 	implementation "org.lwjgl:lwjgl"
 	implementation "org.lwjgl:lwjgl-glfw"
