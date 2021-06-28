@@ -17,19 +17,64 @@
  */
 package ru.windcorp.progressia.client.graphics.gui;
 
+import java.util.Objects;
+
+import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 
 public class Panel extends Group {
 
-	public Panel(String name, Layout layout) {
+	private Vec4 fill;
+	private Vec4 border;
+
+	public Panel(String name, Layout layout, Vec4 fill, Vec4 border) {
 		super(name, layout);
+		
+		this.fill = Objects.requireNonNull(fill, "fill");
+		this.border = border;
+	}
+	
+	public Panel(String name, Layout layout) {
+		this(name, layout, Colors.WHITE, Colors.LIGHT_GRAY);
+	}
+	
+	/**
+	 * @return the fill
+	 */
+	public Vec4 getFill() {
+		return fill;
+	}
+	
+	/**
+	 * @param fill the fill to set
+	 */
+	public void setFill(Vec4 fill) {
+		this.fill = Objects.requireNonNull(fill, "fill");
+	}
+	
+	/**
+	 * @return the border
+	 */
+	public Vec4 getBorder() {
+		return border;
+	}
+	
+	/**
+	 * @param border the border to set
+	 */
+	public void setBorder(Vec4 border) {
+		this.border = border;
 	}
 	
 	@Override
 	protected void assembleSelf(RenderTarget target) {
-		target.fill(getX(), getY(), getWidth(), getHeight(), Colors.LIGHT_GRAY);
-		target.fill(getX() + 2, getY() + 2, getWidth() - 4, getHeight() - 4, Colors.WHITE);
+		if (border == null) {
+			target.fill(getX(), getY(), getWidth(), getHeight(), fill);
+		} else {
+			target.fill(getX(), getY(), getWidth(), getHeight(), border);
+			target.fill(getX() + 2, getY() + 2, getWidth() - 4, getHeight() - 4, fill);
+		}
 	}
 
 }

@@ -6,7 +6,6 @@ LayerAbout.DebugHint = Debug GUI: F3
 
 LayerTestGUI.IsFlyingDisplay = Flying:         %5s (Space bar x2)
 LayerTestGUI.IsSprintingDisplay = Sprinting:      %5s (W x2)
-LayerTestGUI.IsMouseCapturedDisplay = Mouse captured: %5s (Esc)
 LayerTestGUI.CameraModeDisplay = Camera mode:    %5d (F5)
 LayerTestGUI.GravityModeDisplay = Gravity:    %9s (G)
 LayerTestGUI.LanguageDisplay = Language:       %5s (L)
@@ -22,3 +21,5 @@ LayerTestGUI.SelectedTileDisplay = %s Tile:  %s
 LayerTestGUI.PlacementModeHint = (Blocks %s Tiles: Ctrl + Mouse Wheel)
 LayerTestGUI.IsFullscreen = Fullscreen:     %5s (F11)
 LayerTestGUI.IsVSync = VSync:          %5s (F12)
+
+LayerButtonTest.Title = Button Test

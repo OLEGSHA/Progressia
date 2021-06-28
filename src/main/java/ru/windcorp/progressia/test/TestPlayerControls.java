@@ -82,7 +82,6 @@ public class TestPlayerControls {
 	private double lastSpacePress = Double.NEGATIVE_INFINITY;
 	private double lastSprintPress = Double.NEGATIVE_INFINITY;
 
-	private boolean captureMouse = true;
 	private boolean useMinecraftGravity = false;
 
 	private int selectedBlock = 0;
@@ -294,21 +293,10 @@ public class TestPlayerControls {
 	}
 
 	private void handleEscape() {
-//		if (captureMouse) {
-//			GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
-//		} else {
-//			GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
-//		}
-//
-//		captureMouse = !captureMouse;
-
 		movementForward = 0;
 		movementRight = 0;
 		movementUp = 0;
-		GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 		GUI.addTopLayer(new LayerButtonTest());
-		
-		updateGUI();
 	}
 
 	private void handleDebugLayerSwitch() {
@@ -352,9 +340,6 @@ public class TestPlayerControls {
 	}
 
 	private void onMouseMoved(CursorMoveEvent event) {
-		if (!captureMouse)
-			return;
-
 		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
 			return;
 		}
@@ -443,10 +428,6 @@ public class TestPlayerControls {
 
 	public boolean isSprinting() {
 		return isSprinting;
-	}
-
-	public boolean isMouseCaptured() {
-		return captureMouse;
 	}
 
 	public boolean useMinecraftGravity() {

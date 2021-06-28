@@ -24,6 +24,7 @@ import java.util.List;
 
 import com.google.common.eventbus.Subscribe;
 
+import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.input.CursorEvent;
 import ru.windcorp.progressia.client.graphics.input.FrameResizeEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
@@ -57,15 +58,24 @@ public class GUI {
 	}
 
 	public static void addBottomLayer(Layer layer) {
-		modify(layers -> layers.add(layer));
+		modify(layers -> {
+			layers.add(layer);
+			layer.onAdded();
+		});
 	}
 
 	public static void addTopLayer(Layer layer) {
-		modify(layers -> layers.add(0, layer));
+		modify(layers -> {
+			layers.add(0, layer);
+			layer.onAdded();
+		});
 	}
 
 	public static void removeLayer(Layer layer) {
-		modify(layers -> layers.remove(layer));
+		modify(layers -> {
+			layers.remove(layer);
+			layer.onRemoved();
+		});
 	}
 
 	private static void modify(LayerStackModification mod) {
@@ -78,12 +88,33 @@ public class GUI {
 
 	public static void render() {
 		synchronized (LAYERS) {
-			MODIFICATION_QUEUE.forEach(action -> action.affect(LAYERS));
-			MODIFICATION_QUEUE.clear();
-
+			
+			if (!MODIFICATION_QUEUE.isEmpty()) {
+				MODIFICATION_QUEUE.forEach(action -> action.affect(LAYERS));
+				MODIFICATION_QUEUE.clear();
+				
+				boolean isMouseCurrentlyCaptured = GraphicsInterface.isMouseCaptured();
+				Layer.CursorPolicy policy = Layer.CursorPolicy.REQUIRE;
+				
+				for (Layer layer : LAYERS) {
+					Layer.CursorPolicy currentPolicy = layer.getCursorPolicy();
+					
+					if (currentPolicy != Layer.CursorPolicy.INDIFFERENT) {
+						policy = currentPolicy;
+						break;
+					}
+				}
+				
+				boolean shouldCaptureMouse = (policy == Layer.CursorPolicy.FORBID);
+				if (shouldCaptureMouse != isMouseCurrentlyCaptured) {
+					GraphicsInterface.setMouseCaptured(shouldCaptureMouse);
+				}
+			}
+			
 			for (int i = LAYERS.size() - 1; i >= 0; --i) {
 				LAYERS.get(i).render();
 			}
+			
 		}
 	}
 

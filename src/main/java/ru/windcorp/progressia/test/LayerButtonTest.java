@@ -17,47 +17,29 @@
  */
 package ru.windcorp.progressia.test;
 
-import org.lwjgl.glfw.GLFW;
-
 import ru.windcorp.progressia.client.graphics.Colors;
-import ru.windcorp.progressia.client.graphics.GUI;
-import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
-import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
+import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.Button;
 import ru.windcorp.progressia.client.graphics.gui.Checkbox;
-import ru.windcorp.progressia.client.graphics.gui.GUILayer;
-import ru.windcorp.progressia.client.graphics.gui.Group;
-import ru.windcorp.progressia.client.graphics.gui.Panel;
+import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.RadioButton;
 import ru.windcorp.progressia.client.graphics.gui.RadioButtonGroup;
-import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
-import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderHorizontal;
-import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
-import ru.windcorp.progressia.client.graphics.input.InputEvent;
-import ru.windcorp.progressia.client.graphics.input.KeyEvent;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
+import ru.windcorp.progressia.client.graphics.gui.menu.MenuLayer;
 
-public class LayerButtonTest extends GUILayer {
+public class LayerButtonTest extends MenuLayer {
 
 	public LayerButtonTest() {
-		super("LayerButtonTest", new LayoutBorderHorizontal(0));
+		super("ButtonTest");
 		
-		Group background = new Group("Background", new LayoutAlign(10)) {
-			@Override
-			protected void assembleSelf(RenderTarget target) {
-				target.fill(Colors.toVector(0x88FFFFFF));
-			}
-		};
-		
-		Panel panel = new Panel("Panel", new LayoutVertical(10));
+		addTitle();
 		
 		Button blockableButton;
-		panel.addChild((blockableButton = new Button("BlockableButton", "Blockable")).addAction(b -> {
+		getContent().addChild((blockableButton = new Button("BlockableButton", "Blockable")).addAction(b -> {
 			System.out.println("Button Blockable!");
 		}));
 		blockableButton.setEnabled(false);
 		
-		panel.addChild(new Checkbox("EnableButton", "Enable").addAction(b -> {
+		getContent().addChild(new Checkbox("EnableButton", "Enable").addAction(b -> {
 			blockableButton.setEnabled(((Checkbox) b).isChecked());
 		}));
 		
@@ -65,35 +47,24 @@ public class LayerButtonTest extends GUILayer {
 			System.out.println("RBG! " + g.getSelected().getLabel().getCurrentText());
 		});
 		
-		panel.addChild(new RadioButton("RB1", "Moon").setGroup(group));
-		panel.addChild(new RadioButton("RB2", "Type").setGroup(group));
-		panel.addChild(new RadioButton("RB3", "Ice").setGroup(group));
-		panel.addChild(new RadioButton("RB4", "Cream").setGroup(group));
+		getContent().addChild(new RadioButton("RB1", "Moon").setGroup(group));
+		getContent().addChild(new RadioButton("RB2", "Type").setGroup(group));
+		getContent().addChild(new RadioButton("RB3", "Ice").setGroup(group));
+		getContent().addChild(new RadioButton("RB4", "Cream").setGroup(group));
 		
-		panel.getChild(panel.getChildren().size() - 1).setEnabled(false);
+		getContent().getChild(getContent().getChildren().size() - 1).setEnabled(false);
 		
-		panel.getChild(1).takeFocus();
+		getContent().addChild(new Label("Hint", new Font().withColor(Colors.LIGHT_GRAY), "This is a MenuLayer"));
 		
-		background.addChild(panel);
-		getRoot().addChild(background.setLayoutHint(LayoutBorderHorizontal.CENTER));
-	}
-	
-	@Override
-	protected void handleInput(Input input) {
+		getContent().addChild(new Button("Continue", "Continue").addAction(b -> {
+			getCloseAction().run();
+		}));
 		
-		if (!input.isConsumed()) {
-			
-			InputEvent e = input.getEvent();
-			
-			if ((e instanceof KeyEvent) && ((KeyEvent) e).isPress() && ((KeyEvent) e).getKey() == GLFW.GLFW_KEY_ESCAPE) {
-				GUI.removeLayer(this);
-				GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
-			}
-			
-		}
+		getContent().addChild(new Button("Quit", "Quit").addAction(b -> {
+			System.exit(0);
+		}));
 		
-		super.handleInput(input);
-		input.consume();
+		getContent().takeFocus();
 	}
 
 }

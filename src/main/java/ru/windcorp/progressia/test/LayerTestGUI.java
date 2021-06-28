@@ -75,14 +75,6 @@ public class LayerTestGUI extends GUILayer {
 
 		group.addChild(
 			new Label(
-				"IsMouseCapturedDisplay",
-				font,
-				tmp_dynFormat("LayerTestGUI.IsMouseCapturedDisplay", tpc::isMouseCaptured)
-			)
-		);
-
-		group.addChild(
-			new Label(
 				"CameraModeDisplay",
 				font,
 				tmp_dynFormat(

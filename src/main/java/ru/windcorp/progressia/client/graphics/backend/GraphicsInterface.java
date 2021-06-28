@@ -81,5 +81,13 @@ public class GraphicsInterface {
 		}
 		GraphicsBackend.setVSyncEnabled(GraphicsBackend.isVSyncEnabled());
 	}
+	
+	public static boolean isMouseCaptured() {
+		return GraphicsBackend.isMouseCaptured();
+	}
+	
+	public static void setMouseCaptured(boolean capture) {
+		GraphicsBackend.setMouseCaptured(capture);
+	}
 
 }
