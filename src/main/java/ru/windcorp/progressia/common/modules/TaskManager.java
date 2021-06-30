@@ -8,25 +8,30 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+//TODO Maybe I want to make it singleton @"Nullkat"
+//TODO Optimize task iteration: If task is not runnable check its requirement tasks
+
 public class TaskManager {
-    private static final List<Task> tasks = new ArrayList<>();
-    private static final List<Module> modules = new ArrayList<>();
-    private static final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+    private final List<Task> tasks = new ArrayList<>();
+    private final List<Module> modules = new ArrayList<>();
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("LogicCore-%d")
             .build();
+    private boolean wakeUpFlag = false;
 
     //Thread pool with size of logical cores of CPU
-    private static final ExecutorService executorService =
+    private final ExecutorService executorService =
             Executors.newFixedThreadPool(
                     Runtime.getRuntime().availableProcessors()
                     , threadFactory);
 
-    public static void registerModule(Module module) {
+    public void registerModule(Module module) {
         tasks.addAll(module.getTasks());
         modules.add(module);
     }
 
-    public static void startLoading() {
+    public void startLoading() {
+        //DEBUG START
         Module mod = new Module("Module:Mod");
         Task task = new Task("Task:Task") {
             @Override
@@ -34,6 +39,11 @@ public class TaskManager {
                 int i = 0;
                 while(i < 1000000) {
                     i++;
+                }
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 System.out.println("Task " + getId() + "has been performed by" + Thread.currentThread().getName());
             }
@@ -45,6 +55,11 @@ public class TaskManager {
                 while(i < 1000000) {
                     i++;
                 }
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 System.out.println("Task " + getId() + "has been performed by" + Thread.currentThread().getName());
             }
         };
@@ -55,6 +70,11 @@ public class TaskManager {
                 while(i < 1000000) {
                     i++;
                 }
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 System.out.println("Task " + getId() + "has been performed by" + Thread.currentThread().getName());
             }
         };
@@ -62,35 +82,50 @@ public class TaskManager {
         mod.addTask(task1);
         mod.addTask(task2);
         registerModule(mod);
+        //DEBUG END
 
-        while (!tasks.isEmpty()) {
+        for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
             executorService.submit(() -> {
-                while (true) {
+                while (!tasks.isEmpty()) {
                     Task t = getRunnableTask();
-                    if(t == null) {
-                        break;
+                    if (t == null) {
+                        while (!wakeUpFlag) {
+                            try {
+                                System.out.println(Thread.currentThread().getName() + " go to sleep");
+                                synchronized (tasks) {
+                                    tasks.wait();
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        System.out.println(Thread.currentThread().getName() + " wake up");
+                        wakeUpFlag = false;
                     }
                     else if (!t.isActive()) {
-                        t.setActive(true);
-                        removeTask(t);
                         t.run();
+                        removeTask(t);
+                        wakeUpFlag = true;
+                        synchronized (tasks) {
+                            tasks.notifyAll();
+                        }
                     }
+                    //DEBUG
+                    assert t != null;
+                    System.out.println(Thread.currentThread().getName() + " has iterated && Task id:" + t.getId());
                 }
-                System.out.println(Thread.currentThread().getName() + " has been stopped!");
-                Thread.yield();
+                System.out.println(Thread.currentThread().getName() + " has completed its work!");
             });
         }
-
-        executorService.shutdownNow();
     }
 
-    private static void removeTask(Task task) {
+    private void removeTask(Task task) {
         synchronized (tasks) {
             tasks.remove(task);
         }
     }
 
-    public static Task getRunnableTask() {
+    public Task getRunnableTask() {
         synchronized (tasks) {
             for (Task t : tasks) {
                 if (t.canRun()) return t;

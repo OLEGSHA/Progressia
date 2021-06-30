@@ -36,6 +36,7 @@ public abstract class Task
 					"The following required Tasks are not done:\n%s",
 					StringUtil.iterableToString(undoneTasks, "\n"));
 		} else {
+			isActive = true;
 			perform();
 			isDone = true;
 		}
@@ -49,12 +50,11 @@ public abstract class Task
 	}
 
 	public boolean isActive() { return isActive; }
-
-	public void setActive(boolean value) { isActive = value; }
 	
 	public boolean canRun() {
-		for (Task t : requiredTasks) {
-			if (!t.isDone()) return false;
+		if (this.isActive) return false;
+		for (Task reqT : requiredTasks) {
+			if (!reqT.isDone()) return false;
 		}
 		return true;
 	}
