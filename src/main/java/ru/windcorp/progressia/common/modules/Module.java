@@ -32,7 +32,7 @@ public class Module extends Namespaced {
 	/**
 	 * @return false - not all tasks are done
 	 */
-	public boolean setDone() {
+	public boolean done() {
 		for (Task t : tasks) {
 			if (!t.isDone()) {
 				return false;
@@ -40,9 +40,5 @@ public class Module extends Namespaced {
 		}
 		
 		return true;
-	}
-	
-	public boolean isDone() {
-		return done;
 	}
 }
