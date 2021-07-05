@@ -37,3 +37,4 @@ build_packages/NSIS/*
 !build_packages/DEB
 build_packages/DEB/*
 !build_packages/DEB/template
+*.log
