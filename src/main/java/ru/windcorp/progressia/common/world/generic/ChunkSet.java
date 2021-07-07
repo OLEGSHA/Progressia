@@ -56,6 +56,7 @@ public interface ChunkSet extends Iterable<Vec3i> {
 
 	default boolean contains(int x, int y, int z) {
 		Vec3i v = Vectors.grab3i();
+		v.set(x, y, z);
 		boolean result = contains(v);
 		Vectors.release(v);
 		return result;
@@ -63,6 +64,7 @@ public interface ChunkSet extends Iterable<Vec3i> {
 
 	default boolean add(int x, int y, int z) {
 		Vec3i v = Vectors.grab3i();
+		v.set(x, y, z);
 		boolean result = add(v);
 		Vectors.release(v);
 		return result;
@@ -70,6 +72,7 @@ public interface ChunkSet extends Iterable<Vec3i> {
 
 	default boolean remove(int x, int y, int z) {
 		Vec3i v = Vectors.grab3i();
+		v.set(x, y, z);
 		boolean result = remove(v);
 		Vectors.release(v);
 		return result;

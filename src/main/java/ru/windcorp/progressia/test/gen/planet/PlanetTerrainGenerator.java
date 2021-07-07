@@ -69,6 +69,8 @@ class PlanetTerrainGenerator {
 		} else {
 			generateBorderTerrain(chunk);
 		}
+		
+		chunk.setGenerationHint(false);
 
 		return chunk;
 	}

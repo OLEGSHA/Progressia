@@ -140,6 +140,9 @@ public class TestContent {
 			)
 		);
 		register(new BlockLogic("Test:Log"));
+		register(new BlockData("Test:TemporaryLeaves"));
+		register(new BlockRenderTransparentCube("Test:TemporaryLeaves", getBlockTexture("TemporaryLeaves")));
+		register(new TestBlockLogicGlass("Test:TemporaryLeaves")); // Sic, using Glass logic for leaves because Test
 
 		register(new BlockData("Test:WoodenPlank"));
 		register(new BlockRenderOpaqueCube("Test:WoodenPlank", getBlockTexture("WoodenPlank")));

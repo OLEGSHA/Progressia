@@ -106,7 +106,11 @@ public interface GenericChunk<
 	boolean hasTiles(Vec3i blockInChunk, BlockFace face);
 
 	default Vec3i resolve(Vec3i relativeCoords, Vec3i output) {
-		return GenericChunks.resolve(relativeCoords, output, getUp());
+		return GenericChunks.resolve(relativeCoords, getUp(), output);
+	}
+	
+	default Vec3i relativize(Vec3i absoluteCoords, Vec3i output) {
+		return GenericChunks.relativize(absoluteCoords, getUp(), output);
 	}
 
 	default B getBlockRel(Vec3i relativeBlockInChunk) {

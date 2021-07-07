@@ -26,6 +26,8 @@ import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.test.TestBushFeature;
+import ru.windcorp.progressia.test.TestGrassFeature;
+import ru.windcorp.progressia.test.TestTreeFeature;
 import ru.windcorp.progressia.test.gen.surface.Surface;
 import ru.windcorp.progressia.test.gen.surface.SurfaceFeature;
 import ru.windcorp.progressia.test.gen.surface.SurfaceFeatureGenerator;
@@ -41,6 +43,8 @@ public class PlanetFeatureGenerator {
 
 		Collection<SurfaceFeature> features = new ArrayList<>();
 		features.add(new TestBushFeature("Test:BushFeature"));
+		features.add(new TestTreeFeature("Test:TreeFeature"));
+		features.add(new TestGrassFeature("Test:GrassFeature"));
 		
 		int seaLevel = (int) parent.getPlanet().getRadius();
 		this.surfaceGenerators = AbsFace.mapToFaces(face -> new SurfaceFeatureGenerator(
@@ -59,6 +63,8 @@ public class PlanetFeatureGenerator {
 		} else {
 			generateBorderFeatures(chunk);
 		}
+		
+		chunk.setGenerationHint(true);
 	}
 
 	private boolean isOrdinaryChunk(Vec3i chunkPos) {
@@ -72,7 +78,6 @@ public class PlanetFeatureGenerator {
 
 	private void generateBorderFeatures(ChunkData chunk) {
 		// Do nothing
-		chunk.setGenerationHint(true);
 	}
 
 }

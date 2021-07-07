@@ -27,34 +27,42 @@ import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.generic.GenericChunks;
-import ru.windcorp.progressia.common.world.rels.AxisRotations;
 
 public abstract class SurfaceFeature extends Namespaced {
 
 	public static class Request {
 
+		private final SurfaceWorld world;
 		private final ChunkData chunk;
 		private final Vec3i minSfc = new Vec3i();
 		private final Vec3i maxSfc = new Vec3i();
 		
 		private final Random random;
 
-		public Request(ChunkData chunk, Random random) {
+		public Request(SurfaceWorld world, ChunkData chunk, Random random) {
+			this.world = world;
 			this.chunk = chunk;
 			this.random = random;
 
-			Vec3i absMin = chunk.getMinBIW(null);
-			Vec3i absMax = chunk.getMaxBIW(null);
+			Vec3i tmpMin = chunk.getMinBIW(null);
+			Vec3i tmpMax = chunk.getMaxBIW(null);
+			
+			GenericChunks.relativize(tmpMin, chunk.getUp(), tmpMin);
+			GenericChunks.relativize(tmpMax, chunk.getUp(), tmpMax);
 
-			AxisRotations.relativize(absMin, chunk.getUp(), absMin);
-			AxisRotations.relativize(absMax, chunk.getUp(), absMax);
-
-			Glm.min(absMin, absMax, minSfc);
-			Glm.max(absMin, absMax, maxSfc);
+			Glm.min(tmpMin, tmpMax, minSfc);
+			Glm.max(tmpMin, tmpMax, maxSfc);
+			 
+			minSfc.z -= world.getSurface().getSeaLevel();
+			maxSfc.z -= world.getSurface().getSeaLevel();
 		}
 
 		public ChunkData getChunk() {
 			return chunk;
+		}
+		
+		public SurfaceWorld getWorld() {
+			return world;
 		}
 		
 		public Random getRandom() {
@@ -93,56 +101,6 @@ public abstract class SurfaceFeature extends Namespaced {
 			return maxSfc;
 		}
 
-		public boolean contains(Vec3i surfaceBlockInWorld) {
-			Vec3i bic = Vectors.grab3i();
-			bic.set(surfaceBlockInWorld.x, surfaceBlockInWorld.y, surfaceBlockInWorld.z);
-			bic.sub(minSfc);
-			boolean result = GenericChunks.containsBiC(bic);
-			Vectors.release(bic);
-			return result;
-		}
-
-		public void forEach(Consumer<? super Vec3i> action) {
-			VectorUtil.iterateCuboid(
-				minSfc.x,
-				minSfc.y,
-				minSfc.z,
-				maxSfc.x + 1,
-				maxSfc.y + 1,
-				maxSfc.z + 1,
-				action
-			);
-		}
-
-		/**
-		 * Provided vectors have z set to {@link #getMinZ()}.
-		 */
-		public void forEachOnFloor(Consumer<? super Vec3i> action) {
-			forEachOnLayer(action, getMinZ());
-		}
-		
-		/**
-		 * Provided vectors have z set to {@link #getMaxZ()}.
-		 */
-		public void forEachOnCeiling(Consumer<? super Vec3i> action) {
-			forEachOnLayer(action, getMaxZ());
-		}
-		
-		/**
-		 * Provided vectors have z set to layer.
-		 */
-		public void forEachOnLayer(Consumer<? super Vec3i> action, int layer) {
-			VectorUtil.iterateCuboid(
-				minSfc.x,
-				minSfc.y,
-				layer,
-				maxSfc.x + 1,
-				maxSfc.y + 1,
-				layer + 1,
-				action
-			);
-		}
-
 	}
 
 	public SurfaceFeature(String id) {
@@ -150,5 +108,59 @@ public abstract class SurfaceFeature extends Namespaced {
 	}
 
 	public abstract void process(SurfaceWorld world, Request request);
+	
+	/*
+	 * Utility methods
+	 */
+
+	public boolean contains(Request request, Vec3i surfaceBlockInWorld) {
+		Vec3i bic = Vectors.grab3i();
+		bic.set(surfaceBlockInWorld.x, surfaceBlockInWorld.y, surfaceBlockInWorld.z);
+		bic.sub(request.minSfc);
+		boolean result = GenericChunks.containsBiC(bic);
+		Vectors.release(bic);
+		return result;
+	}
+
+	public void forEach(Request request, Consumer<? super Vec3i> action) {
+		VectorUtil.iterateCuboid(
+			request.minSfc.x,
+			request.minSfc.y,
+			request.minSfc.z,
+			request.maxSfc.x + 1,
+			request.maxSfc.y + 1,
+			request.maxSfc.z + 1,
+			action
+		);
+	}
+
+	/**
+	 * Provided vectors have z set to {@link #getMinZ()}.
+	 */
+	public void forEachOnFloor(Request request, Consumer<? super Vec3i> action) {
+		forEachOnLayer(request, action, request.getMinZ());
+	}
+	
+	/**
+	 * Provided vectors have z set to {@link #getMaxZ()}.
+	 */
+	public void forEachOnCeiling(Request request, Consumer<? super Vec3i> action) {
+		forEachOnLayer(request, action, request.getMaxZ());
+	}
+	
+	/**
+	 * Provided vectors have z set to layer.
+	 */
+	public void forEachOnLayer(Request request, Consumer<? super Vec3i> action, int layer) {
+		VectorUtil.iterateCuboid(
+			request.minSfc.x,
+			request.minSfc.y,
+			layer,
+			request.maxSfc.x + 1,
+			request.maxSfc.y + 1,
+			layer + 1,
+			action
+		);
+	}
 
 }

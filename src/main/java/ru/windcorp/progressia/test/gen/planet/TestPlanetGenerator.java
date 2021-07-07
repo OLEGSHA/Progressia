@@ -72,7 +72,7 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 
 	@Override
 	protected boolean checkIsChunkReady(Boolean hint) {
-		return hint == Boolean.TRUE; // Avoid NPE
+		return Boolean.TRUE.equals(hint); // Avoid NPE
 	}
 
 	@Override
@@ -91,7 +91,6 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 		ChunkData chunk = getWorldData().getChunk(chunkPos);
 		
 		if (chunk == null) {
-			getServer().getLoadManager().getChunkManager().loadChunk(chunkPos);
 			chunk = getWorldData().getChunk(chunkPos);
 		}
 

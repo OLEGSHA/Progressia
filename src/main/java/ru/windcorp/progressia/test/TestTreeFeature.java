@@ -17,6 +17,8 @@
  */
 package ru.windcorp.progressia.test;
 
+import java.util.function.Consumer;
+
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.block.BlockData;
@@ -26,9 +28,9 @@ import ru.windcorp.progressia.server.world.block.BlockLogicRegistry;
 import ru.windcorp.progressia.test.gen.surface.SurfaceTopLayerFeature;
 import ru.windcorp.progressia.test.gen.surface.SurfaceWorld;
 
-public class TestBushFeature extends SurfaceTopLayerFeature {
+public class TestTreeFeature extends SurfaceTopLayerFeature {
 
-	public TestBushFeature(String id) {
+	public TestTreeFeature(String id) {
 		super(id);
 	}
 	
@@ -38,24 +40,59 @@ public class TestBushFeature extends SurfaceTopLayerFeature {
 		}
 	}
 	
+	private void iterateSpheroid(Vec3i center, double horDiameter, double vertDiameter, Consumer<Vec3i> action) {
+		VectorUtil.iterateCuboidAround(
+			center.x, center.y, center.z,
+			(int) Math.ceil(horDiameter) / 2 * 2 + 5,
+			(int) Math.ceil(horDiameter) / 2 * 2 + 5,
+			(int) Math.ceil(vertDiameter) / 2 * 2 + 5,
+			pos -> {
+				double sx = (pos.x - center.x) / horDiameter;
+				double sy = (pos.y - center.y) / horDiameter;
+				double sz = (pos.z - center.z) / vertDiameter;
+				
+				if (sx*sx + sy*sy + sz*sz <= 1) {
+					action.accept(pos);
+				}
+			}
+		);
+	}
+	
 	@Override
 	protected void processTopBlock(SurfaceWorld world, Request request, Vec3i topBlock) {
-		if (request.getRandom().nextInt(10*10) > 0) return;
+		if (request.getRandom().nextInt(20*20) > 0) return;
 		
-		Vec3i center = topBlock.add_(0, 0, 1);
+		Vec3i start = topBlock.add_(0, 0, 1);
 
 		BlockData log = BlockDataRegistry.getInstance().get("Test:Log");
 		BlockData leaves = BlockDataRegistry.getInstance().get("Test:TemporaryLeaves");
 		
-		world.setBlockSfc(center, log, false);
+		Vec3i center = start.add_(0);
 		
-		VectorUtil.iterateCuboidAround(center.x, center.y, center.z, 3, 3, 3, p -> {
-			tryToSetLeaves(world, p, leaves);
-		});
+		int height = request.getRandom().nextInt(3) + 5;
+		for (; center.z < start.z + height; ++center.z) {
+			world.setBlockSfc(center, log, false);
+		}
 		
-		VectorUtil.iterateCuboidAround(center.x, center.y, center.z, 5, 5, 1, p -> {
-			tryToSetLeaves(world, p, leaves);
-		});
+		double branchHorDistance = 0;
+		
+		do {
+			double branchSize = 0.5 + 1 * request.getRandom().nextDouble();
+			double branchHorAngle = 2 * Math.PI * request.getRandom().nextDouble();
+			int branchVertOffset = -2 + request.getRandom().nextInt(3);
+			
+			Vec3i branchCenter = center.add_(
+				(int) (Math.sin(branchHorAngle) * branchHorDistance),
+				(int) (Math.cos(branchHorAngle) * branchHorDistance),
+				branchVertOffset
+			);
+			
+			iterateSpheroid(branchCenter, 1.75 * branchSize, 2.5 * branchSize, p -> {
+				tryToSetLeaves(world, p, leaves);
+			});
+			
+			branchHorDistance = 1 + 2 * request.getRandom().nextDouble();
+		} while (request.getRandom().nextInt(8) > 1);
 	}
 	
 	@Override

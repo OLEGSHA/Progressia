@@ -93,8 +93,6 @@ public class TestChunkCodec extends ChunkCodec {
 
 		ChunkData chunk = new ChunkData(position, world);
 		
-		assert chunk.getUp() == ru.windcorp.progressia.server.ServerState.getInstance().getWorld().getData().getChunk(position).getUp();
-		
 		readBlocks(input, blockPalette, chunk);
 		readTiles(input, tilePalette, chunk);
 

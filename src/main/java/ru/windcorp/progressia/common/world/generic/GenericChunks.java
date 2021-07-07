@@ -29,7 +29,7 @@ import ru.windcorp.progressia.common.world.rels.AxisRotations;
 
 public class GenericChunks {
 	
-	public static Vec3i resolve(Vec3i relativeCoords, Vec3i output, AbsFace up) {
+	public static Vec3i resolve(Vec3i relativeCoords, AbsFace up, Vec3i output) {
 		if (output == null) {
 			output = new Vec3i();
 		}
@@ -40,6 +40,23 @@ public class GenericChunks {
 		output.mul(2).sub(offset);
 
 		AxisRotations.resolve(output, up, output);
+
+		output.add(offset).div(2);
+
+		return output;
+	}
+	
+	public static Vec3i relativize(Vec3i absoluteCoords, AbsFace up, Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+
+		final int offset = GenericChunk.BLOCKS_PER_CHUNK - 1;
+
+		output.set(absoluteCoords.x, absoluteCoords.y, absoluteCoords.z);
+		output.mul(2).sub(offset);
+
+		AxisRotations.relativize(output, up, output);
 
 		output.add(offset).div(2);
 

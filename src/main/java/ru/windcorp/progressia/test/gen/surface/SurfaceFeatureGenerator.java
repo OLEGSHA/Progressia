@@ -46,7 +46,7 @@ public class SurfaceFeatureGenerator {
 		SurfaceWorld world = new SurfaceWorld(surface, chunk.getWorld());
 		
 		Random random = new Random(CoordinatePacker.pack3IntsIntoLong(chunk.getPosition()) /* ^ seed*/);
-		SurfaceFeature.Request request = new SurfaceFeature.Request(chunk, random);
+		SurfaceFeature.Request request = new SurfaceFeature.Request(world, chunk, random);
 		
 		for (SurfaceFeature feature : features) {
 			feature.process(world, request);
