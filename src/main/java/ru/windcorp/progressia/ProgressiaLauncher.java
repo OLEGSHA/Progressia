@@ -31,7 +31,6 @@ public class ProgressiaLauncher {
 		arguments = args.clone();
 		setupCrashReports();
 		proxy.initialize();
-		TaskManager.getInstance().startLoading();
 	}
 
 	private static void setupCrashReports() {

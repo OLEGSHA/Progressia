@@ -18,14 +18,25 @@
  
 package ru.windcorp.progressia.client.audio;
 
+import ru.windcorp.progressia.common.modules.Module;
+import ru.windcorp.progressia.common.modules.Task;
+import ru.windcorp.progressia.common.modules.TaskManager;
 import ru.windcorp.progressia.common.resource.ResourceManager;
 
 public class AudioSystem {
 	static public void initialize() {
+		Module audioModule = new Module("AudioModule:System");
 		AudioManager.initAL();
 		Thread shutdownHook = new Thread(AudioManager::closeAL, "AL Shutdown Hook");
 		Runtime.getRuntime().addShutdownHook(shutdownHook);
-		loadAudioData();
+		Task t = new Task("Task:InitializeAudio") {
+			@Override
+			protected void perform() {
+				loadAudioData();
+			}
+		};
+		audioModule.addTask(t);
+		TaskManager.getInstance().registerModule(audioModule);
 	}
 
 	static void loadAudioData() {

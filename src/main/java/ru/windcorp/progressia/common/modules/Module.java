@@ -9,9 +9,9 @@ import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 public class Module extends Namespaced {
 
-	private List<Task> tasks = new ArrayList<>();
-	private Map<String, String> meta = new HashMap<>();
-	private boolean done = false;
+	private final List<Task> tasks = new ArrayList<>();
+	private final Map<String, String> meta = new HashMap<>();
+	private final boolean done = false;
 	
 	
 	public Module(String id) {

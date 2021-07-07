@@ -1,100 +1,101 @@
 package ru.windcorp.progressia.common.modules;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import ru.windcorp.progressia.common.util.crash.CrashReports;
+import ru.windcorp.progressia.common.state.StateFieldBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+
+import static java.util.concurrent.Executors.newFixedThreadPool;
 
 public class TaskManager {
     private static final TaskManager instance = new TaskManager();
     private final List<Task> tasks = new ArrayList<>();
     private final List<Module> modules = new ArrayList<>();
-    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("LogicCore-%d")
-            .build();
-    private boolean wakeUpFlag = false;
+    private boolean loadingDone;
+    private int activeThreadsCount;
 
-    private TaskManager() {}
+    private  final ExecutorService executorService;
 
+    private TaskManager() {
+        loadingDone = false;
+        activeThreadsCount = 0;
+        executorService = newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors(), Thread::new);
+    }
+    
     public static TaskManager getInstance() {
         return instance;
     }
-
-    //Thread pool with size of logical cores of CPU
-    private final ExecutorService executorService =
-            Executors.newFixedThreadPool(
-                    Runtime.getRuntime().availableProcessors()
-                    , threadFactory);
 
     public void registerModule(Module module) {
         tasks.addAll(module.getTasks());
         modules.add(module);
     }
 
+    public boolean isLoadingDone() {
+        return loadingDone;
+    }
+
     public void startLoading() {
-        System.out.println("Loader is started");
-        for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
+
+        for(int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
             executorService.submit(() -> {
-                while (!tasks.isEmpty()) {
+                while(!loadingDone) {
                     Task t = getRunnableTask();
-                    if (t == null) {
-                        while (!wakeUpFlag) {
-                            try {
-                                synchronized (tasks) {
-                                    tasks.wait();
-                                }
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                    if (t != null) {
+                        synchronized (this) {
+                            activeThreadsCount++;
                         }
-                        wakeUpFlag = false;
-                    }
-                    else if (!t.isActive()) {
                         t.run();
-                        removeTask(t);
-                        wakeUpFlag = true;
-                        synchronized (tasks) {
-                            tasks.notifyAll();
+                        synchronized (this) {
+                            activeThreadsCount--;
+                            notifyAll();
+                        }
+                    } else if (activeThreadsCount > 0) {
+                        try {
+                            synchronized (this) {
+                                this.wait();
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        synchronized (this) {
+                            loadingDone = true;
                         }
                     }
                 }
             });
         }
 
-        for (Module m : modules) {
-            if (!m.done()) {
-                throw CrashReports.crash(new Exception("Modules loading failed"),
-                        null);
-            }
-        }
-        while(true) {
-            try {
-                executorService.shutdown();
-                if (executorService.awaitTermination(5, TimeUnit.SECONDS)) break;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        };
-        System.out.println("Loader has completed its job");
+        waitForLoadingEnd();
+        executorService.shutdownNow();
     }
 
-    private void removeTask(Task task) {
-        synchronized (tasks) {
-            tasks.remove(task);
+    public synchronized Task getRunnableTask() {
+        if(!tasks.isEmpty()) {
+            for (Task t :
+                 tasks) {
+                if(t.canRun()) {
+                    tasks.remove(t);
+                    return t;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void waitForLoadingEnd() {
+        synchronized (this) {
+            while(!loadingDone) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
-    public Task getRunnableTask() {
-        synchronized (tasks) {
-            for (Task t : tasks) {
-                if (t.canRun()) return t;
-            }
-            return null;
-        }
-    }
 }
