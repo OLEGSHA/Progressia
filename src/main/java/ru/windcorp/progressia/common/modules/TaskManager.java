@@ -1,101 +1,107 @@
 package ru.windcorp.progressia.common.modules;
 
-import ru.windcorp.progressia.common.state.StateFieldBuilder;
+
+import org.apache.logging.log4j.LogManager;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
 
 public class TaskManager {
-    private static final TaskManager instance = new TaskManager();
-    private final List<Task> tasks = new ArrayList<>();
-    private final List<Module> modules = new ArrayList<>();
-    private boolean loadingDone;
-    private int activeThreadsCount;
+	private static final TaskManager instance = new TaskManager();
+	private final List<Task> tasks = new ArrayList<>();
+	private final List<Module> modules = new ArrayList<>();
+	private final ExecutorService executorService;
+	private final AtomicBoolean loadingDone;
+	private final AtomicInteger activeThreadsCount;
 
-    private  final ExecutorService executorService;
+	private TaskManager() {
+		loadingDone = new AtomicBoolean(false);
+		activeThreadsCount = new AtomicInteger(0);
+		executorService = newFixedThreadPool(
+				Runtime.getRuntime().availableProcessors(), Thread::new);
+	}
 
-    private TaskManager() {
-        loadingDone = false;
-        activeThreadsCount = 0;
-        executorService = newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors(), Thread::new);
-    }
-    
-    public static TaskManager getInstance() {
-        return instance;
-    }
+	public static TaskManager getInstance() {
+		return instance;
+	}
 
-    public void registerModule(Module module) {
-        tasks.addAll(module.getTasks());
-        modules.add(module);
-    }
+	public void registerModule(Module module) {
+		tasks.addAll(module.getTasks());
+		modules.add(module);
+	}
 
-    public boolean isLoadingDone() {
-        return loadingDone;
-    }
+	public boolean isLoadingDone() {
+		return loadingDone.get();
+	}
 
-    public void startLoading() {
+	public void startLoading() {
+		LogManager.getLogger().info("Loading is started");
+		for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
+			executorService.submit(() -> {
+				while (!loadingDone.get()) {
+					Task t = getRunnableTask();
+					if (t != null) {
+						activeThreadsCount.incrementAndGet();
+						t.run();
+						activeThreadsCount.decrementAndGet();
+						synchronized (this) {
+							notifyAll();
+						}
+					} else if (activeThreadsCount.get() > 0) {
+						try {
+							synchronized (this) {
+								this.wait();
+							}
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					} else {
+						loadingDone.set(true);
+						synchronized (this) {
+							notifyAll();
+						}
+					}
+				}
+			});
+		}
 
-        for(int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-            executorService.submit(() -> {
-                while(!loadingDone) {
-                    Task t = getRunnableTask();
-                    if (t != null) {
-                        synchronized (this) {
-                            activeThreadsCount++;
-                        }
-                        t.run();
-                        synchronized (this) {
-                            activeThreadsCount--;
-                            notifyAll();
-                        }
-                    } else if (activeThreadsCount > 0) {
-                        try {
-                            synchronized (this) {
-                                this.wait();
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        synchronized (this) {
-                            loadingDone = true;
-                        }
-                    }
-                }
-            });
-        }
+		waitForLoadingEnd();
+		if (!tasks.isEmpty()) {
+			throw CrashReports.crash(new Exception("Loading is failed"), "");
+		}
+		LogManager.getLogger().info("Loading is finished");
+		executorService.shutdownNow();
+	}
 
-        waitForLoadingEnd();
-        executorService.shutdownNow();
-    }
+	public synchronized Task getRunnableTask() {
+		if (!tasks.isEmpty()) {
+			for (Task t :
+					tasks) {
+				if (t.canRun()) {
+					tasks.remove(t);
+					return t;
+				}
+			}
+		}
+		return null;
+	}
 
-    public synchronized Task getRunnableTask() {
-        if(!tasks.isEmpty()) {
-            for (Task t :
-                 tasks) {
-                if(t.canRun()) {
-                    tasks.remove(t);
-                    return t;
-                }
-            }
-        }
-        return null;
-    }
-
-    private void waitForLoadingEnd() {
-        synchronized (this) {
-            while(!loadingDone) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+	private void waitForLoadingEnd() {
+		synchronized (this) {
+			while (!loadingDone.get()) {
+				try {
+					this.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
 }

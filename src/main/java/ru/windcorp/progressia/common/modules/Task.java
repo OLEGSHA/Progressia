@@ -5,15 +5,13 @@ import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Task 
-	extends Namespaced
-	implements Runnable
-	{
-	
+public abstract class Task
+		extends Namespaced
+		implements Runnable {
+
+	List<Task> requiredTasks = new ArrayList<>();
 	private boolean isDone = false;
 	private boolean isActive = false;
-	
-	List<Task> requiredTasks = new ArrayList<>();
 
 	protected Task(String id) {
 		super(id);
@@ -28,13 +26,15 @@ public abstract class Task
 
 	// This method will be invoked by Run()
 	protected abstract void perform();
-	
+
 	public boolean isDone() {
 		return isDone;
 	}
 
-	public boolean isActive() { return isActive; }
-	
+	public boolean isActive() {
+		return isActive;
+	}
+
 	public boolean canRun() {
 		if (this.isActive) return false;
 		for (Task reqT : requiredTasks) {
@@ -42,8 +42,12 @@ public abstract class Task
 		}
 		return true;
 	}
-	
+
 	public List<Task> getRequiredTasks() {
 		return requiredTasks;
+	}
+
+	public void addRequiredTask(Task task) {
+		requiredTasks.add(task);
 	}
 }

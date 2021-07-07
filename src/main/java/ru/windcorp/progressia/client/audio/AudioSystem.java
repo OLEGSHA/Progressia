@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.audio;
 
+import org.apache.logging.log4j.LogManager;
 import ru.windcorp.progressia.common.modules.Module;
 import ru.windcorp.progressia.common.modules.Task;
 import ru.windcorp.progressia.common.modules.TaskManager;
@@ -29,10 +30,12 @@ public class AudioSystem {
 		AudioManager.initAL();
 		Thread shutdownHook = new Thread(AudioManager::closeAL, "AL Shutdown Hook");
 		Runtime.getRuntime().addShutdownHook(shutdownHook);
-		Task t = new Task("Task:InitializeAudio") {
+
+		Task t = new Task("AudioSystem:Initialize") {
 			@Override
 			protected void perform() {
 				loadAudioData();
+				LogManager.getLogger().info("Audio data is loaded");
 			}
 		};
 		audioModule.addTask(t);
@@ -41,9 +44,9 @@ public class AudioSystem {
 
 	static void loadAudioData() {
 		AudioManager.loadSound(
-			ResourceManager.getResource("assets/sounds/block_destroy_clap.ogg"),
-			"Progressia:BlockDestroy",
-			AudioFormat.MONO
+				ResourceManager.getResource("assets/sounds/block_destroy_clap.ogg"),
+				"Progressia:BlockDestroy",
+				AudioFormat.MONO
 		);
 	}
 }
