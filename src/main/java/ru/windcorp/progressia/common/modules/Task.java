@@ -1,5 +1,6 @@
 package ru.windcorp.progressia.common.modules;
 
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 import java.util.ArrayList;
@@ -12,9 +13,15 @@ public abstract class Task
 	List<Task> requiredTasks = new ArrayList<>();
 	private boolean isDone = false;
 	private boolean isActive = false;
+	private Module owner;
 
-	protected Task(String id) {
+	public Task(String id) {
 		super(id);
+	}
+
+	public Task(String id, Module module) {
+		this(id);
+		module.addTask(this);
 	}
 
 	@Override
@@ -49,5 +56,20 @@ public abstract class Task
 
 	public void addRequiredTask(Task task) {
 		requiredTasks.add(task);
+	}
+
+	public void setOwner(Module module) {
+		if(owner != null) {
+			CrashReports.crash(
+					new Exception("Owner is not null")
+					, "Could not set %s as owner of %s, because %s is already owner of it.",
+					module.getId(), this.getId(), this.getOwner().getId());
+		} else {
+			owner = module;
+		}
+	}
+
+	public Module getOwner() {
+		return owner;
 	}
 }

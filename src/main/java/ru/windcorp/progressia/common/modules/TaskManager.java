@@ -1,11 +1,9 @@
 package ru.windcorp.progressia.common.modules;
 
-
 import org.apache.logging.log4j.LogManager;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,17 +12,24 @@ import static java.util.concurrent.Executors.newFixedThreadPool;
 
 public class TaskManager {
 	private static final TaskManager instance = new TaskManager();
-	private final List<Task> tasks = new ArrayList<>();
-	private final List<Module> modules = new ArrayList<>();
+
+	private final Set<Task> tasks = new HashSet<>();
+	private final Set<Module> modules = new HashSet<>();
 	private final ExecutorService executorService;
+
 	private final AtomicBoolean loadingDone;
 	private final AtomicInteger activeThreadsCount;
+
+	private final Map<Thread, Task> loadersMonitorMap;
+	Map<Thread, Task> unmodifiableLoadersMonitorMap;
 
 	private TaskManager() {
 		loadingDone = new AtomicBoolean(false);
 		activeThreadsCount = new AtomicInteger(0);
 		executorService = newFixedThreadPool(
 				Runtime.getRuntime().availableProcessors(), Thread::new);
+		loadersMonitorMap = new HashMap<>(Runtime.getRuntime().availableProcessors());
+		unmodifiableLoadersMonitorMap = Collections.unmodifiableMap(loadersMonitorMap);
 	}
 
 	public static TaskManager getInstance() {
@@ -48,7 +53,9 @@ public class TaskManager {
 					Task t = getRunnableTask();
 					if (t != null) {
 						activeThreadsCount.incrementAndGet();
+						loadersMonitorMap.put(Thread.currentThread(), t);
 						t.run();
+						loadersMonitorMap.put(Thread.currentThread(), null);
 						activeThreadsCount.decrementAndGet();
 						synchronized (this) {
 							notifyAll();
@@ -102,6 +109,10 @@ public class TaskManager {
 				}
 			}
 		}
+	}
+
+	public Map<Thread, Task> getLoadersMonitorMap() {
+		return unmodifiableLoadersMonitorMap;
 	}
 
 }
