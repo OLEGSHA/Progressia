@@ -17,6 +17,7 @@
  */
 package ru.windcorp.progressia.common.modules;
 
+import ru.windcorp.jputil.chars.StringUtil;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
@@ -43,12 +44,28 @@ public abstract class Task
 
 	@Override
 	public void run() {
-		isActive = true;
-		perform();
-		isDone = true;
+		if (!canRun()) {
+			ArrayList<Task> undoneTasks = new ArrayList<>();
+			for (Task j : requiredTasks) {
+				if (!j.isDone()) {
+					undoneTasks.add(j);
+				}
+			}
+
+			throw CrashReports.report(new Throwable(),
+					"The following required Tasks are not done:\n%s",
+					StringUtil.iterableToString(undoneTasks, "\n"));
+		} else if (isDone()) {
+			throw CrashReports.report(new Throwable(),
+					"The task cannot be performed second time");
+		} else {
+			isActive = true;
+			perform();
+			isDone = true;
+		}
 	}
 
-	// This method will be invoked by Run()
+	//This method will be invoked by Run()
 	protected abstract void perform();
 
 	public boolean isDone() {
