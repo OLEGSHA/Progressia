@@ -23,24 +23,36 @@ import java.util.*;
 
 public class Module extends Namespaced {
 
-	private final List<Task> tasks = new ArrayList<>();
+	private final Set<Task> tasks = new HashSet<>();
 	private final Map<String, String> meta = new HashMap<>();
 	private final Map<String, String> unmodifiableMeta = Collections.unmodifiableMap(meta);
+	private final Set<Task> unmodifiableTasks = Collections.unmodifiableSet(tasks);
 
-
+	/**
+	 * @param id the identifier of a task object.
+	 * Its format is restricted by {@link Namespaced}.
+	 * @see Namespaced#Namespaced
+	 */
 	public Module(String id) {
 		super(id);
 		meta.put("id", id);
 	}
 
+	/**
+	 * @return meta information of the module as {@link Map}.
+	 */
 	public Map<String, String> getMeta() {
 		return unmodifiableMeta;
 	}
 
-	public List<Task> getTasks() {
-		return tasks;
+	public Set<Task> getTasks() {
+		return unmodifiableTasks;
 	}
 
+	/**
+	 * @param task that will be attached to the module.
+	 * A task can't be added to any module second time.
+	 */
 	public void addTask(Task task) {
 		task.setOwner(this);
 		tasks.add(task);

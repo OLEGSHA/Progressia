@@ -22,21 +22,34 @@ import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class Task
 		extends Namespaced
 		implements Runnable {
 
-	List<Task> requiredTasks = new ArrayList<>();
-	private boolean isDone = false;
-	private boolean isActive = false;
+	private final Set<Task> requiredTasks = new HashSet<>();
+	private final AtomicBoolean isDone = new AtomicBoolean(false);
+	private final AtomicBoolean isActive = new AtomicBoolean(false);
 	private Module owner;
 
+	/**
+	 * @param id the identifier of a task object.
+	 * Its format is restricted by {@link Namespaced}.
+	 * @see Namespaced#Namespaced
+	 */
 	public Task(String id) {
 		super(id);
 	}
 
+	/**
+	 * @param id the identifier of a task object.
+	 * Its format is restricted by {@link Namespaced}.
+	 * @param module to which the task will be attached.
+	 * @see Namespaced#Namespaced
+	 */
 	public Task(String id, Module module) {
 		this(id);
 		module.addTask(this);
@@ -59,32 +72,44 @@ public abstract class Task
 			throw CrashReports.report(new Throwable(),
 					"The task cannot be performed second time");
 		} else {
-			isActive = true;
+			isActive.set(true);
 			perform();
-			isDone = true;
+			isActive.set(false);
+			isDone.set(true);
 		}
 	}
 
-	//This method will be invoked by Run()
+	/**
+	 * The method is to be invoked in run().
+	 * @see Task#run()
+	 */
 	protected abstract void perform();
 
 	public boolean isDone() {
-		return isDone;
+		return isDone.get();
 	}
 
+	/**
+	 * @return if the {@link Task#run()} method is being invoked at the moment or not.
+	 */
 	public boolean isActive() {
-		return isActive;
+		return isActive.get();
 	}
 
+	/**
+	 *
+	 * @return true - the method is not done and not active
+	 * and all requirement tasks are done, false - otherwise.
+	 */
 	public boolean canRun() {
-		if (this.isActive) return false;
+		if (this.isActive.get() || isDone.get()) return false;
 		for (Task reqT : requiredTasks) {
 			if (!reqT.isDone()) return false;
 		}
 		return true;
 	}
 
-	public List<Task> getRequiredTasks() {
+	public Set<Task> getRequiredTasks() {
 		return requiredTasks;
 	}
 
@@ -92,14 +117,21 @@ public abstract class Task
 		requiredTasks.add(task);
 	}
 
+	/**
+	 * @return the module the task is attached to.
+	 */
 	public Module getOwner() {
 		return owner;
 	}
 
+	/**
+	 * @param module to which the task will be attached.
+	 * Only one module can be the owner of the task.
+ 	 */
 	public void setOwner(Module module) {
 		if (owner != null) {
 			CrashReports.crash(
-					new Exception("Owner is not null")
+					new Throwable()
 					, "Could not set %s as owner of %s, because %s is already owner of it.",
 					module.getId(), this.getId(), this.getOwner().getId());
 		} else {

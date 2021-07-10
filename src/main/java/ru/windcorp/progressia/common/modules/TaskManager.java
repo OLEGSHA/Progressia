@@ -53,15 +53,34 @@ public class TaskManager {
 		return instance;
 	}
 
+	/**
+	 * Registers the module and its tasks that are
+	 * to be performed by {@link TaskManager#startLoading()}.
+	 *
+	 * @param module from where to register tasks for loading.
+	 */
 	public void registerModule(Module module) {
 		tasks.addAll(module.getTasks());
 		modules.add(module);
+	}
+
+	/**
+	 * Registers a task that is to be performed
+	 * by {@link TaskManager#startLoading()}.
+	 *
+	 * @param task to register for loading.
+	 */
+	public void addTask(Task task) {
+		tasks.add(task);
 	}
 
 	public boolean isLoadingDone() {
 		return loadingDone.get();
 	}
 
+	/**
+	 * The method to start loading. It will perform every registered task.
+	 */
 	public void startLoading() {
 		LogManager.getLogger().info("Loading is started");
 		for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
@@ -103,7 +122,12 @@ public class TaskManager {
 		executorService.shutdownNow();
 	}
 
-	public synchronized Task getRunnableTask() {
+	/**
+	 * @return Task - founded registered task with {@link Task#canRun()} = true;
+	 * null - there is no available task found.
+ 	 * @see Task#canRun()
+	 */
+	private synchronized Task getRunnableTask() {
 		if (!tasks.isEmpty()) {
 			for (Task t :
 					tasks) {
@@ -116,6 +140,10 @@ public class TaskManager {
 		return null;
 	}
 
+	/**
+	 * Makes the thread that is performing this method
+	 * to wait until the loading is not done.
+	 */
 	private void waitForLoadingEnd() {
 		synchronized (this) {
 			while (!loadingDone.get()) {
@@ -128,6 +156,11 @@ public class TaskManager {
 		}
 	}
 
+	/**
+	 * @return a map where key is a thread making loading
+	 * and where value is a task that is being performed by it
+	 * at the moment.
+	 */
 	public Map<Thread, Task> getLoadersMonitorMap() {
 		return unmodifiableLoadersMonitorMap;
 	}
