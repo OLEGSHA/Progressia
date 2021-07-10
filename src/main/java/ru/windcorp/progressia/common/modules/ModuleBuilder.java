@@ -1,14 +1,31 @@
+/*
+ * Progressia
+ * Copyright (C)  2020-2021  Wind Corporation and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package ru.windcorp.progressia.common.modules;
 
 public class ModuleBuilder {
-    private final Module module;
+	private final Module module;
 
-    public ModuleBuilder(String id) {
-        module = new Module(id);
-    }
+	public ModuleBuilder(String id) {
+		module = new Module(id);
+	}
 
-    public ModuleBuilder AddTask(Task task) {
-        module.addTask(task);
-        return this;
-    }
+	public ModuleBuilder AddTask(Task task) {
+		module.addTask(task);
+		return this;
+	}
 }
