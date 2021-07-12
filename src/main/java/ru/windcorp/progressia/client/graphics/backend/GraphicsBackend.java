@@ -18,11 +18,11 @@
  
 package ru.windcorp.progressia.client.graphics.backend;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import glm.vec._2.i.Vec2i;
+import org.lwjgl.glfw.GLFWVidMode;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
 
 public class GraphicsBackend {
 
@@ -38,9 +38,30 @@ public class GraphicsBackend {
 
 	private static boolean faceCullingEnabled = false;
 
+	private static boolean isFullscreen = false;
+	private static boolean vSyncEnabled = false;
+	private static boolean isGLFWInitialized = false;
+	private static boolean isOpenGLInitialized = false;
+
 	private GraphicsBackend() {
 	}
 
+	public static boolean isGLFWInitialized() {
+		return isGLFWInitialized;
+	}
+
+	static void setGLFWInitialized(boolean isGLFWInitialized) {
+		GraphicsBackend.isGLFWInitialized = isGLFWInitialized;
+	}
+
+	public static boolean isOpenGLInitialized() {
+		return isOpenGLInitialized;
+	}
+
+	static void setOpenGLInitialized(boolean isOpenGLInitialized) {
+		GraphicsBackend.isOpenGLInitialized = isOpenGLInitialized;
+	}
+	
 	public static void initialize() {
 		startRenderThread();
 	}
@@ -128,4 +149,61 @@ public class GraphicsBackend {
 		faceCullingEnabled = useFaceCulling;
 	}
 
+	public static boolean isFullscreen() {
+		return isFullscreen;
+	}
+
+	public static boolean isVSyncEnabled() {
+		return vSyncEnabled;
+	}
+
+	public static void setFullscreen() {
+		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		glfwSetWindowMonitor(
+			getWindowHandle(),
+			glfwGetPrimaryMonitor(),
+			0,
+			0,
+			vidmode.width(),
+			vidmode.height(),
+			0);
+		isFullscreen = true;
+	}
+
+	public static void setWindowed() {
+		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		glfwSetWindowMonitor(
+			getWindowHandle(),
+			0,
+			(vidmode.width() - getFrameWidth()) / 2,
+			(vidmode.height() - getFrameHeight()) / 2,
+			getFrameWidth(),
+			getFrameHeight(),
+			0);
+		isFullscreen = false;
+	}
+
+	public static void setVSyncEnabled(boolean enable) {
+		glfwSwapInterval(enable ? 1 : 0);
+		vSyncEnabled = enable;
+	}
+
+	public static int getRefreshRate() {
+		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		return vidmode.refreshRate();
+	}
+	
+	public static boolean isMouseCaptured() {
+		return glfwGetInputMode(windowHandle, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
+	}
+	
+	public static void setMouseCaptured(boolean capture) {
+		int mode = capture ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL;
+		glfwSetInputMode(windowHandle, GLFW_CURSOR, mode);
+		
+		if (!capture) {
+			glfwSetCursorPos(windowHandle, FRAME_SIZE.x / 2.0, FRAME_SIZE.y / 2.0);
+		}
+	}
+	
 }

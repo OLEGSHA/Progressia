@@ -189,13 +189,10 @@ public class RenderTarget {
 
 	public void addCustomRenderer(Renderable renderable) {
 		assembleCurrentClipFromFaces();
-		assembled.add(
-			new Clip(
-				maskStack,
-				getTransform(),
-				renderable
-			)
-		);
+		
+		float depth = this.depth--;
+		Mat4 transform = new Mat4().translate(0, 0, depth).mul(getTransform());
+		assembled.add(new Clip(maskStack, transform, renderable));
 	}
 
 	protected void addFaceToCurrentClip(ShapePart face) {

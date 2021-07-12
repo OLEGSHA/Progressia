@@ -18,22 +18,18 @@
  
 package ru.windcorp.progressia.test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.function.Supplier;
-
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.Colors;
+import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.Label;
-import ru.windcorp.progressia.client.graphics.gui.Panel;
+import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.localization.Localizer;
@@ -44,19 +40,24 @@ import ru.windcorp.progressia.common.util.dynstr.DynamicStrings;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.ServerState;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.function.Supplier;
+
 public class LayerTestGUI extends GUILayer {
 
 	public LayerTestGUI() {
 		super("LayerTestGui", new LayoutAlign(0, 1, 5));
 
-		Panel panel = new Panel("ControlDisplays", new LayoutVertical(5));
+		Group group = new Group("ControlDisplays", new LayoutVertical(5));
 
 		Vec4 color = Colors.WHITE;
 		Font font = new Font().withColor(color).deriveOutlined();
 
 		TestPlayerControls tpc = TestPlayerControls.getInstance();
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"IsFlyingDisplay",
 				font,
@@ -64,7 +65,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"IsSprintingDisplay",
 				font,
@@ -72,15 +73,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
-			new Label(
-				"IsMouseCapturedDisplay",
-				font,
-				tmp_dynFormat("LayerTestGUI.IsMouseCapturedDisplay", tpc::isMouseCaptured)
-			)
-		);
-
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"CameraModeDisplay",
 				font,
@@ -91,7 +84,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"LanguageDisplay",
 				font,
@@ -99,7 +92,23 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
+			new Label(
+				"FullscreenDisplay",
+				font,
+				tmp_dynFormat("LayerTestGUI.IsFullscreen", GraphicsBackend::isFullscreen)
+			)
+		);
+
+		group.addChild(
+			new Label(
+				"VSyncDisplay",
+				font,
+				tmp_dynFormat("LayerTestGUI.IsVSync", GraphicsBackend::isVSyncEnabled)
+			)
+		);
+
+		group.addChild(
 			new DynamicLabel(
 				"FPSDisplay",
 				font,
@@ -111,7 +120,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new DynamicLabel(
 				"TPSDisplay",
 				font,
@@ -120,7 +129,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new DynamicLabel(
 				"ChunkUpdatesDisplay",
 				font,
@@ -132,7 +141,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new DynamicLabel(
 				"PosDisplay",
 				font,
@@ -141,7 +150,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"SelectedBlockDisplay",
 				font,
@@ -152,7 +161,7 @@ public class LayerTestGUI extends GUILayer {
 				)
 			)
 		);
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"SelectedTileDisplay",
 				font,
@@ -163,7 +172,7 @@ public class LayerTestGUI extends GUILayer {
 				)
 			)
 		);
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"PlacementModeHint",
 				font,
@@ -171,7 +180,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		getRoot().addChild(panel);
+		getRoot().addChild(group);
 	}
 
 	public Runnable getUpdateCallback() {

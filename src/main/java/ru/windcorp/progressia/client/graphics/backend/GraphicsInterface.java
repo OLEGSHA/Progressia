@@ -73,4 +73,21 @@ public class GraphicsInterface {
 		GraphicsBackend.startNextLayer();
 	}
 
+	public static void makeFullscreen(boolean state) {
+		if (state) {
+			GraphicsBackend.setFullscreen();
+		} else {
+			GraphicsBackend.setWindowed();
+		}
+		GraphicsBackend.setVSyncEnabled(GraphicsBackend.isVSyncEnabled());
+	}
+	
+	public static boolean isMouseCaptured() {
+		return GraphicsBackend.isMouseCaptured();
+	}
+	
+	public static void setMouseCaptured(boolean capture) {
+		GraphicsBackend.setMouseCaptured(capture);
+	}
+
 }

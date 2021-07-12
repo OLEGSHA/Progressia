@@ -15,24 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.client.audio;
 
-import ru.windcorp.progressia.common.resource.ResourceManager;
+package ru.windcorp.progressia.common.util.crash.providers;
 
-public class AudioSystem {
-	static public void initialize() {
-		AudioManager.initAL();
-		Thread shutdownHook = new Thread(AudioManager::closeAL, "AL Shutdown Hook");
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
-		loadAudioData();
+import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
+import ru.windcorp.progressia.common.util.crash.ContextProvider;
+
+import java.util.Map;
+
+public class ScreenContextProvider implements ContextProvider {
+
+	@Override
+	public void provideContext(Map<String, String> output) {
+		if (GraphicsBackend.isGLFWInitialized()) {
+			output.put("Refresh rate", GraphicsBackend.getRefreshRate() + " Hz");
+			output.put("Size", GraphicsBackend.getFrameWidth() + "x" + GraphicsBackend.getFrameHeight());
+			output.put("Fullscreen", GraphicsBackend.isFullscreen() ? "enabled" : "disabled");
+		}
 	}
 
-	static void loadAudioData() {
-		AudioManager.loadSound(
-			ResourceManager.getResource("assets/sounds/block_destroy_clap.ogg"),
-			"Progressia:BlockDestroy",
-			AudioFormat.MONO
-		);
+	@Override
+	public String getName() {
+		return "Screen Context Provider";
 	}
 }

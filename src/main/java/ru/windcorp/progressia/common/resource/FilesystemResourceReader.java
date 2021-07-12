@@ -15,24 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.client.audio;
+package ru.windcorp.progressia.common.resource;
 
-import ru.windcorp.progressia.common.resource.ResourceManager;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-public class AudioSystem {
-	static public void initialize() {
-		AudioManager.initAL();
-		Thread shutdownHook = new Thread(AudioManager::closeAL, "AL Shutdown Hook");
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
-		loadAudioData();
+public class FilesystemResourceReader implements ResourceReader {
+
+	@Override
+	public InputStream read(String name) {
+		try {
+			return Files.newInputStream(Paths.get(name));
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
-	static void loadAudioData() {
-		AudioManager.loadSound(
-			ResourceManager.getResource("assets/sounds/block_destroy_clap.ogg"),
-			"Progressia:BlockDestroy",
-			AudioFormat.MONO
-		);
-	}
 }

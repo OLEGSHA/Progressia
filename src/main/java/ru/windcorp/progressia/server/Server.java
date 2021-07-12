@@ -208,6 +208,18 @@ public class Server {
 	}
 
 	/**
+	 * Returns the amount of ticks performed since the server has started. This
+	 * value resets on shutdowns. The counter is incremented at the end of a
+	 * tick.
+	 * 
+	 * @return the number of times the world has finished a tick since the
+	 *         server has started.
+	 */
+	public long getUptimeTicks() {
+		return this.serverThread.getTicker().getUptimeTicks();
+	}
+
+	/**
 	 * Returns the {@link WorldAccessor} object for this server. Use the
 	 * provided accessor to request common {@link Evaluation}s and
 	 * {@link Change}s.

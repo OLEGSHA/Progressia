@@ -97,16 +97,27 @@ public class LayoutGrid implements Layout {
 		void setBounds(int column, int row, Component child, Component parent) {
 			if (!isSummed)
 				throw new IllegalStateException("Not summed yet");
+			
+			int width, height;
+			
+			if (column == columns.length - 1) {
+				width = parent.getWidth() - margin - columns[column];
+			} else {
+				width = columns[column + 1] - columns[column] - gap;
+			}
+			
+			if (row == rows.length - 1) {
+				height = parent.getHeight() - margin - rows[row];
+			} else {
+				height = rows[row + 1] - rows[row] - gap;
+			}
 
 			child.setBounds(
 				parent.getX() + columns[column],
-				parent.getY() + rows[row],
+				parent.getY() + parent.getHeight() - (rows[row] + height),
 
-				(column != (columns.length - 1) ? (columns[column + 1] - columns[column] - gap)
-					: (parent.getWidth() - margin - columns[column])),
-
-				(row != (rows.length - 1) ? (rows[row + 1] - rows[row] - gap)
-					: (parent.getHeight() - margin - rows[row]))
+				width,
+				height
 			);
 		}
 	}
@@ -132,10 +143,9 @@ public class LayoutGrid implements Layout {
 			GridDimensions grid = calculateGrid(c);
 			grid.sum();
 
-			int[] coords;
 			for (Component child : c.getChildren()) {
-				coords = (int[]) child.getLayoutHint();
-				grid.setBounds(coords[0], coords[1], child, c);
+				Vec2i coords = (Vec2i) child.getLayoutHint();
+				grid.setBounds(coords.x, coords.y, child, c);
 			}
 		}
 	}
@@ -149,11 +159,10 @@ public class LayoutGrid implements Layout {
 
 	private GridDimensions calculateGrid(Component parent) {
 		GridDimensions result = new GridDimensions();
-		int[] coords;
 
 		for (Component child : parent.getChildren()) {
-			coords = (int[]) child.getLayoutHint();
-			result.add(coords[0], coords[1], child.getPreferredSize());
+			Vec2i coords = (Vec2i) child.getLayoutHint();
+			result.add(coords.x, coords.y, child.getPreferredSize());
 		}
 
 		return result;

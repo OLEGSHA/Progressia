@@ -15,41 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
 package ru.windcorp.progressia.client.audio;
 
-import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.audio.backend.SoundType;
-import ru.windcorp.progressia.client.audio.backend.Speaker;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
-public class Music 
-	extends Sound {
+public class AudioRegistry extends NamespacedInstanceRegistry<SoundType> {
 	
+	private static final AudioRegistry INSTANCE = new AudioRegistry();
 	
-	
-	public Music(SoundType soundType, int timeLength, float pitch, float gain) {
-		super(soundType, timeLength, new Vec3(), new Vec3(), pitch, gain);
+	/**
+	 * @return the instance
+	 */
+	public static AudioRegistry getInstance() {
+		return INSTANCE;
 	}
 
-	public Music(SoundType soundType) {
-		super(soundType);
-	}
-
-	public Music(String id, int timeLength, float pitch, float gain) {
-		super(id, timeLength, new Vec3(), new Vec3(), pitch, gain);
-	}
-
-	public Music(String id) {
-		super(id);
-	}
-
-	@Override
-	protected Speaker initSpeaker() {
-		return AudioManager.initMusicSpeaker(soundType);
-	}
-	
-	@Override
-	public void setPosition(Vec3 position) {
-		throw new UnsupportedOperationException();
-	}
 }

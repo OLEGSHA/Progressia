@@ -21,6 +21,9 @@ package ru.windcorp.progressia.client.audio.backend;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 import java.nio.ShortBuffer;
+
+import org.lwjgl.openal.AL10;
+
 import static org.lwjgl.openal.AL11.*;
 
 public class SoundType extends Namespaced {
@@ -29,6 +32,7 @@ public class SoundType extends Namespaced {
 	private int sampleRate;
 	private int format;
 	private int audioBuffer;
+	private double duration;
 
 	public SoundType(
 		String id,
@@ -46,9 +50,14 @@ public class SoundType extends Namespaced {
 	private void createAudioBuffer() {
 		this.audioBuffer = alGenBuffers();
 		alBufferData(audioBuffer, format, rawAudio, sampleRate);
+		duration = rawAudio.limit() / (double) sampleRate / (format == AL10.AL_FORMAT_STEREO16 ? 2 : 1);
 	}
 
 	public void initSpeaker(Speaker speaker) {
 		speaker.setAudioData(audioBuffer);
+	}
+	
+	public double getDuration() {
+		return duration;
 	}
 }

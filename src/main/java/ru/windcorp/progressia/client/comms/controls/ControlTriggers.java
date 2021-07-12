@@ -142,12 +142,109 @@ public class ControlTriggers {
 			predicates
 		);
 	}
+	
+	//
+	//
+	///
+	///
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	
+	public static ControlTriggerInputBased localOf(
+		String id,
+		Consumer<InputEvent> action,
+		Predicate<InputEvent> predicate
+	) {
+		return new ControlTriggerLocalLambda(id, predicate, action);
+	}
+
+	public static ControlTriggerInputBased localOf(
+		String id,
+		Runnable action,
+		Predicate<InputEvent> predicate
+	) {
+		return localOf(
+			id,
+			input -> action.run(),
+			predicate
+		);
+	}
+
+	@SafeVarargs
+	public static <I extends InputEvent> ControlTriggerInputBased localOf(
+		String id,
+		Class<I> inputType,
+		Consumer<I> action,
+		Predicate<I>... predicates
+	) {
+		return localOf(
+			id,
+			createCheckedAction(inputType, action),
+			createCheckedCompoundPredicate(inputType, predicates)
+		);
+	}
+
+	@SafeVarargs
+	public static <I extends InputEvent> ControlTriggerInputBased localOf(
+		String id,
+		Class<I> inputType,
+		Runnable action,
+		Predicate<I>... predicates
+	) {
+		return localOf(
+			id,
+			inputType,
+			input -> action.run(),
+			predicates
+		);
+	}
+
+	@SafeVarargs
+	public static ControlTriggerInputBased localOf(
+		String id,
+		Consumer<InputEvent> action,
+		Predicate<InputEvent>... predicates
+	) {
+		return localOf(
+			id,
+			InputEvent.class,
+			action,
+			predicates
+		);
+	}
+
+	@SafeVarargs
+	public static <I extends InputEvent> ControlTriggerInputBased localOf(
+		String id,
+		Runnable action,
+		Predicate<InputEvent>... predicates
+	) {
+		return of(
+			id,
+			input -> action.run(),
+			predicates
+		);
+	}
 
 	private static <I extends InputEvent> BiConsumer<InputEvent, ControlData> createCheckedDataWriter(
 		Class<I> inputType,
 		BiConsumer<I, ControlData> dataWriter
 	) {
 		return (inputEvent, control) -> dataWriter.accept(inputType.cast(inputEvent), control);
+	}
+	
+	private static <I extends InputEvent> Consumer<InputEvent> createCheckedAction(
+		Class<I> inputType,
+		Consumer<I> action
+	) {
+		return inputEvent -> action.accept(inputType.cast(inputEvent));
 	}
 
 	private static <I extends InputEvent> Predicate<InputEvent> createCheckedCompoundPredicate(

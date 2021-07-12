@@ -6,7 +6,6 @@ LayerAbout.DebugHint = Отладочный GUI: F3
 
 LayerTestGUI.IsFlyingDisplay = Полёт:          %5s (Пробел x2)
 LayerTestGUI.IsSprintingDisplay = Бег:            %5s (W x2)
-LayerTestGUI.IsMouseCapturedDisplay = Захват мыши:    %5s (Esc)
 LayerTestGUI.CameraModeDisplay = Камера:         %5d (F5)
 LayerTestGUI.LanguageDisplay = Язык:           %5s (L)
 LayerTestGUI.FPSDisplay = FPS: 
@@ -19,3 +18,7 @@ LayerTestGUI.PosDisplay.NA.Entity = Поз: сущность н/д
 LayerTestGUI.SelectedBlockDisplay = %s Блок:   %s
 LayerTestGUI.SelectedTileDisplay = %s Плитка: %s
 LayerTestGUI.PlacementModeHint = (Блок %s плитки: Ctrl + прокрутка)
+LayerTestGUI.IsFullscreen = Полный экран:   %5s (F11)
+LayerTestGUI.IsVSync = Верт. синхр.:   %5s (F12)
+
+LayerButtonTest.Title = Тест Кнопок

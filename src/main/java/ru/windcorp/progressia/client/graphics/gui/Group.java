@@ -16,23 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
  
-package ru.windcorp.progressia.client.audio;
+package ru.windcorp.progressia.client.graphics.gui;
 
-import ru.windcorp.progressia.common.resource.ResourceManager;
+public class Group extends Component {
 
-public class AudioSystem {
-	static public void initialize() {
-		AudioManager.initAL();
-		Thread shutdownHook = new Thread(AudioManager::closeAL, "AL Shutdown Hook");
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
-		loadAudioData();
+	public Group(String name, Layout layout) {
+		super(name);
+		setLayout(layout);
 	}
 
-	static void loadAudioData() {
-		AudioManager.loadSound(
-			ResourceManager.getResource("assets/sounds/block_destroy_clap.ogg"),
-			"Progressia:BlockDestroy",
-			AudioFormat.MONO
-		);
-	}
 }

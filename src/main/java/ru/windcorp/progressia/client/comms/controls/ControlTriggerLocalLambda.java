@@ -16,28 +16,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
  
-package ru.windcorp.progressia.common.util.crash.providers;
+package ru.windcorp.progressia.client.comms.controls;
 
-import ru.windcorp.progressia.common.util.crash.ContextProvider;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
-import java.util.Map;
+import ru.windcorp.progressia.client.graphics.input.InputEvent;
+import ru.windcorp.progressia.common.comms.controls.PacketControl;
 
-public class RAMContextProvider implements ContextProvider {
+public class ControlTriggerLocalLambda extends ControlTriggerInputBased {
 
-	@Override
-	public void provideContext(Map<String, String> output) {
-		output.put("Max Memory", Runtime.getRuntime().maxMemory() / 1024 / 1024 + " MB");
-		output.put("Total Memory", Runtime.getRuntime().totalMemory() / 1024 / 1024 + " MB");
-		output.put("Free Memory", Runtime.getRuntime().freeMemory() / 1024 / 1024 + " MB");
-		output.put(
-			"Used Memory",
-			(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024
-				+ " MB"
-		);
+	private final Predicate<InputEvent> predicate;
+	private final Consumer<InputEvent> action;
+
+	public ControlTriggerLocalLambda(
+		String id,
+		Predicate<InputEvent> predicate,
+		Consumer<InputEvent> action
+	) {
+		super(id);
+
+		this.predicate = predicate;
+		this.action = action;
 	}
 
 	@Override
-	public String getName() {
-		return "RAM Context Provider";
+	public PacketControl onInputEvent(InputEvent event) {
+		if (!predicate.test(event))
+			return null;
+
+		action.accept(event);
+
+		return null;
 	}
+
 }

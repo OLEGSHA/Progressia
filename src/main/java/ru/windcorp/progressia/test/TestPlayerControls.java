@@ -84,8 +84,6 @@ public class TestPlayerControls {
 	private double lastSpacePress = Double.NEGATIVE_INFINITY;
 	private double lastSprintPress = Double.NEGATIVE_INFINITY;
 
-	private boolean captureMouse = true;
-
 	private int selectedBlock = 0;
 	private int selectedTile = 0;
 	private boolean isBlockSelected = true;
@@ -203,7 +201,22 @@ public class TestPlayerControls {
 		case GLFW.GLFW_KEY_ESCAPE:
 			if (!event.isPress())
 				return false;
+			
 			handleEscape();
+			break;
+
+		case GLFW.GLFW_KEY_F11:
+			if (!event.isPress())
+				return false;
+			GraphicsInterface.makeFullscreen(!GraphicsBackend.isFullscreen());
+			updateGUI();
+			break;
+
+		case GLFW.GLFW_KEY_F12:
+			if (!event.isPress())
+				return false;
+			GraphicsBackend.setVSyncEnabled(!GraphicsBackend.isVSyncEnabled());
+			updateGUI();
 			break;
 
 		case GLFW.GLFW_KEY_F3:
@@ -298,14 +311,10 @@ public class TestPlayerControls {
 	}
 
 	private void handleEscape() {
-		if (captureMouse) {
-			GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
-		} else {
-			GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
-		}
-
-		captureMouse = !captureMouse;
-		updateGUI();
+		movementForward = 0;
+		movementRight = 0;
+		movementUp = 0;
+		GUI.addTopLayer(new LayerButtonTest());
 	}
 
 	private void handleDebugLayerSwitch() {
@@ -344,10 +353,6 @@ public class TestPlayerControls {
 	}
 
 	private void onMouseMoved(CursorMoveEvent event) {
-		if (!captureMouse) {
-			return;
-		}
-
 		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
 			return;
 		}
@@ -443,10 +448,6 @@ public class TestPlayerControls {
 
 	public boolean isSprinting() {
 		return isSprinting;
-	}
-
-	public boolean isMouseCaptured() {
-		return captureMouse;
 	}
 
 	public BlockData getSelectedBlock() {

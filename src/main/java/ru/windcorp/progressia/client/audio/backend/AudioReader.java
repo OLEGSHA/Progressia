@@ -33,13 +33,11 @@ public class AudioReader {
 	}
 
 	// TODO fix converting from mono-stereo
-	private static SoundType readAsSpecified(String path, String id, int format) {
+	private static SoundType readAsSpecified(Resource resource, String id, int format) {
 		IntBuffer channelBuffer = BufferUtils.createIntBuffer(1);
 		IntBuffer rateBuffer = BufferUtils.createIntBuffer(1);
 
-		Resource res = ResourceManager.getResource(path);
-
-		ShortBuffer rawAudio = decodeVorbis(res, channelBuffer, rateBuffer);
+		ShortBuffer rawAudio = decodeVorbis(resource, channelBuffer, rateBuffer);
 
 		return new SoundType(
 			id,
@@ -49,12 +47,12 @@ public class AudioReader {
 		);
 	}
 
-	public static SoundType readAsMono(String path, String id) {
-		return readAsSpecified(path, id, AL_FORMAT_MONO16);
+	public static SoundType readAsMono(Resource resource, String id) {
+		return readAsSpecified(resource, id, AL_FORMAT_MONO16);
 	}
 
-	public static SoundType readAsStereo(String path, String id) {
-		return readAsSpecified(path, id, AL_FORMAT_STEREO16);
+	public static SoundType readAsStereo(Resource resource, String id) {
+		return readAsSpecified(resource, id, AL_FORMAT_STEREO16);
 	}
 
 	private static ShortBuffer decodeVorbis(

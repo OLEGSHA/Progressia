@@ -59,6 +59,8 @@ public class LayerWorld extends Layer {
 		super("World");
 		this.client = client;
 		this.inputBasedControls = new InputBasedControls(client);
+		
+		setCursorPolicy(CursorPolicy.FORBID);
 	}
 
 	@Override
