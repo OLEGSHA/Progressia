@@ -18,7 +18,6 @@
  
 package ru.windcorp.progressia;
 
-import ru.windcorp.progressia.common.modules.TaskManager;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.crash.analyzers.OutOfMemoryAnalyzer;
 import ru.windcorp.progressia.common.util.crash.providers.*;

@@ -25,8 +25,6 @@ public class Module extends Namespaced {
 
 	private final Set<Task> tasks = new HashSet<>();
 	private final Map<String, String> meta = new HashMap<>();
-	private final Map<String, String> unmodifiableMeta = Collections.unmodifiableMap(meta);
-	private final Set<Task> unmodifiableTasks = Collections.unmodifiableSet(tasks);
 
 	/**
 	 * @param id the identifier of a task object.
@@ -42,11 +40,11 @@ public class Module extends Namespaced {
 	 * @return meta information of the module as {@link Map}.
 	 */
 	public Map<String, String> getMeta() {
-		return unmodifiableMeta;
+		return Collections.unmodifiableMap(meta);
 	}
 
 	public Set<Task> getTasks() {
-		return unmodifiableTasks;
+		return Collections.unmodifiableSet(tasks);
 	}
 
 	/**

@@ -21,9 +21,7 @@ import ru.windcorp.jputil.chars.StringUtil;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class Task
@@ -40,28 +38,18 @@ public abstract class Task
 	 * Its format is restricted by {@link Namespaced}.
 	 * @see Namespaced#Namespaced
 	 */
-	public Task(String id) {
+	protected Task(String id) {
 		super(id);
-	}
-
-	/**
-	 * @param id the identifier of a task object.
-	 * Its format is restricted by {@link Namespaced}.
-	 * @param module to which the task will be attached.
-	 * @see Namespaced#Namespaced
-	 */
-	public Task(String id, Module module) {
-		this(id);
-		module.addTask(this);
 	}
 
 	@Override
 	public void run() {
 		if (!canRun()) {
-			ArrayList<Task> undoneTasks = new ArrayList<>();
-			for (Task j : requiredTasks) {
-				if (!j.isDone()) {
-					undoneTasks.add(j);
+			List<Task> undoneTasks = new ArrayList<>();
+			for (Iterator<Task> iterator = requiredTasks.iterator(); iterator.hasNext(); ) {
+				Task t = iterator.next();
+				if (!t.isDone()) {
+					undoneTasks.add(t);
 				}
 			}
 
@@ -103,14 +91,15 @@ public abstract class Task
 	 */
 	public boolean canRun() {
 		if (this.isActive.get() || isDone.get()) return false;
-		for (Task reqT : requiredTasks) {
-			if (!reqT.isDone()) return false;
+		for (Iterator<Task> iterator = requiredTasks.iterator(); iterator.hasNext(); ) {
+			Task reqTask = iterator.next();
+			if (!reqTask.isDone()) return false;
 		}
 		return true;
 	}
 
 	public Set<Task> getRequiredTasks() {
-		return requiredTasks;
+		return Collections.unmodifiableSet(requiredTasks);
 	}
 
 	public void addRequiredTask(Task task) {
@@ -130,10 +119,10 @@ public abstract class Task
  	 */
 	public void setOwner(Module module) {
 		if (owner != null) {
-			CrashReports.crash(
-					new Throwable()
+			throw CrashReports.crash(
+					null
 					, "Could not set %s as owner of %s, because %s is already owner of it.",
-					module.getId(), this.getId(), this.getOwner().getId());
+					module.getId(), this.getId(), this.owner.getId());
 		} else {
 			owner = module;
 		}

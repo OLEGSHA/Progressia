@@ -31,13 +31,14 @@ public class AudioSystem {
 		Thread shutdownHook = new Thread(AudioManager::closeAL, "AL Shutdown Hook");
 		Runtime.getRuntime().addShutdownHook(shutdownHook);
 
-		Task t = new Task("AudioSystem:Initialize", audioModule) {
+		Task t = new Task("AudioSystem:Initialize") {
 			@Override
 			protected void perform() {
 				loadAudioData();
 				LogManager.getLogger().info("Audio data is loaded");
 			}
 		};
+		audioModule.addTask(t);
 		TaskManager.getInstance().registerModule(audioModule);
 	}
 

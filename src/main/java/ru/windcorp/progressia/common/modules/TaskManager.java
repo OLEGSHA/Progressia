@@ -19,6 +19,7 @@ package ru.windcorp.progressia.common.modules;
 
 import org.apache.logging.log4j.LogManager;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -27,18 +28,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
 
-public class TaskManager {
-	private static final TaskManager instance = new TaskManager();
+public final class TaskManager {
+	private static final TaskManager INSTANCE = new TaskManager();
 
 	private final Set<Task> tasks = new HashSet<>();
 	private final Set<Module> modules = new HashSet<>();
 	private final ExecutorService executorService;
 
-	private final AtomicBoolean loadingDone;
-	private final AtomicInteger activeThreadsCount;
+	final AtomicBoolean loadingDone;
+	final AtomicInteger activeThreadsCount;
 
-	private final Map<Thread, Task> loadersMonitorMap;
-	Map<Thread, Task> unmodifiableLoadersMonitorMap;
+	private final Map<Thread, Namespaced> loadersMonitorMap;
 
 	private TaskManager() {
 		loadingDone = new AtomicBoolean(false);
@@ -46,11 +46,10 @@ public class TaskManager {
 		executorService = newFixedThreadPool(
 				Runtime.getRuntime().availableProcessors(), Thread::new);
 		loadersMonitorMap = new HashMap<>(Runtime.getRuntime().availableProcessors());
-		unmodifiableLoadersMonitorMap = Collections.unmodifiableMap(loadersMonitorMap);
 	}
 
 	public static TaskManager getInstance() {
-		return instance;
+		return TaskManager.INSTANCE;
 	}
 
 	/**
@@ -83,40 +82,14 @@ public class TaskManager {
 	 */
 	public void startLoading() {
 		LogManager.getLogger().info("Loading is started");
-		for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-			executorService.submit(() -> {
-				while (!loadingDone.get()) {
-					Task t = getRunnableTask();
-					if (t != null) {
-						activeThreadsCount.incrementAndGet();
-						loadersMonitorMap.put(Thread.currentThread(), t);
-						t.run();
-						loadersMonitorMap.put(Thread.currentThread(), null);
-						activeThreadsCount.decrementAndGet();
-						synchronized (this) {
-							notifyAll();
-						}
-					} else if (activeThreadsCount.get() > 0) {
-						try {
-							synchronized (this) {
-								this.wait();
-							}
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					} else {
-						loadingDone.set(true);
-						synchronized (this) {
-							notifyAll();
-						}
-					}
-				}
-			});
+		int procAmount = Runtime.getRuntime().availableProcessors();
+		for (int i = 0; i < procAmount; i++) {
+			executorService.submit(loaderTask);
 		}
 
 		waitForLoadingEnd();
 		if (!tasks.isEmpty()) {
-			throw CrashReports.crash(new Exception("Loading is failed"), "");
+			throw CrashReports.crash(null, "Loading is failed");
 		}
 		LogManager.getLogger().info("Loading is finished");
 		executorService.shutdownNow();
@@ -125,12 +98,12 @@ public class TaskManager {
 	/**
 	 * @return Task - founded registered task with {@link Task#canRun()} = true;
 	 * null - there is no available task found.
- 	 * @see Task#canRun()
+	 * @see Task#canRun()
 	 */
-	private synchronized Task getRunnableTask() {
+	synchronized Task getRunnableTask() {
 		if (!tasks.isEmpty()) {
-			for (Task t :
-					tasks) {
+			for (Iterator<Task> iterator = tasks.iterator(); iterator.hasNext(); ) {
+				Task t = iterator.next();
 				if (t.canRun()) {
 					tasks.remove(t);
 					return t;
@@ -145,24 +118,56 @@ public class TaskManager {
 	 * to wait until the loading is not done.
 	 */
 	private void waitForLoadingEnd() {
-		synchronized (this) {
+		synchronized (tasks) {
 			while (!loadingDone.get()) {
 				try {
-					this.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+					tasks.wait();
+				} catch (InterruptedException ignored) {}
 			}
+		}
+	}
+
+	private void stopLoading() {
+		loadingDone.set(true);
+		synchronized (tasks) {
+			tasks.notifyAll();
 		}
 	}
 
 	/**
 	 * @return a map where key is a thread making loading
-	 * and where value is a task that is being performed by it
+	 * and where value is a {@link Namespaced} of {@link Task} that is being performed by it
 	 * at the moment.
+	 * @see Namespaced
 	 */
-	public Map<Thread, Task> getLoadersMonitorMap() {
-		return unmodifiableLoadersMonitorMap;
+	public Map<Thread, Namespaced> getLoadersMonitorMap() {
+		return Collections.unmodifiableMap(loadersMonitorMap);
 	}
 
+	private final Runnable loaderTask = new Runnable() {
+		@Override
+		public void run() {
+			while (!loadingDone.get()) {
+				Task t = getRunnableTask();
+				if (t != null) {
+					activeThreadsCount.incrementAndGet();
+					loadersMonitorMap.put(Thread.currentThread(), t);
+					t.run();
+					loadersMonitorMap.put(Thread.currentThread(), null);
+					activeThreadsCount.decrementAndGet();
+					synchronized (tasks) {
+						tasks.notifyAll();
+					}
+				} else if (activeThreadsCount.get() > 0) {
+					try {
+						synchronized (tasks) {
+							tasks.wait();
+						}
+					} catch (InterruptedException ignored) {}
+				} else {
+					stopLoading();
+				}
+			}
+		}
+	};
 }
