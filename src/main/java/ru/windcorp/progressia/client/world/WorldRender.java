@@ -38,54 +38,54 @@ import ru.windcorp.progressia.client.world.tile.TileRenderReference;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListeners;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.common.world.WorldDataListener;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.ChunkSet;
 import ru.windcorp.progressia.common.world.generic.ChunkSets;
-import ru.windcorp.progressia.common.world.generic.GenericWorld;
+import ru.windcorp.progressia.common.world.generic.WorldGenericRO;
 
 public class WorldRender
-	implements GenericWorld<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender, EntityRenderable> {
+	implements WorldGenericRO<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender, EntityRenderable> {
 
-	private final WorldData data;
+	private final DefaultWorldData data;
 	private final Client client;
 
-	private final Map<ChunkData, ChunkRender> chunks = Collections.synchronizedMap(new HashMap<>());
+	private final Map<DefaultChunkData, ChunkRender> chunks = Collections.synchronizedMap(new HashMap<>());
 	private final Map<EntityData, EntityRenderable> entityModels = Collections.synchronizedMap(new WeakHashMap<>());
 
 	private final ChunkSet chunksToUpdate = ChunkSets.newSyncHashSet();
 
-	public WorldRender(WorldData data, Client client) {
+	public WorldRender(DefaultWorldData data, Client client) {
 		this.data = data;
 		this.client = client;
 
 		data.addListener(ChunkDataListeners.createAdder(new ChunkUpdateListener(this)));
 		data.addListener(new WorldDataListener() {
 			@Override
-			public void onChunkLoaded(WorldData world, ChunkData chunk) {
+			public void onChunkLoaded(DefaultWorldData world, DefaultChunkData chunk) {
 				addChunk(chunk);
 			}
 
 			@Override
-			public void beforeChunkUnloaded(WorldData world, ChunkData chunk) {
+			public void beforeChunkUnloaded(DefaultWorldData world, DefaultChunkData chunk) {
 				removeChunk(chunk);
 			}
 		});
 	}
 
-	protected void addChunk(ChunkData chunk) {
+	protected void addChunk(DefaultChunkData chunk) {
 		chunks.put(chunk, new ChunkRender(WorldRender.this, chunk));
 		markChunkForUpdate(chunk.getPosition());
 	}
 
-	protected void removeChunk(ChunkData chunk) {
+	protected void removeChunk(DefaultChunkData chunk) {
 		chunks.remove(chunk);
 	}
 
-	public WorldData getData() {
+	public DefaultWorldData getData() {
 		return data;
 	}
 
@@ -93,7 +93,7 @@ public class WorldRender
 		return client;
 	}
 
-	public ChunkRender getChunk(ChunkData chunkData) {
+	public ChunkRender getChunk(DefaultChunkData chunkData) {
 		return chunks.get(chunkData);
 	}
 

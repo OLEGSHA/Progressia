@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class PacketAddTile extends PacketAffectTile {
@@ -61,7 +61,7 @@ public class PacketAddTile extends PacketAffectTile {
 	}
 
 	@Override
-	public void apply(WorldData world) {
+	public void apply(DefaultWorldData world) {
 		TileData tile = TileDataRegistry.getInstance().get(getTileId());
 		world.getTiles(getBlockInWorld(), getFace()).add(tile);
 	}

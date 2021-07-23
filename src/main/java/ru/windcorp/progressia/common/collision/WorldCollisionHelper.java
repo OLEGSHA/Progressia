@@ -24,7 +24,7 @@ import java.util.Collection;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.LowOverheadCache;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 
 public class WorldCollisionHelper {
 
@@ -79,7 +79,7 @@ public class WorldCollisionHelper {
 	 *                    checked against
 	 * @param maxTime     maximum collision time
 	 */
-	public void tuneToCollideable(WorldData world, Collideable collideable, float maxTime) {
+	public void tuneToCollideable(DefaultWorldData world, Collideable collideable, float maxTime) {
 		activeBlockModels.forEach(blockModelCache::release);
 		activeBlockModels.clear();
 		CollisionPathComputer.forEveryBlockInCollisionPath(

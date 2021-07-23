@@ -19,10 +19,10 @@
 package ru.windcorp.progressia.server.world.block;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.generic.GenericBlock;
+import ru.windcorp.progressia.common.world.generic.BlockGeneric;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 
-public class BlockLogic extends Namespaced implements GenericBlock {
+public class BlockLogic extends Namespaced implements BlockGeneric {
 
 	public BlockLogic(String id) {
 		super(id);

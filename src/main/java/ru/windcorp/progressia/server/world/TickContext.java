@@ -20,7 +20,7 @@ package ru.windcorp.progressia.server.world;
 
 import java.util.Random;
 
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 
@@ -42,7 +42,7 @@ public interface TickContext {
 		return getServer().getAdHocRandom();
 	}
 
-	default WorldData getWorldData() {
+	default DefaultWorldData getWorldData() {
 		return getWorld().getData();
 	}
 

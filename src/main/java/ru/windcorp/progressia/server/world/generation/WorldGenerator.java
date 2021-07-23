@@ -25,10 +25,10 @@ import java.io.IOException;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.GravityModel;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.WorldLogic;
 
@@ -39,7 +39,7 @@ public abstract class WorldGenerator extends Namespaced {
 		// package-private constructor; extend AbstractWorldGeneration
 	}
 
-	public abstract ChunkData generate(Vec3i chunkPos);
+	public abstract DefaultChunkData generate(Vec3i chunkPos);
 
 	public abstract Object readGenerationHint(DataInputStream input) throws IOException, DecodingException;
 
@@ -53,6 +53,6 @@ public abstract class WorldGenerator extends Namespaced {
 	
 	public abstract Server getServer();
 	public abstract WorldLogic getWorldLogic();
-	public abstract WorldData getWorldData();
+	public abstract DefaultWorldData getWorldData();
 
 }

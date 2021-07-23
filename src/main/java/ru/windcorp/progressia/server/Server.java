@@ -28,7 +28,7 @@ import ru.windcorp.jputil.functions.ThrowingRunnable;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.TaskQueue;
 import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.comms.ClientManager;
 import ru.windcorp.progressia.server.events.ServerEvent;
 import ru.windcorp.progressia.server.management.load.ChunkRequestDaemon;
@@ -68,7 +68,7 @@ public class Server {
 
 	private final TickingSettings tickingSettings = new TickingSettings();
 
-	public Server(WorldData world) {
+	public Server(DefaultWorldData world) {
 		this.world = new WorldLogic(
 			world,
 			this,

@@ -15,29 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+ 
 package ru.windcorp.progressia.common.world.generic;
 
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.Coordinates;
 
-// @formatter:off
-public interface GenericWritableChunk<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericWritableTileStack <B, T, TS, TR, C>,
-	TR extends GenericTileReference     <B, T, TS, TR, C>,
-	C  extends GenericWritableChunk     <B, T, TS, TR, C>
->
-	extends GenericChunk<B, T, TS, TR, C> {
-// @formatter:on
+public interface EntityGeneric {
 
-	void setBlock(Vec3i posInChunk, B block, boolean notify);
+	String getId();
+	
+	long getEntityId();
 
-	default void setBlockRel(Vec3i relativeBlockInChunk, B block, boolean notify) {
-		Vec3i absoluteBlockInChunk = Vectors.grab3i();
-		resolve(relativeBlockInChunk, absoluteBlockInChunk);
-		setBlock(absoluteBlockInChunk, block, notify);
-		Vectors.release(absoluteBlockInChunk);
+	Vec3 getPosition();
+
+	default Vec3i getBlockInWorld(Vec3i output) {
+		if (output == null)
+			output = new Vec3i();
+		return getPosition().round(output);
+	}
+
+	default Vec3i getChunkCoords(Vec3i output) {
+		output = getBlockInWorld(output);
+		return Coordinates.convertInWorldToChunk(output, output);
 	}
 
 }

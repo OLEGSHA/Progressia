@@ -34,9 +34,9 @@ import org.apache.logging.log4j.Logger;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.state.IOContext;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.common.world.io.ChunkIO;
 import ru.windcorp.progressia.server.Server;
 
@@ -47,7 +47,7 @@ public class TestWorldDiskIO {
 
 	private static final boolean ENABLE = false;
 
-	public static void saveChunk(ChunkData chunk, Server server) {
+	public static void saveChunk(DefaultChunkData chunk, Server server) {
 		if (!ENABLE)
 			return;
 
@@ -83,12 +83,12 @@ public class TestWorldDiskIO {
 		}
 	}
 
-	private static void writeGenerationHint(ChunkData chunk, DataOutputStream output, Server server)
+	private static void writeGenerationHint(DefaultChunkData chunk, DataOutputStream output, Server server)
 		throws IOException {
 		server.getWorld().getGenerator().writeGenerationHint(output, chunk.getGenerationHint());
 	}
 
-	public static ChunkData tryToLoad(Vec3i chunkPos, WorldData world, Server server) {
+	public static DefaultChunkData tryToLoad(Vec3i chunkPos, DefaultWorldData world, Server server) {
 		if (!ENABLE)
 			return null;
 
@@ -113,7 +113,7 @@ public class TestWorldDiskIO {
 		}
 
 		try {
-			ChunkData result = load(path, chunkPos, world, server);
+			DefaultChunkData result = load(path, chunkPos, world, server);
 
 			LOG.debug(
 				"Loaded {} {} {}",
@@ -135,7 +135,7 @@ public class TestWorldDiskIO {
 		}
 	}
 
-	private static ChunkData load(Path path, Vec3i chunkPos, WorldData world, Server server)
+	private static DefaultChunkData load(Path path, Vec3i chunkPos, DefaultWorldData world, Server server)
 		throws IOException,
 		DecodingException {
 		try (
@@ -143,13 +143,13 @@ public class TestWorldDiskIO {
 				new InflaterInputStream(new BufferedInputStream(Files.newInputStream(path)))
 			)
 		) {
-			ChunkData chunk = ChunkIO.load(world, chunkPos, input, IOContext.SAVE);
+			DefaultChunkData chunk = ChunkIO.load(world, chunkPos, input, IOContext.SAVE);
 			readGenerationHint(chunk, input, server);
 			return chunk;
 		}
 	}
 
-	private static void readGenerationHint(ChunkData chunk, DataInputStream input, Server server)
+	private static void readGenerationHint(DefaultChunkData chunk, DataInputStream input, Server server)
 		throws IOException,
 		DecodingException {
 		chunk.setGenerationHint(server.getWorld().getGenerator().readGenerationHint(input));

@@ -18,13 +18,16 @@
  
 package ru.windcorp.progressia.server.world.tile;
 
-import ru.windcorp.progressia.common.world.generic.GenericTileStack;
-import ru.windcorp.progressia.common.world.tile.TileDataStack;
+import java.util.AbstractList;
+
+import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.generic.TileGenericStackRO;
 import ru.windcorp.progressia.server.world.ChunkLogic;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 
 public abstract class TileLogicStack
-	extends GenericTileStack<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic> {
+	extends AbstractList<TileLogic>
+	implements TileGenericStackRO<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic> {
 
 	public abstract TileDataStack getData();
 

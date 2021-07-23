@@ -17,7 +17,7 @@
  */
 package ru.windcorp.progressia.test.gen.planet;
 
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 
 public class Planet {
 	
@@ -47,7 +47,7 @@ public class Planet {
 	}
 	
 	public float getRadius() {
-		return radiusInChunks * ChunkData.BLOCKS_PER_CHUNK + ChunkData.CHUNK_RADIUS;
+		return radiusInChunks * DefaultChunkData.BLOCKS_PER_CHUNK + DefaultChunkData.CHUNK_RADIUS;
 	}
 	
 	public int getDiameterInChunks() {
@@ -55,7 +55,7 @@ public class Planet {
 	}
 	
 	public float getDiameter() {
-		return getDiameterInChunks() * ChunkData.BLOCKS_PER_CHUNK;
+		return getDiameterInChunks() * DefaultChunkData.BLOCKS_PER_CHUNK;
 	}
 	
 	/**

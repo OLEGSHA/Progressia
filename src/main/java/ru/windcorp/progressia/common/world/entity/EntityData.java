@@ -32,10 +32,10 @@ import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.state.StatefulObject;
 import ru.windcorp.progressia.common.util.Matrices;
-import ru.windcorp.progressia.common.world.generic.GenericEntity;
+import ru.windcorp.progressia.common.world.generic.EntityGeneric;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 
-public class EntityData extends StatefulObject implements Collideable, GenericEntity {
+public class EntityData extends StatefulObject implements Collideable, EntityGeneric {
 
 	private final Vec3 position = new Vec3();
 	private final Vec3 velocity = new Vec3();

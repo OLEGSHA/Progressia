@@ -18,21 +18,24 @@
 package ru.windcorp.progressia.common.world.generic;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.block.BlockData;
+import ru.windcorp.progressia.common.state.StateChange;
+import ru.windcorp.progressia.common.state.StatefulObject;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
 
 //@formatter:off
-public interface GenericWritableWorld<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericWritableTileStack <B, T, TS, TR, C>,
-	TR extends GenericTileReference     <B, T, TS, TR, C>,
-	C  extends GenericWritableChunk     <B, T, TS, TR, C>,
-	E  extends GenericEntity
->
-	extends GenericWorld<B, T, TS, TR, C, E> {
+public interface WorldGenericWO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackWO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceWO <B, T, TS, TR, C>,
+	C  extends ChunkGenericWO         <B, T, TS, TR, C>,
+	E  extends EntityGeneric
+> {
 //@formatter:on
 
-	void setBlock(Vec3i blockInWorld, BlockData block, boolean notify);
+	void setBlock(Vec3i blockInWorld, B block, boolean notify);
+
+	TS getTiles(Vec3i blockInWorld, BlockFace face);
 
 	void addEntity(E entity);
 
@@ -41,5 +44,14 @@ public interface GenericWritableWorld<
 	default void removeEntity(E entity) {
 		removeEntity(entity.getEntityId());
 	}
+
+	/**
+	 * Requests that the specified change is applied to the given entity. The
+	 * {@code change} object provided may be stored until the change is applied.
+	 * 
+	 * @param entity the entity to change
+	 * @param change the change to apply
+	 */
+	<SE extends StatefulObject & EntityGeneric> void changeEntity(SE entity, StateChange<SE> change);
 
 }

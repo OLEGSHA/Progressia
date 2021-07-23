@@ -19,8 +19,8 @@
 package ru.windcorp.progressia.server.world.tile;
 
 import ru.windcorp.progressia.common.world.tile.TileData;
-import ru.windcorp.progressia.common.world.tile.TileDataStack;
-import ru.windcorp.progressia.common.world.tile.TileDataReference;
+import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.TileDataReference;
 
 public interface TileTickContext extends TSTickContext {
 

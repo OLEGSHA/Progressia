@@ -23,9 +23,9 @@ import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.common.world.generic.GenericEntity;
+import ru.windcorp.progressia.common.world.generic.EntityGeneric;
 
-public abstract class EntityRenderable implements Renderable, GenericEntity {
+public abstract class EntityRenderable implements Renderable, EntityGeneric {
 
 	private final EntityData data;
 	

@@ -23,13 +23,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.generic.GenericTileStack;
+import ru.windcorp.progressia.common.world.generic.TileGenericStackRO;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
-import ru.windcorp.progressia.common.world.tile.TileDataStack;
-import ru.windcorp.progressia.common.world.tile.TileDataReference;
+import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.TileDataReference;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockTickContext;
 import ru.windcorp.progressia.server.world.tile.TSTickContext;
@@ -109,9 +109,9 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 
 			Block withBlock(Vec3i blockInWorld);
 
-			TileStack withTS(GenericTileStack<?, ?, ?, ?, ?> tileStack);
+			TileStack withTS(TileGenericStackRO<?, ?, ?, ?, ?> tileStack);
 
-			default Builder.Chunk withChunk(ChunkData chunk) {
+			default Builder.Chunk withChunk(DefaultChunkData chunk) {
 				Objects.requireNonNull(chunk, "chunk");
 				return withChunk(chunk.getPosition());
 			}
@@ -259,7 +259,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		}
 
 		@Override
-		public TileStack withTS(GenericTileStack<?, ?, ?, ?, ?> tileStack) {
+		public TileStack withTS(TileGenericStackRO<?, ?, ?, ?, ?> tileStack) {
 			Objects.requireNonNull(tileStack, "tileStack");
 
 			return withBlock(
@@ -324,7 +324,7 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 			final int minX = Coordinates.getInWorld(chunk.x, 0);
 			final int minY = Coordinates.getInWorld(chunk.y, 0);
 			final int minZ = Coordinates.getInWorld(chunk.z, 0);
-			final int size = ChunkData.BLOCKS_PER_CHUNK;
+			final int size = DefaultChunkData.BLOCKS_PER_CHUNK;
 
 			for (v.x = minX; v.x < minX + size; ++v.x) {
 				for (v.y = minY; v.y < minY + size; ++v.y) {

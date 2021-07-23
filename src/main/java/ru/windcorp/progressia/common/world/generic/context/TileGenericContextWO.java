@@ -28,14 +28,14 @@ import ru.windcorp.progressia.common.world.generic.*;
  * The tile may or may not actually exist.
  */
 //@formatter:off
-public interface GenericRWTileContext<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericRWTileStack <B, T, TS, TR, C>,
-	TR extends GenericROTileReference     <B, T, TS, TR, C>,
-	C  extends GenericRWChunk     <B, T, TS, TR, C>,
-	E  extends GenericEntity
-> extends GenericRWBlockFaceContext<B, T, TS, TR, C, E>, GenericROTileContext<B, T, TS, TR, C, E> {
+public interface TileGenericContextWO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackWO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceWO <B, T, TS, TR, C>,
+	C  extends ChunkGenericWO         <B, T, TS, TR, C>,
+	E  extends EntityGeneric
+> extends WorldContexts.Tile, BlockFaceGenericContextWO<B, T, TS, TR, C, E> {
 //@formatter:on
 
 	/**

@@ -22,7 +22,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.ArrayFloatRangeMap;
 import ru.windcorp.progressia.common.util.FloatRangeMap;
 import ru.windcorp.progressia.common.util.VectorUtil;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
@@ -40,7 +40,7 @@ class PlanetTerrainGenerator {
 		this.parent = generator;
 
 		SurfaceFloatField heightMap = new TestHeightMap(
-			generator.getPlanet().getRadius() - ChunkData.BLOCKS_PER_CHUNK,
+			generator.getPlanet().getRadius() - DefaultChunkData.BLOCKS_PER_CHUNK,
 			generator.getPlanet().getRadius() / 4,
 			5,
 			6
@@ -61,8 +61,8 @@ class PlanetTerrainGenerator {
 		return parent;
 	}
 
-	public ChunkData generateTerrain(Vec3i chunkPos) {
-		ChunkData chunk = new ChunkData(chunkPos, getGenerator().getWorldData());
+	public DefaultChunkData generateTerrain(Vec3i chunkPos) {
+		DefaultChunkData chunk = new DefaultChunkData(chunkPos, getGenerator().getWorldData());
 
 		if (isOrdinaryChunk(chunkPos)) {
 			generateOrdinaryTerrain(chunk);
@@ -80,11 +80,11 @@ class PlanetTerrainGenerator {
 		return sorted.x != sorted.y;
 	}
 
-	private void generateOrdinaryTerrain(ChunkData chunk) {
+	private void generateOrdinaryTerrain(DefaultChunkData chunk) {
 		surfaceGenerator.generateTerrain(chunk);
 	}
 
-	private void generateBorderTerrain(ChunkData chunk) {
+	private void generateBorderTerrain(DefaultChunkData chunk) {
 		BlockData stone = BlockDataRegistry.getInstance().get("Test:Stone");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 		
@@ -100,7 +100,7 @@ class PlanetTerrainGenerator {
 				Coordinates.getInWorld(chunk.getZ(), bic.z)
 			);
 			
-			biw.sub(ChunkData.CHUNK_RADIUS - 0.5f);
+			biw.sub(DefaultChunkData.CHUNK_RADIUS - 0.5f);
 			VectorUtil.sortAfterAbs(biw, biw);
 			
 			chunk.setBlock(bic, biw.x <= radius ? stone : air, false);

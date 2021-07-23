@@ -34,7 +34,7 @@ import com.google.common.collect.ImmutableList;
 
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.ChunkDataListeners;
 import ru.windcorp.progressia.server.Server;
@@ -105,7 +105,7 @@ public class TickerCoordinator {
 
 		server.getWorld().getData().addListener(ChunkDataListeners.createAdder(new ChunkDataListener() {
 			@Override
-			public void onChunkChanged(ChunkData chunk) {
+			public void onChunkChanged(DefaultChunkData chunk) {
 				if (!canChange.get()) {
 					throw CrashReports.report(null, "A change has been detected during evaluation phase");
 				}

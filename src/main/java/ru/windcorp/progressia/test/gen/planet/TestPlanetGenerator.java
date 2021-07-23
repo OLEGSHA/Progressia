@@ -24,7 +24,7 @@ import java.io.IOException;
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.generation.AbstractWorldGenerator;
@@ -76,9 +76,9 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 	}
 
 	@Override
-	public ChunkData generate(Vec3i chunkPos) {
+	public DefaultChunkData generate(Vec3i chunkPos) {
 		VectorUtil.iterateCuboidAround(chunkPos, 3, r -> conjureTerrain(r));
-		ChunkData chunk = getWorldData().getChunk(chunkPos);
+		DefaultChunkData chunk = getWorldData().getChunk(chunkPos);
 		
 		if (!isChunkReady(chunk.getGenerationHint())) {
 			featureGenerator.generateFeatures(chunk);
@@ -88,7 +88,7 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 	}
 	
 	private void conjureTerrain(Vec3i chunkPos) {
-		ChunkData chunk = getWorldData().getChunk(chunkPos);
+		DefaultChunkData chunk = getWorldData().getChunk(chunkPos);
 		
 		if (chunk == null) {
 			chunk = getWorldData().getChunk(chunkPos);

@@ -35,7 +35,7 @@ import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerRegistry;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.client.world.tile.TileRenderNone;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.generic.GenericChunks;
 import ru.windcorp.progressia.common.world.rels.AxisRotations;
 import ru.windcorp.progressia.common.world.rels.RelFace;
@@ -55,12 +55,12 @@ public class ChunkRenderModel implements Renderable {
 	public void render(ShapeRenderHelper renderer) {
 		if (model == null) return;
 		
-		float offset = ChunkData.BLOCKS_PER_CHUNK / 2 - 0.5f;
+		float offset = DefaultChunkData.BLOCKS_PER_CHUNK / 2 - 0.5f;
 		
 		renderer.pushTransform().translate(
-			chunk.getX() * ChunkData.BLOCKS_PER_CHUNK,
-			chunk.getY() * ChunkData.BLOCKS_PER_CHUNK,
-			chunk.getZ() * ChunkData.BLOCKS_PER_CHUNK
+			chunk.getX() * DefaultChunkData.BLOCKS_PER_CHUNK,
+			chunk.getY() * DefaultChunkData.BLOCKS_PER_CHUNK,
+			chunk.getZ() * DefaultChunkData.BLOCKS_PER_CHUNK
 		).translate(offset, offset, offset)
 		.mul(AxisRotations.getResolutionMatrix4(chunk.getUp()))
 		.translate(-offset, -offset, -offset);

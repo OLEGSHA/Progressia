@@ -34,7 +34,7 @@ public class GenericChunks {
 			output = new Vec3i();
 		}
 
-		final int offset = GenericChunk.BLOCKS_PER_CHUNK - 1;
+		final int offset = ChunkGenericRO.BLOCKS_PER_CHUNK - 1;
 
 		output.set(relativeCoords.x, relativeCoords.y, relativeCoords.z);
 		output.mul(2).sub(offset);
@@ -51,7 +51,7 @@ public class GenericChunks {
 			output = new Vec3i();
 		}
 
-		final int offset = GenericChunk.BLOCKS_PER_CHUNK - 1;
+		final int offset = ChunkGenericRO.BLOCKS_PER_CHUNK - 1;
 
 		output.set(absoluteCoords.x, absoluteCoords.y, absoluteCoords.z);
 		output.mul(2).sub(offset);
@@ -73,7 +73,7 @@ public class GenericChunks {
 		return hits;
 	}
 	
-	static boolean testBiC(Vec3i blockInWorld, GenericChunk<?, ?, ?, ?, ?> chunk, Predicate<Vec3i> test) {
+	static boolean testBiC(Vec3i blockInWorld, ChunkGenericRO<?, ?, ?, ?, ?> chunk, Predicate<Vec3i> test) {
 		Vec3i v = Vectors.grab3i();
 
 		v = Coordinates.getInWorld(chunk.getPosition(), Vectors.ZERO_3i, v);
@@ -87,9 +87,9 @@ public class GenericChunks {
 	}
 
 	public static boolean containsBiC(Vec3i blockInChunk) {
-		return blockInChunk.x >= 0 && blockInChunk.x < GenericChunk.BLOCKS_PER_CHUNK &&
-			blockInChunk.y >= 0 && blockInChunk.y < GenericChunk.BLOCKS_PER_CHUNK &&
-			blockInChunk.z >= 0 && blockInChunk.z < GenericChunk.BLOCKS_PER_CHUNK;
+		return blockInChunk.x >= 0 && blockInChunk.x < ChunkGenericRO.BLOCKS_PER_CHUNK &&
+			blockInChunk.y >= 0 && blockInChunk.y < ChunkGenericRO.BLOCKS_PER_CHUNK &&
+			blockInChunk.z >= 0 && blockInChunk.z < ChunkGenericRO.BLOCKS_PER_CHUNK;
 	}
 
 	public static boolean isSurfaceBiC(Vec3i blockInChunk) {
@@ -109,9 +109,9 @@ public class GenericChunks {
 			0,
 			0,
 			0,
-			GenericChunk.BLOCKS_PER_CHUNK,
-			GenericChunk.BLOCKS_PER_CHUNK,
-			GenericChunk.BLOCKS_PER_CHUNK,
+			ChunkGenericRO.BLOCKS_PER_CHUNK,
+			ChunkGenericRO.BLOCKS_PER_CHUNK,
+			ChunkGenericRO.BLOCKS_PER_CHUNK,
 			action
 		);
 	}

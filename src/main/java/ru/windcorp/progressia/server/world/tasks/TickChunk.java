@@ -27,9 +27,9 @@ import com.google.common.collect.ImmutableList;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.FloatMathUtil;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
-import ru.windcorp.progressia.common.world.tile.TileDataStack;
+import ru.windcorp.progressia.common.world.TileDataStack;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.ChunkLogic;
 import ru.windcorp.progressia.server.world.TickContextMutable;
@@ -40,13 +40,13 @@ import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
 import ru.windcorp.progressia.server.world.tile.TSTickContext;
 import ru.windcorp.progressia.server.world.tile.TickableTile;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
-import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
+import static ru.windcorp.progressia.common.world.DefaultChunkData.BLOCKS_PER_CHUNK;
 
 public class TickChunk extends Evaluation {
 
-	private static final int CHUNK_VOLUME = ChunkData.BLOCKS_PER_CHUNK *
-		ChunkData.BLOCKS_PER_CHUNK *
-		ChunkData.BLOCKS_PER_CHUNK;
+	private static final int CHUNK_VOLUME = DefaultChunkData.BLOCKS_PER_CHUNK *
+		DefaultChunkData.BLOCKS_PER_CHUNK *
+		DefaultChunkData.BLOCKS_PER_CHUNK;
 
 	private final List<Consumer<Server>> randomTickMethods;
 

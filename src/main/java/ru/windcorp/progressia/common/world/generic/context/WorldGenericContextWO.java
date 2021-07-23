@@ -30,14 +30,14 @@ import ru.windcorp.progressia.common.world.rels.BlockFace;
  * may not be immediate, see {@link #isImmediate()}.
  */
 // @formatter:off
-public interface GenericRWWorldContext<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericRWTileStack <B, T, TS, TR, C>,
-	TR extends GenericROTileReference     <B, T, TS, TR, C>,
-	C  extends GenericRWChunk     <B, T, TS, TR, C>,
-	E  extends GenericEntity
-> extends GenericROWorldContext<B, T, TS, TR, C, E>, GenericRWWorld<B, T, TS, TR, C, E> {
+public interface WorldGenericContextWO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackWO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceWO <B, T, TS, TR, C>,
+	C  extends ChunkGenericWO         <B, T, TS, TR, C>,
+	E  extends EntityGeneric
+> extends WorldContexts.World, WorldGenericWO<B, T, TS, TR, C, E> {
 // @formatter:on
 
 	/**
@@ -92,17 +92,20 @@ public interface GenericRWWorldContext<
 	void removeTile(Vec3i location, BlockFace face, int tag);
 
 	/**
-	 * Requests that the referenced tile is removed from the specified tile
-	 * stack. If the tile could not be found at the time of application this
-	 * method fails silently.
+	 * Requests that the referenced tile is removed from its tile stack. If the
+	 * tile could not be found at the time of application this method fails
+	 * silently.
 	 * 
-	 * @param location      the location of the block from which the tile is to
-	 *                      be removed
-	 * @param face          the of the block to remove the tile from
 	 * @param tileReference a reference to the tile
 	 */
-	default void removeTile(Vec3i location, BlockFace face, TR tileReference) {
-		removeTile(location, face, tileReference.getTag());
+	default void removeTile(TileGenericReferenceRO<?, ?, ?, ?, ?> tileReference) {
+		TileGenericStackRO<?, ?, ?, ?, ?> tileStack = tileReference.getStack();
+
+		if (tileStack == null) {
+			return;
+		}
+
+		removeTile(tileStack.getBlockInWorld(null), tileStack.getFace(), tileReference.getTag());
 	}
 
 	/**
@@ -123,7 +126,7 @@ public interface GenericRWWorldContext<
 	 * 
 	 * @param entityId the ID of the entity to remove
 	 * @see #isImmediate()
-	 * @see #removeEntity(GenericEntity)
+	 * @see #removeEntity(EntityGeneric)
 	 */
 	@Override
 	void removeEntity(long entityId);
@@ -140,12 +143,13 @@ public interface GenericRWWorldContext<
 	void removeEntity(E entity);
 
 	/**
-	 * Requests that the specified change is applied to the given entity. The {@code change} object provided may be stored until the change is applied.
+	 * Requests that the specified change is applied to the given entity. The
+	 * {@code change} object provided may be stored until the change is applied.
 	 * 
 	 * @param entity the entity to change
 	 * @param change the change to apply
 	 */
 	@Override
-	<SE extends StatefulObject & GenericEntity> void changeEntity(SE entity, StateChange<SE> change);
+	<SE extends StatefulObject & EntityGeneric> void changeEntity(SE entity, StateChange<SE> change);
 
 }

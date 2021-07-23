@@ -17,11 +17,11 @@
  */
 package ru.windcorp.progressia.server.world.tile;
 
-import ru.windcorp.progressia.common.world.generic.GenericTileReference;
+import ru.windcorp.progressia.common.world.generic.TileGenericReferenceRO;
 import ru.windcorp.progressia.server.world.ChunkLogic;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 
 public interface TileLogicReference
-	extends GenericTileReference<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic> {
+	extends TileGenericReferenceRO<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic> {
 
 }

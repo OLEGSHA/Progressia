@@ -27,7 +27,7 @@ import glm.vec._3.Vec3;
 import ru.windcorp.progressia.common.collision.*;
 import ru.windcorp.progressia.common.util.LowOverheadCache;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 
 public class Collider {
 
@@ -36,7 +36,7 @@ public class Collider {
 	/**
 	 * Dear Princess Celestia,
 	 * <p>
-	 * When {@linkplain #advanceTime(Collection, Collision, WorldData, float)
+	 * When {@linkplain #advanceTime(Collection, Collision, DefaultWorldData, float)
 	 * advancing time},
 	 * time step for all entities <em>except</em> currently colliding bodies is
 	 * the current
@@ -61,7 +61,7 @@ public class Collider {
 
 	public static void performCollisions(
 		List<? extends Collideable> colls,
-		WorldData world,
+		DefaultWorldData world,
 		float tickLength,
 		ColliderWorkspace workspace
 	) {
@@ -96,7 +96,7 @@ public class Collider {
 	private static Collision getFirstCollision(
 		List<? extends Collideable> colls,
 		float tickLength,
-		WorldData world,
+		DefaultWorldData world,
 		ColliderWorkspace workspace
 	) {
 		Collision result = null;
@@ -126,7 +126,7 @@ public class Collider {
 	private static void tuneWorldCollisionHelper(
 		Collideable coll,
 		float tickLength,
-		WorldData world,
+		DefaultWorldData world,
 		ColliderWorkspace workspace
 	) {
 		WorldCollisionHelper wch = workspace.worldCollisionHelper;
@@ -194,7 +194,7 @@ public class Collider {
 		Collision collision,
 
 		Collection<? extends Collideable> colls,
-		WorldData world,
+		DefaultWorldData world,
 		float tickLength,
 		ColliderWorkspace workspace
 	) {
@@ -361,7 +361,7 @@ public class Collider {
 	private static void advanceTime(
 		Collection<? extends Collideable> colls,
 		Collision exceptions,
-		WorldData world,
+		DefaultWorldData world,
 		float step
 	) {
 		world.advanceTime(step);

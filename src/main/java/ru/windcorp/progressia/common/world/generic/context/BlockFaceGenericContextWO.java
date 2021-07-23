@@ -28,14 +28,14 @@ import ru.windcorp.progressia.common.world.generic.*;
  * stack may or may not actually exist.
  */
 //@formatter:off
-public interface GenericRWBlockFaceContext<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericRWTileStack <B, T, TS, TR, C>,
-	TR extends GenericROTileReference     <B, T, TS, TR, C>,
-	C  extends GenericRWChunk     <B, T, TS, TR, C>,
-	E  extends GenericEntity
-> extends GenericRWBlockContext<B, T, TS, TR, C, E>, GenericROBlockFaceContext<B, T, TS, TR, C, E> {
+public interface BlockFaceGenericContextWO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackWO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceWO <B, T, TS, TR, C>,
+	C  extends ChunkGenericWO         <B, T, TS, TR, C>,
+	E  extends EntityGeneric
+> extends WorldContexts.BlockFace, BlockGenericContextWO<B, T, TS, TR, C, E> {
 //@formatter:on
 
 	/**
@@ -61,18 +61,6 @@ public interface GenericRWBlockFaceContext<
 	 */
 	default void removeTile(int tag) {
 		removeTile(getLocation(), getFace(), tag);
-	}
-
-	/**
-	 * Requests that the referenced tile is removed from the specified tile
-	 * stack. If the tile could not be found at the time of application this
-	 * method fails silently. The location and the face of the block are implied
-	 * by the context.
-	 * 
-	 * @param tileReference a reference to the tile
-	 */
-	default void removeTile(TR tileReference) {
-		removeTile(getLocation(), getFace(), tileReference.getTag());
 	}
 
 }

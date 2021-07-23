@@ -18,26 +18,20 @@
 package ru.windcorp.progressia.common.world.generic.context;
 
 import ru.windcorp.progressia.common.world.context.Context;
-import ru.windcorp.progressia.common.world.generic.GenericBlock;
-import ru.windcorp.progressia.common.world.generic.GenericROChunk;
-import ru.windcorp.progressia.common.world.generic.GenericEntity;
-import ru.windcorp.progressia.common.world.generic.GenericTile;
-import ru.windcorp.progressia.common.world.generic.GenericROTileReference;
-import ru.windcorp.progressia.common.world.generic.GenericROTileStack;
-import ru.windcorp.progressia.common.world.generic.GenericROWorld;
+import ru.windcorp.progressia.common.world.generic.*;
 
 /**
  * A {@link Context} with a world instance.
  */
 // @formatter:off
-public interface GenericROWorldContext<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericROTileStack     <B, T, TS, TR, C>,
-	TR extends GenericROTileReference <B, T, TS, TR, C>,
-	C  extends GenericROChunk         <B, T, TS, TR, C>,
-	E  extends GenericEntity
-> extends Context, GenericROWorld<B, T, TS, TR, C, E> {
+public interface WorldGenericContextRO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackRO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceRO <B, T, TS, TR, C>,
+	C  extends ChunkGenericRO         <B, T, TS, TR, C>,
+	E  extends EntityGeneric
+> extends WorldContexts.World, WorldGenericRO<B, T, TS, TR, C, E> {
 // @formatter:on
 	
 	// currently empty

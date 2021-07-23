@@ -33,9 +33,9 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import ru.windcorp.jputil.functions.ThrowingConsumer;
 import ru.windcorp.progressia.common.state.IOContext;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.generic.GenericChunks;
@@ -76,7 +76,7 @@ public class TestChunkCodec extends ChunkCodec {
 	}
 
 	@Override
-	public boolean shouldEncode(ChunkData chunk, IOContext context) {
+	public boolean shouldEncode(DefaultChunkData chunk, IOContext context) {
 		return true;
 	}
 
@@ -85,13 +85,13 @@ public class TestChunkCodec extends ChunkCodec {
 	 */
 
 	@Override
-	public ChunkData decode(WorldData world, Vec3i position, DataInputStream input, IOContext context)
+	public DefaultChunkData decode(DefaultWorldData world, Vec3i position, DataInputStream input, IOContext context)
 		throws DecodingException,
 		IOException {
 		BlockData[] blockPalette = readBlockPalette(input);
 		TileData[] tilePalette = readTilePalette(input);
 
-		ChunkData chunk = new ChunkData(position, world);
+		DefaultChunkData chunk = new DefaultChunkData(position, world);
 		
 		readBlocks(input, blockPalette, chunk);
 		readTiles(input, tilePalette, chunk);
@@ -121,7 +121,7 @@ public class TestChunkCodec extends ChunkCodec {
 		return palette;
 	}
 
-	private void readBlocks(DataInput input, BlockData[] blockPalette, ChunkData chunk) throws IOException {
+	private void readBlocks(DataInput input, BlockData[] blockPalette, DefaultChunkData chunk) throws IOException {
 		try {
 			GenericChunks.forEachBiC(guard(v -> {
 				chunk.setBlock(v, blockPalette[input.readInt()], false);
@@ -131,7 +131,7 @@ public class TestChunkCodec extends ChunkCodec {
 		}
 	}
 
-	private void readTiles(DataInput input, TileData[] tilePalette, ChunkData chunk) throws IOException {
+	private void readTiles(DataInput input, TileData[] tilePalette, DefaultChunkData chunk) throws IOException {
 		Vec3i bic = new Vec3i();
 
 		while (true) {
@@ -157,7 +157,7 @@ public class TestChunkCodec extends ChunkCodec {
 	 */
 
 	@Override
-	public void encode(ChunkData chunk, DataOutputStream output, IOContext context) throws IOException {
+	public void encode(DefaultChunkData chunk, DataOutputStream output, IOContext context) throws IOException {
 		Palette<BlockData> blockPalette = createBlockPalette(chunk);
 		Palette<TileData> tilePalette = createTilePalette(chunk);
 
@@ -168,13 +168,13 @@ public class TestChunkCodec extends ChunkCodec {
 		writeTiles(chunk, tilePalette, output);
 	}
 
-	private Palette<BlockData> createBlockPalette(ChunkData chunk) {
+	private Palette<BlockData> createBlockPalette(DefaultChunkData chunk) {
 		Palette<BlockData> blockPalette = new Palette<>();
 		GenericChunks.forEachBiC(v -> blockPalette.add(chunk.getBlock(v)));
 		return blockPalette;
 	}
 
-	private Palette<TileData> createTilePalette(ChunkData chunk) {
+	private Palette<TileData> createTilePalette(DefaultChunkData chunk) {
 		Palette<TileData> tilePalette = new Palette<>();
 		chunk.forEachTile((ts, t) -> tilePalette.add(t));
 		return tilePalette;
@@ -196,7 +196,7 @@ public class TestChunkCodec extends ChunkCodec {
 		}
 	}
 
-	private void writeBlocks(ChunkData chunk, Palette<BlockData> blockPalette, DataOutput output) throws IOException {
+	private void writeBlocks(DefaultChunkData chunk, Palette<BlockData> blockPalette, DataOutput output) throws IOException {
 		try {
 			GenericChunks.forEachBiC(guard(v -> {
 				output.writeInt(blockPalette.getNid(chunk.getBlock(v)));
@@ -206,7 +206,7 @@ public class TestChunkCodec extends ChunkCodec {
 		}
 	}
 
-	private void writeTiles(ChunkData chunk, Palette<TileData> tilePalette, DataOutput output) throws IOException {
+	private void writeTiles(DefaultChunkData chunk, Palette<TileData> tilePalette, DataOutput output) throws IOException {
 		Vec3i bic = new Vec3i();
 
 		try {

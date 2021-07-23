@@ -25,7 +25,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.generic.GenericChunks;
 
 public abstract class SurfaceFeature extends Namespaced {
@@ -33,13 +33,13 @@ public abstract class SurfaceFeature extends Namespaced {
 	public static class Request {
 
 		private final SurfaceWorld world;
-		private final ChunkData chunk;
+		private final DefaultChunkData chunk;
 		private final Vec3i minSfc = new Vec3i();
 		private final Vec3i maxSfc = new Vec3i();
 		
 		private final Random random;
 
-		public Request(SurfaceWorld world, ChunkData chunk, Random random) {
+		public Request(SurfaceWorld world, DefaultChunkData chunk, Random random) {
 			this.world = world;
 			this.chunk = chunk;
 			this.random = random;
@@ -57,7 +57,7 @@ public abstract class SurfaceFeature extends Namespaced {
 			maxSfc.z -= world.getSurface().getSeaLevel();
 		}
 
-		public ChunkData getChunk() {
+		public DefaultChunkData getChunk() {
 			return chunk;
 		}
 		

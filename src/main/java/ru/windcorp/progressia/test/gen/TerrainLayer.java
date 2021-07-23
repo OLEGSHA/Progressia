@@ -19,12 +19,12 @@ package ru.windcorp.progressia.test.gen;
 
 import java.util.Random;
 
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.block.BlockData;
 
 @FunctionalInterface
 public interface TerrainLayer {
 
-	BlockData get(float north, float west, float depth, Random random, ChunkData chunk);
+	BlockData get(float north, float west, float depth, Random random, DefaultChunkData chunk);
 	
 }

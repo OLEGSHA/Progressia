@@ -18,7 +18,7 @@
  
 package ru.windcorp.progressia.server;
 
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 
 public class ServerState {
 
@@ -33,7 +33,7 @@ public class ServerState {
 	}
 
 	public static void startServer() {
-		Server server = new Server(new WorldData());
+		Server server = new Server(new DefaultWorldData());
 		setInstance(server);
 		server.start();
 	}

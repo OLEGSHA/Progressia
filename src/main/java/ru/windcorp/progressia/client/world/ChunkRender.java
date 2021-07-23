@@ -30,26 +30,26 @@ import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.client.world.tile.TileRenderReference;
 import ru.windcorp.progressia.client.world.tile.TileRenderRegistry;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.generic.GenericChunk;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
+import ru.windcorp.progressia.common.world.TileDataReference;
+import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.generic.ChunkGenericRO;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
-import ru.windcorp.progressia.common.world.tile.TileDataReference;
-import ru.windcorp.progressia.common.world.tile.TileDataStack;
 
 public class ChunkRender
-	implements GenericChunk<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender> {
+	implements ChunkGenericRO<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender> {
 
 	private final WorldRender world;
-	private final ChunkData data;
+	private final DefaultChunkData data;
 
 	private final ChunkRenderModel model;
 
 	private final Map<TileDataStack, TileRenderStackImpl> tileRenderLists = Collections
 		.synchronizedMap(new WeakHashMap<>());
 
-	public ChunkRender(WorldRender world, ChunkData data) {
+	public ChunkRender(WorldRender world, DefaultChunkData data) {
 		this.world = world;
 		this.data = data;
 		this.model = new ChunkRenderModel(this);
@@ -93,7 +93,7 @@ public class ChunkRender
 		return world;
 	}
 
-	public ChunkData getData() {
+	public DefaultChunkData getData() {
 		return data;
 	}
 

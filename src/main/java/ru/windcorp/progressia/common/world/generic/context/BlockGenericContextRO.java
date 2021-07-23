@@ -17,14 +17,8 @@
  */
 package ru.windcorp.progressia.common.world.generic.context;
 
-import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.context.Context;
-import ru.windcorp.progressia.common.world.generic.GenericBlock;
-import ru.windcorp.progressia.common.world.generic.GenericROChunk;
-import ru.windcorp.progressia.common.world.generic.GenericEntity;
-import ru.windcorp.progressia.common.world.generic.GenericTile;
-import ru.windcorp.progressia.common.world.generic.GenericROTileReference;
-import ru.windcorp.progressia.common.world.generic.GenericROTileStack;
+import ru.windcorp.progressia.common.world.generic.*;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 
 /**
@@ -32,28 +26,15 @@ import ru.windcorp.progressia.common.world.rels.BlockFace;
  * location may or may not be loaded.
  */
 //@formatter:off
-public interface GenericROBlockContext<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericROTileStack     <B, T, TS, TR, C>,
-	TR extends GenericROTileReference <B, T, TS, TR, C>,
-	C  extends GenericROChunk         <B, T, TS, TR, C>,
-	E  extends GenericEntity
-> extends GenericROWorldContext<B, T, TS, TR, C, E> {
+public interface BlockGenericContextRO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackRO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceRO <B, T, TS, TR, C>,
+	C  extends ChunkGenericRO         <B, T, TS, TR, C>,
+	E  extends EntityGeneric
+> extends WorldContexts.Block, WorldGenericContextRO<B, T, TS, TR, C, E> {
 //@formatter:on
-
-	/**
-	 * Returns the location of the block.
-	 * <p>
-	 * The coordinate system in use is not specified, but it is consistent
-	 * across all methods of this context.
-	 * <p>
-	 * The object returned by this method must not be modified. It is only valid
-	 * while the context is {@linkplain valid}.
-	 * 
-	 * @return a vector describing the block's position
-	 */
-	Vec3i getLocation();
 
 	/**
 	 * Determines whether the location relevant to this context is currently

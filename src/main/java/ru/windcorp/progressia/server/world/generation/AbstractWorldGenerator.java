@@ -23,11 +23,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.GravityModelRegistry;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.WorldLogic;
 
@@ -71,11 +71,11 @@ public abstract class AbstractWorldGenerator<H> extends WorldGenerator {
 
 	protected abstract boolean checkIsChunkReady(H hint);
 
-	protected H getHint(ChunkData chunk) {
+	protected H getHint(DefaultChunkData chunk) {
 		return hintClass.cast(chunk.getGenerationHint());
 	}
 
-	protected void setHint(ChunkData chunk, H hint) {
+	protected void setHint(DefaultChunkData chunk, H hint) {
 		chunk.setGenerationHint(hint);
 	}
 	
@@ -95,7 +95,7 @@ public abstract class AbstractWorldGenerator<H> extends WorldGenerator {
 	}
 	
 	@Override
-	public WorldData getWorldData() {
+	public DefaultWorldData getWorldData() {
 		return server.getWorld().getData();
 	}
 

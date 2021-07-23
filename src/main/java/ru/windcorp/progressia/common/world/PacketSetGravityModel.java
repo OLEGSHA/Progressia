@@ -61,7 +61,7 @@ public class PacketSetGravityModel extends PacketAffectWorld {
 	}
 
 	@Override
-	public void apply(WorldData world) {
+	public void apply(DefaultWorldData world) {
 		GravityModel model = GravityModelRegistry.getInstance().create(gravityModelId);
 		world.setGravityModel(model);
 		try {

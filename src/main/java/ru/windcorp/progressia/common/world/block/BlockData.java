@@ -21,9 +21,9 @@ package ru.windcorp.progressia.common.world.block;
 import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.generic.GenericBlock;
+import ru.windcorp.progressia.common.world.generic.BlockGeneric;
 
-public class BlockData extends Namespaced implements GenericBlock {
+public class BlockData extends Namespaced implements BlockGeneric {
 
 	public BlockData(String id) {
 		super(id);

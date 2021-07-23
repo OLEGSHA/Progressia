@@ -20,26 +20,29 @@ package ru.windcorp.progressia.test.gen.surface;
 import java.util.Collection;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.state.StateChange;
+import ru.windcorp.progressia.common.state.StatefulObject;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.EntityGeneric;
 import ru.windcorp.progressia.common.world.generic.GenericChunks;
-import ru.windcorp.progressia.common.world.generic.GenericWritableWorld;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
-import ru.windcorp.progressia.common.world.tile.TileDataReference;
-import ru.windcorp.progressia.common.world.tile.TileDataStack;
+import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.WorldData;
 
 public class SurfaceWorld
-	implements GenericWritableWorld<BlockData, TileData, TileDataStack, TileDataReference, ChunkData, EntityData> {
+	implements WorldData {
 
 	private final Surface surface;
-	private final GenericWritableWorld<BlockData, TileData, TileDataStack, TileDataReference, ChunkData, EntityData> parent;
+	private final WorldData parent;
 
 	public SurfaceWorld(
 		Surface surface,
-		GenericWritableWorld<BlockData, TileData, TileDataStack, TileDataReference, ChunkData, EntityData> parent
+		WorldData parent
 	) {
 		this.surface = surface;
 		this.parent = parent;
@@ -55,7 +58,7 @@ public class SurfaceWorld
 	/**
 	 * @return the parent
 	 */
-	public GenericWritableWorld<BlockData, TileData, TileDataStack, TileDataReference, ChunkData, EntityData> getParent() {
+	public WorldData getParent() {
 		return parent;
 	}
 
@@ -64,7 +67,7 @@ public class SurfaceWorld
 	 */
 
 	@Override
-	public Collection<ChunkData> getChunks() {
+	public Collection<? extends ChunkData> getChunks() {
 		return parent.getChunks();
 	}
 
@@ -177,6 +180,26 @@ public class SurfaceWorld
 		boolean result = parent.isBlockLoaded(blockInWorld);
 		Vectors.release(blockInWorld);
 		return result;
+	}
+
+	@Override
+	public float getTime() {
+		return parent.getTime();
+	}
+
+	@Override
+	public GravityModel getGravityModel() {
+		return parent.getGravityModel();
+	}
+
+	@Override
+	public <SE extends StatefulObject & EntityGeneric> void changeEntity(SE entity, StateChange<SE> change) {
+		parent.changeEntity(entity, change);
+	}
+
+	@Override
+	public void advanceTime(float change) {
+		parent.advanceTime(change);
 	}
 
 }

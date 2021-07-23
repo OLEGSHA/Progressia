@@ -18,15 +18,18 @@
 
 package ru.windcorp.progressia.common.world.generic;
 
+import java.util.List;
+import java.util.RandomAccess;
+
 // @formatter:off
-public abstract class GenericWritableTileStack<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericWritableTileStack<B, T, TS, TR, C>,
-	TR extends GenericTileReference<B, T, TS, TR, C>,
-	C  extends GenericWritableChunk<B, T, TS, TR, C>
+public interface TileGenericStackWO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackWO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceWO <B, T, TS, TR, C>,
+	C  extends ChunkGenericWO         <B, T, TS, TR, C>
 >
-	extends GenericTileStack<B, T, TS, TR, C> {
+	extends List<T>, RandomAccess {
 // @formatter:on
 
 	/**
@@ -45,7 +48,7 @@ public abstract class GenericWritableTileStack<
 	 * make sure to override it in subclass
 	 */
 	@Override
-	public abstract void add(int index, T tile);
+	void add(int index, T tile);
 
 	/**
 	 * Adds the specified tile at the end of this stack assigning it the
@@ -59,7 +62,7 @@ public abstract class GenericWritableTileStack<
 	 *                                  with the
 	 *                                  provided tag
 	 */
-	public abstract void load(T tile, int tag);
+	void load(T tile, int tag);
 
 	/**
 	 * Replaces the tile at the specified position in this stack with the
@@ -74,7 +77,7 @@ public abstract class GenericWritableTileStack<
 	 * make sure to override it in subclass
 	 */
 	@Override
-	public abstract T set(int index, T tile);
+	T set(int index, T tile);
 
 	/**
 	 * Removes the tile at the specified position in this list. Shifts any
@@ -91,19 +94,21 @@ public abstract class GenericWritableTileStack<
 	 * make sure to override it in subclass
 	 */
 	@Override
-	public abstract T remove(int index);
+	T remove(int index);
 
 	/*
 	 * Aliases and overloads
 	 */
 
-	public void addClosest(T tile) {
+	default void addClosest(T tile) {
 		add(0, tile);
 	}
 
-	public void addFarthest(T tile) {
+	default void addFarthest(T tile) {
 		add(size(), tile);
 	}
+	
+	boolean isFull();
 
 	/**
 	 * Attempts to {@link #add(int, TileData) add} the provided {@code tile}
@@ -114,45 +119,45 @@ public abstract class GenericWritableTileStack<
 	 * @param tile  the tile to try to add
 	 * @return {@code true} iff this stack has changed
 	 */
-	public boolean offer(int index, T tile) {
+	default boolean offer(int index, T tile) {
 		if (isFull())
 			return false;
 		add(index, tile);
 		return true;
 	}
 
-	public boolean offerClosest(T tile) {
+	default boolean offerClosest(T tile) {
 		return offer(0, tile);
 	}
 
-	public boolean offerFarthest(T tile) {
+	default boolean offerFarthest(T tile) {
 		return offer(size(), tile);
 	}
 
-	public T removeClosest() {
+	default T removeClosest() {
 		return remove(0);
 	}
 
-	public T removeFarthest() {
+	default T removeFarthest() {
 		return remove(size() - 1);
 	}
 
-	public T poll(int index) {
+	default T poll(int index) {
 		if (size() <= index)
 			return null;
 		return remove(index);
 	}
 
-	public T pollClosest() {
+	default T pollClosest() {
 		return poll(0);
 	}
 
-	public T pollFarthest() {
+	default T pollFarthest() {
 		return poll(size() - 1);
 	}
 
 	@Override
-	public boolean add(T tile) {
+	default boolean add(T tile) {
 		addFarthest(tile);
 		return true;
 	}

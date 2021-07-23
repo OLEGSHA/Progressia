@@ -15,30 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
 package ru.windcorp.progressia.common.world.generic;
 
-import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.Coordinates;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
 
-public interface GenericEntity {
+// @formatter:off
+public interface ChunkGenericWO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackWO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceWO <B, T, TS, TR, C>,
+	C  extends ChunkGenericWO         <B, T, TS, TR, C>
+> {
+// @formatter:on
 
-	String getId();
-	
-	long getEntityId();
+	void setBlock(Vec3i posInChunk, B block, boolean notify);
 
-	Vec3 getPosition();
-
-	default Vec3i getBlockInWorld(Vec3i output) {
-		if (output == null)
-			output = new Vec3i();
-		return getPosition().round(output);
-	}
-
-	default Vec3i getChunkCoords(Vec3i output) {
-		output = getBlockInWorld(output);
-		return Coordinates.convertInWorldToChunk(output, output);
-	}
+	TS getTiles(Vec3i blockInChunk, BlockFace face);
 
 }

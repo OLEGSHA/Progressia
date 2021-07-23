@@ -19,18 +19,18 @@
 package ru.windcorp.progressia.client.world.block;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.generic.GenericBlock;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
+import ru.windcorp.progressia.common.world.generic.BlockGeneric;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 
-public abstract class BlockRender extends Namespaced implements GenericBlock {
+public abstract class BlockRender extends Namespaced implements BlockGeneric {
 
 	public BlockRender(String id) {
 		super(id);
 	}
 
-	public Renderable createRenderable(ChunkData chunk, Vec3i relBlockInChunk) {
+	public Renderable createRenderable(DefaultChunkData chunk, Vec3i relBlockInChunk) {
 		return null;
 	}
 

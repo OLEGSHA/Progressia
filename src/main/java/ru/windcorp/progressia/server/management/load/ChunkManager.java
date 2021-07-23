@@ -18,10 +18,10 @@
 package ru.windcorp.progressia.server.management.load;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.PacketRevokeChunk;
 import ru.windcorp.progressia.common.world.PacketSendChunk;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.test.TestWorldDiskIO;
@@ -113,9 +113,9 @@ public class ChunkManager {
 			return LoadResult.ALREADY_LOADED;
 		}
 
-		WorldData world = getServer().getWorld().getData();
+		DefaultWorldData world = getServer().getWorld().getData();
 
-		ChunkData chunk = TestWorldDiskIO.tryToLoad(chunkPos, world, getServer());
+		DefaultChunkData chunk = TestWorldDiskIO.tryToLoad(chunkPos, world, getServer());
 		if (chunk != null) {
 			world.addChunk(chunk);
 			return LoadResult.LOADED_FROM_DISK;
@@ -133,8 +133,8 @@ public class ChunkManager {
 	 *         this method
 	 */
 	public boolean unloadChunk(Vec3i chunkPos) {
-		WorldData world = getServer().getWorld().getData();
-		ChunkData chunk = world.getChunk(chunkPos);
+		DefaultWorldData world = getServer().getWorld().getData();
+		DefaultChunkData chunk = world.getChunk(chunkPos);
 
 		if (chunk == null) {
 			return false;
@@ -147,7 +147,7 @@ public class ChunkManager {
 	}
 
 	public void sendChunk(Player player, Vec3i chunkPos) {
-		ChunkData chunk = getServer().getWorld().getData().getChunk(chunkPos);
+		DefaultChunkData chunk = getServer().getWorld().getData().getChunk(chunkPos);
 
 		if (chunk == null) {
 			throw new IllegalStateException(
@@ -180,7 +180,7 @@ public class ChunkManager {
 
 	/**
 	 * Checks whether or not the chunk at the specified location is loaded. A
-	 * loaded chunk is accessible through the server's {@link WorldData} object.
+	 * loaded chunk is accessible through the server's {@link DefaultWorldData} object.
 	 * 
 	 * @param chunkPos the position of the chunk
 	 * @return {@code true} iff the chunk is loaded

@@ -32,37 +32,37 @@ import ru.windcorp.progressia.common.world.rels.BlockFace;
 
 /**
  * An unmodifiable chunk representation. Per default, it is usually one of
- * {@link ru.windcorp.progressia.common.world.ChunkData ChunkData},
+ * {@link ru.windcorp.progressia.common.world.DefaultChunkData ChunkData},
  * {@link ru.windcorp.progressia.client.world.ChunkRender ChunkRender} or
  * {@link ru.windcorp.progressia.server.world.ChunkLogic ChunkLogic}, but this
  * interface may be implemented differently for various reasons.
  * <p>
- * A generic chunk contains {@linkplain GenericBlock blocks} and
- * {@linkplain GenericTileStack tile stacks} and is characterized by its
+ * A generic chunk contains {@linkplain BlockGeneric blocks} and
+ * {@linkplain TileGenericStackRO tile stacks} and is characterized by its
  * location. It also bears a discrete up direction. Note that no
- * {@linkplain GenericWorld world} object is directly accessible through this
+ * {@linkplain WorldGenericRO world} object is directly accessible through this
  * interface.
  * <p>
  * This interface defines the most common methods for examining a chunk and
  * implements many of them as default methods. It also contains several static
  * methods useful when dealing with chunks. {@code GenericChunk} does not
- * provide a way to modify a chunk; use {@link GenericWritableChunk} methods
+ * provide a way to modify a chunk; use {@link ChunkGenericWO} methods
  * when applicable.
  * 
  * @param <Self> a reference to itself (required to properly reference a
- *               {@link GenericTileStack})
+ *               {@link TileGenericStackRO})
  * @param <B>    block type
  * @param <T>    tile type
  * @param <TS>   tile stack type
  * @author javapony
  */
 // @formatter:off
-public interface GenericChunk<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericTileStack     <B, T, TS, TR, C>,
-	TR extends GenericTileReference <B, T, TS, TR, C>,
-	C  extends GenericChunk         <B, T, TS, TR, C>
+public interface ChunkGenericRO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackRO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceRO <B, T, TS, TR, C>,
+	C  extends ChunkGenericRO         <B, T, TS, TR, C>
 > {
 // @formatter:on
 

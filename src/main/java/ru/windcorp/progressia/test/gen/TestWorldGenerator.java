@@ -27,10 +27,10 @@ import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.common.world.WorldDataListener;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
@@ -50,7 +50,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 
 		getWorldData().addListener(new WorldDataListener() {
 			@Override
-			public void onChunkLoaded(WorldData world, ChunkData chunk) {
+			public void onChunkLoaded(DefaultWorldData world, DefaultChunkData chunk) {
 				findAndPopulate(chunk.getPosition(), world);
 			}
 		});
@@ -77,17 +77,17 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 	}
 
 	@Override
-	public ChunkData generate(Vec3i chunkPos) {
-		ChunkData chunk = generateUnpopulated(chunkPos, getWorldData());
+	public DefaultChunkData generate(Vec3i chunkPos) {
+		DefaultChunkData chunk = generateUnpopulated(chunkPos, getWorldData());
 		getWorldData().addChunk(chunk);
 		return chunk;
 	}
 
-	private ChunkData generateUnpopulated(Vec3i chunkPos, WorldData world) {
-		ChunkData chunk = new ChunkData(chunkPos, world);
+	private DefaultChunkData generateUnpopulated(Vec3i chunkPos, DefaultWorldData world) {
+		DefaultChunkData chunk = new DefaultChunkData(chunkPos, world);
 		chunk.setGenerationHint(false);
 
-		final int bpc = ChunkData.BLOCKS_PER_CHUNK;
+		final int bpc = DefaultChunkData.BLOCKS_PER_CHUNK;
 		Random random = new Random(chunkPos.x + chunkPos.y + chunkPos.z);
 
 		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
@@ -130,7 +130,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		return chunk;
 	}
 
-	private void findAndPopulate(Vec3i changePos, WorldData world) {
+	private void findAndPopulate(Vec3i changePos, DefaultWorldData world) {
 		VectorUtil.iterateCuboidAround(changePos, 3, candidatePos -> {
 			if (canBePopulated(candidatePos, world)) {
 				populate(candidatePos, world);
@@ -138,10 +138,10 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		});
 	}
 
-	private boolean canBePopulated(Vec3i candidatePos, WorldData world) {
+	private boolean canBePopulated(Vec3i candidatePos, DefaultWorldData world) {
 		Vec3i cursor = Vectors.grab3i();
 
-		ChunkData candidate = world.getChunk(candidatePos);
+		DefaultChunkData candidate = world.getChunk(candidatePos);
 		if (candidate == null || isChunkReady(candidate.getGenerationHint()))
 			return false;
 
@@ -156,7 +156,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 
 					cursor.z = candidatePos.z + dz;
 
-					ChunkData chunk = world.getChunk(cursor);
+					DefaultChunkData chunk = world.getChunk(cursor);
 					if (chunk == null) {
 						return false;
 					}
@@ -169,10 +169,10 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		return true;
 	}
 
-	private void populate(Vec3i chunkPos, WorldData world) {
+	private void populate(Vec3i chunkPos, DefaultWorldData world) {
 		Random random = new Random(chunkPos.x + chunkPos.y + chunkPos.z);
 
-		ChunkData chunk = world.getChunk(chunkPos);
+		DefaultChunkData chunk = world.getChunk(chunkPos);
 		assert chunk != null : "Something went wrong when populating chunk at (" + chunkPos.x + "; " + chunkPos.y + "; "
 			+ chunkPos.z + ")";
 
@@ -188,7 +188,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		int minZ = chunk.getMinZ();
 		int maxZ = chunk.getMaxZ() + 1;
 
-		final int bpc = ChunkData.BLOCKS_PER_CHUNK;
+		final int bpc = DefaultChunkData.BLOCKS_PER_CHUNK;
 		double[][] heightMap = new double[bpc][bpc];
 		double[][] gradMap = new double[bpc][bpc];
 
@@ -226,9 +226,9 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 	}
 
 	private void addTiles(
-		ChunkData chunk,
+		DefaultChunkData chunk,
 		Vec3i biw,
-		WorldData world,
+		DefaultWorldData world,
 		Random random,
 		boolean isDirt,
 		double height,
@@ -240,7 +240,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		addSnow(chunk, biw, world, random, isDirt, height, grad);
 	}
 
-	private void addGrass(ChunkData chunk, Vec3i biw, WorldData world, Random random) {
+	private void addGrass(DefaultChunkData chunk, Vec3i biw, DefaultWorldData world, Random random) {
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 		TileData grass = TileDataRegistry.getInstance().get("Test:Grass");
 
@@ -260,7 +260,7 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 		}
 	}
 
-	private void addDecor(ChunkData chunk, Vec3i biw, WorldData world, Random random, boolean isDirt) {
+	private void addDecor(DefaultChunkData chunk, Vec3i biw, DefaultWorldData world, Random random, boolean isDirt) {
 		if (isDirt) {
 			if (random.nextInt(8) == 0) {
 				world.getTiles(biw, AbsFace.POS_Z).addFarthest(
@@ -289,9 +289,9 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 	}
 
 	private void addSnow(
-		ChunkData chunk,
+		DefaultChunkData chunk,
 		Vec3i biw,
-		WorldData world,
+		DefaultWorldData world,
 		Random random,
 		boolean isDirt,
 		double height,

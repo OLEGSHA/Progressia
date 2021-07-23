@@ -19,9 +19,9 @@ package ru.windcorp.progressia.client.world.tile;
 
 import ru.windcorp.progressia.client.world.ChunkRender;
 import ru.windcorp.progressia.client.world.block.BlockRender;
-import ru.windcorp.progressia.common.world.generic.GenericTileReference;
+import ru.windcorp.progressia.common.world.generic.TileGenericReferenceRO;
 
 public interface TileRenderReference
-	extends GenericTileReference<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender> {
+	extends TileGenericReferenceRO<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender> {
 
 }

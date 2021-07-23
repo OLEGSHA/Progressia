@@ -31,16 +31,16 @@ import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 
 public class ChunkIO {
 
 	private static final TByteObjectMap<ChunkCodec> CODECS_BY_ID = new TByteObjectHashMap<>();
 	private static final List<ChunkCodec> CODECS_BY_PRIORITY = new ArrayList<>();
 
-	public static ChunkData load(WorldData world, Vec3i position, DataInputStream data, IOContext context)
+	public static DefaultChunkData load(DefaultWorldData world, Vec3i position, DataInputStream data, IOContext context)
 		throws DecodingException,
 		IOException {
 		if (CODECS_BY_ID.isEmpty())
@@ -73,7 +73,7 @@ public class ChunkIO {
 		}
 	}
 
-	public static void save(ChunkData chunk, DataOutputStream output, IOContext context)
+	public static void save(DefaultChunkData chunk, DataOutputStream output, IOContext context)
 		throws IOException {
 		ChunkCodec codec = getCodec(chunk, context);
 
@@ -100,7 +100,7 @@ public class ChunkIO {
 		return CODECS_BY_ID.get(signature);
 	}
 
-	public static ChunkCodec getCodec(ChunkData chunk, IOContext context) {
+	public static ChunkCodec getCodec(DefaultChunkData chunk, IOContext context) {
 		for (ChunkCodec codec : CODECS_BY_PRIORITY) {
 			if (codec.shouldEncode(chunk, context)) {
 				return codec;

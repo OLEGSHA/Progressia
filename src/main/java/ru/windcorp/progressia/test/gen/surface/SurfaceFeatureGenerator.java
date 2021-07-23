@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Random;
 
 import ru.windcorp.progressia.common.util.CoordinatePacker;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 
 public class SurfaceFeatureGenerator {
 	
@@ -42,7 +42,7 @@ public class SurfaceFeatureGenerator {
 		return surface;
 	}
 	
-	public void generateFeatures(ChunkData chunk) {
+	public void generateFeatures(DefaultChunkData chunk) {
 		SurfaceWorld world = new SurfaceWorld(surface, chunk.getWorld());
 		
 		Random random = new Random(CoordinatePacker.pack3IntsIntoLong(chunk.getPosition()) /* ^ seed*/);

@@ -19,7 +19,7 @@
 package ru.windcorp.progressia.server.world;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
@@ -37,7 +37,7 @@ public class UpdateTriggerer implements ChunkDataListener {
 
 	@Override
 	public void onChunkBlockChanged(
-		ChunkData chunk,
+		DefaultChunkData chunk,
 		Vec3i blockInChunk,
 		BlockData previous,
 		BlockData current
@@ -47,7 +47,7 @@ public class UpdateTriggerer implements ChunkDataListener {
 
 	@Override
 	public void onChunkTilesChanged(
-		ChunkData chunk,
+		DefaultChunkData chunk,
 		Vec3i blockInChunk,
 		RelFace face,
 		TileData tile,

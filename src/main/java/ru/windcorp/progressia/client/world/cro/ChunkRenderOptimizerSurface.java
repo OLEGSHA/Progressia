@@ -18,8 +18,8 @@
 
 package ru.windcorp.progressia.client.world.cro;
 
-import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
-import static ru.windcorp.progressia.common.world.generic.GenericTileStack.TILES_PER_FACE;
+import static ru.windcorp.progressia.common.world.DefaultChunkData.BLOCKS_PER_CHUNK;
+import static ru.windcorp.progressia.common.world.generic.TileGenericStackRO.TILES_PER_FACE;
 import static ru.windcorp.progressia.common.world.rels.AbsFace.BLOCK_FACE_COUNT;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import ru.windcorp.progressia.client.world.ChunkRender;
 import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.generic.GenericChunks;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 
@@ -71,7 +71,7 @@ public class ChunkRenderOptimizerSurface extends ChunkRenderOptimizer {
 		 *                        vertices
 		 */
 		void getShapeParts(
-			ChunkData chunk,
+			DefaultChunkData chunk,
 			Vec3i relBlockInChunk,
 			RelFace blockFace,
 			boolean inner,

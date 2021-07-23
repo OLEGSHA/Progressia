@@ -18,13 +18,7 @@
 package ru.windcorp.progressia.common.world.generic.context;
 
 import ru.windcorp.progressia.common.world.context.Context;
-import ru.windcorp.progressia.common.world.generic.GenericBlock;
-import ru.windcorp.progressia.common.world.generic.GenericROChunk;
-import ru.windcorp.progressia.common.world.generic.GenericEntity;
-import ru.windcorp.progressia.common.world.generic.GenericTile;
-import ru.windcorp.progressia.common.world.generic.GenericROTileReference;
-import ru.windcorp.progressia.common.world.generic.GenericROTileStack;
-import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.common.world.generic.*;
 
 /**
  * A {@link Context} referencing a world with a block location and a block face
@@ -32,22 +26,15 @@ import ru.windcorp.progressia.common.world.rels.RelFace;
  * not actually exist.
  */
 //@formatter:off
-public interface GenericROBlockFaceContext<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericROTileStack     <B, T, TS, TR, C>,
-	TR extends GenericROTileReference <B, T, TS, TR, C>,
-	C  extends GenericROChunk         <B, T, TS, TR, C>,
-	E  extends GenericEntity
-> extends GenericROBlockContext<B, T, TS, TR, C, E> {
+public interface BlockFaceGenericContextRO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackRO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceRO <B, T, TS, TR, C>,
+	C  extends ChunkGenericRO         <B, T, TS, TR, C>,
+	E  extends EntityGeneric
+> extends WorldContexts.BlockFace, BlockGenericContextRO<B, T, TS, TR, C, E> {
 //@formatter:on
-
-	/**
-	 * Returns the face relevant to this context.
-	 * 
-	 * @return the block face
-	 */
-	RelFace getFace();
 
 	/**
 	 * Gets the tile stack at the relevant position.

@@ -18,7 +18,7 @@
  
 package ru.windcorp.progressia.common.world.generic;
 
-public interface GenericBlock {
+public interface BlockGeneric {
 
 	String getId();
 

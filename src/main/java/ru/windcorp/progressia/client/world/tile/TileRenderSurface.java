@@ -33,7 +33,7 @@ import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSurface.TileOptimizedSurface;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 
@@ -60,7 +60,7 @@ public abstract class TileRenderSurface extends TileRender implements TileOptimi
 	
 	@Override
 	public final void getShapeParts(
-		ChunkData chunk, Vec3i relBlockInChunk, RelFace blockFace,
+		DefaultChunkData chunk, Vec3i relBlockInChunk, RelFace blockFace,
 		boolean inner,
 		Consumer<ShapePart> output,
 		Vec3 offset
@@ -69,7 +69,7 @@ public abstract class TileRenderSurface extends TileRender implements TileOptimi
 	}
 	
 	private ShapePart createFace(
-		ChunkData chunk, Vec3i blockInChunk, RelFace blockFace,
+		DefaultChunkData chunk, Vec3i blockInChunk, RelFace blockFace,
 		boolean inner,
 		Vec3 offset
 	) {
@@ -84,7 +84,7 @@ public abstract class TileRenderSurface extends TileRender implements TileOptimi
 	}
 
 	@Override
-	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk, RelFace blockFace) {
+	public Renderable createRenderable(DefaultChunkData chunk, Vec3i blockInChunk, RelFace blockFace) {
 		return new Shape(
 			Usage.STATIC,
 			WorldRenderProgram.getDefault(),

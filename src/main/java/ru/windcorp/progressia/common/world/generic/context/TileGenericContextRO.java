@@ -18,12 +18,7 @@
 package ru.windcorp.progressia.common.world.generic.context;
 
 import ru.windcorp.progressia.common.world.context.Context;
-import ru.windcorp.progressia.common.world.generic.GenericBlock;
-import ru.windcorp.progressia.common.world.generic.GenericROChunk;
-import ru.windcorp.progressia.common.world.generic.GenericEntity;
-import ru.windcorp.progressia.common.world.generic.GenericTile;
-import ru.windcorp.progressia.common.world.generic.GenericROTileReference;
-import ru.windcorp.progressia.common.world.generic.GenericROTileStack;
+import ru.windcorp.progressia.common.world.generic.*;
 
 /**
  * A {@link Context} referencing a world with a block location, a block face and
@@ -31,22 +26,15 @@ import ru.windcorp.progressia.common.world.generic.GenericROTileStack;
  * or may not actually exist.
  */
 //@formatter:off
-public interface GenericROTileContext<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericROTileStack     <B, T, TS, TR, C>,
-	TR extends GenericROTileReference <B, T, TS, TR, C>,
-	C  extends GenericROChunk         <B, T, TS, TR, C>,
-	E  extends GenericEntity
-> extends GenericROBlockFaceContext<B, T, TS, TR, C, E> {
+public interface TileGenericContextRO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackRO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceRO <B, T, TS, TR, C>,
+	C  extends ChunkGenericRO         <B, T, TS, TR, C>,
+	E  extends EntityGeneric
+> extends WorldContexts.Tile, BlockFaceGenericContextRO<B, T, TS, TR, C, E> {
 //@formatter:on
-
-	/**
-	 * Returns the tile layer relevant to this context.
-	 * 
-	 * @return the tile layer
-	 */
-	int getLayer();
 
 	/**
 	 * Determines whether the location relevant to this context has a tile.
@@ -67,12 +55,7 @@ public interface GenericROTileContext<
 		return getTile(getLocation(), getFace(), getLayer());
 	}
 
-	/**
-	 * Gets the tag of the tile at the relevant position.
-	 * 
-	 * @return the tag of the tile or {@code -1} if the location is not loaded
-	 *         or the tile does not exist
-	 */
+	@Override
 	default int getTag() {
 		TS tileStack = getTilesOrNull();
 		if (tileStack == null) {
@@ -80,6 +63,25 @@ public interface GenericROTileContext<
 		}
 
 		return tileStack.getTagByIndex(getLayer());
+	}
+
+	/**
+	 * Gets the {@link TileGenericReferenceRO TileReference} to the relevant
+	 * tile.
+	 * 
+	 * @return the reference to the tile relevant to this context or
+	 *         {@code null} if the location is not loaded or the tile does not
+	 *         exist
+	 *         
+	 * @see TileGenericStackRO#getReference(int)
+	 */
+	default TR getTileReference() {
+		TS tileStack = getTilesOrNull();
+		if (tileStack == null) {
+			return null;
+		}
+
+		return tileStack.getReference(getLayer());
 	}
 
 }

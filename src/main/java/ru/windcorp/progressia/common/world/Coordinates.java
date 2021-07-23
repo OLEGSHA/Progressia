@@ -18,7 +18,7 @@
  
 package ru.windcorp.progressia.common.world;
 
-import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
+import static ru.windcorp.progressia.common.world.DefaultChunkData.BLOCKS_PER_CHUNK;
 
 import glm.vec._3.i.Vec3i;
 

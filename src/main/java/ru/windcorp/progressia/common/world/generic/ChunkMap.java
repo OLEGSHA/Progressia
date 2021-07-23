@@ -77,27 +77,27 @@ public interface ChunkMap<V> {
 	// TODO implement (int, int, int) and GenericChunk versions of all of the
 	// above
 
-	default boolean containsChunk(GenericChunk<?, ?, ?, ?, ?> chunk) {
+	default boolean containsChunk(ChunkGenericRO<?, ?, ?, ?, ?> chunk) {
 		return containsKey(chunk.getPosition());
 	}
 
-	default V get(GenericChunk<?, ?, ?, ?, ?> chunk) {
+	default V get(ChunkGenericRO<?, ?, ?, ?, ?> chunk) {
 		return get(chunk.getPosition());
 	}
 
-	default V put(GenericChunk<?, ?, ?, ?, ?> chunk, V obj) {
+	default V put(ChunkGenericRO<?, ?, ?, ?, ?> chunk, V obj) {
 		return put(chunk.getPosition(), obj);
 	}
 
-	default V remove(GenericChunk<?, ?, ?, ?, ?> chunk) {
+	default V remove(ChunkGenericRO<?, ?, ?, ?, ?> chunk) {
 		return remove(chunk.getPosition());
 	}
 
-	default V getOrDefault(GenericChunk<?, ?, ?, ?, ?> chunk, V def) {
+	default V getOrDefault(ChunkGenericRO<?, ?, ?, ?, ?> chunk, V def) {
 		return containsChunk(chunk) ? def : get(chunk);
 	}
 
-	default <C extends GenericChunk<?, ?, ?, ?, C>> V compute(
+	default <C extends ChunkGenericRO<?, ?, ?, ?, C>> V compute(
 		C chunk,
 		BiFunction<? super C, ? super V, ? extends V> remappingFunction
 	) {
@@ -128,8 +128,8 @@ public interface ChunkMap<V> {
 
 	void forEach(BiConsumer<? super Vec3i, ? super V> action);
 
-	default <C extends GenericChunk<?, ?, ?, ?, C>> void forEachIn(
-		GenericWorld<?, ?, ?, ?, C, ?> world,
+	default <C extends ChunkGenericRO<?, ?, ?, ?, C>> void forEachIn(
+		WorldGenericRO<?, ?, ?, ?, C, ?> world,
 		BiConsumer<? super C, ? super V> action
 	) {
 		forEach((pos, value) -> {

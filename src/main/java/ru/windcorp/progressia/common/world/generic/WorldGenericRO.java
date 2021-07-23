@@ -30,17 +30,17 @@ import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 
 // @formatter:off
-public interface GenericWorld<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericTileStack     <B, T, TS, TR, C>,
-	TR extends GenericTileReference <B, T, TS, TR, C>,
-	C  extends GenericChunk         <B, T, TS, TR, C>,
-	E  extends GenericEntity
+public interface WorldGenericRO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackRO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceRO <B, T, TS, TR, C>,
+	C  extends ChunkGenericRO         <B, T, TS, TR, C>,
+	E  extends EntityGeneric
 > {
 // @formatter:on	
 
-	Collection<C> getChunks();
+	Collection<? extends C> getChunks();
 
 	C getChunk(Vec3i pos);
 
@@ -129,6 +129,15 @@ public interface GenericWorld<
 		if (stack == null || stack.size() <= layer)
 			return null;
 		return stack.get(layer);
+	}
+
+	/**
+	 * Determines whether the specified position has a tile.
+	 * 
+	 * @return {@code true} iff the tile exists
+	 */
+	default boolean hasTile(Vec3i location, BlockFace face, int layer) {
+		return hasTile(location, face, layer);
 	}
 
 	default boolean isChunkLoaded(Vec3i chunkPos) {

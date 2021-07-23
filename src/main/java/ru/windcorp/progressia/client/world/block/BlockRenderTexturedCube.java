@@ -36,7 +36,7 @@ import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSurface.BlockOptimizedSurface;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 
@@ -69,7 +69,7 @@ public abstract class BlockRenderTexturedCube
 
 	@Override
 	public final void getShapeParts(
-		ChunkData chunk, Vec3i blockInChunk, RelFace blockFace,
+		DefaultChunkData chunk, Vec3i blockInChunk, RelFace blockFace,
 		boolean inner,
 		Consumer<ShapePart> output,
 		Vec3 offset
@@ -78,7 +78,7 @@ public abstract class BlockRenderTexturedCube
 	}
 	
 	private ShapePart createFace(
-		ChunkData chunk, Vec3i blockInChunk, RelFace blockFace,
+		DefaultChunkData chunk, Vec3i blockInChunk, RelFace blockFace,
 		boolean inner,
 		Vec3 offset
 	) {
@@ -93,7 +93,7 @@ public abstract class BlockRenderTexturedCube
 	}
 
 	@Override
-	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk) {
+	public Renderable createRenderable(DefaultChunkData chunk, Vec3i blockInChunk) {
 		boolean opaque = isBlockOpaque();
 		
 		ShapePart[] faces = new ShapePart[BLOCK_FACE_COUNT + (opaque ? BLOCK_FACE_COUNT : 0)];

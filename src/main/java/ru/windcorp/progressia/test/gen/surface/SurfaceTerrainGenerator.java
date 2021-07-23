@@ -23,7 +23,7 @@ import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.util.FloatRangeMap;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.rels.AxisRotations;
 import ru.windcorp.progressia.test.gen.TerrainLayer;
@@ -38,35 +38,38 @@ public class SurfaceTerrainGenerator {
 		this.layers = layers;
 	}
 	
-	public void generateTerrain(ChunkData chunk) {
+	public void generateTerrain(DefaultChunkData chunk) {
 		
 		Vec3i relBIC = new Vec3i();
 		
 		Vec3 offset = new Vec3(chunk.getMinX(), chunk.getMinY(), chunk.getMinZ());
 		AxisRotations.relativize(offset, chunk.getUp(), offset);
-		offset.sub(ChunkData.CHUNK_RADIUS - 0.5f);
+		offset.sub(DefaultChunkData.CHUNK_RADIUS - 0.5f);
 		
 		Random random = new Random(CoordinatePacker.pack3IntsIntoLong(chunk.getPosition()) /* ^ seed*/);
 		
-		for (relBIC.x = 0; relBIC.x < ChunkData.BLOCKS_PER_CHUNK; ++relBIC.x) {
-			for (relBIC.y = 0; relBIC.y < ChunkData.BLOCKS_PER_CHUNK; ++relBIC.y) {
+		for (relBIC.x = 0; relBIC.x < DefaultChunkData.BLOCKS_PER_CHUNK; ++relBIC.x) {
+			for (relBIC.y = 0; relBIC.y < DefaultChunkData.BLOCKS_PER_CHUNK; ++relBIC.y) {
 				generateColumn(chunk, relBIC, offset, random);
 			}
 		}
 		
 	}
 	
-	public void generateColumn(ChunkData chunk, Vec3i relBIC, Vec3 offset, Random random) {
+	public void generateColumn(DefaultChunkData chunk, Vec3i relBIC, Vec3 offset, Random random) {
 		
 		float north = relBIC.x + offset.x;
 		float west = relBIC.y + offset.y;
 		
 		float relSurface = heightMap.get(chunk.getUp(), north, west) - offset.z;
 		
-		for (relBIC.z = 0; relBIC.z < ChunkData.BLOCKS_PER_CHUNK; ++relBIC.z) {
+		for (relBIC.z = 0; relBIC.z < DefaultChunkData.BLOCKS_PER_CHUNK; ++relBIC.z) {
 			float depth = relSurface - relBIC.z;
 			BlockData block = layers.get(depth).get(north, west, depth, random, chunk);
-			chunk.setBlockRel(relBIC, block, false);
+			
+			chunk.resolve(relBIC, relBIC);
+			chunk.setBlock(relBIC, block, false);
+			chunk.relativize(relBIC, relBIC);
 		}
 		
 	}

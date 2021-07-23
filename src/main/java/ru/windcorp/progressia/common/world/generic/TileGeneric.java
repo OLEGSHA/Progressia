@@ -15,27 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package ru.windcorp.progressia.common.world.generic;
 
-// @formatter:off
-public interface GenericTileReference<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericTileStack     <B, T, TS, TR, C>,
-	TR extends GenericTileReference <B, T, TS, TR, C>,
-	C  extends GenericChunk         <B, T, TS, TR, C>
-> {
-// @formatter:on
+public interface TileGeneric {
 
-	T get();
-
-	int getIndex();
-
-	TS getStack();
-
-	default boolean isValid() {
-		return get() != null;
-	}
+	String getId();
 
 }

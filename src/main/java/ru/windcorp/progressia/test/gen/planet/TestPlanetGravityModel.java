@@ -19,7 +19,7 @@ package ru.windcorp.progressia.test.gen.planet;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
@@ -93,9 +93,9 @@ public class TestPlanetGravityModel extends GravityModel {
 		float g = getSurfaceGravitationalAcceleration();
 		
 		// Change to a CS where (0;0;0) is the center of the center chunk
-		float px = pos.x - ChunkData.CHUNK_RADIUS + 0.5f;
-		float py = pos.y - ChunkData.CHUNK_RADIUS + 0.5f;
-		float pz = pos.z - ChunkData.CHUNK_RADIUS + 0.5f;
+		float px = pos.x - DefaultChunkData.CHUNK_RADIUS + 0.5f;
+		float py = pos.y - DefaultChunkData.CHUNK_RADIUS + 0.5f;
+		float pz = pos.z - DefaultChunkData.CHUNK_RADIUS + 0.5f;
 		
 		// Assume weightlessness when too close to center
 		if ((px*px + py*py + pz*pz) < r*r) {

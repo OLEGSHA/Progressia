@@ -26,14 +26,14 @@ import java.util.WeakHashMap;
 import java.util.function.BiConsumer;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.generic.GenericChunk;
+import ru.windcorp.progressia.common.world.generic.ChunkGenericRO;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
-import ru.windcorp.progressia.common.world.tile.TileDataStack;
-import ru.windcorp.progressia.common.world.tile.TileDataReference;
+import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.TileDataReference;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.BlockLogicRegistry;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
@@ -45,10 +45,10 @@ import ru.windcorp.progressia.server.world.tile.TileLogicReference;
 import ru.windcorp.progressia.server.world.tile.TileLogicRegistry;
 import ru.windcorp.progressia.server.world.tile.TileLogicStack;
 
-public class ChunkLogic implements GenericChunk<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic> {
+public class ChunkLogic implements ChunkGenericRO<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic> {
 
 	private final WorldLogic world;
-	private final ChunkData data;
+	private final DefaultChunkData data;
 
 	private final Collection<Vec3i> tickingBlocks = new ArrayList<>();
 	private final Collection<TileDataReference> tickingTiles = new ArrayList<>();
@@ -58,7 +58,7 @@ public class ChunkLogic implements GenericChunk<BlockLogic, TileLogic, TileLogic
 	private final Map<TileDataStack, TileLogicStackImpl> tileLogicLists = Collections
 		.synchronizedMap(new WeakHashMap<>());
 
-	public ChunkLogic(WorldLogic world, ChunkData data) {
+	public ChunkLogic(WorldLogic world, DefaultChunkData data) {
 		this.world = world;
 		this.data = data;
 
@@ -103,7 +103,7 @@ public class ChunkLogic implements GenericChunk<BlockLogic, TileLogic, TileLogic
 		return world;
 	}
 
-	public ChunkData getData() {
+	public DefaultChunkData getData() {
 		return data;
 	}
 

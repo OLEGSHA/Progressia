@@ -174,42 +174,42 @@ public class ChunkMaps {
 		}
 
 		@Override
-		public boolean containsChunk(GenericChunk<?, ?, ?, ?, ?> chunk) {
+		public boolean containsChunk(ChunkGenericRO<?, ?, ?, ?, ?> chunk) {
 			synchronized (mutex) {
 				return parent.containsChunk(chunk);
 			}
 		}
 
 		@Override
-		public V get(GenericChunk<?, ?, ?, ?, ?> chunk) {
+		public V get(ChunkGenericRO<?, ?, ?, ?, ?> chunk) {
 			synchronized (mutex) {
 				return parent.get(chunk);
 			}
 		}
 
 		@Override
-		public V put(GenericChunk<?, ?, ?, ?, ?> chunk, V obj) {
+		public V put(ChunkGenericRO<?, ?, ?, ?, ?> chunk, V obj) {
 			synchronized (mutex) {
 				return parent.put(chunk, obj);
 			}
 		}
 
 		@Override
-		public V remove(GenericChunk<?, ?, ?, ?, ?> chunk) {
+		public V remove(ChunkGenericRO<?, ?, ?, ?, ?> chunk) {
 			synchronized (mutex) {
 				return parent.remove(chunk);
 			}
 		}
 
 		@Override
-		public V getOrDefault(GenericChunk<?, ?, ?, ?, ?> chunk, V def) {
+		public V getOrDefault(ChunkGenericRO<?, ?, ?, ?, ?> chunk, V def) {
 			synchronized (mutex) {
 				return parent.getOrDefault(chunk, def);
 			}
 		}
 
 		@Override
-		public <C extends GenericChunk<?, ?, ?, ?, C>> V compute(
+		public <C extends ChunkGenericRO<?, ?, ?, ?, C>> V compute(
 			C chunk,
 			BiFunction<? super C, ? super V, ? extends V> remappingFunction
 		) {
@@ -247,8 +247,8 @@ public class ChunkMaps {
 		}
 
 		@Override
-		public <C extends GenericChunk<?, ?, ?, ?, C>> void forEachIn(
-			GenericWorld<?, ?, ?, ?, C, ?> world,
+		public <C extends ChunkGenericRO<?, ?, ?, ?, C>> void forEachIn(
+			WorldGenericRO<?, ?, ?, ?, C, ?> world,
 			BiConsumer<? super C, ? super V> action
 		) {
 			synchronized (mutex) {

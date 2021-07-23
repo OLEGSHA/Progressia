@@ -18,7 +18,7 @@
  
 package ru.windcorp.progressia.common.world.generic;
 
-import java.util.AbstractList;
+import java.util.List;
 import java.util.Objects;
 import java.util.RandomAccess;
 import java.util.function.Consumer;
@@ -28,13 +28,13 @@ import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 
 // @formatter:off
-public abstract class GenericTileStack<
-	B  extends GenericBlock,
-	T  extends GenericTile,
-	TS extends GenericTileStack     <B, T, TS, TR, C>,
-	TR extends GenericTileReference <B, T, TS, TR, C>,
-	C  extends GenericChunk         <B, T, TS, TR, C>
-> extends AbstractList<T> implements RandomAccess {
+public interface TileGenericStackRO<
+	B  extends BlockGeneric,
+	T  extends TileGeneric,
+	TS extends TileGenericStackRO     <B, T, TS, TR, C>,
+	TR extends TileGenericReferenceRO <B, T, TS, TR, C>,
+	C  extends ChunkGenericRO         <B, T, TS, TR, C>
+> extends List<T>, RandomAccess {
 // @formatter:on
 
 	public static interface TSConsumer<T> {
@@ -43,36 +43,36 @@ public abstract class GenericTileStack<
 
 	public static final int TILES_PER_FACE = 8;
 
-	public abstract Vec3i getBlockInChunk(Vec3i output);
+	Vec3i getBlockInChunk(Vec3i output);
 
-	public abstract C getChunk();
+	C getChunk();
 
-	public abstract RelFace getFace();
+	RelFace getFace();
 
-	public abstract TR getReference(int index);
+	TR getReference(int index);
 
-	public abstract int getIndexByTag(int tag);
+	int getIndexByTag(int tag);
 
-	public abstract int getTagByIndex(int index);
+	int getTagByIndex(int index);
 
-	public Vec3i getBlockInWorld(Vec3i output) {
+	default Vec3i getBlockInWorld(Vec3i output) {
 		// This is safe
 		return Coordinates.getInWorld(getChunk().getPosition(), getBlockInChunk(output), output);
 	}
 
-	public boolean isFull() {
+	default boolean isFull() {
 		return size() >= TILES_PER_FACE;
 	}
 
-	public T getClosest() {
+	default T getClosest() {
 		return get(0);
 	}
 
-	public T getFarthest() {
+	default T getFarthest() {
 		return get(size() - 1);
 	}
 
-	public void forEach(TSConsumer<T> action) {
+	default void forEach(TSConsumer<T> action) {
 		Objects.requireNonNull(action, "action");
 		for (int i = 0; i < size(); ++i) {
 			action.accept(i, get(i));
@@ -80,14 +80,14 @@ public abstract class GenericTileStack<
 	}
 
 	@Override
-	public void forEach(Consumer<? super T> action) {
+	default void forEach(Consumer<? super T> action) {
 		Objects.requireNonNull(action, "action");
 		for (int i = 0; i < size(); ++i) {
 			action.accept(get(i));
 		}
 	}
 
-	public T findClosest(String id) {
+	default T findClosest(String id) {
 		Objects.requireNonNull(id, "id");
 
 		for (int i = 0; i < size(); ++i) {
@@ -100,7 +100,7 @@ public abstract class GenericTileStack<
 		return null;
 	}
 
-	public T findFarthest(String id) {
+	default T findFarthest(String id) {
 		Objects.requireNonNull(id, "id");
 
 		for (int i = 0; i < size(); ++i) {
@@ -113,11 +113,11 @@ public abstract class GenericTileStack<
 		return null;
 	}
 
-	public boolean contains(String id) {
+	default boolean contains(String id) {
 		return findClosest(id) != null;
 	}
 
-	public B getHost() {
+	default B getHost() {
 		return getChunk().getBlock(getBlockInChunk(null));
 	}
 

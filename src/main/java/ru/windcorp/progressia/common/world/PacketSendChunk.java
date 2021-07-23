@@ -41,7 +41,7 @@ public class PacketSendChunk extends PacketAffectChunk {
 		super(id);
 	}
 
-	public void set(ChunkData chunk) {
+	public void set(DefaultChunkData chunk) {
 		this.position.set(chunk.getX(), chunk.getY(), chunk.getZ());
 
 		try {
@@ -67,7 +67,7 @@ public class PacketSendChunk extends PacketAffectChunk {
 	}
 
 	@Override
-	public void apply(WorldData world) {
+	public void apply(DefaultWorldData world) {
 		try {
 			world.addChunk(ChunkIO.load(world, position, data.getReader(), IOContext.COMMS));
 		} catch (DecodingException | IOException e) {

@@ -16,13 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
  
-package ru.windcorp.progressia.common.world.tile;
+package ru.windcorp.progressia.common.state;
 
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.generic.GenericWritableTileStack;
-
-public abstract class TileDataStack
-	extends GenericWritableTileStack<BlockData, TileData, TileDataStack, TileDataReference, ChunkData> {
-
+@FunctionalInterface
+public interface StateChange<T> {
+	void change(T object);
 }

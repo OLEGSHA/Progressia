@@ -25,12 +25,12 @@ import java.util.Map;
 import glm.Glm;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListeners;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.common.world.WorldDataListener;
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.common.world.generic.GenericWorld;
+import ru.windcorp.progressia.common.world.generic.WorldGenericRO;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.generation.WorldGenerator;
@@ -41,20 +41,20 @@ import ru.windcorp.progressia.server.world.tile.TileLogicReference;
 import ru.windcorp.progressia.server.world.tile.TileLogicStack;
 
 public class WorldLogic
-	implements GenericWorld<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic, EntityData
+	implements WorldGenericRO<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic, EntityData
 	// not using EntityLogic because it is stateless
 > {
 
-	private final WorldData data;
+	private final DefaultWorldData data;
 	private final Server server;
 
 	private final WorldGenerator generator;
 
-	private final Map<ChunkData, ChunkLogic> chunks = new HashMap<>();
+	private final Map<DefaultChunkData, ChunkLogic> chunks = new HashMap<>();
 
 	private final Evaluation tickEntitiesTask = new TickEntitiesTask();
 
-	public WorldLogic(WorldData data, Server server, WorldGenerator generator) {
+	public WorldLogic(DefaultWorldData data, Server server, WorldGenerator generator) {
 		this.data = data;
 		this.server = server;
 		
@@ -63,12 +63,12 @@ public class WorldLogic
 
 		data.addListener(new WorldDataListener() {
 			@Override
-			public void onChunkLoaded(WorldData world, ChunkData chunk) {
+			public void onChunkLoaded(DefaultWorldData world, DefaultChunkData chunk) {
 				chunks.put(chunk, new ChunkLogic(WorldLogic.this, chunk));
 			}
 
 			@Override
-			public void beforeChunkUnloaded(WorldData world, ChunkData chunk) {
+			public void beforeChunkUnloaded(DefaultWorldData world, DefaultChunkData chunk) {
 				chunks.remove(chunk);
 			}
 		});
@@ -104,7 +104,7 @@ public class WorldLogic
 		return server;
 	}
 
-	public WorldData getData() {
+	public DefaultWorldData getData() {
 		return data;
 	}
 
@@ -112,8 +112,8 @@ public class WorldLogic
 		return generator;
 	}
 
-	public ChunkData generate(Vec3i chunkPos) {
-		ChunkData chunk = getGenerator().generate(chunkPos);
+	public DefaultChunkData generate(Vec3i chunkPos) {
+		DefaultChunkData chunk = getGenerator().generate(chunkPos);
 		
 		if (!Glm.equals(chunkPos, chunk.getPosition())) {
 			throw CrashReports.report(null, "Generator %s has generated a chunk at (%d; %d; %d) when requested to generate a chunk at (%d; %d; %d)",
@@ -147,7 +147,7 @@ public class WorldLogic
 		return chunk;
 	}
 
-	public ChunkLogic getChunk(ChunkData chunkData) {
+	public ChunkLogic getChunk(DefaultChunkData chunkData) {
 		return chunks.get(chunkData);
 	}
 
