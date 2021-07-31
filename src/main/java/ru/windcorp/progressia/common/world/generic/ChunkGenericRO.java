@@ -34,7 +34,7 @@ import ru.windcorp.progressia.common.world.rels.BlockFace;
  * An unmodifiable chunk representation. Per default, it is usually one of
  * {@link ru.windcorp.progressia.common.world.DefaultChunkData ChunkData},
  * {@link ru.windcorp.progressia.client.world.ChunkRender ChunkRender} or
- * {@link ru.windcorp.progressia.server.world.ChunkLogic ChunkLogic}, but this
+ * {@link ru.windcorp.progressia.server.world.DefaultChunkLogic ChunkLogic}, but this
  * interface may be implemented differently for various reasons.
  * <p>
  * A generic chunk contains {@linkplain BlockGeneric blocks} and

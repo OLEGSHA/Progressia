@@ -19,7 +19,7 @@
 package ru.windcorp.progressia.test.gen;
 
 import kdotjpg.opensimplex2.areagen.OpenSimplex2S;
-import ru.windcorp.progressia.server.world.WorldLogic;
+import ru.windcorp.progressia.server.world.DefaultWorldLogic;
 
 class TestTerrainGenerator {
 
@@ -31,7 +31,7 @@ class TestTerrainGenerator {
 	private final OpenSimplex2S noise;
 	private final Func2D shape;
 
-	public TestTerrainGenerator(TestWorldGenerator testWorldGenerator, WorldLogic world) {
+	public TestTerrainGenerator(TestWorldGenerator testWorldGenerator, DefaultWorldLogic world) {
 		this.noise = new OpenSimplex2S("We're getting somewhere".hashCode());
 
 		Func2D plainsHeight = tweak(

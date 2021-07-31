@@ -93,12 +93,12 @@ public abstract class TickContextMutable implements BlockTickContext, TSTickCont
 		public static interface Empty /* does not extend Builder */ {
 			World withServer(Server server);
 
-			default Builder.World withWorld(WorldLogic world) {
+			default Builder.World withWorld(DefaultWorldLogic world) {
 				Objects.requireNonNull(world, "world");
 				return withServer(world.getServer());
 			}
 
-			default Builder.Chunk withChunk(ChunkLogic chunk) {
+			default Builder.Chunk withChunk(DefaultChunkLogic chunk) {
 				Objects.requireNonNull(chunk, "chunk");
 				return withWorld(chunk.getWorld()).withChunk(chunk.getPosition());
 			}

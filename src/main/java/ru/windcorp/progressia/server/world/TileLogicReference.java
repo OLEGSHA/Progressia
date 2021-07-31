@@ -17,36 +17,28 @@
  */
 package ru.windcorp.progressia.server.world;
 
-import java.util.Collection;
+import ru.windcorp.progressia.common.world.TileDataReference;
+import ru.windcorp.progressia.common.world.generic.TileGenericReferenceRO;
+import ru.windcorp.progressia.common.world.tile.TileData;
+import ru.windcorp.progressia.server.world.tile.TileLogic;
 
-import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.rels.BlockFace;
-
-public interface WorldLogic extends WorldLogicRO {
+/**
+ * A read-only {@link TileGenericReferenceRO TileReference} for a
+ * {@link TileData} that provides convenient read-write access to the matching
+ * {@link TileLogic} instance.
+ * <p>
+ * For all methods other than {@link #get()}, {@link #getStack()} and
+ * {@link #getDataReference()},
+ * <tt>logicRef.<i>method</i>() == logicRef.getDataReference().<i>method</i>()</tt>.
+ */
+public interface TileLogicReference
+	extends TileLogicReferenceRO {
 
 	/*
-	 * Override return types
+	 * Override return type
 	 */
 
 	@Override
-	ChunkLogic getChunk(Vec3i pos);
-
-	@Override
-	Collection<? extends ChunkLogic> getChunks();
-
-	@Override
-	default ChunkLogic getChunkByBlock(Vec3i blockInWorld) {
-		return (ChunkLogic) WorldLogicRO.super.getChunkByBlock(blockInWorld);
-	}
-
-	@Override
-	default TileLogicStack getTiles(Vec3i blockInWorld, BlockFace face) {
-		return (TileLogicStack) WorldLogicRO.super.getTiles(blockInWorld, face);
-	}
-
-	@Override
-	default TileLogicStack getTilesOrNull(Vec3i blockInWorld, BlockFace face) {
-		return (TileLogicStack) WorldLogicRO.super.getTilesOrNull(blockInWorld, face);
-	}
+	TileDataReference getDataReference();
 
 }

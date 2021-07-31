@@ -17,36 +17,21 @@
  */
 package ru.windcorp.progressia.server.world;
 
-import java.util.Collection;
+import ru.windcorp.progressia.common.world.TileDataStack;
 
-import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.rels.BlockFace;
-
-public interface WorldLogic extends WorldLogicRO {
-
+public interface TileLogicStack extends TileLogicStackRO {
+	
 	/*
 	 * Override return types
 	 */
-
+	
 	@Override
-	ChunkLogic getChunk(Vec3i pos);
-
+	TileDataStack getData();
+	
 	@Override
-	Collection<? extends ChunkLogic> getChunks();
-
+	ChunkLogic getChunk();
+	
 	@Override
-	default ChunkLogic getChunkByBlock(Vec3i blockInWorld) {
-		return (ChunkLogic) WorldLogicRO.super.getChunkByBlock(blockInWorld);
-	}
-
-	@Override
-	default TileLogicStack getTiles(Vec3i blockInWorld, BlockFace face) {
-		return (TileLogicStack) WorldLogicRO.super.getTiles(blockInWorld, face);
-	}
-
-	@Override
-	default TileLogicStack getTilesOrNull(Vec3i blockInWorld, BlockFace face) {
-		return (TileLogicStack) WorldLogicRO.super.getTilesOrNull(blockInWorld, face);
-	}
+	TileLogicReference getReference(int index);
 
 }

@@ -44,7 +44,7 @@ public class TickAndUpdateUtil {
 		}
 	}
 
-	public static void tickBlock(WorldLogic world, Vec3i blockInWorld) {
+	public static void tickBlock(DefaultWorldLogic world, Vec3i blockInWorld) {
 		BlockLogic block = world.getBlock(blockInWorld);
 		if (!(block instanceof TickableBlock))
 			return; // also checks nulls
@@ -61,7 +61,7 @@ public class TickAndUpdateUtil {
 		}
 	}
 
-	public static void tickTile(WorldLogic world, Vec3i blockInWorld, BlockFace face, int layer) {
+	public static void tickTile(DefaultWorldLogic world, Vec3i blockInWorld, BlockFace face, int layer) {
 		TileLogic tile = world.getTile(blockInWorld, face, layer);
 		if (!(tile instanceof TickableTile)) {
 			return;
@@ -72,7 +72,7 @@ public class TickAndUpdateUtil {
 		tickTile((TickableTile) tile, tickContext);
 	}
 
-	public static void tickTiles(WorldLogic world, Vec3i blockInWorld, BlockFace face) {
+	public static void tickTiles(DefaultWorldLogic world, Vec3i blockInWorld, BlockFace face) {
 		if (!world.isBlockLoaded(blockInWorld)) {
 			return;
 		}
@@ -94,7 +94,7 @@ public class TickAndUpdateUtil {
 		}
 	}
 
-	public static void updateBlock(WorldLogic world, Vec3i blockInWorld) {
+	public static void updateBlock(DefaultWorldLogic world, Vec3i blockInWorld) {
 		BlockLogic block = world.getBlock(blockInWorld);
 		if (!(block instanceof UpdateableBlock))
 			return; // also checks nulls
@@ -111,7 +111,7 @@ public class TickAndUpdateUtil {
 		}
 	}
 
-	public static void updateTile(WorldLogic world, Vec3i blockInWorld, BlockFace face, int layer) {
+	public static void updateTile(DefaultWorldLogic world, Vec3i blockInWorld, BlockFace face, int layer) {
 		TileLogic tile = world.getTile(blockInWorld, face, layer);
 		if (!(tile instanceof UpdateableTile)) {
 			return;
@@ -122,7 +122,7 @@ public class TickAndUpdateUtil {
 		updateTile((UpdateableTile) tile, tickContext);
 	}
 
-	public static void updateTiles(WorldLogic world, Vec3i blockInWorld, BlockFace face) {
+	public static void updateTiles(DefaultWorldLogic world, Vec3i blockInWorld, BlockFace face) {
 		if (!world.isBlockLoaded(blockInWorld)) {
 			return;
 		}

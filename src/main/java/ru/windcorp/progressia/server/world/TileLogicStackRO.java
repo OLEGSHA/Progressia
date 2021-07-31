@@ -15,35 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world;
 
-import java.util.Random;
+import ru.windcorp.progressia.common.world.TileDataStackRO;
+import ru.windcorp.progressia.common.world.generic.TileGenericStackRO;
+import ru.windcorp.progressia.server.world.block.BlockLogic;
+import ru.windcorp.progressia.server.world.tile.TileLogic;
 
-import ru.windcorp.progressia.common.world.DefaultWorldData;
-import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
+public interface TileLogicStackRO
+	extends TileGenericStackRO<BlockLogic, TileLogic, TileLogicStackRO, TileLogicReferenceRO, ChunkLogicRO> {
 
-public interface TickContext {
-
-	float getTickLength();
-
-	Server getServer();
-
-	default DefaultWorldLogic getWorld() {
-		return getServer().getWorld();
-	}
-
-	default WorldAccessor getAccessor() {
-		return getServer().getWorldAccessor();
-	}
-
-	default Random getRandom() {
-		return getServer().getAdHocRandom();
-	}
-
-	default DefaultWorldData getWorldData() {
-		return getWorld().getData();
-	}
+	public abstract TileDataStackRO getData();
 
 }

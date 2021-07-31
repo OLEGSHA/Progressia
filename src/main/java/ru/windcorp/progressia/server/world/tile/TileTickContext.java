@@ -19,6 +19,7 @@
 package ru.windcorp.progressia.server.world.tile;
 
 import ru.windcorp.progressia.common.world.tile.TileData;
+import ru.windcorp.progressia.server.world.TileLogicStackRO;
 import ru.windcorp.progressia.common.world.TileDataStack;
 import ru.windcorp.progressia.common.world.TileDataReference;
 
@@ -40,7 +41,7 @@ public interface TileTickContext extends TSTickContext {
 	 */
 
 	default TileLogic getTile() {
-		TileLogicStack stack = getTLSOrNull();
+		TileLogicStackRO stack = getTLSOrNull();
 		if (stack == null)
 			return null;
 		return stack.get(getLayer());

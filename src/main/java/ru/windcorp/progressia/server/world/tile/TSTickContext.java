@@ -25,8 +25,9 @@ import java.util.function.Function;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.TileDataStack;
-import ru.windcorp.progressia.server.world.ChunkLogic;
+import ru.windcorp.progressia.server.world.DefaultChunkLogic;
 import ru.windcorp.progressia.server.world.TickContextMutable;
+import ru.windcorp.progressia.server.world.TileLogicStackRO;
 import ru.windcorp.progressia.server.world.block.BlockTickContext;
 
 public interface TSTickContext extends BlockTickContext {
@@ -41,15 +42,15 @@ public interface TSTickContext extends BlockTickContext {
 	 * Getters
 	 */
 
-	default TileLogicStack getTLSOrNull() {
-		ChunkLogic chunkLogic = getChunkLogic();
+	default TileLogicStackRO getTLSOrNull() {
+		DefaultChunkLogic chunkLogic = getChunkLogic();
 		if (chunkLogic == null)
 			return null;
 
 		return chunkLogic.getTilesOrNull(getBlockInChunk(), getFace());
 	}
 
-	default TileLogicStack getTLS() {
+	default TileLogicStackRO getTLS() {
 		return getChunkLogic().getTiles(getBlockInChunk(), getFace());
 	}
 

@@ -30,7 +30,7 @@ import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.world.WorldLogic;
+import ru.windcorp.progressia.server.world.DefaultWorldLogic;
 
 public abstract class WorldGenerator extends Namespaced {
 
@@ -52,7 +52,7 @@ public abstract class WorldGenerator extends Namespaced {
 	public abstract Vec3 suggestSpawnLocation();
 	
 	public abstract Server getServer();
-	public abstract WorldLogic getWorldLogic();
+	public abstract DefaultWorldLogic getWorldLogic();
 	public abstract DefaultWorldData getWorldData();
 
 }

@@ -37,6 +37,10 @@ import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileStackIsFullException;
 
+/**
+ * The implementation of {@link ChunkData} used to store the actual game world.
+ * This class should be considered an implementation detail.
+ */
 public class DefaultChunkData implements ChunkData {
 
 	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
@@ -222,7 +226,7 @@ public class DefaultChunkData implements ChunkData {
 			}
 
 			public void invalidate() {
-				this.index = 0;
+				this.index = -1;
 			}
 
 			@Override

@@ -34,7 +34,7 @@ import ru.windcorp.progressia.server.events.ServerEvent;
 import ru.windcorp.progressia.server.management.load.ChunkRequestDaemon;
 import ru.windcorp.progressia.server.management.load.EntityRequestDaemon;
 import ru.windcorp.progressia.server.management.load.LoadManager;
-import ru.windcorp.progressia.server.world.WorldLogic;
+import ru.windcorp.progressia.server.world.DefaultWorldLogic;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Change;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
@@ -53,7 +53,7 @@ public class Server {
 		return ServerThread.getCurrentServer();
 	}
 
-	private final WorldLogic world;
+	private final DefaultWorldLogic world;
 	private final WorldAccessor worldAccessor = new WorldAccessor(this);
 
 	private final ServerThread serverThread;
@@ -69,7 +69,7 @@ public class Server {
 	private final TickingSettings tickingSettings = new TickingSettings();
 
 	public Server(DefaultWorldData world) {
-		this.world = new WorldLogic(
+		this.world = new DefaultWorldLogic(
 			world,
 			this,
 			new TestPlanetGenerator("Test:PlanetGenerator", this, new Planet(4, 9.8f, 16f, 16f))
@@ -91,9 +91,9 @@ public class Server {
 	/**
 	 * Returns this server's world.
 	 * 
-	 * @return this server's {@link WorldLogic}
+	 * @return this server's {@link DefaultWorldLogic}
 	 */
-	public WorldLogic getWorld() {
+	public DefaultWorldLogic getWorld() {
 		return world;
 	}
 

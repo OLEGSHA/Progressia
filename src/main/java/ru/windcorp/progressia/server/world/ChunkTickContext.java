@@ -30,12 +30,12 @@ public interface ChunkTickContext extends TickContext {
 
 	Vec3i getChunk();
 
-	default ChunkLogic getChunkLogic() {
+	default DefaultChunkLogic getChunkLogic() {
 		return getWorld().getChunk(getChunk());
 	}
 
 	default DefaultChunkData getChunkData() {
-		ChunkLogic chunkLogic = getChunkLogic();
+		DefaultChunkLogic chunkLogic = getChunkLogic();
 		return chunkLogic == null ? null : chunkLogic.getData();
 	}
 	

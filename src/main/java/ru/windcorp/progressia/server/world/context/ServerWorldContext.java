@@ -15,13 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.server.world.tile;
+package ru.windcorp.progressia.server.world.context;
 
-import ru.windcorp.progressia.common.world.generic.TileGenericReferenceRO;
-import ru.windcorp.progressia.server.world.ChunkLogic;
-import ru.windcorp.progressia.server.world.block.BlockLogic;
+import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.server.world.WorldLogic;
 
-public interface TileLogicReference
-	extends TileGenericReferenceRO<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic> {
-
+public interface ServerWorldContext extends WorldData, ServerWorldContextRO {
+	
+	public interface Logic extends ServerWorldContextRO.Logic, WorldLogic {
+		
+		@Override
+		ServerWorldContext data();
+		
+	}
+	
+	@Override
+	ServerWorldContext.Logic logic();
+	
 }

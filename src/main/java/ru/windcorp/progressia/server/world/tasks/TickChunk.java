@@ -31,7 +31,7 @@ import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.TileDataStack;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.world.ChunkLogic;
+import ru.windcorp.progressia.server.world.DefaultChunkLogic;
 import ru.windcorp.progressia.server.world.TickContextMutable;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
@@ -61,9 +61,9 @@ public class TickChunk extends Evaluation {
 		this.randomTickMethods = ImmutableList.copyOf(randomTickMethods);
 	}
 
-	private final ChunkLogic chunk;
+	private final DefaultChunkLogic chunk;
 
-	public TickChunk(ChunkLogic chunk) {
+	public TickChunk(DefaultChunkLogic chunk) {
 		this.chunk = chunk;
 	}
 

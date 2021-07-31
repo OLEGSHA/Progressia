@@ -15,20 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.server.world.tile;
+package ru.windcorp.progressia.server.world;
 
-import java.util.AbstractList;
-
-import ru.windcorp.progressia.common.world.TileDataStack;
-import ru.windcorp.progressia.common.world.generic.TileGenericStackRO;
-import ru.windcorp.progressia.server.world.ChunkLogic;
+import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.WorldGenericRO;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
+import ru.windcorp.progressia.server.world.tile.TileLogic;
 
-public abstract class TileLogicStack
-	extends AbstractList<TileLogic>
-	implements TileGenericStackRO<BlockLogic, TileLogic, TileLogicStack, TileLogicReference, ChunkLogic> {
-
-	public abstract TileDataStack getData();
+public interface WorldLogicRO
+	extends WorldGenericRO<BlockLogic, TileLogic, TileLogicStackRO, TileLogicReferenceRO, ChunkLogicRO, EntityData> {
 
 }

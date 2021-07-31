@@ -29,7 +29,7 @@ import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.GravityModelRegistry;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.world.WorldLogic;
+import ru.windcorp.progressia.server.world.DefaultWorldLogic;
 
 public abstract class AbstractWorldGenerator<H> extends WorldGenerator {
 
@@ -90,7 +90,7 @@ public abstract class AbstractWorldGenerator<H> extends WorldGenerator {
 	}
 	
 	@Override
-	public WorldLogic getWorldLogic() {
+	public DefaultWorldLogic getWorldLogic() {
 		return server.getWorld();
 	}
 	
