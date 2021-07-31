@@ -15,28 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.server.world.context;
+package ru.windcorp.progressia.common.world.context;
 
-import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.context.WorldDataContext;
-import ru.windcorp.progressia.common.world.rels.BlockFace;
-import ru.windcorp.progressia.server.world.TileLogicStack;
-import ru.windcorp.progressia.server.world.WorldLogic;
+import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.TileDataReference;
+import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.block.BlockData;
+import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.context.BlockGenericContextWO;
+import ru.windcorp.progressia.common.world.tile.TileData;
 
-public interface ServerWorldContext extends WorldDataContext, ServerWorldContextRO {
-
-	public interface Logic extends ServerWorldContextRO.Logic,
-		WorldLogic {
-
-		@Override
-		ServerWorldContext data();
-		
-		@Override
-		TileLogicStack getTiles(Vec3i blockInWorld, BlockFace face);
-
-	}
-
-	@Override
-	ServerWorldContext.Logic logic();
+public interface BlockDataContext
+	extends BlockGenericContextWO<BlockData, TileData, TileDataStack, TileDataReference, ChunkData, EntityData>,
+	WorldDataContext,
+	BlockDataContextRO {
+	
+	// currently empty
 
 }

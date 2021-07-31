@@ -17,26 +17,25 @@
  */
 package ru.windcorp.progressia.server.world.context;
 
-import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.world.context.WorldDataContext;
+import ru.windcorp.progressia.common.world.context.BlockDataContext;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.server.world.TileLogicStack;
-import ru.windcorp.progressia.server.world.WorldLogic;
 
-public interface ServerWorldContext extends WorldDataContext, ServerWorldContextRO {
+public interface ServerBlockContext extends BlockDataContext, ServerWorldContext, ServerBlockContextRO {
 
-	public interface Logic extends ServerWorldContextRO.Logic,
-		WorldLogic {
+	public interface Logic extends ServerBlockContextRO.Logic, ServerWorldContext.Logic {
 
 		@Override
-		ServerWorldContext data();
-		
+		ServerBlockContext data();
+
 		@Override
-		TileLogicStack getTiles(Vec3i blockInWorld, BlockFace face);
+		default TileLogicStack getTilesOrNull(BlockFace face) {
+			return (TileLogicStack) ServerBlockContextRO.Logic.super.getTilesOrNull(face);
+		}
 
 	}
 
 	@Override
-	ServerWorldContext.Logic logic();
+	ServerBlockContext.Logic logic();
 
 }
