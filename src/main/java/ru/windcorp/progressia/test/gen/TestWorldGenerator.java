@@ -62,8 +62,9 @@ public class TestWorldGenerator extends AbstractWorldGenerator<Boolean> {
 					@Override
 					public void onChunkBlockChanged(ChunkData chunk, Vec3i blockInChunk, BlockData previous,
 							BlockData current) {
-						Vec3i chunkWorldPos = chunk.getPosition().mul_(16).add_(blockInChunk);
-
+						Vec3i chunkWorldPos = new Vec3i(0,0,0);
+						Coordinates.getInWorld(chunk.getPosition(), blockInChunk, chunkWorldPos); //chunk.getPosition().mul_(16).add_(blockInChunk);
+						
 						if (TestEntityLogicFallingBlock.FallingBlocks
 								.contains(chunk.getWorld().getBlock(chunkWorldPos.add_(0, 0, 1)).getId())) {
 							chunk.getWorld().setBlock(chunkWorldPos.add_(0, 0, 1), BlockDataRegistry.getInstance()
