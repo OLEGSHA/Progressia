@@ -10,6 +10,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.TickContext;
 import ru.windcorp.progressia.server.world.entity.EntityLogic;
 
@@ -57,7 +58,7 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 		// "+String.valueOf(entity!=null) + " " +
 		// context.toString());
 		super.tick(entity, context);
-
+		
 		// friction
 		Vec3 vel = entity.getVelocity();
 		float friction = 0f;
@@ -105,12 +106,14 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 
 		if (context.getWorldData().isBlockLoaded(occupiedBlock)
 				&& context.getWorldData().getChunk(chunkCoords).getBlock(inChunkCoords).getId() != "Test:Air") {
-			LogManager.getLogger().info("Deleting FallingBlock at " + String.valueOf(occupiedBlock.x));
+			LogManager.getLogger().info("Deleting FallingBlock at " + String.valueOf(occupiedBlock.x) + " " + String.valueOf(occupiedBlock.y) + " " + String.valueOf(occupiedBlock.z));
 			// ClientState.getInstance().getWorld().getData().setBlock(occupiedBlock,
 			// fallBlock.getBlock(),true);
 			context.getAccessor().setBlock(occupiedBlock, fallBlock.getBlock());
 			fallBlock.setInvisible(); // Until I know how to properly delete it.
-			ClientState.getInstance().getWorld().getData().removeEntity(entity.getEntityId());// context.getWorldData().removeEntity(entity.getEntityId());
+			//ClientState.getInstance().getWorld().getData().removeEntity(entity.getEntityId());// context.getWorldData().removeEntity(entity.getEntityId());
+			Server server = context.getServer();
+			server.invokeLater(() -> server.getWorld().getData().removeEntity(entity.getEntityId()));
 		}
 	}
 }

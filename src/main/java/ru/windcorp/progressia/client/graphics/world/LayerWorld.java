@@ -110,11 +110,11 @@ public class LayerWorld extends Layer {
 
 			tmp_testControls.applyPlayerControls();
 
-			for (EntityData data : this.client.getWorld().getData().getEntities()) {
+			this.client.getWorld().getData().getEntities().forEach(data -> {
 				tmp_applyFriction(data, tickLength);
 				tmp_applyGravity(data, tickLength);
 				tmp_renderCollisionModel(data);
-			}
+			});
 		} catch (Throwable e) {
 			e.printStackTrace();
 			System.err.println("OLEGSHA is to blame. Tell him he vry stupiDD!!");
