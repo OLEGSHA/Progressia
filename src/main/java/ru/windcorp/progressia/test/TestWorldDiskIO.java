@@ -26,6 +26,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -42,10 +46,49 @@ import ru.windcorp.progressia.server.Server;
 
 public class TestWorldDiskIO {
 
-	private static final Path SAVE_DIR = Paths.get("tmp_world");
+	private static Path SAVE_DIR = Paths.get("tmp_world");
 	private static final Logger LOG = LogManager.getLogger("TestWorldDiskIO");
 
-	private static final boolean ENABLE = false;
+	private static final boolean ENABLE = true;
+	
+	private static final int maxSize = 1048576;
+	private static final int sectorSize = maxSize/256;
+	
+	private Map<Vec3i,Vec3i> regions = new HashMap<Vec3i,Vec3i>();
+	
+	private int natFromInt(int loc)
+	{
+		if (loc<0)
+			return (-loc)<<1 + 1;
+		return loc<<1;
+	}
+	
+	private int intFromNat(int loc) // Possibly unused
+	{
+		if ((loc&1) == 1)
+			return -loc>>1;
+		return loc>>1;
+	}
+	
+	private Vec3i getRegionLoc(Vec3i chunkLoc)
+	{
+		return new Vec3i(natFromInt(chunkLoc.x),natFromInt(chunkLoc.y),natFromInt(chunkLoc.z));
+	}
+	
+	public void initRegions()
+	{
+		initRegions(null);
+	}
+	
+	public void initRegions(Path worldPath)
+	{
+		if (worldPath!=null)
+		{
+			SAVE_DIR = worldPath;
+		}
+		
+		regions.put(new Vec3i(0,0,0), new Vec3i(1,1,1));
+	}
 
 	public static void saveChunk(ChunkData chunk, Server server) {
 		if (!ENABLE)
