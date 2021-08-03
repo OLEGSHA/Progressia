@@ -17,7 +17,10 @@
  */
 package ru.windcorp.progressia.test;
 
+import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.Colors;
+import ru.windcorp.progressia.client.graphics.GUI;
+import ru.windcorp.progressia.client.graphics.Layer;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.Button;
 import ru.windcorp.progressia.client.graphics.gui.Checkbox;
@@ -25,6 +28,7 @@ import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.RadioButton;
 import ru.windcorp.progressia.client.graphics.gui.RadioButtonGroup;
 import ru.windcorp.progressia.client.graphics.gui.menu.MenuLayer;
+import ru.windcorp.progressia.server.ServerState;
 
 public class LayerButtonTest extends MenuLayer {
 
@@ -60,8 +64,16 @@ public class LayerButtonTest extends MenuLayer {
 			getCloseAction().run();
 		}));
 		
-		getContent().addChild(new Button("Quit", "Quit").addAction(b -> {
-			System.exit(0);
+		getContent().addChild(new Button("Menu", "Menu").addAction(b -> {
+			//System.exit(0);
+			for (Layer layer : GUI.getLayers())
+			{
+				GUI.removeLayer(layer);
+			}
+			GUI.addTopLayer(new LayerTitle("Title"));
+			//ClientState.getInstance().;
+			
+			//ServerState.getInstance().shutdown("Safe Exit");
 		}));
 		
 		getContent().takeFocus();

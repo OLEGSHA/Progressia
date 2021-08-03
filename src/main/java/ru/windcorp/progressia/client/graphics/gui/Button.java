@@ -29,6 +29,10 @@ public class Button extends BasicButton {
 		super(name, label, labelFont);
 	}
 	
+	public Button(String name, Label label) {
+		super(name, label);
+	}
+	
 	public Button(String name, String label) {
 		this(name, label, new Font());
 	}
