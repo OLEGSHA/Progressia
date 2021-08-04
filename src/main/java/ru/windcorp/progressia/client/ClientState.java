@@ -64,11 +64,13 @@ public class ClientState {
 
 		setInstance(client);
 
+		MutableString t = new MutableStringLocalized("LayerText.Load");
+		layer = new LayerTestText("Text",() -> {t.update(); return t.get();});
+		
 		ServerState.getInstance().getChunkManager().register((ChunksLoadStartListener)() -> {
 			if (firstLoad)
 			{
-				MutableString t = new MutableStringLocalized("LayerText.Load");
-				layer = new LayerTestText("Text",() -> {t.update(); return t.get();});
+				
 				GUI.addTopLayer(layer);
 			}});
 		
