@@ -38,7 +38,9 @@ public class ClientProxy implements Proxy {
 
 	@Override
 	public void initialize() {
+
 		GraphicsBackend.initialize();
+		
 		try {
 			RenderTaskQueue.waitAndInvoke(FlatRenderProgram::init);
 			RenderTaskQueue.waitAndInvoke(WorldRenderProgram::init);
@@ -47,21 +49,26 @@ public class ClientProxy implements Proxy {
 					.setDefault(GNUUnifontLoader.load(ResourceManager.getResource("assets/unifont-13.0.03.hex.gz")))
 			);
 		} catch (InterruptedException e) {
-			throw CrashReports.report(e, "ClientProxy failed");
+			throw CrashReports.report(e, "Menu launch failed");
 		}
-
+		
 		Localizer.getInstance().setLanguage("en-US");
-
+		
 		TestContent.registerContent();
 
 		Atlases.loadAllAtlases();
 
 		AudioSystem.initialize();
-
-		ServerState.startServer();
-		ClientState.connectToLocalServer();
 		
 		TestMusicPlayer.start();
+		
+		//setupServer();
+	}
+	
+	public void setupServer()
+	{
+		ServerState.startServer();
+		ClientState.connectToLocalServer();
 	}
 
 }

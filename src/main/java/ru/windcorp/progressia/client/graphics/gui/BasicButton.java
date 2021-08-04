@@ -42,10 +42,10 @@ public abstract class BasicButton extends Component {
 
 	private boolean isPressed = false;
 	private final Collection<Consumer<BasicButton>> actions = Collections.synchronizedCollection(new ArrayList<>());
-
-	public BasicButton(String name, String label, Font labelFont) {
+	
+	public BasicButton(String name, Label label) {
 		super(name);
-		this.label = new Label(name + ".Label", labelFont, label);
+		this.label = label;
 
 		setLayout(new LayoutAlign(10));
 		addChild(this.label);
@@ -102,6 +102,11 @@ public abstract class BasicButton extends Component {
 			}
 			
 		});
+	}
+	
+	public BasicButton(String name, String label, Font labelFont)
+	{
+		this(name, new Label(name + ".Label", labelFont, label));
 	}
 
 	public BasicButton(String name, String label) {

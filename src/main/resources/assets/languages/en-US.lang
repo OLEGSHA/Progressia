@@ -23,3 +23,8 @@ LayerTestGUI.IsFullscreen = Fullscreen:     %5s (F11)
 LayerTestGUI.IsVSync = VSync:          %5s (F12)
 
 LayerButtonTest.Title = Button Test
+
+LayerTitle.Title = Progressia
+LayerTitle.Play = Play World
+LayerTitle.Options = Options
+LayerTitle.Quit = Quit
