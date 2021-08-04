@@ -104,6 +104,7 @@ public class LayerButtonTest extends MenuLayer {
 					//cm.unregisterAll();
 					alive = false;
 					
+					//ServerState.getInstance().;
 					ServerState.getInstance().shutdown("Safe Exit");
 
 					ServerState.setInstance(null);

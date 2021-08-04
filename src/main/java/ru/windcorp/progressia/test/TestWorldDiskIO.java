@@ -15,21 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -47,47 +48,68 @@ import ru.windcorp.progressia.server.Server;
 public class TestWorldDiskIO {
 
 	private static Path SAVE_DIR = Paths.get("tmp_world");
+	private static String formatFile = "world.format";
 	private static final Logger LOG = LogManager.getLogger("TestWorldDiskIO");
 
 	private static final boolean ENABLE = true;
-	
+
 	private static final int maxSize = 1048576;
-	private static final int sectorSize = maxSize/256;
-	
-	private Map<Vec3i,Vec3i> regions = new HashMap<Vec3i,Vec3i>();
-	
-	private int natFromInt(int loc)
-	{
-		if (loc<0)
-			return (-loc)<<1 + 1;
-		return loc<<1;
+	private static final int sectorSize = maxSize / 256;
+
+	private static final int bestFormat = 2;
+
+	// private Map<Vec3i,Vec3i> regions = new HashMap<Vec3i,Vec3i>();
+	private static Vec3i regionSize;
+	private static int chunksPerRegion;
+
+	private static int currentFormat = -1;
+	private static String extension = ".null";
+
+	private static int natFromInt(int loc) {
+		if (loc < 0)
+			return (-loc) << 1 + 1;
+		return loc << 1;
 	}
-	
-	private int intFromNat(int loc) // Possibly unused
+
+	private static int intFromNat(int loc) // Possibly unused
 	{
-		if ((loc&1) == 1)
-			return -loc>>1;
-		return loc>>1;
+		if ((loc & 1) == 1)
+			return -loc >> 1;
+		return loc >> 1;
 	}
-	
-	private Vec3i getRegionLoc(Vec3i chunkLoc)
-	{
-		return new Vec3i(natFromInt(chunkLoc.x),natFromInt(chunkLoc.y),natFromInt(chunkLoc.z));
+
+	private static Vec3i getRegionLoc(Vec3i chunkLoc) {
+		return new Vec3i(natFromInt(chunkLoc.x), natFromInt(chunkLoc.y), natFromInt(chunkLoc.z));
 	}
-	
-	public void initRegions()
-	{
+
+	public static void initRegions() {
 		initRegions(null);
 	}
-	
-	public void initRegions(Path worldPath)
-	{
-		if (worldPath!=null)
-		{
+
+	public static void initRegions(Path worldPath) {
+		if (worldPath != null) {
 			SAVE_DIR = worldPath;
 		}
-		
-		regions.put(new Vec3i(0,0,0), new Vec3i(1,1,1));
+
+		// regions.put(new Vec3i(0,0,0), new Vec3i(1,1,1));
+	}
+
+	private static void setRegionSize(int format) {
+		switch (format) {
+		case 0:
+		case 1:
+			regionSize = new Vec3i(1);
+			chunksPerRegion = 1;
+			currentFormat = format;
+			extension = ".progressia_chunk";
+			break;
+		case 2:
+			regionSize = new Vec3i(16);
+			chunksPerRegion = 16 * 16 * 16;
+			currentFormat = 2;
+			extension = ".progressia_region";
+			break;
+		}
 	}
 
 	public static void saveChunk(ChunkData chunk, Server server) {
@@ -95,32 +117,65 @@ public class TestWorldDiskIO {
 			return;
 
 		try {
-			LOG.debug(
-				"Saving {} {} {}",
-				chunk.getPosition().x,
-				chunk.getPosition().y,
-				chunk.getPosition().z
-			);
 
-			Files.createDirectories(SAVE_DIR);
-
-			Path path = SAVE_DIR.resolve(
-				String.format(
-					"chunk_%+d_%+d_%+d.progressia_chunk",
+			if (currentFormat == 0) {
+				LOG.debug(
+					"Saving {} {} {}",
 					chunk.getPosition().x,
 					chunk.getPosition().y,
 					chunk.getPosition().z
-				)
-			);
+				);
 
-			try (
-				DataOutputStream output = new DataOutputStream(
-					new DeflaterOutputStream(new BufferedOutputStream(Files.newOutputStream(path)))
-				)
-			) {
-				ChunkIO.save(chunk, output, IOContext.SAVE);
-				writeGenerationHint(chunk, output, server);
+				Files.createDirectories(SAVE_DIR);
+
+				Path path = SAVE_DIR.resolve(
+					String.format(
+						"chunk_%+d_%+d_%+d" + extension,
+						chunk.getPosition().x,
+						chunk.getPosition().y,
+						chunk.getPosition().z
+					)
+				);
+
+				try (
+					DataOutputStream output = new DataOutputStream(
+						new DeflaterOutputStream(new BufferedOutputStream(Files.newOutputStream(path)))
+					)
+				) {
+					ChunkIO.save(chunk, output, IOContext.SAVE);
+					writeGenerationHint(chunk, output, server);
+				}
+			} else if (currentFormat == 1) {
+				LOG.debug(
+					"Saving {} {} {}",
+					chunk.getPosition().x,
+					chunk.getPosition().y,
+					chunk.getPosition().z
+				);
+
+				Files.createDirectories(SAVE_DIR);
+
+				Vec3i saveCoords = getRegionLoc(chunk.getPosition());
+
+				Path path = SAVE_DIR.resolve(
+					String.format(
+						"chunk_%+d_%+d_%+d" + extension,
+						saveCoords.x,
+						saveCoords.y,
+						saveCoords.z
+					)
+				);
+
+				try (
+					DataOutputStream output = new DataOutputStream(
+						new DeflaterOutputStream(new BufferedOutputStream(Files.newOutputStream(path)))
+					)
+				) {
+					ChunkIO.save(chunk, output, IOContext.SAVE);
+					writeGenerationHint(chunk, output, server);
+				}
 			}
+			// else if (currentFormat)
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -135,47 +190,141 @@ public class TestWorldDiskIO {
 		if (!ENABLE)
 			return null;
 
-		Path path = SAVE_DIR.resolve(
-			String.format(
-				"chunk_%+d_%+d_%+d.progressia_chunk",
-				chunkPos.x,
-				chunkPos.y,
-				chunkPos.z
-			)
-		);
+		if (currentFormat == -1) {
+			Path formatPath = SAVE_DIR.resolve(formatFile);
+			File format = formatPath.toFile();
 
-		if (!Files.exists(path)) {
-			LOG.debug(
-				"Not found {} {} {}",
-				chunkPos.x,
-				chunkPos.y,
-				chunkPos.z
-			);
+			if (format.exists()) {
+				String data = null;
+				try {
+					Scanner reader = new Scanner(format);
 
-			return null;
+					data = reader.next();
+
+					reader.close();
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				byte[] formatBytes = data.getBytes();
+				int formatNum = formatBytes[0] * 256 * 256 * 256 + formatBytes[1] * 256 * 256 + formatBytes[2] * 256
+					+ formatBytes[3];
+
+				setRegionSize(formatNum);
+			} else {
+				setRegionSize(bestFormat);
+
+				BufferedWriter bw;
+				try {
+					bw = new BufferedWriter(new FileWriter(format));
+
+					bw.write(
+						new char[] {
+							bestFormat / (256 * 256 * 256),
+							(bestFormat % 256) / (256 * 256),
+							(bestFormat % (256 * 256)) / (256),
+							bestFormat % (256 * 256 * 256) }
+					);
+
+					bw.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
 		}
 
-		try {
-			ChunkData result = load(path, chunkPos, world, server);
+		if (currentFormat == 0) {
 
-			LOG.debug(
-				"Loaded {} {} {}",
-				chunkPos.x,
-				chunkPos.y,
-				chunkPos.z
+			Path path = SAVE_DIR.resolve(
+				String.format(
+					"chunk_%+d_%+d_%+d" + extension,
+					chunkPos.x,
+					chunkPos.y,
+					chunkPos.z
+				)
 			);
 
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-			LOG.debug(
-				"Could not load {} {} {}",
-				chunkPos.x,
-				chunkPos.y,
-				chunkPos.z
+			if (!Files.exists(path)) {
+				LOG.debug(
+					"Not found {} {} {}",
+					chunkPos.x,
+					chunkPos.y,
+					chunkPos.z
+				);
+
+				return null;
+			}
+
+			try {
+				ChunkData result = load(path, chunkPos, world, server);
+
+				LOG.debug(
+					"Loaded {} {} {}",
+					chunkPos.x,
+					chunkPos.y,
+					chunkPos.z
+				);
+
+				return result;
+			} catch (Exception e) {
+				e.printStackTrace();
+				LOG.debug(
+					"Could not load {} {} {}",
+					chunkPos.x,
+					chunkPos.y,
+					chunkPos.z
+				);
+				return null;
+			}
+		} else if (currentFormat == 1) {
+			Vec3i saveCoords = getRegionLoc(chunkPos);
+
+			Path path = SAVE_DIR.resolve(
+				String.format(
+					"chunk_%+d_%+d_%+d" + extension,
+					saveCoords.x,
+					saveCoords.y,
+					saveCoords.z
+				)
 			);
-			return null;
+
+			if (!Files.exists(path)) {
+				LOG.debug(
+					"Not found {} {} {}",
+					chunkPos.x,
+					chunkPos.y,
+					chunkPos.z
+				);
+
+				return null;
+			}
+
+			try {
+				ChunkData result = load(path, chunkPos, world, server);
+
+				LOG.debug(
+					"Loaded {} {} {}",
+					chunkPos.x,
+					chunkPos.y,
+					chunkPos.z
+				);
+
+				return result;
+			} catch (Exception e) {
+				e.printStackTrace();
+				LOG.debug(
+					"Could not load {} {} {}",
+					chunkPos.x,
+					chunkPos.y,
+					chunkPos.z
+				);
+				return null;
+			}
 		}
+		return null;
 	}
 
 	private static ChunkData load(Path path, Vec3i chunkPos, WorldData world, Server server)

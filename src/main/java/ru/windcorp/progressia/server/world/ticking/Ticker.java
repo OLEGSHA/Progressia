@@ -115,6 +115,8 @@ class Ticker {
 		} catch (Exception e) {
 			getCoordinator().crash(e, this.name);
 		}
+		
+		
 	}
 
 	private synchronized boolean sleep() {

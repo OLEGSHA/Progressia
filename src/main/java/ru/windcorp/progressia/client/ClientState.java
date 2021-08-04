@@ -18,9 +18,6 @@
  
 package ru.windcorp.progressia.client;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import ru.windcorp.progressia.client.comms.localhost.LocalServerCommsChannel;
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.Layer;

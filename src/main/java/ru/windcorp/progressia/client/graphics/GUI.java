@@ -21,6 +21,7 @@ package ru.windcorp.progressia.client.graphics;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -58,6 +59,7 @@ public class GUI {
 	}
 
 	public static void addBottomLayer(Layer layer) {
+		Objects.requireNonNull(layer, "layer");
 		modify(layers -> {
 			layers.add(layer);
 			layer.onAdded();
@@ -65,6 +67,7 @@ public class GUI {
 	}
 
 	public static void addTopLayer(Layer layer) {
+		Objects.requireNonNull(layer, "layer");
 		modify(layers -> {
 			layers.add(0, layer);
 			layer.onAdded();
@@ -72,6 +75,7 @@ public class GUI {
 	}
 
 	public static void removeLayer(Layer layer) {
+		Objects.requireNonNull(layer, "layer");
 		modify(layers -> {
 			layers.remove(layer);
 			layer.onRemoved();
