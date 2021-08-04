@@ -54,7 +54,7 @@ public class LocalServerCommsChannel extends ServerCommsChannel {
 
 	@Override
 	public void disconnect() {
-		// Do nothing
+		setState(State.DISCONNECTING);
 	}
 
 }

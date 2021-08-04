@@ -17,6 +17,8 @@
  */
 package ru.windcorp.progressia.test;
 
+import java.util.Collection;
+
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.GUI;
@@ -28,9 +30,15 @@ import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.RadioButton;
 import ru.windcorp.progressia.client.graphics.gui.RadioButtonGroup;
 import ru.windcorp.progressia.client.graphics.gui.menu.MenuLayer;
+import ru.windcorp.progressia.client.localization.MutableString;
+import ru.windcorp.progressia.client.localization.MutableStringLocalized;
+import ru.windcorp.progressia.server.ChunkManager;
+import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.ServerState;
 
 public class LayerButtonTest extends MenuLayer {
+	
+	boolean alive = true;
 
 	public LayerButtonTest() {
 		super("ButtonTest");
@@ -64,14 +72,42 @@ public class LayerButtonTest extends MenuLayer {
 			getCloseAction().run();
 		}));
 		
-		getContent().addChild(new Button("Menu", "Menu").addAction(b -> {
+		getContent().addChild(new Button("Menu", "Back To Menu").addAction(b -> {
 			//System.exit(0);
-			for (Layer layer : GUI.getLayers())
-			{
-				GUI.removeLayer(layer);
-			}
-			GUI.addTopLayer(new LayerTitle("Title"));
+			//for (Layer layer : GUI.getLayers())
+			//{
+			//	GUI.removeLayer(layer);
+			//}
+			getCloseAction().run();
+			
 			//ClientState.getInstance().;
+			
+			Collection<Player> players = ServerState.getInstance().getPlayerManager().getPlayers();
+			players.clear();
+			
+			ClientState.disconnectFromLocalServer();
+			
+			MutableString t = new MutableStringLocalized("LayerText.Save");
+			LayerTestText layer = new LayerTestText("Text",() -> {t.update(); return t.get();});
+			
+			GUI.addTopLayer(layer);
+			
+			ChunkManager cm = ServerState.getInstance().getChunkManager();
+			alive = true;
+			cm.register(bl -> {
+				if (bl && alive)
+				{
+					GUI.removeLayer(layer);
+					GUI.addTopLayer(new LayerTitle("Title"));
+					//cm.unregisterAll();
+					alive = false;
+				}
+			});
+			
+			//ClientState.getInstance();
+			ClientState.setInstance(null);
+			ServerState.setInstance(null);
+			//ServerState.getInstance().getChunkManager().unloadAll();
 			
 			//ServerState.getInstance().shutdown("Safe Exit");
 		}));

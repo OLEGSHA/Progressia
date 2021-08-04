@@ -18,18 +18,30 @@
  
 package ru.windcorp.progressia.client;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import ru.windcorp.progressia.client.comms.localhost.LocalServerCommsChannel;
 import ru.windcorp.progressia.client.graphics.GUI;
+import ru.windcorp.progressia.client.graphics.Layer;
 import ru.windcorp.progressia.client.graphics.world.LayerWorld;
+import ru.windcorp.progressia.client.localization.MutableString;
+import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.server.ServerState;
 import ru.windcorp.progressia.test.LayerAbout;
+import ru.windcorp.progressia.test.LayerTestText;
 import ru.windcorp.progressia.test.LayerTestUI;
 import ru.windcorp.progressia.test.TestContent;
 
 public class ClientState {
 
 	private static Client instance;
+	
+	private static Collection<Layer> layers;
+	
+	private static boolean firstLoad;
+	private static LayerTestText layer;
 
 	public static Client getInstance() {
 		return instance;
@@ -46,6 +58,8 @@ public class ClientState {
 		LocalServerCommsChannel channel = new LocalServerCommsChannel(
 			ServerState.getInstance()
 		);
+		
+		firstLoad = true;
 
 		Client client = new Client(world, channel);
 
@@ -53,10 +67,43 @@ public class ClientState {
 
 		setInstance(client);
 
-		GUI.addBottomLayer(new LayerWorld(client));
-		GUI.addTopLayer(new LayerTestUI());
-		GUI.addTopLayer(new LayerAbout());
+		ServerState.getInstance().getChunkManager().register(bl -> {
+			if (!bl && firstLoad)
+			{
+				MutableString t = new MutableStringLocalized("LayerText.Load");
+				layer = new LayerTestText("Text",() -> {t.update(); return t.get();});
+				GUI.addTopLayer(layer);
+			}
+			else if (bl && firstLoad)
+			{
+				GUI.removeLayer(layer);
+				
+				LayerWorld layerWorld = new LayerWorld(client);
+				LayerTestUI layerUI = new LayerTestUI();
+				LayerAbout layerAbout = new LayerAbout();
+				GUI.addBottomLayer(layerWorld);
+				GUI.addTopLayer(layerUI);
+				GUI.addTopLayer(layerAbout);
 
+				layers = new HashSet<Layer>();
+				layers.add(layerWorld);
+				layers.add(layerUI);
+				layers.add(layerAbout);
+			
+				firstLoad = false;
+			}
+		});
+		
+	}
+	
+	public static void disconnectFromLocalServer()
+	{
+		for (Layer layer : layers)
+		{
+			GUI.removeLayer(layer);
+		}
+		
+		ServerState.getInstance().getClientManager();
 	}
 
 	private ClientState() {

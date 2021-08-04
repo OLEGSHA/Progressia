@@ -18,9 +18,14 @@
  
 package ru.windcorp.progressia.server;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import org.apache.logging.log4j.LogManager;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -74,6 +79,12 @@ public class ChunkManager {
 		}
 
 	}
+	
+	@FunctionalInterface
+	public interface ChunksLoadListener
+	{
+		void handle(boolean starting);
+	}
 
 	private final Server server;
 
@@ -82,6 +93,8 @@ public class ChunkManager {
 	private final ChunkSet toLoad = ChunkSets.newHashSet();
 	private final ChunkSet toUnload = ChunkSets.newHashSet();
 
+	private Collection<ChunksLoadListener> listeners = Collections.synchronizedCollection( new ArrayList<>());
+	
 	// TODO replace with a normal Map managed by some sort of PlayerListener,
 	// weak maps are weak
 	private final Map<Player, PlayerVision> visions = Collections.synchronizedMap(new WeakHashMap<>());
@@ -101,6 +114,16 @@ public class ChunkManager {
 		}
 	}
 
+	public void register(ChunksLoadListener cll)
+	{
+		listeners.add(cll);
+	}
+	
+	public void unregisterAll()
+	{
+		listeners.clear();
+	}
+	
 	private void gatherRequests() {
 		requested.clear();
 
@@ -126,6 +149,12 @@ public class ChunkManager {
 	}
 
 	private void processQueues() {
+		
+		if (toUnload.size()!=0 || toLoad.size()!=0)
+		{
+			LogManager.getLogger().info(String.valueOf(toUnload.size())+" "+String.valueOf( toLoad.size()));
+			listeners.forEach(l -> l.handle(false));
+		}
 		toUnload.forEach(this::unloadChunk);
 		toUnload.clear();
 		toLoad.forEach(this::loadChunk);
@@ -134,6 +163,8 @@ public class ChunkManager {
 		visions.forEach((p, v) -> {
 			v.processQueues(p);
 		});
+		listeners.forEach(l -> l.handle(true));
+		
 	}
 
 	private PlayerVision getVision(Player player, boolean createIfMissing) {
@@ -173,6 +204,25 @@ public class ChunkManager {
 
 		TestWorldDiskIO.saveChunk(chunk, getServer());
 
+	}
+	
+	public void unloadAll() // dont use probably
+	{
+		WorldData world = getServer().getWorld().getData();
+		
+		//Collection<ChunkData> chunks = world.getChunks();
+		Collection<Vec3i> chunkPoss = new HashSet<Vec3i>();
+		
+		world.forEachChunk(c -> {
+			chunkPoss.add(c.getPosition());
+		});
+		
+		chunkPoss.forEach(v -> {
+			ChunkData c = world.getChunk(v);
+			world.removeChunk(c);
+		
+			TestWorldDiskIO.saveChunk(c, getServer());
+		});
 	}
 
 	public void sendChunk(Player player, Vec3i chunkPos) {

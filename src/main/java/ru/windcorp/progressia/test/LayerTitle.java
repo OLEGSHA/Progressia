@@ -24,6 +24,7 @@ public class LayerTitle extends GUILayer {
 		MutableString playText = new MutableStringLocalized("Layer"+name+".Play");
 		getRoot().addChild(new Button(name+".Play", new Label(name+".Play", buttonFont, playText)).addAction(b -> {
 			GUI.removeLayer(this);
+			
 			ProgressiaLauncher.play();}));
 		
 		MutableString quitText = new MutableStringLocalized("Layer"+name+".Quit");

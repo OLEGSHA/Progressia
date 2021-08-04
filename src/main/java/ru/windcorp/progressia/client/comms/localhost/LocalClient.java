@@ -53,7 +53,8 @@ public class LocalClient extends ClientPlayer {
 
 	@Override
 	public void disconnect() {
-		// Do nothing
+		setState(State.DISCONNECTING);
+		serverComms.disconnect();
 	}
 
 }

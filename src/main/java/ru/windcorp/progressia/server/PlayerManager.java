@@ -72,6 +72,11 @@ public class PlayerManager {
 
 		return player;
 	}
+	
+	public void removePlayer(Player player)
+	{
+		players.remove(player);
+	}
 
 	public Server getServer() {
 		return server;

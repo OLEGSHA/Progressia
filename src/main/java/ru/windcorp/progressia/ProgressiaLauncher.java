@@ -20,14 +20,6 @@ package ru.windcorp.progressia;
 
 import ru.windcorp.progressia.client.ClientProxy;
 import ru.windcorp.progressia.client.graphics.GUI;
-import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
-import ru.windcorp.progressia.client.graphics.backend.RenderTaskQueue;
-import ru.windcorp.progressia.client.graphics.flat.FlatRenderProgram;
-import ru.windcorp.progressia.client.graphics.font.GNUUnifontLoader;
-import ru.windcorp.progressia.client.graphics.font.Typefaces;
-import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
-import ru.windcorp.progressia.client.localization.Localizer;
-import ru.windcorp.progressia.common.resource.ResourceManager;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.crash.analyzers.OutOfMemoryAnalyzer;
 import ru.windcorp.progressia.common.util.crash.providers.*;
