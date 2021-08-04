@@ -17,6 +17,7 @@
  */
 package ru.windcorp.progressia.server.world;
 
+import ru.windcorp.progressia.common.world.WorldDataRO;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.WorldGenericRO;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
@@ -24,5 +25,7 @@ import ru.windcorp.progressia.server.world.tile.TileLogic;
 
 public interface WorldLogicRO
 	extends WorldGenericRO<BlockLogic, TileLogic, TileLogicStackRO, TileLogicReferenceRO, ChunkLogicRO, EntityData> {
+	
+	WorldDataRO getData();
 
 }

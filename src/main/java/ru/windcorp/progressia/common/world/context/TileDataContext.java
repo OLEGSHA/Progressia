@@ -29,7 +29,10 @@ public interface TileDataContext
 	extends TileGenericContextWO<BlockData, TileData, TileDataStack, TileDataReference, ChunkData, EntityData>,
 	BlockFaceDataContext,
 	TileDataContextRO {
-
-	// currently empty
+	
+	@Override
+	default int getTag() {
+		return getTileReference().getTag();
+	}
 	
 }

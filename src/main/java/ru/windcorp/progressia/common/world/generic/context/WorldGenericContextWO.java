@@ -140,7 +140,9 @@ public interface WorldGenericContextWO<
 	 * @see #removeEntity(long)
 	 */
 	@Override
-	void removeEntity(E entity);
+	default void removeEntity(E entity) {
+		removeEntity(entity.getEntityId());
+	}
 
 	/**
 	 * Requests that the specified change is applied to the given entity. The

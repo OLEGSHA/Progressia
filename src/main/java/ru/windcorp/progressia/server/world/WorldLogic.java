@@ -20,6 +20,7 @@ package ru.windcorp.progressia.server.world;
 import java.util.Collection;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 
 public interface WorldLogic extends WorldLogicRO {
@@ -27,6 +28,9 @@ public interface WorldLogic extends WorldLogicRO {
 	/*
 	 * Override return types
 	 */
+	
+	@Override
+	WorldData getData();
 
 	@Override
 	ChunkLogic getChunk(Vec3i pos);

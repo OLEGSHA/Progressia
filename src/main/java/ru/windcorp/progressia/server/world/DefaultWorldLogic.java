@@ -96,6 +96,7 @@ public class DefaultWorldLogic implements WorldLogic {
 		return server;
 	}
 
+	@Override
 	public DefaultWorldData getData() {
 		return data;
 	}
