@@ -28,6 +28,8 @@ import ru.windcorp.progressia.client.graphics.world.LayerWorld;
 import ru.windcorp.progressia.client.localization.MutableString;
 import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.server.ChunkManager.ChunksLoadFinishListener;
+import ru.windcorp.progressia.server.ChunkManager.ChunksLoadStartListener;
 import ru.windcorp.progressia.server.ServerState;
 import ru.windcorp.progressia.test.LayerAbout;
 import ru.windcorp.progressia.test.LayerTestText;
@@ -37,8 +39,6 @@ import ru.windcorp.progressia.test.TestContent;
 public class ClientState {
 
 	private static Client instance;
-	
-	private static Collection<Layer> layers;
 	
 	private static boolean firstLoad;
 	private static LayerTestText layer;
@@ -67,14 +67,16 @@ public class ClientState {
 
 		setInstance(client);
 
-		ServerState.getInstance().getChunkManager().register(bl -> {
-			if (!bl && firstLoad)
+		ServerState.getInstance().getChunkManager().register((ChunksLoadStartListener)() -> {
+			if (firstLoad)
 			{
 				MutableString t = new MutableStringLocalized("LayerText.Load");
 				layer = new LayerTestText("Text",() -> {t.update(); return t.get();});
 				GUI.addTopLayer(layer);
-			}
-			else if (bl && firstLoad)
+			}});
+		
+		ServerState.getInstance().getChunkManager().register((ChunksLoadFinishListener)() -> {
+			if (firstLoad)
 			{
 				GUI.removeLayer(layer);
 				
@@ -84,11 +86,6 @@ public class ClientState {
 				GUI.addBottomLayer(layerWorld);
 				GUI.addTopLayer(layerUI);
 				GUI.addTopLayer(layerAbout);
-
-				layers = new HashSet<Layer>();
-				layers.add(layerWorld);
-				layers.add(layerUI);
-				layers.add(layerAbout);
 			
 				firstLoad = false;
 			}
@@ -98,12 +95,12 @@ public class ClientState {
 	
 	public static void disconnectFromLocalServer()
 	{
-		for (Layer layer : layers)
+		for (Layer layer : GUI.getLayers())
 		{
 			GUI.removeLayer(layer);
 		}
 		
-		ServerState.getInstance().getClientManager();
+		//ServerState.getInstance().getClientManager();
 	}
 
 	private ClientState() {

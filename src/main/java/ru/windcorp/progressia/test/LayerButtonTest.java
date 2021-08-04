@@ -33,6 +33,8 @@ import ru.windcorp.progressia.client.graphics.gui.menu.MenuLayer;
 import ru.windcorp.progressia.client.localization.MutableString;
 import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 import ru.windcorp.progressia.server.ChunkManager;
+import ru.windcorp.progressia.server.ChunkManager.ChunksLoadFinishListener;
+import ru.windcorp.progressia.server.ChunkManager.ChunksLoadListener;
 import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.ServerState;
 
@@ -94,22 +96,25 @@ public class LayerButtonTest extends MenuLayer {
 			
 			ChunkManager cm = ServerState.getInstance().getChunkManager();
 			alive = true;
-			cm.register(bl -> {
-				if (bl && alive)
+			cm.register((ChunksLoadFinishListener)() -> {
+				if (alive)
 				{
 					GUI.removeLayer(layer);
 					GUI.addTopLayer(new LayerTitle("Title"));
 					//cm.unregisterAll();
 					alive = false;
+					
+					ServerState.getInstance().shutdown("Safe Exit");
+
+					ServerState.setInstance(null);
 				}
 			});
 			
 			//ClientState.getInstance();
 			ClientState.setInstance(null);
-			ServerState.setInstance(null);
 			//ServerState.getInstance().getChunkManager().unloadAll();
 			
-			//ServerState.getInstance().shutdown("Safe Exit");
+			
 		}));
 		
 		getContent().takeFocus();

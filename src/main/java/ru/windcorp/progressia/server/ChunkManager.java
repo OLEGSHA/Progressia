@@ -85,6 +85,22 @@ public class ChunkManager {
 	{
 		void handle(boolean starting);
 	}
+	
+	@FunctionalInterface
+	private interface ChunksLoadEventListener
+	{
+		void handle();
+	}
+	
+	public interface ChunksLoadStartListener extends ChunksLoadEventListener
+	{
+		
+	}
+	
+	public interface ChunksLoadFinishListener extends ChunksLoadEventListener
+	{
+		
+	}
 
 	private final Server server;
 
@@ -94,6 +110,8 @@ public class ChunkManager {
 	private final ChunkSet toUnload = ChunkSets.newHashSet();
 
 	private Collection<ChunksLoadListener> listeners = Collections.synchronizedCollection( new ArrayList<>());
+	private Collection<ChunksLoadStartListener> startListeners = Collections.synchronizedCollection( new ArrayList<>());
+	private Collection<ChunksLoadFinishListener> finishListeners = Collections.synchronizedCollection( new ArrayList<>());
 	
 	// TODO replace with a normal Map managed by some sort of PlayerListener,
 	// weak maps are weak
@@ -117,6 +135,16 @@ public class ChunkManager {
 	public void register(ChunksLoadListener cll)
 	{
 		listeners.add(cll);
+	}
+	
+	public void register(ChunksLoadStartListener clsl)
+	{
+		startListeners.add(clsl);
+	}
+	
+	public void register(ChunksLoadFinishListener clfl)
+	{
+		finishListeners.add(clfl);
 	}
 	
 	public void unregisterAll()
@@ -153,8 +181,10 @@ public class ChunkManager {
 		if (toUnload.size()!=0 || toLoad.size()!=0)
 		{
 			LogManager.getLogger().info(String.valueOf(toUnload.size())+" "+String.valueOf( toLoad.size()));
-			listeners.forEach(l -> l.handle(false));
 		}
+		listeners.forEach(l -> l.handle(false));
+		startListeners.forEach(sl -> sl.handle());
+		
 		toUnload.forEach(this::unloadChunk);
 		toUnload.clear();
 		toLoad.forEach(this::loadChunk);
@@ -164,6 +194,7 @@ public class ChunkManager {
 			v.processQueues(p);
 		});
 		listeners.forEach(l -> l.handle(true));
+		finishListeners.forEach(fl -> fl.handle());
 		
 	}
 

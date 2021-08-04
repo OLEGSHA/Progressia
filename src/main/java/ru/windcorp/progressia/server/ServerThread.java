@@ -79,6 +79,7 @@ public class ServerThread implements Runnable {
 
 	public void stop() {
 		try {
+			executor.shutdown();
 			executor.awaitTermination(10, TimeUnit.MINUTES);
 		} catch (InterruptedException e) {
 			LogManager.getLogger().warn("Received interrupt in ServerThread.stop(), aborting wait");
