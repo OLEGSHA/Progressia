@@ -249,21 +249,21 @@ public class TestWorldDiskIO {
 					//output.mark(sectorSize*sectorLength);
 					
 					DataOutputStream trueOutput =  new DataOutputStream(Channels.newOutputStream(output.getChannel()));
-					CountingOutputStream countOutput = new CountingOutputStream(trueOutput);
+					//CountingOutputStream countOutput = new CountingOutputStream(trueOutput);
 					
 					//trueOutput.
 					ChunkIO.save(chunk, trueOutput, IOContext.SAVE);
 					writeGenerationHint(chunk, trueOutput, server);
 					
-					while (countOutput.getCount()%sectorSize != 0) {
-						countOutput.write(0);
+					while (trueOutput.size()%sectorSize != 0) {
+						trueOutput.write(0);
 					}
 					
 					output.seek(shortOffset+offsetBytes);
-					LOG.info(countOutput.getCount());
-					output.write((int) countOutput.getCount()/sectorSize);
+					LOG.info(trueOutput.size());
+					output.write((int) trueOutput.size()/sectorSize);
 					
-					countOutput.close();
+					trueOutput.close();
 				}
 			}
 			// else if (currentFormat)
@@ -494,17 +494,19 @@ public class TestWorldDiskIO {
 				new InflaterInputStream(new BufferedInputStream(Files.newInputStream(path)))
 			)
 		) {
+			LOG.info(path.toString());
 			Vec3i pos = getRegionLoc(chunkPos);
 			int shortOffset = (offsetBytes+1)*(pos.z+regionSize.z*(pos.y + regionSize.y*pos.x));
 			int fullOffset = (offsetBytes+1)*(chunksPerRegion);
 			input.skipNBytes(shortOffset);
-			int offset = 0;
-			for (int i=0;i<offsetBytes;i++)
+			int offset = input.readInt();
+			/*for (int i=0;i<offsetBytes;i++)
 			{
 				offset*=256;
 				offset += input.read();
-			}
-			int sectorLength = input.read();
+			}*/
+			int sectorLength = offset & 255;
+			offset = offset << 8;
 			input.skipNBytes(fullOffset-shortOffset-offsetBytes-1);
 			input.skipNBytes(sectorSize*offset);
 			input.mark(sectorSize*sectorLength);
