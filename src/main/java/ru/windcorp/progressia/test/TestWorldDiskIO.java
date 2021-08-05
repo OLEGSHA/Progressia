@@ -122,10 +122,15 @@ public class TestWorldDiskIO {
 			regionSize = new Vec3i(16);
 			chunksPerRegion = 16 * 16 * 16;
 			currentFormat = 65536;
-			offsetBytes = 4;
+			offsetBytes = 3;
 			extension = ".progressia_region";
 			break;
 		}
+	}
+	
+	private static void expand(int sectors)
+	{
+		
 	}
 
 	public static void saveChunk(ChunkData chunk, Server server) {
@@ -219,6 +224,7 @@ public class TestWorldDiskIO {
 					//LOG.debug(output.read());
 					if (output.read()<0)
 					{
+						LOG.info("Making header");
 						output.writeChars("\0".repeat((offsetBytes+1)*chunksPerRegion));
 					}
 					
@@ -227,17 +233,19 @@ public class TestWorldDiskIO {
 					int fullOffset = (offsetBytes+1)*(chunksPerRegion);
 					output.seek(shortOffset);
 					int offset = output.readInt();
-					int sectorLength = output.read();
+					int sectorLength = offset&255;
+					offset = offset >> 8;
 					if (sectorLength == 0)
 					{
-						offset = (int) (output.length()-fullOffset)/sectorSize;
+						int outputLen = (int) output.length();
+						offset = (int) (outputLen-fullOffset)/sectorSize;
 						output.seek(shortOffset);
-						output.writeInt(offset);
+						output.writeInt(offset<<8);
 						//output.write(200);
 					}
 					output.seek(fullOffset+sectorSize*offset);
 					
-					int bytestoWrite = output.readInt();
+					//int bytestoWrite = output.readInt();
 					//output.mark(sectorSize*sectorLength);
 					
 					DataOutputStream trueOutput =  new DataOutputStream(Channels.newOutputStream(output.getChannel()));
@@ -252,6 +260,7 @@ public class TestWorldDiskIO {
 					}
 					
 					output.seek(shortOffset+offsetBytes);
+					LOG.info(countOutput.getCount());
 					output.write((int) countOutput.getCount()/sectorSize);
 					
 					countOutput.close();
