@@ -28,7 +28,7 @@ import ru.windcorp.progressia.common.world.generic.*;
  * stack may or may not actually exist.
  */
 //@formatter:off
-public interface BlockFaceGenericContextWO<
+public interface TileStackGenericContextWO<
 	B  extends BlockGeneric,
 	T  extends TileGeneric,
 	E  extends EntityGeneric

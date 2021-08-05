@@ -30,7 +30,7 @@ public interface TileGenericContextRO<
 	B  extends BlockGeneric,
 	T  extends TileGeneric,
 	E  extends EntityGeneric
-> extends WorldContexts.Tile, BlockFaceGenericContextRO<B, T, E> {
+> extends WorldContexts.Tile, TileStackGenericContextRO<B, T, E> {
 //@formatter:on
 
 	/**

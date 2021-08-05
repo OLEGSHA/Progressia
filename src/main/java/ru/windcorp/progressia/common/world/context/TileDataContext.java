@@ -24,7 +24,7 @@ import ru.windcorp.progressia.common.world.tile.TileData;
 
 public interface TileDataContext
 	extends TileGenericContextWO<BlockData, TileData, EntityData>,
-	BlockFaceDataContext,
+	TileStackDataContext,
 	TileDataContextRO {
 	
 	// currently empty

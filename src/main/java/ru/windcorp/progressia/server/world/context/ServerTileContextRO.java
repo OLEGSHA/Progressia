@@ -23,10 +23,10 @@ import ru.windcorp.progressia.common.world.generic.context.TileGenericContextRO;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 
-public interface ServerTileContextRO extends ServerBlockFaceContextRO, TileDataContextRO {
+public interface ServerTileContextRO extends ServerTileStackContextRO, TileDataContextRO {
 
 	public interface Logic
-		extends ServerBlockFaceContextRO.Logic, TileGenericContextRO<BlockLogic, TileLogic, EntityData> {
+		extends ServerTileStackContextRO.Logic, TileGenericContextRO<BlockLogic, TileLogic, EntityData> {
 
 		@Override
 		ServerTileContextRO data();

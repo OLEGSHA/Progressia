@@ -19,13 +19,14 @@ package ru.windcorp.progressia.common.world.context;
 
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.common.world.generic.context.BlockFaceGenericContextRO;
+import ru.windcorp.progressia.common.world.generic.context.TileStackGenericContextWO;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
-public interface BlockFaceDataContextRO
-	extends BlockFaceGenericContextRO<BlockData, TileData, EntityData>,
-	BlockDataContext {
-	
+public interface TileStackDataContext
+	extends TileStackGenericContextWO<BlockData, TileData, EntityData>,
+	BlockDataContext,
+	TileStackDataContextRO {
+
 	// currently empty
 
 }

@@ -20,15 +20,7 @@ package ru.windcorp.progressia.server.world.context.impl;
 import ru.windcorp.progressia.common.world.context.Context;
 import ru.windcorp.progressia.server.world.WorldLogic;
 import ru.windcorp.progressia.server.world.WorldLogicRO;
-import ru.windcorp.progressia.server.world.context.ServerBlockContext;
-import ru.windcorp.progressia.server.world.context.ServerBlockContextRO;
-import ru.windcorp.progressia.server.world.context.ServerBlockFaceContext;
-import ru.windcorp.progressia.server.world.context.ServerBlockFaceContextRO;
-import ru.windcorp.progressia.server.world.context.ServerContext;
-import ru.windcorp.progressia.server.world.context.ServerTileContext;
-import ru.windcorp.progressia.server.world.context.ServerTileContextRO;
-import ru.windcorp.progressia.server.world.context.ServerWorldContext;
-import ru.windcorp.progressia.server.world.context.ServerWorldContextRO;
+import ru.windcorp.progressia.server.world.context.*;
 
 /**
  * An implementation of the entire {@link ServerContext} tree. The objects of
@@ -75,8 +67,8 @@ public abstract class ReusableServerContext implements ServerTileContext {
 		 */
 		LOCATION,
 		/**
-		 * This object conforms to {@link ServerBlockFaceContext} or
-		 * {@link ServerBlockFaceContextRO}.
+		 * This object conforms to {@link ServerTileStackContext} or
+		 * {@link ServerTileStackContextRO}.
 		 */
 		TILE_STACK,
 		/**

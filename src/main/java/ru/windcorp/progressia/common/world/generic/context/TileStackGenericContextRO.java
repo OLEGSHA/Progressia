@@ -26,7 +26,7 @@ import ru.windcorp.progressia.common.world.generic.*;
  * not actually exist.
  */
 //@formatter:off
-public interface BlockFaceGenericContextRO<
+public interface TileStackGenericContextRO<
 	B  extends BlockGeneric,
 	T  extends TileGeneric,
 	E  extends EntityGeneric

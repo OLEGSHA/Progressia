@@ -19,9 +19,9 @@ package ru.windcorp.progressia.server.world.context;
 
 import ru.windcorp.progressia.common.world.context.TileDataContext;
 
-public interface ServerTileContext extends TileDataContext, ServerBlockFaceContext, ServerTileContextRO {
+public interface ServerTileContext extends TileDataContext, ServerTileStackContext, ServerTileContextRO {
 
-	public interface Logic extends ServerTileContextRO.Logic, ServerBlockFaceContext.Logic {
+	public interface Logic extends ServerTileContextRO.Logic, ServerTileStackContext.Logic {
 
 		@Override
 		ServerTileContext data();

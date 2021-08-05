@@ -78,7 +78,7 @@ class WorldContexts {
 	/**
 	 * A {@link Context} with a world instance, a block location and a block face
 	 * (block side). This interface should not be implemented directly; see
-	 * {@link BlockFaceGenericContextRO} or {@link BlockFaceGenericContextWO}.
+	 * {@link TileStackGenericContextRO} or {@link TileStackGenericContextWO}.
 	 * 
 	 * @author javapony
 	 *
