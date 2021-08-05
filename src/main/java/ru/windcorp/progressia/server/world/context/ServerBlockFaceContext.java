@@ -18,7 +18,6 @@
 package ru.windcorp.progressia.server.world.context;
 
 import ru.windcorp.progressia.common.world.context.BlockFaceDataContext;
-import ru.windcorp.progressia.server.world.TileLogicStack;
 
 public interface ServerBlockFaceContext extends BlockFaceDataContext, ServerBlockContext, ServerBlockFaceContextRO {
 
@@ -26,11 +25,6 @@ public interface ServerBlockFaceContext extends BlockFaceDataContext, ServerBloc
 
 		@Override
 		ServerBlockFaceContext data();
-
-		@Override
-		default TileLogicStack getTilesOrNull() {
-			return (TileLogicStack) ServerBlockFaceContextRO.Logic.super.getTilesOrNull();
-		}
 
 	}
 

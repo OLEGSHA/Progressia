@@ -20,16 +20,13 @@ package ru.windcorp.progressia.server.world.context;
 import ru.windcorp.progressia.common.world.context.BlockFaceDataContextRO;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.context.BlockFaceGenericContextRO;
-import ru.windcorp.progressia.server.world.ChunkLogicRO;
-import ru.windcorp.progressia.server.world.TileLogicReferenceRO;
-import ru.windcorp.progressia.server.world.TileLogicStackRO;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 
 public interface ServerBlockFaceContextRO extends ServerBlockContextRO, BlockFaceDataContextRO {
 
-	public interface Logic extends ServerBlockContextRO.Logic,
-		BlockFaceGenericContextRO<BlockLogic, TileLogic, TileLogicStackRO, TileLogicReferenceRO, ChunkLogicRO, EntityData> {
+	public interface Logic
+		extends ServerBlockContextRO.Logic, BlockFaceGenericContextRO<BlockLogic, TileLogic, EntityData> {
 
 		@Override
 		ServerBlockFaceContextRO data();

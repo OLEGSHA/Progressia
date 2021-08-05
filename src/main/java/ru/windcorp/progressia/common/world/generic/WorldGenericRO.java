@@ -144,7 +144,7 @@ public interface WorldGenericRO<
 		return getChunk(chunkPos) != null;
 	}
 
-	default boolean isBlockLoaded(Vec3i blockInWorld) {
+	default boolean isLocationLoaded(Vec3i blockInWorld) {
 		return getChunkByBlock(blockInWorld) != null;
 	}
 

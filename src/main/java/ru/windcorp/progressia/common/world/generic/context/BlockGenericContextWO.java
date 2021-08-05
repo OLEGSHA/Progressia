@@ -31,11 +31,8 @@ import ru.windcorp.progressia.common.world.rels.BlockFace;
 public interface BlockGenericContextWO<
 	B  extends BlockGeneric,
 	T  extends TileGeneric,
-	TS extends TileGenericStackWO     <B, T, TS, TR, C>,
-	TR extends TileGenericReferenceWO <B, T, TS, TR, C>,
-	C  extends ChunkGenericWO         <B, T, TS, TR, C>,
 	E  extends EntityGeneric
-> extends WorldContexts.Block, WorldGenericContextWO<B, T, TS, TR, C, E> {
+> extends WorldContexts.Block, WorldGenericContextWO<B, T, E> {
 //@formatter:on
 
 	/**

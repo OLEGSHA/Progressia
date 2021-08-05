@@ -51,9 +51,7 @@ public interface ServerContext extends Context {
 	 * 
 	 * @return the length of the last server tick
 	 */
-	default double getTickLength() {
-		return getServer().getTickLength();
-	}
+	double getTickLength();
 
 	/**
 	 * Adjusts the provided value according to tick length assuming the value

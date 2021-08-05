@@ -17,20 +17,23 @@
  */
 package ru.windcorp.progressia.common.world.context;
 
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.TileDataReference;
-import ru.windcorp.progressia.common.world.TileDataStack;
-import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.context.WorldGenericContextWO;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 public interface WorldDataContext
-	extends WorldGenericContextWO<BlockData, TileData, TileDataStack, TileDataReference, ChunkData, EntityData>,
-	WorldDataContextRO,
-	WorldData {
-	
-	// currently empty
+	extends WorldGenericContextWO<BlockData, TileData, EntityData>,
+	WorldDataContextRO {
+
+	/**
+	 * Increases in-game time of this world by {@code change}. Total time is
+	 * decreased when {@code change} is negative.
+	 * 
+	 * @param change the amount of time to add to current world time. May be
+	 *               negative.
+	 * @see #getTime()
+	 */
+	void advanceTime(float change);
 
 }

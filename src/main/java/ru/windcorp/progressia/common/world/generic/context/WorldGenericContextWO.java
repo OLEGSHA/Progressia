@@ -28,16 +28,16 @@ import ru.windcorp.progressia.common.world.rels.BlockFace;
  * A writable {@link Context} with a world instance. This context provides
  * methods for affecting the world. The application of requested changes may or
  * may not be immediate, see {@link #isImmediate()}.
+ * <p>
+ * This interfaces defines the entirety of world modification methods supported
+ * by the default contexts.
  */
 // @formatter:off
 public interface WorldGenericContextWO<
 	B  extends BlockGeneric,
 	T  extends TileGeneric,
-	TS extends TileGenericStackWO     <B, T, TS, TR, C>,
-	TR extends TileGenericReferenceWO <B, T, TS, TR, C>,
-	C  extends ChunkGenericWO         <B, T, TS, TR, C>,
 	E  extends EntityGeneric
-> extends WorldContexts.World, WorldGenericWO<B, T, TS, TR, C, E> {
+> extends WorldContexts.World {
 // @formatter:on
 
 	/**
@@ -116,7 +116,6 @@ public interface WorldGenericContextWO<
 	 * @param entity the entity to add
 	 * @see #isImmediate()
 	 */
-	@Override
 	void addEntity(E entity);
 
 	/**
@@ -128,7 +127,6 @@ public interface WorldGenericContextWO<
 	 * @see #isImmediate()
 	 * @see #removeEntity(EntityGeneric)
 	 */
-	@Override
 	void removeEntity(long entityId);
 
 	/**
@@ -139,7 +137,6 @@ public interface WorldGenericContextWO<
 	 * @see #isImmediate()
 	 * @see #removeEntity(long)
 	 */
-	@Override
 	default void removeEntity(E entity) {
 		removeEntity(entity.getEntityId());
 	}
@@ -151,7 +148,6 @@ public interface WorldGenericContextWO<
 	 * @param entity the entity to change
 	 * @param change the change to apply
 	 */
-	@Override
 	<SE extends StatefulObject & EntityGeneric> void changeEntity(SE entity, StateChange<SE> change);
 
 }

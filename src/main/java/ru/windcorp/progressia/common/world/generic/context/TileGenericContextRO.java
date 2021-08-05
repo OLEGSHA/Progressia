@@ -29,15 +29,12 @@ import ru.windcorp.progressia.common.world.generic.*;
 public interface TileGenericContextRO<
 	B  extends BlockGeneric,
 	T  extends TileGeneric,
-	TS extends TileGenericStackRO     <B, T, TS, TR, C>,
-	TR extends TileGenericReferenceRO <B, T, TS, TR, C>,
-	C  extends ChunkGenericRO         <B, T, TS, TR, C>,
 	E  extends EntityGeneric
-> extends WorldContexts.Tile, BlockFaceGenericContextRO<B, T, TS, TR, C, E> {
+> extends WorldContexts.Tile, BlockFaceGenericContextRO<B, T, E> {
 //@formatter:on
 
 	/**
-	 * Determines whether the location relevant to this context has a tile.
+	 * Determines whether the relevant position has a tile.
 	 * 
 	 * @return {@code true} iff the tile exists
 	 */
@@ -46,42 +43,18 @@ public interface TileGenericContextRO<
 	}
 
 	/**
-	 * Gets the tile at the relevant position.
+	 * Retrieves the tile at the relevant position. This method may return
+	 * {@code null} in one of three cases:
+	 * <ul>
+	 * <li>the location is not loaded,
+	 * <li>there is no tile stack on the relevant face, or
+	 * <li>{@code layer} is not less than the amount of tiles in the tile stack.
+	 * </ul>
 	 * 
-	 * @return the specified tile or {@code null} if the location is not loaded
-	 *         or the tile does not exist
+	 * @return the tile or {@code null} if the position does not contain a tile
 	 */
 	default T getTile() {
 		return getTile(getLocation(), getFace(), getLayer());
-	}
-
-	@Override
-	default int getTag() {
-		TS tileStack = getTilesOrNull();
-		if (tileStack == null) {
-			return -1;
-		}
-
-		return tileStack.getTagByIndex(getLayer());
-	}
-
-	/**
-	 * Gets the {@link TileGenericReferenceRO TileReference} to the relevant
-	 * tile.
-	 * 
-	 * @return the reference to the tile relevant to this context or
-	 *         {@code null} if the location is not loaded or the tile does not
-	 *         exist
-	 *         
-	 * @see TileGenericStackRO#getReference(int)
-	 */
-	default TR getTileReference() {
-		TS tileStack = getTilesOrNull();
-		if (tileStack == null) {
-			return null;
-		}
-
-		return tileStack.getReference(getLayer());
 	}
 
 }

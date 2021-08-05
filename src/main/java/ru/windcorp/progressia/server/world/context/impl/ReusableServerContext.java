@@ -37,8 +37,13 @@ import ru.windcorp.progressia.server.world.context.ServerWorldContextRO;
  * when a {@link WorldLogic} (or a {@link WorldLogicRO}) instance requires a
  * context wrapper.
  * <p>
- * Use other unutilized instances of {@link ReusableServerContext} or
+ * Use other unutilized instances of {@code ReusableServerContext} or
  * {@link #empty()} static method to acquire a usable instance.
+ * <p>
+ * {@code ReusableServerContext} asserts that is it {@linkplain #isReal() real}
+ * and {@linkplain #isImmediate() immediate}. It creates and provides an
+ * independent randomness source. The tick length is consulted with the server.
+ * Use wrappers to alter these properties.
  * <p>
  * This class defines the outward-facing safe interface of the actual
  * implementation located in {@link ReusableServerContextImpl}. The reasoning

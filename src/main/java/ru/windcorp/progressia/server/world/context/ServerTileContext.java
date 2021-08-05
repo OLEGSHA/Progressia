@@ -18,7 +18,6 @@
 package ru.windcorp.progressia.server.world.context;
 
 import ru.windcorp.progressia.common.world.context.TileDataContext;
-import ru.windcorp.progressia.server.world.TileLogicReference;
 
 public interface ServerTileContext extends TileDataContext, ServerBlockFaceContext, ServerTileContextRO {
 
@@ -26,11 +25,6 @@ public interface ServerTileContext extends TileDataContext, ServerBlockFaceConte
 
 		@Override
 		ServerTileContext data();
-
-		@Override
-		default TileLogicReference getTileReference() {
-			return (TileLogicReference) ServerTileContextRO.Logic.super.getTileReference();
-		}
 
 	}
 

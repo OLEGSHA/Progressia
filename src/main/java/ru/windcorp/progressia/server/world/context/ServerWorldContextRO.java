@@ -3,20 +3,12 @@ package ru.windcorp.progressia.server.world.context;
 import ru.windcorp.progressia.common.world.context.WorldDataContextRO;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.context.WorldGenericContextRO;
-import ru.windcorp.progressia.server.world.ChunkLogicRO;
-import ru.windcorp.progressia.server.world.TileLogicReferenceRO;
-import ru.windcorp.progressia.server.world.TileLogicStackRO;
-import ru.windcorp.progressia.server.world.WorldLogicRO;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 
 public interface ServerWorldContextRO extends WorldDataContextRO, ServerContext {
 
-	public interface Logic
-		extends
-		WorldGenericContextRO<BlockLogic, TileLogic, TileLogicStackRO, TileLogicReferenceRO, ChunkLogicRO, EntityData>,
-		WorldLogicRO,
-		ServerContext {
+	public interface Logic extends WorldGenericContextRO<BlockLogic, TileLogic, EntityData>, ServerContext {
 
 		/**
 		 * Acquires the data view of this context. Use this method to

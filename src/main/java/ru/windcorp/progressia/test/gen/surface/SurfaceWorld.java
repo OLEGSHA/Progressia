@@ -177,7 +177,7 @@ public class SurfaceWorld
 	public boolean isBlockLoadedSfc(Vec3i surfaceBlockInWorld) {
 		Vec3i blockInWorld = Vectors.grab3i();
 		resolve(surfaceBlockInWorld, blockInWorld);
-		boolean result = parent.isBlockLoaded(blockInWorld);
+		boolean result = parent.isLocationLoaded(blockInWorld);
 		Vectors.release(blockInWorld);
 		return result;
 	}

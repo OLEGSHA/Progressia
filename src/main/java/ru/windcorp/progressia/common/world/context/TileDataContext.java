@@ -17,22 +17,16 @@
  */
 package ru.windcorp.progressia.common.world.context;
 
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.TileDataReference;
-import ru.windcorp.progressia.common.world.TileDataStack;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.context.TileGenericContextWO;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 public interface TileDataContext
-	extends TileGenericContextWO<BlockData, TileData, TileDataStack, TileDataReference, ChunkData, EntityData>,
+	extends TileGenericContextWO<BlockData, TileData, EntityData>,
 	BlockFaceDataContext,
 	TileDataContextRO {
 	
-	@Override
-	default int getTag() {
-		return getTileReference().getTag();
-	}
+	// currently empty
 	
 }

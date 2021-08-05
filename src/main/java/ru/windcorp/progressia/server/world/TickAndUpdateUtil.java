@@ -73,7 +73,7 @@ public class TickAndUpdateUtil {
 	}
 
 	public static void tickTiles(DefaultWorldLogic world, Vec3i blockInWorld, BlockFace face) {
-		if (!world.isBlockLoaded(blockInWorld)) {
+		if (!world.isLocationLoaded(blockInWorld)) {
 			return;
 		}
 		
@@ -123,7 +123,7 @@ public class TickAndUpdateUtil {
 	}
 
 	public static void updateTiles(DefaultWorldLogic world, Vec3i blockInWorld, BlockFace face) {
-		if (!world.isBlockLoaded(blockInWorld)) {
+		if (!world.isLocationLoaded(blockInWorld)) {
 			return;
 		}
 		

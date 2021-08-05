@@ -18,19 +18,30 @@
 
 package ru.windcorp.progressia.common.world.context;
 
-import ru.windcorp.progressia.common.world.ChunkDataRO;
-import ru.windcorp.progressia.common.world.TileDataReferenceRO;
-import ru.windcorp.progressia.common.world.TileDataStackRO;
-import ru.windcorp.progressia.common.world.WorldDataRO;
+import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.context.WorldGenericContextRO;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
-public interface WorldDataContextRO
-	extends WorldGenericContextRO<BlockData, TileData, TileDataStackRO, TileDataReferenceRO, ChunkDataRO, EntityData>,
-	WorldDataRO {
+public interface WorldDataContextRO extends WorldGenericContextRO<BlockData, TileData, EntityData> {
 
-	// currently empty
+	/**
+	 * Returns in-world time since creation. World time is zero before and
+	 * during first tick.
+	 * <p>
+	 * Game logic should assume that this value mostly increases uniformly.
+	 * However, it is not guaranteed that in-world time always increments.
+	 * 
+	 * @return time, in in-game seconds, since the world was created
+	 */
+	float getTime();
+
+	/**
+	 * Gets the {@link GravityModel} used by this world.
+	 * 
+	 * @return the gravity model
+	 */
+	GravityModel getGravityModel();
 
 }

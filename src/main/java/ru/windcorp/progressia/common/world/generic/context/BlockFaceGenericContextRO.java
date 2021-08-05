@@ -29,37 +29,15 @@ import ru.windcorp.progressia.common.world.generic.*;
 public interface BlockFaceGenericContextRO<
 	B  extends BlockGeneric,
 	T  extends TileGeneric,
-	TS extends TileGenericStackRO     <B, T, TS, TR, C>,
-	TR extends TileGenericReferenceRO <B, T, TS, TR, C>,
-	C  extends ChunkGenericRO         <B, T, TS, TR, C>,
 	E  extends EntityGeneric
-> extends WorldContexts.BlockFace, BlockGenericContextRO<B, T, TS, TR, C, E> {
+> extends WorldContexts.BlockFace, BlockGenericContextRO<B, T, E> {
 //@formatter:on
 
 	/**
-	 * Gets the tile stack at the relevant position.
+	 * Determines whether the specified position has a tile. Block location and
+	 * block face are implied by the context.
 	 * 
-	 * @return the specified tile stack or {@code null} if the location is not
-	 *         loaded or the tile stack does not exist
-	 */
-	default TS getTilesOrNull() {
-		return getTilesOrNull(getLocation(), getFace());
-	}
-
-	/**
-	 * Determines whether the location relevant to this context has a tile
-	 * stack.
-	 * 
-	 * @return {@code true} iff the tile stack exists
-	 */
-	default boolean hasTiles() {
-		return hasTiles(getLocation(), getFace());
-	}
-
-	/**
-	 * Determines whether the specified position has a tile; block location and
-	 * face are implied by the context.
-	 * 
+	 * @param layer the layer of the tile
 	 * @return {@code true} iff the tile exists
 	 */
 	default boolean hasTile(int layer) {
@@ -67,14 +45,60 @@ public interface BlockFaceGenericContextRO<
 	}
 
 	/**
-	 * Gets the tile at the specified position; block location and face are
-	 * implied by the context.
+	 * Determines whether the specified position has a tile with the given tag.
+	 * Block location and block face are implied by the context.
 	 * 
-	 * @return the specified tile or {@code null} if the location is not loaded
-	 *         or the tile does not exist
+	 * @param tag the tag of the tile
+	 * @return {@code true} iff the tile exists
+	 */
+	default boolean isTagValid(int tag) {
+		return isTagValid(getLocation(), getFace(), tag);
+	}
+
+	/**
+	 * Retrieves the tile at the specified position. Block location and block
+	 * face are implied by the context. This method may return {@code null} in
+	 * one of three cases:
+	 * <ul>
+	 * <li>the location is not loaded,
+	 * <li>there is no tile stack on the relevant face, or
+	 * <li>{@code layer} is not less than the amount of tiles in the tile stack.
+	 * </ul>
+	 * 
+	 * @return the tile or {@code null} if the position does not contain a tile
 	 */
 	default T getTile(int layer) {
 		return getTile(getLocation(), getFace(), layer);
+	}
+
+	/**
+	 * Retrieves the tile at the specified position and the tile's tag. Block
+	 * location and block face are implied by the context. This
+	 * method may return {@code null} in one of three cases:
+	 * <ul>
+	 * <li>the location is not loaded,
+	 * <li>there is no tile stack on the relevant face, or
+	 * <li>there is no tile with the specified tag in the tile stack.
+	 * </ul>
+	 * 
+	 * @param tag the tag of the tile
+	 * @return the tile or {@code null} if the position does not contain a tile
+	 */
+	default T getTileByTag(int tag) {
+		return getTileByTag(getLocation(), getFace(), tag);
+	}
+
+	/**
+	 * Counts the amount of tiles in the specified tile stack. Block location
+	 * and block face are implied by the context.
+	 * <p>
+	 * This method returns {@code 0} in case the location is not loaded.
+	 * 
+	 * @return the count of tiles in the tile stack or {@code -1} if the tile
+	 *         stack could not exist
+	 */
+	default int getTileCount() {
+		return getTileCount(getLocation(), getFace());
 	}
 
 }
