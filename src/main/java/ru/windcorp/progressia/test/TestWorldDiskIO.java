@@ -39,6 +39,8 @@ import java.util.zip.InflaterInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.io.CountingOutputStream;
+
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.world.ChunkData;
@@ -231,15 +233,28 @@ public class TestWorldDiskIO {
 						offset = (int) (output.length()-fullOffset)/sectorSize;
 						output.seek(shortOffset);
 						output.writeInt(offset);
-						output.write(200);
+						//output.write(200);
 					}
 					output.seek(fullOffset+sectorSize*offset);
+					
+					int bytestoWrite = output.readInt();
 					//output.mark(sectorSize*sectorLength);
 					
-					DataOutputStream trueOutput = new DataOutputStream(Channels.newOutputStream(output.getChannel()));
+					DataOutputStream trueOutput =  new DataOutputStream(Channels.newOutputStream(output.getChannel()));
+					CountingOutputStream countOutput = new CountingOutputStream(trueOutput);
 					
+					//trueOutput.
 					ChunkIO.save(chunk, trueOutput, IOContext.SAVE);
 					writeGenerationHint(chunk, trueOutput, server);
+					
+					while (countOutput.getCount()%sectorSize != 0) {
+						countOutput.write(0);
+					}
+					
+					output.seek(shortOffset+offsetBytes);
+					output.write((int) countOutput.getCount()/sectorSize);
+					
+					countOutput.close();
 				}
 			}
 			// else if (currentFormat)

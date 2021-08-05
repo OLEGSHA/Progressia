@@ -108,6 +108,8 @@ public class LayerButtonTest extends MenuLayer {
 					ServerState.getInstance().shutdown("Safe Exit");
 
 					ServerState.setInstance(null);
+					
+					TestPlayerControls.resetInstance();
 				}
 			});
 			

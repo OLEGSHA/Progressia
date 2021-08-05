@@ -44,7 +44,7 @@ import ru.windcorp.progressia.server.ServerState;
 
 public class TestPlayerControls {
 
-	private static final TestPlayerControls INSTANCE = new TestPlayerControls();
+	private static TestPlayerControls INSTANCE = new TestPlayerControls();
 
 	public static TestPlayerControls getInstance() {
 		return INSTANCE;
@@ -90,6 +90,11 @@ public class TestPlayerControls {
 
 	private LayerTestGUI debugLayer = null;
 	private Runnable updateCallback = null;
+	
+	public static void resetInstance()
+	{
+		INSTANCE = new TestPlayerControls();
+	}
 
 	public void applyPlayerControls() {
 		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
