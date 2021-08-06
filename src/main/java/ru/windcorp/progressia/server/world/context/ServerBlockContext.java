@@ -17,7 +17,10 @@
  */
 package ru.windcorp.progressia.server.world.context;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.context.BlockDataContext;
+import ru.windcorp.progressia.common.world.rels.AbsRelation;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public interface ServerBlockContext extends BlockDataContext, ServerWorldContext, ServerBlockContextRO {
 
@@ -25,10 +28,60 @@ public interface ServerBlockContext extends BlockDataContext, ServerWorldContext
 
 		@Override
 		ServerBlockContext data();
+		
+		@Override
+		default ServerBlockContext.Logic pushRelative(int dx, int dy, int dz) {
+			return push(getLocation().add_(dx, dy, dz));
+		}
+		
+		@Override
+		default ServerBlockContext.Logic pushRelative(Vec3i direction) {
+			return push(getLocation().add_(direction));
+		}
+		
+		@Override
+		default ServerBlockContext.Logic pushRelative(AbsRelation direction) {
+			return push(direction.getVector());
+		}
+		
+		@Override
+		default ServerTileStackContext.Logic push(RelFace face) {
+			return push(getLocation(), face);
+		}
+		
+		@Override
+		default ServerTileContext.Logic push(RelFace face, int layer) {
+			return push(getLocation(), face, layer);
+		}
 
 	}
 
 	@Override
 	ServerBlockContext.Logic logic();
+	
+	@Override
+	default ServerBlockContext pushRelative(int dx, int dy, int dz) {
+		return push(getLocation().add_(dx, dy, dz));
+	}
+	
+	@Override
+	default ServerBlockContext pushRelative(Vec3i direction) {
+		return push(getLocation().add_(direction));
+	}
+	
+	@Override
+	default ServerBlockContext pushRelative(AbsRelation direction) {
+		return push(direction.getVector());
+	}
+	
+	@Override
+	default ServerTileStackContext push(RelFace face) {
+		return push(getLocation(), face);
+	}
+	
+	@Override
+	default ServerTileContext push(RelFace face, int layer) {
+		return push(getLocation(), face, layer);
+	}
 
 }

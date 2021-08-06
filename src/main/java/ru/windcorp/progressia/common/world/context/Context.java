@@ -17,11 +17,15 @@
  */
 package ru.windcorp.progressia.common.world.context;
 
+import ru.windcorp.progressia.common.world.generic.context.AbstractContextRO;
+
 /**
  * A cursor-like object for retrieving information about an in-game environment.
  * A context object typically holds a reference to some sort of data structure
  * and a cursor pointing to a location in that data structure. The exact meaning
- * of "environment" and "location" is defined by extending interfaces.
+ * of "environment" and "location" is defined by extending interfaces. The terms
+ * <em>relevant</em> and <em>implied</em> should be understood to refer to the
+ * aforementioned location.
  * <p>
  * Context objects are intended to be the primary way of interacting for in-game
  * content. Wherever possible, context objects should be preferred over other
@@ -41,37 +45,48 @@ package ru.windcorp.progressia.common.world.context;
  * thread-safe</em> and are often pooled and reused.
  * <p>
  * <h2 id="subcontexting">Subcontexting</h2>
- * <em>Subcontexting</em> is the invocation of user-provided code with a context
- * object derived from an existing one. For example, block context provides a
- * convenience method for referencing the block's neighbor:
+ * Context objects allow <em>subcontexting</em>. Subcontexting is the temporary
+ * modification of the context object. Contexts use a stack approach to
+ * modification: all modifications must be reverted in the reversed order they
+ * were applied.
+ * <p>
+ * Modification methods are usually named <em>{@code pushXXX}</em>. To revert
+ * the most recent non-reverted modification, use {@link #pop()}. As a general
+ * rule, a method that is given a context must always {@link #pop()} every
+ * change it has pushed. Failure to abide by this contract results in bugs that
+ * is difficult to trace.
+ * <p>
+ * Although various push methods declare differing result types, the same object
+ * is always returned:
  * 
  * <pre>
- * blockContextA.forNeighbor(RelFace.UP, blockContextB -&gt; {
- * 	foo(blockContextA); // undefined behavior!
- * 	foo(blockContextB); // correct
- * });
+ * someContext.pushXXX() == someContext
  * </pre>
  * 
- * In this example, {@code forNeighbor} is a subcontexting method,
- * {@code blockContextA} is the parent context, {@code blockContextB} is the
- * subcontext, and the lambda is the context consumer.
- * <p>
- * <em>Parent contexts are invalid while the subcontexting method is
- * running.</em> Referencing {@code blockContextA} from inside the lambda
- * creates undefined behavior.
- * <p>
- * This restriction exists because some implementations of contexts may
- * implement subcontexting by simply modifying the parent context for the
- * duration of the call and presenting the temporarily modified parent context
- * as the subcontext:
+ * Therefore invoking {@link #pop()} is valid using both the original reference
+ * and the obtained reference.
+ * <h3>Subcontexting example</h3>
+ * Given a {@link ru.windcorp.progressia.common.world.context.BlockDataContext
+ * BlockDataContext} {@code a} one can process the tile stack on the top of the
+ * relevant block by using
  * 
  * <pre>
- * public void forNeighbor(BlockFace face, Consumer&lt;BlockContext&gt; action) {
- * 	this.position.add(face);
- * 	action.accept(this);
- * 	this.position.sub(face);
- * }
+ * TileStackDataContext b = a.push(RelFace.TOP);
+ * processTileStack(b);
+ * b.pop();
  * </pre>
+ * 
+ * One can improve readability by eliminating the temporary variable:
+ * 
+ * <pre>
+ * processTileStack(a.push(RelFace.TOP));
+ * a.pop();
+ * </pre>
+ * 
+ * Notice that {@code a.pop()} and {@code b.pop()} are interchangeable.
+ * 
+ * @see AbstractContextRO
+ * @author javapony
  */
 public interface Context {
 
@@ -101,5 +116,24 @@ public interface Context {
 	 *         suppressed
 	 */
 	boolean isReal();
+
+	/**
+	 * Reverts the more recent modification to this object that has not been
+	 * reverted yet.
+	 * <p>
+	 * Context objects may be modified temporarily with various push methods
+	 * (see <a href="#subcontexting">subcontexting</a>). To revert the most
+	 * recent non-reverted modification, use {@link #pop()}. As a general rule,
+	 * a method that is given a context must always {@link #pop()} every change
+	 * it has pushed. Failure to abide by this contract results in bugs that is
+	 * difficult to trace.
+	 * <p>
+	 * This method may be invoked using either the original reference or the
+	 * reference provided by push method.
+	 * <p>
+	 * This method fails with an {@link IllegalStateException} when there are no
+	 * modifications to revert.
+	 */
+	void pop();
 
 }

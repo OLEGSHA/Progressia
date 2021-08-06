@@ -18,10 +18,12 @@
 
 package ru.windcorp.progressia.common.world.context;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.context.WorldGenericContextRO;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 public interface WorldDataContextRO extends WorldGenericContextRO<BlockData, TileData, EntityData> {
@@ -43,5 +45,18 @@ public interface WorldDataContextRO extends WorldGenericContextRO<BlockData, Til
 	 * @return the gravity model
 	 */
 	GravityModel getGravityModel();
+	
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	BlockDataContextRO push(Vec3i location);
+	
+	@Override
+	TileStackDataContextRO push(Vec3i location, RelFace face);
+	
+	@Override
+	TileDataContextRO push(Vec3i location, RelFace face, int layer);
 
 }

@@ -17,7 +17,9 @@
  */
 package ru.windcorp.progressia.server.world.context;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.context.WorldDataContext;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public interface ServerWorldContext extends WorldDataContext, ServerWorldContextRO {
 
@@ -25,10 +27,28 @@ public interface ServerWorldContext extends WorldDataContext, ServerWorldContext
 
 		@Override
 		ServerWorldContext data();
+		
+		@Override
+		ServerBlockContext.Logic push(Vec3i location);
+		
+		@Override
+		ServerTileStackContext.Logic push(Vec3i location, RelFace face);
+		
+		@Override
+		ServerTileContext.Logic push(Vec3i location, RelFace face, int layer);
 
 	}
 
 	@Override
 	ServerWorldContext.Logic logic();
+	
+	@Override
+	ServerBlockContext push(Vec3i location);
+	
+	@Override
+	ServerTileStackContext push(Vec3i location, RelFace face);
+	
+	@Override
+	ServerTileContext push(Vec3i location, RelFace face, int layer);
 
 }

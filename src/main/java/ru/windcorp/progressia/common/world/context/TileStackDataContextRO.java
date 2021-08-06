@@ -24,8 +24,25 @@ import ru.windcorp.progressia.common.world.tile.TileData;
 
 public interface TileStackDataContextRO
 	extends TileStackGenericContextRO<BlockData, TileData, EntityData>,
-	BlockDataContext {
+	BlockDataContextRO {
 	
-	// currently empty
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	default TileDataContextRO push(int layer) {
+		return push(getLocation(), getFace(), layer);
+	}
+	
+	@Override
+	default TileStackDataContextRO pushCounter() {
+		return push(getFace().getCounter());
+	}
+	
+	@Override
+	default TileStackDataContextRO pushOpposite() {
+		return push(getLocation().add_(getFace().getRelVector()), getFace().getCounter());
+	}
 
 }

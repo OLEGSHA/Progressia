@@ -25,6 +25,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.context.Context;
 import ru.windcorp.progressia.common.world.generic.*;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 /**
  * A {@link Context} with a world instance.
@@ -187,5 +188,18 @@ public interface WorldGenericContextRO<
 			}
 		});
 	}
+
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	BlockGenericContextRO<B, T, E> push(Vec3i location);
+	
+	@Override
+	TileStackGenericContextRO<B, T, E> push(Vec3i location, RelFace face);
+	
+	@Override
+	TileGenericContextRO<B, T, E> push(Vec3i location, RelFace face, int layer);
 
 }

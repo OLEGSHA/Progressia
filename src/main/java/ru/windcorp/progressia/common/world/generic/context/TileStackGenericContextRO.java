@@ -30,7 +30,7 @@ public interface TileStackGenericContextRO<
 	B  extends BlockGeneric,
 	T  extends TileGeneric,
 	E  extends EntityGeneric
-> extends WorldContexts.BlockFace, BlockGenericContextRO<B, T, E> {
+> extends WorldContexts.TileStack, BlockGenericContextRO<B, T, E> {
 //@formatter:on
 
 	/**
@@ -99,6 +99,25 @@ public interface TileStackGenericContextRO<
 	 */
 	default int getTileCount() {
 		return getTileCount(getLocation(), getFace());
+	}
+	
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	default TileGenericContextRO<B, T, E> push(int layer) {
+		return push(getLocation(), getFace(), layer);
+	}
+	
+	@Override
+	default TileStackGenericContextRO<B, T, E> pushCounter() {
+		return push(getFace().getCounter());
+	}
+	
+	@Override
+	default TileStackGenericContextRO<B, T, E> pushOpposite() {
+		return push(getLocation().add_(getFace().getRelVector()), getFace().getCounter());
 	}
 
 }

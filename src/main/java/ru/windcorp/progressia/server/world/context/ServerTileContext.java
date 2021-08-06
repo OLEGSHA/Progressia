@@ -25,10 +25,30 @@ public interface ServerTileContext extends TileDataContext, ServerTileStackConte
 
 		@Override
 		ServerTileContext data();
+		
+		@Override
+		default ServerTileContext.Logic pushCloser() {
+			return push(getLocation(), getFace(), getLayer() - 1);
+		}
+		
+		@Override
+		default ServerTileContext.Logic pushFarther() {
+			return push(getLocation(), getFace(), getLayer() + 1);
+		}
 
 	}
 
 	@Override
 	ServerTileContext.Logic logic();
+	
+	@Override
+	default ServerTileContext pushCloser() {
+		return push(getLocation(), getFace(), getLayer() - 1);
+	}
+	
+	@Override
+	default ServerTileContext pushFarther() {
+		return push(getLocation(), getFace(), getLayer() + 1);
+	}
 
 }

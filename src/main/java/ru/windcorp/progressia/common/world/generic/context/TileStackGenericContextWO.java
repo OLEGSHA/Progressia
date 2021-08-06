@@ -32,7 +32,7 @@ public interface TileStackGenericContextWO<
 	B  extends BlockGeneric,
 	T  extends TileGeneric,
 	E  extends EntityGeneric
-> extends WorldContexts.BlockFace, BlockGenericContextWO<B, T, E> {
+> extends WorldContexts.TileStack, BlockGenericContextWO<B, T, E> {
 //@formatter:on
 
 	/**
@@ -58,6 +58,25 @@ public interface TileStackGenericContextWO<
 	 */
 	default void removeTile(int tag) {
 		removeTile(getLocation(), getFace(), tag);
+	}
+	
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	default TileGenericContextWO<B, T, E> push(int layer) {
+		return push(getLocation(), getFace(), layer);
+	}
+	
+	@Override
+	default TileStackGenericContextWO<B, T, E> pushCounter() {
+		return push(getFace().getCounter());
+	}
+	
+	@Override
+	default TileStackGenericContextWO<B, T, E> pushOpposite() {
+		return push(getLocation().add_(getFace().getRelVector()), getFace().getCounter());
 	}
 
 }

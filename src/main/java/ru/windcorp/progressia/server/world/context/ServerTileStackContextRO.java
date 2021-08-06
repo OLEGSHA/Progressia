@@ -30,10 +30,40 @@ public interface ServerTileStackContextRO extends ServerBlockContextRO, TileStac
 
 		@Override
 		ServerTileStackContextRO data();
+		
+		@Override
+		default ServerTileContextRO.Logic push(int layer) {
+			return push(getLocation(), getFace(), layer);
+		}
+		
+		@Override
+		default ServerTileStackContextRO.Logic pushCounter() {
+			return push(getFace().getCounter());
+		}
+		
+		@Override
+		default ServerTileStackContextRO.Logic pushOpposite() {
+			return push(getLocation().add_(getFace().getRelVector()), getFace().getCounter());
+		}
 
 	}
 
 	@Override
 	ServerTileStackContextRO.Logic logic();
+	
+	@Override
+	default ServerTileContextRO push(int layer) {
+		return push(getLocation(), getFace(), layer);
+	}
+	
+	@Override
+	default ServerTileStackContextRO pushCounter() {
+		return push(getFace().getCounter());
+	}
+	
+	@Override
+	default ServerTileStackContextRO pushOpposite() {
+		return push(getLocation().add_(getFace().getRelVector()), getFace().getCounter());
+	}
 
 }

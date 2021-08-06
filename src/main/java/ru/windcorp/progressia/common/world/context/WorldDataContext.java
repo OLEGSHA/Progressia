@@ -17,9 +17,11 @@
  */
 package ru.windcorp.progressia.common.world.context;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.context.WorldGenericContextWO;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 public interface WorldDataContext
@@ -35,5 +37,18 @@ public interface WorldDataContext
 	 * @see #getTime()
 	 */
 	void advanceTime(float change);
+	
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	BlockDataContext push(Vec3i location);
+	
+	@Override
+	TileStackDataContext push(Vec3i location, RelFace face);
+	
+	@Override
+	TileDataContext push(Vec3i location, RelFace face, int layer);
 
 }

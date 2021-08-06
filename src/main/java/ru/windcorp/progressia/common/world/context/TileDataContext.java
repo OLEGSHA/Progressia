@@ -27,6 +27,18 @@ public interface TileDataContext
 	TileStackDataContext,
 	TileDataContextRO {
 	
-	// currently empty
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	default TileDataContext pushCloser() {
+		return push(getLocation(), getFace(), getLayer() - 1);
+	}
+	
+	@Override
+	default TileDataContext pushFarther() {
+		return push(getLocation(), getFace(), getLayer() + 1);
+	}
 	
 }

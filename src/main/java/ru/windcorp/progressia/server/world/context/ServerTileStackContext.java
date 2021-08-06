@@ -25,10 +25,40 @@ public interface ServerTileStackContext extends TileStackDataContext, ServerBloc
 
 		@Override
 		ServerTileStackContext data();
+		
+		@Override
+		default ServerTileContext.Logic push(int layer) {
+			return push(getLocation(), getFace(), layer);
+		}
+		
+		@Override
+		default ServerTileStackContext.Logic pushCounter() {
+			return push(getFace().getCounter());
+		}
+		
+		@Override
+		default ServerTileStackContext.Logic pushOpposite() {
+			return push(getLocation().add_(getFace().getRelVector()), getFace().getCounter());
+		}
 
 	}
 
 	@Override
 	ServerTileStackContext.Logic logic();
+	
+	@Override
+	default ServerTileContext push(int layer) {
+		return push(getLocation(), getFace(), layer);
+	}
+	
+	@Override
+	default ServerTileStackContext pushCounter() {
+		return push(getFace().getCounter());
+	}
+	
+	@Override
+	default ServerTileStackContext pushOpposite() {
+		return push(getLocation().add_(getFace().getRelVector()), getFace().getCounter());
+	}
 
 }

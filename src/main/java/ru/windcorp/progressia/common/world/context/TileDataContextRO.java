@@ -26,6 +26,18 @@ public interface TileDataContextRO
 	extends TileGenericContextRO<BlockData, TileData, EntityData>,
 	TileStackDataContextRO {
 	
-	// currently empty
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	default TileDataContextRO pushCloser() {
+		return push(getLocation(), getFace(), getLayer() - 1);
+	}
+	
+	@Override
+	default TileDataContextRO pushFarther() {
+		return push(getLocation(), getFace(), getLayer() + 1);
+	}
 
 }

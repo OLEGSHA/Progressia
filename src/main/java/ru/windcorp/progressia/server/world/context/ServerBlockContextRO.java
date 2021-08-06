@@ -17,9 +17,12 @@
  */
 package ru.windcorp.progressia.server.world.context;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.context.BlockDataContextRO;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.context.BlockGenericContextRO;
+import ru.windcorp.progressia.common.world.rels.AbsRelation;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 
@@ -30,10 +33,60 @@ public interface ServerBlockContextRO extends ServerWorldContextRO, BlockDataCon
 
 		@Override
 		ServerBlockContextRO data();
+		
+		@Override
+		default ServerBlockContextRO.Logic pushRelative(int dx, int dy, int dz) {
+			return push(getLocation().add_(dx, dy, dz));
+		}
+		
+		@Override
+		default ServerBlockContextRO.Logic pushRelative(Vec3i direction) {
+			return push(getLocation().add_(direction));
+		}
+		
+		@Override
+		default ServerBlockContextRO.Logic pushRelative(AbsRelation direction) {
+			return push(direction.getVector());
+		}
+		
+		@Override
+		default ServerTileStackContextRO.Logic push(RelFace face) {
+			return push(getLocation(), face);
+		}
+		
+		@Override
+		default ServerTileContextRO.Logic push(RelFace face, int layer) {
+			return push(getLocation(), face, layer);
+		}
 
 	}
 
 	@Override
 	ServerBlockContextRO.Logic logic();
+	
+	@Override
+	default ServerBlockContextRO pushRelative(int dx, int dy, int dz) {
+		return push(getLocation().add_(dx, dy, dz));
+	}
+	
+	@Override
+	default ServerBlockContextRO pushRelative(Vec3i direction) {
+		return push(getLocation().add_(direction));
+	}
+	
+	@Override
+	default ServerBlockContextRO pushRelative(AbsRelation direction) {
+		return push(direction.getVector());
+	}
+	
+	@Override
+	default ServerTileStackContextRO push(RelFace face) {
+		return push(getLocation(), face);
+	}
+	
+	@Override
+	default ServerTileContextRO push(RelFace face, int layer) {
+		return push(getLocation(), face, layer);
+	}
 
 }

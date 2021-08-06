@@ -17,15 +17,45 @@
  */
 package ru.windcorp.progressia.common.world.context;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.context.BlockGenericContextRO;
+import ru.windcorp.progressia.common.world.rels.AbsRelation;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 public interface BlockDataContextRO
 	extends BlockGenericContextRO<BlockData, TileData, EntityData>,
 	WorldDataContextRO {
 
-	// currently empty
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	default BlockDataContextRO pushRelative(int dx, int dy, int dz) {
+		return push(getLocation().add_(dx, dy, dz));
+	}
+	
+	@Override
+	default BlockDataContextRO pushRelative(Vec3i direction) {
+		return push(getLocation().add_(direction));
+	}
+	
+	@Override
+	default BlockDataContextRO pushRelative(AbsRelation direction) {
+		return push(direction.getVector());
+	}
+	
+	@Override
+	default TileStackDataContextRO push(RelFace face) {
+		return push(getLocation(), face);
+	}
+	
+	@Override
+	default TileDataContextRO push(RelFace face, int layer) {
+		return push(getLocation(), face, layer);
+	}
 
 }

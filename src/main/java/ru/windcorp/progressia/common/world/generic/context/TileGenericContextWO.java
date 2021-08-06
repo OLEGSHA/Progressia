@@ -43,5 +43,19 @@ public interface TileGenericContextWO<
 	default void removeTile() {
 		removeTile(getLocation(), getFace(), getTag());
 	}
+	
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	default TileGenericContextWO<B, T, E> pushCloser() {
+		return push(getLocation(), getFace(), getLayer() - 1);
+	}
+	
+	@Override
+	default TileGenericContextWO<B, T, E> pushFarther() {
+		return push(getLocation(), getFace(), getLayer() + 1);
+	}
 
 }

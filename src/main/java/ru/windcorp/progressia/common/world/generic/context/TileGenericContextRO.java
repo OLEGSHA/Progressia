@@ -56,5 +56,19 @@ public interface TileGenericContextRO<
 	default T getTile() {
 		return getTile(getLocation(), getFace(), getLayer());
 	}
+	
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	default TileGenericContextRO<B, T, E> pushCloser() {
+		return push(getLocation(), getFace(), getLayer() - 1);
+	}
+	
+	@Override
+	default TileGenericContextRO<B, T, E> pushFarther() {
+		return push(getLocation(), getFace(), getLayer() + 1);
+	}
 
 }

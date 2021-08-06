@@ -23,6 +23,7 @@ import ru.windcorp.progressia.common.state.StatefulObject;
 import ru.windcorp.progressia.common.world.context.Context;
 import ru.windcorp.progressia.common.world.generic.*;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 /**
  * A writable {@link Context} with a world instance. This context provides
@@ -149,5 +150,18 @@ public interface WorldGenericContextWO<
 	 * @param change the change to apply
 	 */
 	<SE extends StatefulObject & EntityGeneric> void changeEntity(SE entity, StateChange<SE> change);
+	
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	BlockGenericContextWO<B, T, E> push(Vec3i location);
+	
+	@Override
+	TileStackGenericContextWO<B, T, E> push(Vec3i location, RelFace face);
+	
+	@Override
+	TileGenericContextWO<B, T, E> push(Vec3i location, RelFace face, int layer);
 
 }

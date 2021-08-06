@@ -30,10 +30,30 @@ public interface ServerTileContextRO extends ServerTileStackContextRO, TileDataC
 
 		@Override
 		ServerTileContextRO data();
+		
+		@Override
+		default ServerTileContextRO.Logic pushCloser() {
+			return push(getLocation(), getFace(), getLayer() - 1);
+		}
+		
+		@Override
+		default ServerTileContextRO.Logic pushFarther() {
+			return push(getLocation(), getFace(), getLayer() + 1);
+		}
 
 	}
 
 	@Override
 	ServerTileContextRO.Logic logic();
+	
+	@Override
+	default ServerTileContextRO pushCloser() {
+		return push(getLocation(), getFace(), getLayer() - 1);
+	}
+	
+	@Override
+	default ServerTileContextRO pushFarther() {
+		return push(getLocation(), getFace(), getLayer() + 1);
+	}
 
 }

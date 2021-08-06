@@ -26,7 +26,24 @@ public interface TileStackDataContext
 	extends TileStackGenericContextWO<BlockData, TileData, EntityData>,
 	BlockDataContext,
 	TileStackDataContextRO {
-
-	// currently empty
+	
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	default TileDataContext push(int layer) {
+		return push(getLocation(), getFace(), layer);
+	}
+	
+	@Override
+	default TileStackDataContext pushCounter() {
+		return push(getFace().getCounter());
+	}
+	
+	@Override
+	default TileStackDataContext pushOpposite() {
+		return push(getLocation().add_(getFace().getRelVector()), getFace().getCounter());
+	}
 
 }

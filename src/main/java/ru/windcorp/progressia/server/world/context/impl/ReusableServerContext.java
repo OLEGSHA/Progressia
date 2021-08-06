@@ -17,7 +17,13 @@
  */
 package ru.windcorp.progressia.server.world.context.impl;
 
+import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.context.Context;
+import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.context.AbstractContextRO;
+import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.world.WorldLogic;
 import ru.windcorp.progressia.server.world.WorldLogicRO;
 import ru.windcorp.progressia.server.world.context.*;
@@ -45,7 +51,8 @@ import ru.windcorp.progressia.server.world.context.*;
  * 
  * @author javapony
  */
-public abstract class ReusableServerContext implements ServerTileContext {
+public abstract class ReusableServerContext extends AbstractContextRO<BlockData, TileData, EntityData>
+	implements ServerTileContext {
 
 	/**
 	 * An RSC can conform to a variety of different {@link Context} interfaces.
@@ -92,9 +99,7 @@ public abstract class ReusableServerContext implements ServerTileContext {
 	 * 
 	 * @return a {@link ReusableServerContextBuilders.Empty} instance that may
 	 *         be used to reinitialize this object
-	 * @throws IllegalStateException if active subcontexting is detected.
-	 *                               Detection is done on a best-effort basis;
-	 *                               do not rely this exception
+	 * @throws IllegalStateException if active subcontexting is detected
 	 */
 	public abstract ReusableServerContextBuilders.Empty reuse() throws IllegalStateException;
 
@@ -114,6 +119,24 @@ public abstract class ReusableServerContext implements ServerTileContext {
 	 */
 	public static ReusableServerContextBuilders.Empty empty() {
 		return new ReusableServerContextImpl();
+	}
+	
+	@Override
+	public ReusableServerContext push(Vec3i location) {
+		super.push(location);
+		return this;
+	}
+	
+	@Override
+	public ReusableServerContext push(Vec3i location, RelFace face) {
+		super.push(location, face);
+		return this;
+	}
+	
+	@Override
+	public ReusableServerContext push(Vec3i location, RelFace face, int layer) {
+		super.push(location, face, layer);
+		return this;
 	}
 
 }

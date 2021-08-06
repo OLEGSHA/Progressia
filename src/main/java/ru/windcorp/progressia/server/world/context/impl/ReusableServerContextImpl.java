@@ -70,30 +70,6 @@ class ReusableServerContextImpl extends ReusableServerContext
 	protected WorldData worldData;
 
 	/**
-	 * The relevant location. If this is {@code null}, the role is
-	 * {@link Role#WORLD} or {@link Role#NONE}.
-	 */
-	protected Vec3i location;
-
-	/**
-	 * A {@code final} reference to the {@link Vec3i} instance used by
-	 * {@link #location}.
-	 */
-	protected final Vec3i locationVectorContainer = new Vec3i();
-
-	/**
-	 * The relevant {@link RelFace}. If the role is {@link Role#TILE_STACK} or
-	 * {@link Role#TILE}, this is not {@code null}.
-	 */
-	protected RelFace blockFace;
-
-	/**
-	 * The index of the relevant tile. This value is {@code -1} unless the role
-	 * is {@link Role#TILE}.
-	 */
-	protected int layer;
-
-	/**
 	 * The {@link Random} instance exposed with {@link #getRandom()}.
 	 */
 	protected final Random random = new Random();
@@ -124,11 +100,11 @@ class ReusableServerContextImpl extends ReusableServerContext
 	public Role getRole() {
 		if (server == null)
 			return Role.NONE;
-		if (location == null)
+		if (frame == null)
 			return Role.WORLD;
-		if (blockFace == null)
+		if (frame.face == null)
 			return Role.LOCATION;
-		if (layer == -1)
+		if (frame.layer == -1)
 			return Role.TILE_STACK;
 		return Role.TILE;
 	}
@@ -186,19 +162,19 @@ class ReusableServerContextImpl extends ReusableServerContext
 		case TILE:
 			result = String.format(
 				"ServerTileContext[x=%d, y=%d, z=%d, %s, index=%d]",
-				location.x,
-				location.y,
-				location.z,
-				blockFace,
-				layer
+				frame.location.x,
+				frame.location.y,
+				frame.location.z,
+				frame.face,
+				frame.layer
 			);
 			break;
 		case TILE_STACK:
 			result = String
-				.format("ServerBlockFaceContext[x=%d, y=%d, z=%d, %s]", location.x, location.y, location.z, blockFace);
+				.format("ServerBlockFaceContext[x=%d, y=%d, z=%d, %s]", frame.location.x, frame.location.y, frame.location.z, frame.face);
 			break;
 		case LOCATION:
-			result = String.format("ServerBlockContext[x=%d, y=%d, z=%d]", location.x, location.y, location.z);
+			result = String.format("ServerBlockContext[x=%d, y=%d, z=%d]", frame.location.x, frame.location.y, frame.location.z);
 			break;
 		case WORLD:
 			result = String.format("ServerWorldContext");
@@ -222,16 +198,13 @@ class ReusableServerContextImpl extends ReusableServerContext
 	@Override
 	public Empty reuse() {
 
-		if (subcontextDepth != 0) {
-			throw new IllegalStateException("Resetting is not allowed when subcontexting");
-		}
-
 		server = null;
 		worldLogic = null;
 		worldData = null;
-		location = null;
-		blockFace = null;
-		layer = -1;
+		
+		while (isSubcontexting()) {
+			pop();
+		}
 
 		isBuilder = true;
 
@@ -270,8 +243,7 @@ class ReusableServerContextImpl extends ReusableServerContext
 	@Override
 	public WithLocation at(Vec3i location) {
 		requireBuilderRole(Role.WORLD);
-		this.location = this.locationVectorContainer;
-		this.location.set(location.x, location.y, location.z);
+		push(location);
 		return this;
 	}
 
@@ -282,14 +254,14 @@ class ReusableServerContextImpl extends ReusableServerContext
 	@Override
 	public WithTileStack on(RelFace side) {
 		requireBuilderRole(Role.LOCATION);
-		this.blockFace = side;
+		frame.face = side;
 		return this;
 	}
 
 	@Override
 	public WithTileStack on(BlockFace side) {
 		requireBuilderRole(Role.LOCATION);
-		this.blockFace = side.relativize(worldLogic.getData().getUp(location));
+		frame.face = side.relativize(worldLogic.getData().getUp(frame.location));
 		return this;
 	}
 
@@ -300,7 +272,7 @@ class ReusableServerContextImpl extends ReusableServerContext
 	@Override
 	public ReusableServerContext index(int index) {
 		requireBuilderRole(Role.TILE_STACK);
-		this.layer = index;
+		frame.layer = index;
 		return build();
 	}
 
@@ -317,19 +289,19 @@ class ReusableServerContextImpl extends ReusableServerContext
 	@Override
 	public Vec3i getLocation() {
 		assert requireContextRole(Role.LOCATION);
-		return location;
+		return frame.location;
 	}
 
 	@Override
 	public RelFace getFace() {
 		assert requireContextRole(Role.TILE_STACK);
-		return blockFace;
+		return frame.face;
 	}
 
 	@Override
 	public int getLayer() {
 		assert requireContextRole(Role.TILE);
-		return layer;
+		return frame.layer;
 	}
 
 	/*
@@ -402,16 +374,16 @@ class ReusableServerContextImpl extends ReusableServerContext
 	@Override
 	public int getTag() {
 		assert requireContextRole(Role.TILE);
-		TileDataStack stack = worldData.getTilesOrNull(location, blockFace);
+		TileDataStack stack = worldData.getTilesOrNull(frame.location, frame.face);
 		if (stack == null)
 			return -1;
-		return stack.getTagByIndex(layer);
+		return stack.getTagByIndex(frame.layer);
 	}
 
 	@Override
 	public int getTileCount(Vec3i location, BlockFace face) {
 		assert requireContextRole(Role.TILE_STACK);
-		TileDataStack stack = worldData.getTilesOrNull(location, blockFace);
+		TileDataStack stack = worldData.getTilesOrNull(frame.location, frame.face);
 		if (stack == null)
 			return 0;
 		return stack.size();
@@ -516,17 +488,17 @@ class ReusableServerContextImpl extends ReusableServerContext
 
 		@Override
 		public Vec3i getLocation() {
-			return location;
+			return frame.location;
 		}
 
 		@Override
 		public RelFace getFace() {
-			return blockFace;
+			return frame.face;
 		}
 
 		@Override
 		public int getLayer() {
-			return layer;
+			return frame.layer;
 		}
 		
 		/*
@@ -612,6 +584,33 @@ class ReusableServerContextImpl extends ReusableServerContext
 		@Override
 		public EntityData getEntity(long entityId) {
 			return worldLogic.getEntity(entityId);
+		}
+		
+		/*
+		 * Subcontexting
+		 */
+		
+		@Override
+		public Logic push(Vec3i location) {
+			ReusableServerContextImpl.this.push(location);
+			return this;
+		}
+		
+		@Override
+		public Logic push(Vec3i location, RelFace face) {
+			ReusableServerContextImpl.this.push(location, face);
+			return this;
+		}
+		
+		@Override
+		public Logic push(Vec3i location, RelFace face, int layer) {
+			ReusableServerContextImpl.this.push(location, face, layer);
+			return this;
+		}
+		
+		@Override
+		public void pop() {
+			ReusableServerContextImpl.this.pop();
 		}
 		
 		/*

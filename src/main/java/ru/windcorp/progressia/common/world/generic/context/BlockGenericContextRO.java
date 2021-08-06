@@ -17,9 +17,12 @@
  */
 package ru.windcorp.progressia.common.world.generic.context;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.context.Context;
 import ru.windcorp.progressia.common.world.generic.*;
+import ru.windcorp.progressia.common.world.rels.AbsRelation;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 /**
  * A {@link Context} referencing a world with a block location specified. The
@@ -128,6 +131,35 @@ public interface BlockGenericContextRO<
 	 */
 	default int getTileCount(BlockFace face) {
 		return getTileCount(face);
+	}
+	
+	/*
+	 * Subcontexting
+	 */
+	
+	@Override
+	default BlockGenericContextRO<B, T, E> pushRelative(int dx, int dy, int dz) {
+		return push(getLocation().add_(dx, dy, dz));
+	}
+	
+	@Override
+	default BlockGenericContextRO<B, T, E> pushRelative(Vec3i direction) {
+		return push(getLocation().add_(direction));
+	}
+	
+	@Override
+	default BlockGenericContextRO<B, T, E> pushRelative(AbsRelation direction) {
+		return push(direction.getVector());
+	}
+	
+	@Override
+	default TileStackGenericContextRO<B, T, E> push(RelFace face) {
+		return push(getLocation(), face);
+	}
+	
+	@Override
+	default TileGenericContextRO<B, T, E> push(RelFace face, int layer) {
+		return push(getLocation(), face, layer);
 	}
 
 }
