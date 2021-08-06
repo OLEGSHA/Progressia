@@ -238,30 +238,41 @@ public class TestWorldDiskIO {
 					if (sectorLength == 0)
 					{
 						int outputLen = (int) output.length();
-						offset = (int) (outputLen-fullOffset)/sectorSize;
+						offset = (int) (outputLen-fullOffset)/sectorSize+1;
 						output.seek(shortOffset);
 						output.writeInt(offset<<8);
+						output.seek(outputLen);
+						while (output.length()<fullOffset+sectorSize*offset)
+						{
+							output.write(0);
+						}
 						//output.write(200);
 					}
-					output.seek(fullOffset+sectorSize*offset);
+					output.seek((long) fullOffset+sectorSize*offset);
 					
 					//int bytestoWrite = output.readInt();
 					//output.mark(sectorSize*sectorLength);
-					
-					DataOutputStream trueOutput =  new DataOutputStream(Channels.newOutputStream(output.getChannel()));
-					//CountingOutputStream countOutput = new CountingOutputStream(trueOutput);
-					
-					//trueOutput.
+
+					CountingOutputStream counter = new CountingOutputStream(new BufferedOutputStream(Channels.newOutputStream(output.getChannel())));
+					DataOutputStream trueOutput = new DataOutputStream(
+						new DeflaterOutputStream(
+							counter
+						)
+					);
+					// CountingOutputStream countOutput = new
+					// CountingOutputStream(trueOutput);
+	
+					//LOG.info("Before: {}",output.);
 					ChunkIO.save(chunk, trueOutput, IOContext.SAVE);
 					writeGenerationHint(chunk, trueOutput, server);
 					
-					while (trueOutput.size()%sectorSize != 0) {
-						trueOutput.write(0);
-					}
+					/*while (counter.getCount()%sectorSize != 0) {
+						counter.write(0);
+					}*/
 					
 					output.seek(shortOffset+offsetBytes);
-					LOG.info(trueOutput.size());
-					output.write((int) trueOutput.size()/sectorSize);
+					LOG.info("Wrote {} bytes to {},{},{}",counter.getCount(),chunk.getPosition().x,chunk.getPosition().y,chunk.getPosition().z);
+					output.write((int) counter.getCount()/sectorSize);
 					
 					trueOutput.close();
 				}
@@ -490,28 +501,28 @@ public class TestWorldDiskIO {
 	private static ChunkData loadRegion(Path path, Vec3i chunkPos, WorldData world, Server server) throws IOException, DecodingException
 	{
 		try (
-			DataInputStream input = new DataInputStream(
-				new InflaterInputStream(new BufferedInputStream(Files.newInputStream(path)))
-			)
+			BufferedInputStream input = new BufferedInputStream(Files.newInputStream(path))
 		) {
 			LOG.info(path.toString());
 			Vec3i pos = getRegionLoc(chunkPos);
 			int shortOffset = (offsetBytes+1)*(pos.z+regionSize.z*(pos.y + regionSize.y*pos.x));
 			int fullOffset = (offsetBytes+1)*(chunksPerRegion);
 			input.skipNBytes(shortOffset);
-			int offset = input.readInt();
-			/*for (int i=0;i<offsetBytes;i++)
+			int offset = 0;
+			for (int i=0;i<offsetBytes;i++)
 			{
 				offset*=256;
 				offset += input.read();
-			}*/
+			}
 			int sectorLength = offset & 255;
-			offset = offset << 8;
+			offset = offset >> 8;
 			input.skipNBytes(fullOffset-shortOffset-offsetBytes-1);
 			input.skipNBytes(sectorSize*offset);
 			input.mark(sectorSize*sectorLength);
-			ChunkData chunk = ChunkIO.load(world, chunkPos, input, IOContext.SAVE);
-			readGenerationHint(chunk, input, server);
+			DataInputStream trueInput = new DataInputStream(
+				new InflaterInputStream(input));
+			ChunkData chunk = ChunkIO.load(world, chunkPos, trueInput, IOContext.SAVE);
+			readGenerationHint(chunk, trueInput, server);
 			return chunk;
 		}
 	}
