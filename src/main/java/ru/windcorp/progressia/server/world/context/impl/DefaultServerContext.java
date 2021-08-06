@@ -44,14 +44,14 @@ import ru.windcorp.progressia.server.world.context.*;
  * Use wrappers to alter these properties.
  * <p>
  * This class defines the outward-facing safe interface of the actual
- * implementation located in {@link ReusableServerContextImpl}. The reasoning
+ * implementation located in {@link DefaultServerContextImpl}. The reasoning
  * for creating a subclass is to allow a single instance to implement both
- * {@linkplain ReusableServerContextBuilders builder interfaces} and the context
+ * {@linkplain DefaultServerContextBuilders builder interfaces} and the context
  * interface without causing confusion around object states.
  * 
  * @author javapony
  */
-public abstract class ReusableServerContext extends AbstractContextRO<BlockData, TileData, EntityData>
+public abstract class DefaultServerContext extends AbstractContextRO<BlockData, TileData, EntityData>
 	implements ServerTileContext {
 
 	/**
@@ -87,9 +87,9 @@ public abstract class ReusableServerContext extends AbstractContextRO<BlockData,
 
 	/**
 	 * Do not extend ReusableServerContext directly. Use
-	 * {@link ReusableServerContextImpl} if this is truly necessary.
+	 * {@link DefaultServerContextImpl} if this is truly necessary.
 	 */
-	ReusableServerContext() {
+	DefaultServerContext() {
 		// do nothing
 	}
 
@@ -97,11 +97,11 @@ public abstract class ReusableServerContext extends AbstractContextRO<BlockData,
 	 * Resets this object to its uninitialized state and returns a builder to
 	 * reinitialize it.
 	 * 
-	 * @return a {@link ReusableServerContextBuilders.Empty} instance that may
+	 * @return a {@link DefaultServerContextBuilders.Empty} instance that may
 	 *         be used to reinitialize this object
 	 * @throws IllegalStateException if active subcontexting is detected
 	 */
-	public abstract ReusableServerContextBuilders.Empty reuse() throws IllegalStateException;
+	public abstract DefaultServerContextBuilders.Empty reuse() throws IllegalStateException;
 
 	/**
 	 * Returns the {@link Role} currently assumed by this object.
@@ -111,30 +111,30 @@ public abstract class ReusableServerContext extends AbstractContextRO<BlockData,
 	public abstract Role getRole();
 
 	/**
-	 * Instantiates a new {@link ReusableServerContext} using an appropriate
+	 * Instantiates a new {@link DefaultServerContext} using an appropriate
 	 * implementation.
 	 * 
-	 * @return a {@link ReusableServerContextBuilders.Empty} instance that can
+	 * @return a {@link DefaultServerContextBuilders.Empty} instance that can
 	 *         be used to initialize this object
 	 */
-	public static ReusableServerContextBuilders.Empty empty() {
-		return new ReusableServerContextImpl();
+	public static DefaultServerContextBuilders.Empty empty() {
+		return new DefaultServerContextImpl();
 	}
 	
 	@Override
-	public ReusableServerContext push(Vec3i location) {
+	public DefaultServerContext push(Vec3i location) {
 		super.push(location);
 		return this;
 	}
 	
 	@Override
-	public ReusableServerContext push(Vec3i location, RelFace face) {
+	public DefaultServerContext push(Vec3i location, RelFace face) {
 		super.push(location, face);
 		return this;
 	}
 	
 	@Override
-	public ReusableServerContext push(Vec3i location, RelFace face, int layer) {
+	public DefaultServerContext push(Vec3i location, RelFace face, int layer) {
 		super.push(location, face, layer);
 		return this;
 	}

@@ -39,15 +39,15 @@ import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.context.ServerTileContext;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 
-class ReusableServerContextImpl extends ReusableServerContext
-	implements ReusableServerContextBuilders.Empty, ReusableServerContextBuilders.WithWorld,
-	ReusableServerContextBuilders.WithLocation, ReusableServerContextBuilders.WithTileStack {
+class DefaultServerContextImpl extends DefaultServerContext
+	implements DefaultServerContextBuilders.Empty, DefaultServerContextBuilders.WithWorld,
+	DefaultServerContextBuilders.WithLocation, DefaultServerContextBuilders.WithTileStack {
 
 	/*
 	 * STATE MANAGEMENT & UTIL
 	 */
 
-	public ReusableServerContextImpl() {
+	public DefaultServerContextImpl() {
 		reuse();
 	}
 
@@ -89,7 +89,7 @@ class ReusableServerContextImpl extends ReusableServerContext
 	/**
 	 * The Logic view returned by {@link #logic()}.
 	 */
-	protected final ReusableServerContextImpl.Logic logic = new Logic();
+	protected final DefaultServerContextImpl.Logic logic = new Logic();
 
 	/**
 	 * Returns the Role currently assumed by this object.
@@ -217,7 +217,7 @@ class ReusableServerContextImpl extends ReusableServerContext
 	 */
 
 	@Override
-	public ReusableServerContext build() {
+	public DefaultServerContext build() {
 		assert requireBuilderRole(null);
 		isBuilder = false;
 		return this;
@@ -270,7 +270,7 @@ class ReusableServerContextImpl extends ReusableServerContext
 	 */
 
 	@Override
-	public ReusableServerContext index(int index) {
+	public DefaultServerContext index(int index) {
 		requireBuilderRole(Role.TILE_STACK);
 		frame.layer = index;
 		return build();
@@ -538,7 +538,7 @@ class ReusableServerContextImpl extends ReusableServerContext
 
 		@Override
 		public boolean isTagValid(Vec3i location, BlockFace face, int tag) {
-			return ReusableServerContextImpl.this.isTagValid(location, face, tag);
+			return DefaultServerContextImpl.this.isTagValid(location, face, tag);
 		}
 
 		@Override
@@ -573,7 +573,7 @@ class ReusableServerContextImpl extends ReusableServerContext
 
 		@Override
 		public int getTag() {
-			return ReusableServerContextImpl.this.getTag();
+			return DefaultServerContextImpl.this.getTag();
 		}
 
 		@Override
@@ -592,25 +592,25 @@ class ReusableServerContextImpl extends ReusableServerContext
 		
 		@Override
 		public Logic push(Vec3i location) {
-			ReusableServerContextImpl.this.push(location);
+			DefaultServerContextImpl.this.push(location);
 			return this;
 		}
 		
 		@Override
 		public Logic push(Vec3i location, RelFace face) {
-			ReusableServerContextImpl.this.push(location, face);
+			DefaultServerContextImpl.this.push(location, face);
 			return this;
 		}
 		
 		@Override
 		public Logic push(Vec3i location, RelFace face, int layer) {
-			ReusableServerContextImpl.this.push(location, face, layer);
+			DefaultServerContextImpl.this.push(location, face, layer);
 			return this;
 		}
 		
 		@Override
 		public void pop() {
-			ReusableServerContextImpl.this.pop();
+			DefaultServerContextImpl.this.pop();
 		}
 		
 		/*
@@ -618,13 +618,13 @@ class ReusableServerContextImpl extends ReusableServerContext
 		 */
 
 		@Override
-		public ReusableServerContext data() {
-			return ReusableServerContextImpl.this;
+		public DefaultServerContext data() {
+			return DefaultServerContextImpl.this;
 		}
 
 		@Override
 		public String toString() {
-			return ReusableServerContextImpl.this + ".Logic";
+			return DefaultServerContextImpl.this + ".Logic";
 		}
 	}
 

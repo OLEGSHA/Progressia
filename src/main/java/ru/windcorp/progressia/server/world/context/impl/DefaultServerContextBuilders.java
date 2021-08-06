@@ -25,9 +25,9 @@ import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.WorldLogic;
 
-public interface ReusableServerContextBuilders {
+public interface DefaultServerContextBuilders {
 
-	ReusableServerContext build();
+	DefaultServerContext build();
 
 	public interface Empty /* does not extend RSCB */ {
 
@@ -39,11 +39,11 @@ public interface ReusableServerContextBuilders {
 
 	}
 
-	public interface WithWorld extends ReusableServerContextBuilders {
+	public interface WithWorld extends DefaultServerContextBuilders {
 
 		WithLocation at(Vec3i location);
 
-		default ReusableServerContext at(TileGenericReferenceRO<?, ?, ?, ?, ?> reference) {
+		default DefaultServerContext at(TileGenericReferenceRO<?, ?, ?, ?, ?> reference) {
 			if (!reference.isValid()) {
 				throw new IllegalArgumentException("Reference " + reference + " is invalid");
 			}
@@ -54,12 +54,12 @@ public interface ReusableServerContextBuilders {
 
 	}
 
-	public interface WithLocation extends ReusableServerContextBuilders {
+	public interface WithLocation extends DefaultServerContextBuilders {
 
 		WithTileStack on(RelFace side);
 		WithTileStack on(BlockFace side);
 
-		default ReusableServerContext on(TileGenericReferenceRO<?, ?, ?, ?, ?> reference) {
+		default DefaultServerContext on(TileGenericReferenceRO<?, ?, ?, ?, ?> reference) {
 			if (!reference.isValid()) {
 				throw new IllegalArgumentException("Reference " + reference + " is invalid");
 			}
@@ -70,11 +70,11 @@ public interface ReusableServerContextBuilders {
 
 	}
 
-	public interface WithTileStack extends ReusableServerContextBuilders {
+	public interface WithTileStack extends DefaultServerContextBuilders {
 
-		ReusableServerContext index(int index);
+		DefaultServerContext index(int index);
 
-		default ReusableServerContext index(TileGenericReferenceRO<?, ?, ?, ?, ?> reference) {
+		default DefaultServerContext index(TileGenericReferenceRO<?, ?, ?, ?, ?> reference) {
 			if (!reference.isValid()) {
 				throw new IllegalArgumentException("Reference " + reference + " is invalid");
 			}
