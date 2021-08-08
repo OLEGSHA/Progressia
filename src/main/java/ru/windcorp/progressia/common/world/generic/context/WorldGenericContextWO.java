@@ -63,9 +63,7 @@ public interface WorldGenericContextWO<
 	 * @param block    the new block
 	 * @see #isImmediate()
 	 */
-	default void setBlock(Vec3i location, B block) {
-		setBlock(location, block);
-	}
+	void setBlock(Vec3i location, B block);
 
 	/**
 	 * Requests that a tile is added to the top of the tile stack at the given

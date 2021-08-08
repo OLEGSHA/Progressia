@@ -86,6 +86,11 @@ public abstract class FilterServerContext implements ServerTileContext {
 	public boolean isImmediate() {
 		return parent.isImmediate();
 	}
+	
+	@Override
+	public void setBlock(Vec3i location, BlockData block) {
+		parent.setBlock(location, block);
+	}
 
 	@Override
 	public void addTile(Vec3i location, BlockFace face, TileData tile) {
