@@ -18,12 +18,12 @@
 package ru.windcorp.progressia.server.world.context.impl;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.generic.TileGenericReferenceRO;
 import ru.windcorp.progressia.common.world.generic.TileGenericStackRO;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.world.WorldLogic;
 
 public interface DefaultServerContextBuilders {
 
@@ -31,10 +31,10 @@ public interface DefaultServerContextBuilders {
 
 	public interface Empty /* does not extend RSCB */ {
 
-		WithWorld in(Server server, WorldLogic world);
+		WithWorld in(Server server, WorldData world);
 
 		default WithWorld inRealWorldOf(Server server) {
-			return in(server, server.getWorld());
+			return in(server, server.getWorld().getData());
 		}
 
 	}

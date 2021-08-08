@@ -33,11 +33,6 @@ import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.world.TileLogicStack;
-import ru.windcorp.progressia.server.world.WorldLogic;
-import ru.windcorp.progressia.server.world.block.BlockLogic;
-import ru.windcorp.progressia.server.world.context.ServerTileContext;
-import ru.windcorp.progressia.server.world.tile.TileLogic;
 
 class DefaultServerContextImpl extends DefaultServerContext
 	implements DefaultServerContextBuilders.Empty, DefaultServerContextBuilders.WithWorld,
@@ -58,16 +53,10 @@ class DefaultServerContextImpl extends DefaultServerContext
 	protected Server server;
 
 	/**
-	 * The relevant {@link WorldLogic} instance. If this is {@code null}, the
+	 * The relevant {@link WorldData} instance. If this is {@code null}, the
 	 * role is {@link Role#NONE}.
 	 */
-	protected WorldLogic worldLogic;
-
-	/**
-	 * The {@link WorldData} accessible through {@link #worldLogic}. This field
-	 * is kept always in sync with {@link #worldLogic}.
-	 */
-	protected WorldData worldData;
+	protected WorldData world;
 
 	/**
 	 * The {@link Random} instance exposed with {@link #getRandom()}.
@@ -89,7 +78,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	/**
 	 * The Logic view returned by {@link #logic()}.
 	 */
-	protected final DefaultServerContextImpl.Logic logic = new Logic();
+	protected final DefaultServerContextImpl.Logic logic = new DefaultServerContextLogic(this);
 
 	/**
 	 * Returns the Role currently assumed by this object.
@@ -199,8 +188,8 @@ class DefaultServerContextImpl extends DefaultServerContext
 	public Empty reuse() {
 
 		server = null;
-		worldLogic = null;
-		worldData = null;
+//		worldLogic = null;
+		world = null;
 		
 		while (isSubcontexting()) {
 			pop();
@@ -228,11 +217,10 @@ class DefaultServerContextImpl extends DefaultServerContext
 	 */
 
 	@Override
-	public WithWorld in(Server server, WorldLogic world) {
+	public WithWorld in(Server server, WorldData world) {
 		requireBuilderRole(Role.NONE);
 		this.server = server;
-		this.worldLogic = world;
-		this.worldData = world.getData();
+		this.world = world;
 		return this;
 	}
 
@@ -261,7 +249,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public WithTileStack on(BlockFace side) {
 		requireBuilderRole(Role.LOCATION);
-		frame.face = side.relativize(worldLogic.getData().getUp(frame.location));
+		frame.face = side.relativize(world.getUp(frame.location));
 		return this;
 	}
 
@@ -329,31 +317,31 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public BlockData getBlock(Vec3i location) {
 		assert requireContextRole(Role.WORLD);
-		return worldData.getBlock(location);
+		return world.getBlock(location);
 	}
 
 	@Override
 	public boolean isLocationLoaded(Vec3i location) {
 		assert requireContextRole(Role.WORLD);
-		return worldData.isLocationLoaded(location);
+		return world.isLocationLoaded(location);
 	}
 
 	@Override
 	public TileData getTile(Vec3i location, BlockFace face, int layer) {
 		assert requireContextRole(Role.WORLD);
-		return worldData.getTile(location, face, layer);
+		return world.getTile(location, face, layer);
 	}
 
 	@Override
 	public boolean hasTile(Vec3i location, BlockFace face, int layer) {
 		assert requireContextRole(Role.WORLD);
-		return worldData.hasTile(location, face, layer);
+		return world.hasTile(location, face, layer);
 	}
 
 	@Override
 	public TileData getTileByTag(Vec3i location, BlockFace face, int tag) {
 		assert requireContextRole(Role.WORLD);
-		TileDataStack stack = worldData.getTilesOrNull(location, face);
+		TileDataStack stack = world.getTilesOrNull(location, face);
 		if (stack == null)
 			return null;
 		int layer = stack.getIndexByTag(tag);
@@ -365,7 +353,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public boolean isTagValid(Vec3i location, BlockFace face, int tag) {
 		assert requireContextRole(Role.WORLD);
-		TileDataStack stack = worldData.getTilesOrNull(location, face);
+		TileDataStack stack = world.getTilesOrNull(location, face);
 		if (stack == null)
 			return false;
 		return stack.getIndexByTag(tag) != -1;
@@ -374,7 +362,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public int getTag() {
 		assert requireContextRole(Role.TILE);
-		TileDataStack stack = worldData.getTilesOrNull(frame.location, frame.face);
+		TileDataStack stack = world.getTilesOrNull(frame.location, frame.face);
 		if (stack == null)
 			return -1;
 		return stack.getTagByIndex(frame.layer);
@@ -383,7 +371,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public int getTileCount(Vec3i location, BlockFace face) {
 		assert requireContextRole(Role.TILE_STACK);
-		TileDataStack stack = worldData.getTilesOrNull(frame.location, frame.face);
+		TileDataStack stack = world.getTilesOrNull(frame.location, frame.face);
 		if (stack == null)
 			return 0;
 		return stack.size();
@@ -392,25 +380,25 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public Collection<EntityData> getEntities() {
 		assert requireContextRole(Role.WORLD);
-		return worldData.getEntities();
+		return world.getEntities();
 	}
 
 	@Override
 	public EntityData getEntity(long entityId) {
 		assert requireContextRole(Role.WORLD);
-		return worldData.getEntity(entityId);
+		return world.getEntity(entityId);
 	}
 
 	@Override
 	public GravityModel getGravityModel() {
 		assert requireContextRole(Role.WORLD);
-		return worldData.getGravityModel();
+		return world.getGravityModel();
 	}
 
 	@Override
 	public float getTime() {
 		assert requireContextRole(Role.WORLD);
-		return worldData.getTime();
+		return world.getTime();
 	}
 
 	/*
@@ -426,19 +414,19 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public void setBlock(Vec3i blockInWorld, BlockData block) {
 		assert requireContextRole(Role.WORLD);
-		worldData.setBlock(blockInWorld, block, true);
+		world.setBlock(blockInWorld, block, true);
 	}
 
 	@Override
 	public void addTile(Vec3i location, BlockFace face, TileData tile) {
 		assert requireContextRole(Role.WORLD);
-		worldData.getTiles(location, face).addFarthest(tile);
+		world.getTiles(location, face).addFarthest(tile);
 	}
 
 	@Override
 	public void removeTile(Vec3i location, BlockFace face, int tag) {
 		assert requireContextRole(Role.WORLD);
-		TileDataStack stack = worldData.getTilesOrNull(location, face);
+		TileDataStack stack = world.getTilesOrNull(location, face);
 		if (stack == null)
 			return;
 		int layer = stack.getIndexByTag(tag);
@@ -450,183 +438,30 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public void addEntity(EntityData entity) {
 		assert requireContextRole(Role.WORLD);
-		worldData.addEntity(entity);
+		world.addEntity(entity);
 	}
 
 	@Override
 	public void removeEntity(long entityId) {
 		assert requireContextRole(Role.WORLD);
-		worldData.removeEntity(entityId);
+		world.removeEntity(entityId);
 	}
 
 	@Override
 	public <SE extends StatefulObject & EntityGeneric> void changeEntity(SE entity, StateChange<SE> change) {
 		assert requireContextRole(Role.WORLD);
-		worldData.changeEntity(entity, change);
+		world.changeEntity(entity, change);
 	}
 
 	@Override
 	public void advanceTime(float change) {
 		assert requireContextRole(Role.WORLD);
-		worldData.advanceTime(change);
+		world.advanceTime(change);
 	}
 
 	/*
 	 * ServerWorldContext.Logic STUFF
 	 */
-
-	private class Logic implements ServerTileContext.Logic {
-
-		/*
-		 * LOCATION GETTERS
-		 */
-
-		@Override
-		public Server getServer() {
-			return server;
-		}
-
-		@Override
-		public Vec3i getLocation() {
-			return frame.location;
-		}
-
-		@Override
-		public RelFace getFace() {
-			return frame.face;
-		}
-
-		@Override
-		public int getLayer() {
-			return frame.layer;
-		}
-		
-		/*
-		 * RO CONTEXT INTERFACE
-		 */
-		
-		@Override
-		public boolean isReal() {
-			return true;
-		}
-
-		@Override
-		public Random getRandom() {
-			return random;
-		}
-
-		@Override
-		public double getTickLength() {
-			return server.getTickLength();
-		}
-
-		@Override
-		public BlockLogic getBlock(Vec3i location) {
-			assert requireContextRole(Role.WORLD);
-			return worldLogic.getBlock(location);
-		}
-
-		@Override
-		public boolean isLocationLoaded(Vec3i location) {
-			return worldData.isLocationLoaded(location);
-		}
-
-		@Override
-		public boolean hasTile(Vec3i location, BlockFace face, int layer) {
-			return worldData.hasTile(location, face, layer);
-		}
-
-		@Override
-		public boolean isTagValid(Vec3i location, BlockFace face, int tag) {
-			return DefaultServerContextImpl.this.isTagValid(location, face, tag);
-		}
-
-		@Override
-		public TileLogic getTile(Vec3i location, BlockFace face, int layer) {
-			assert requireContextRole(Role.WORLD);
-			return worldLogic.getTile(location, face, layer);
-		}
-
-		@Override
-		public TileLogic getTileByTag(Vec3i location, BlockFace face, int tag) {
-			assert requireContextRole(Role.WORLD);
-			TileLogicStack stack = worldLogic.getTilesOrNull(location, face);
-			if (stack == null) {
-				return null;
-			}
-			int layer = stack.getIndexByTag(tag);
-			if (layer == -1) {
-				return null;
-			}
-			return stack.get(layer);
-		}
-
-		@Override
-		public int getTileCount(Vec3i location, BlockFace face) {
-			assert requireContextRole(Role.WORLD);
-			TileLogicStack stack = worldLogic.getTilesOrNull(location, face);
-			if (stack == null) {
-				return 0;
-			}
-			return stack.size();
-		}
-
-		@Override
-		public int getTag() {
-			return DefaultServerContextImpl.this.getTag();
-		}
-
-		@Override
-		public Collection<EntityData> getEntities() {
-			return worldLogic.getEntities();
-		}
-
-		@Override
-		public EntityData getEntity(long entityId) {
-			return worldLogic.getEntity(entityId);
-		}
-		
-		/*
-		 * Subcontexting
-		 */
-		
-		@Override
-		public Logic push(Vec3i location) {
-			DefaultServerContextImpl.this.push(location);
-			return this;
-		}
-		
-		@Override
-		public Logic push(Vec3i location, RelFace face) {
-			DefaultServerContextImpl.this.push(location, face);
-			return this;
-		}
-		
-		@Override
-		public Logic push(Vec3i location, RelFace face, int layer) {
-			DefaultServerContextImpl.this.push(location, face, layer);
-			return this;
-		}
-		
-		@Override
-		public void pop() {
-			DefaultServerContextImpl.this.pop();
-		}
-		
-		/*
-		 * MISC
-		 */
-
-		@Override
-		public DefaultServerContext data() {
-			return DefaultServerContextImpl.this;
-		}
-
-		@Override
-		public String toString() {
-			return DefaultServerContextImpl.this + ".Logic";
-		}
-	}
 
 	@Override
 	public Logic logic() {
