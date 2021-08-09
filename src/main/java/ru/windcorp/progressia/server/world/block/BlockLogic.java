@@ -21,6 +21,7 @@ package ru.windcorp.progressia.server.world.block;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.generic.BlockGeneric;
 import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.server.world.context.ServerBlockContextRO;
 
 public class BlockLogic extends Namespaced implements BlockGeneric {
 
@@ -28,7 +29,7 @@ public class BlockLogic extends Namespaced implements BlockGeneric {
 		super(id);
 	}
 
-	public boolean isSolid(BlockTickContext context, RelFace face) {
+	public boolean isSolid(ServerBlockContextRO context, RelFace face) {
 		return isSolid(face);
 	}
 
@@ -36,7 +37,7 @@ public class BlockLogic extends Namespaced implements BlockGeneric {
 		return true;
 	}
 
-	public boolean isTransparent(BlockTickContext context) {
+	public boolean isTransparent(ServerBlockContextRO context) {
 		return isTransparent();
 	}
 

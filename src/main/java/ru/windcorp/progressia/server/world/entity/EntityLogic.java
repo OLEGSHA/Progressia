@@ -20,7 +20,7 @@ package ru.windcorp.progressia.server.world.entity;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.server.world.TickContext;
+import ru.windcorp.progressia.server.world.context.ServerWorldContext;
 
 public class EntityLogic extends Namespaced {
 
@@ -28,7 +28,7 @@ public class EntityLogic extends Namespaced {
 		super(id);
 	}
 
-	public void tick(EntityData entity, TickContext context) {
+	public void tick(EntityData entity, ServerWorldContext context) {
 		entity.incrementAge(context.getTickLength());
 	}
 

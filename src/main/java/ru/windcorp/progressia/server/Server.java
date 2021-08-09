@@ -35,6 +35,9 @@ import ru.windcorp.progressia.server.management.load.ChunkRequestDaemon;
 import ru.windcorp.progressia.server.management.load.EntityRequestDaemon;
 import ru.windcorp.progressia.server.management.load.LoadManager;
 import ru.windcorp.progressia.server.world.DefaultWorldLogic;
+import ru.windcorp.progressia.server.world.context.ServerWorldContext;
+import ru.windcorp.progressia.server.world.context.impl.DefaultServerContext;
+import ru.windcorp.progressia.server.world.context.impl.ReportingServerContext;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Change;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
@@ -95,6 +98,19 @@ public class Server {
 	 */
 	public DefaultWorldLogic getWorld() {
 		return world;
+	}
+
+	/**
+	 * Instantiates and returns an new {@link ServerWorldContext} instance
+	 * suitable for read and write access to the server's world. This is the
+	 * preferred way to query or change the world.
+	 * 
+	 * @return the context
+	 */
+	public ServerWorldContext createContext() {
+
+		return new ReportingServerContext(DefaultServerContext.empty().inRealWorldOf(this).build()).withListener(worldAccessor);
+		
 	}
 
 	/**
@@ -219,16 +235,20 @@ public class Server {
 		return this.serverThread.getTicker().getUptimeTicks();
 	}
 
-	/**
-	 * Returns the {@link WorldAccessor} object for this server. Use the
-	 * provided accessor to request common {@link Evaluation}s and
-	 * {@link Change}s.
-	 * 
-	 * @return a {@link WorldAccessor}
-	 * @see #requestChange(Change)
-	 * @see #requestEvaluation(Evaluation)
-	 */
-	public WorldAccessor getWorldAccessor() {
+//	/**
+//	 * Returns the {@link WorldAccessor} object for this server. Use the
+//	 * provided accessor to request common {@link Evaluation}s and
+//	 * {@link Change}s.
+//	 * 
+//	 * @return a {@link WorldAccessor}
+//	 * @see #requestChange(Change)
+//	 * @see #requestEvaluation(Evaluation)
+//	 */
+//	public WorldAccessor getWorldAccessor() {
+//		return worldAccessor;
+//	}
+	
+	public WorldAccessor getWorldAccessor___really_bad_dont_use() {
 		return worldAccessor;
 	}
 

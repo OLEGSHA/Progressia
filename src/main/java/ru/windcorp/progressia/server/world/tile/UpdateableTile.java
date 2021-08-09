@@ -18,8 +18,10 @@
  
 package ru.windcorp.progressia.server.world.tile;
 
+import ru.windcorp.progressia.server.world.context.ServerTileContext;
+
 public interface UpdateableTile {
 
-	void update(TileTickContext context);
+	void update(ServerTileContext context);
 
 }

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.tasks;
 
 import java.util.ArrayList;
@@ -27,17 +27,22 @@ import com.google.common.collect.ImmutableList;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.FloatMathUtil;
+import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.generic.ChunkGenericRO;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.DefaultChunkLogic;
-import ru.windcorp.progressia.server.world.TickContextMutable;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
+import ru.windcorp.progressia.server.world.context.ServerBlockContext;
+import ru.windcorp.progressia.server.world.context.ServerTileContext;
+import ru.windcorp.progressia.server.world.context.ServerTileStackContext;
+import ru.windcorp.progressia.server.world.context.ServerWorldContext;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
 import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
-import ru.windcorp.progressia.server.world.tile.TSTickContext;
 import ru.windcorp.progressia.server.world.tile.TickableTile;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 import static ru.windcorp.progressia.common.world.DefaultChunkData.BLOCKS_PER_CHUNK;
@@ -82,11 +87,11 @@ public class TickChunk extends Evaluation {
 		if (!chunk.hasTickingBlocks())
 			return;
 
-		TickContextMutable context = TickContextMutable.uninitialized();
+		ServerWorldContext context = server.createContext();
 
 		chunk.forEachTickingBlock((blockInChunk, block) -> {
-			context.rebuild().withChunk(chunk).withBlockInChunk(blockInChunk).build();
-			((TickableBlock) block).tick(context);
+			((TickableBlock) block).tick(contextPushBiC(context, chunk, blockInChunk));
+			context.pop();
 		});
 	}
 
@@ -94,11 +99,14 @@ public class TickChunk extends Evaluation {
 		if (!chunk.hasTickingTiles())
 			return;
 
-		TickContextMutable context = TickContextMutable.uninitialized();
+		ServerWorldContext context = server.createContext();
+		Vec3i blockInWorld = new Vec3i();
 
 		chunk.forEachTickingTile((ref, tile) -> {
-			context.rebuild().withServer(server).withTile(ref);
-			((TickableTile) tile).tick(context);
+			((TickableTile) tile).tick(
+				context.push(ref.getStack().getBlockInWorld(blockInWorld), ref.getStack().getFace(), ref.getIndex())
+			);
+			context.pop();
 		});
 	}
 
@@ -144,7 +152,7 @@ public class TickChunk extends Evaluation {
 			return;
 		TickableBlock tickable = (TickableBlock) block;
 
-		TickContextMutable context = TickContextMutable.start().withChunk(chunk).withBlockInChunk(blockInChunk).build();
+		ServerBlockContext context = contextPushBiC(server.createContext(), chunk, blockInChunk);
 
 		if (tickable.getTickingPolicy(context) != TickingPolicy.RANDOM)
 			return;
@@ -164,24 +172,40 @@ public class TickChunk extends Evaluation {
 		if (tiles == null || tiles.isEmpty())
 			return;
 
-		TSTickContext context = TickContextMutable.start().withServer(server).withTS(tiles).build();
+		ServerTileStackContext context = contextPushBiC(server.createContext(), chunk, blockInChunk).push(face.relativize(chunk.getUp()));
 
-		context.forEachTile(tctxt -> {
-			TileLogic logic = tctxt.getTile();
+		for (int i = 0; i < tiles.size(); ++i) {
+			ServerTileContext tileContext = context.push(i);
+			
+			TileLogic logic = tileContext.logic().getTile();
 			if (!(logic instanceof TickableTile))
 				return;
 			TickableTile tickable = (TickableTile) logic;
 
-			if (tickable.getTickingPolicy(tctxt) != TickingPolicy.RANDOM)
+			if (tickable.getTickingPolicy(tileContext) != TickingPolicy.RANDOM)
 				return;
-			tickable.tick(tctxt);
-		});
+			tickable.tick(tileContext);
+			
+			tileContext.pop();
+		}
 	}
 
 	private float computeRandomTicks(Server server) {
 		return (float) (server.getTickingSettings().getRandomTickFrequency() *
 			CHUNK_VOLUME * randomTickMethods.size() *
 			server.getTickLength());
+	}
+
+	private ServerBlockContext contextPushBiC(
+		ServerWorldContext context,
+		ChunkGenericRO<?, ?, ?, ?, ?> chunk,
+		Vec3i blockInChunk
+	) {
+		Vec3i blockInWorld = Vectors.grab3i();
+		Coordinates.getInWorld(chunk.getPosition(), blockInChunk, blockInWorld);
+		ServerBlockContext blockContext = context.push(blockInWorld);
+		Vectors.release(blockInWorld);
+		return blockContext;
 	}
 
 	@Override

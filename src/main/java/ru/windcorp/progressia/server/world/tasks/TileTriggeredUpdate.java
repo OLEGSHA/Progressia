@@ -25,7 +25,6 @@ import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.TickAndUpdateUtil;
-import ru.windcorp.progressia.server.world.DefaultWorldLogic;
 
 class TileTriggeredUpdate extends CachedEvaluation {
 
@@ -40,17 +39,15 @@ class TileTriggeredUpdate extends CachedEvaluation {
 	public void evaluate(Server server) {
 		Vec3i cursor = new Vec3i(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 
-		DefaultWorldLogic world = server.getWorld();
-
-		TickAndUpdateUtil.updateTiles(world, cursor, face); // Update facemates
-															// (also self)
-		TickAndUpdateUtil.updateBlock(world, cursor); // Update block on one
-														// side
+		// Update facemates (also self)
+		TickAndUpdateUtil.updateTiles(server, cursor, face);
+		// Update block on one side
+		TickAndUpdateUtil.updateBlock(server, cursor);
 		cursor.add(face.getVector());
-		TickAndUpdateUtil.updateBlock(world, cursor); // Update block on the
-														// other side
-		TickAndUpdateUtil.updateTiles(world, cursor, face.getCounter()); // Update
-																			// complement
+		// Update block on the other side
+		TickAndUpdateUtil.updateBlock(server, cursor);
+		// Update complement
+		TickAndUpdateUtil.updateTiles(server, cursor, face.getCounter());
 	}
 
 	public void init(Vec3i blockInWorld, AbsFace face) {

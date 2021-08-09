@@ -65,7 +65,7 @@ public class DefaultWorldLogic implements WorldLogic {
 			}
 		});
 
-		data.addListener(ChunkDataListeners.createAdder(new UpdateTriggerer(server)));
+		data.addListener(ChunkDataListeners.createAdder(new UpdateTriggerer(server.getWorldAccessor___really_bad_dont_use())));
 	}
 
 	@Override

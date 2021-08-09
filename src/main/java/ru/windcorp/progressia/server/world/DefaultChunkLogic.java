@@ -34,9 +34,13 @@ import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.TileDataStack;
 import ru.windcorp.progressia.common.world.TileDataReference;
+import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.BlockLogicRegistry;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
+import ru.windcorp.progressia.server.world.context.ServerBlockContextRO;
+import ru.windcorp.progressia.server.world.context.ServerTileContextRO;
+import ru.windcorp.progressia.server.world.context.ServerWorldContextRO;
 import ru.windcorp.progressia.server.world.tasks.TickChunk;
 import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
 import ru.windcorp.progressia.server.world.tile.TickableTile;
@@ -221,28 +225,45 @@ public class DefaultChunkLogic implements ChunkLogic {
 	}
 
 	private void tmp_generateTickLists() {
-		ChunkTickContext context = TickContextMutable.start().withChunk(this).build();
-
-		context.forEachBlock(bctxt -> {
-			BlockLogic block = bctxt.getBlock();
+		ServerWorldContextRO context = Server.getCurrentServer().createContext();
+		Vec3i blockInChunk = new Vec3i();
+		
+		forEachBiW(location -> {
+			
+			ServerBlockContextRO blockContext = context.push(location);
+			
+			BlockLogic block = blockContext.logic().getBlock();
+			Coordinates.convertInWorldToInChunk(location, blockInChunk);
 
 			if (!(block instanceof TickableBlock))
 				return;
 
-			if (((TickableBlock) block).getTickingPolicy(bctxt) == TickingPolicy.REGULAR) {
-				tickingBlocks.add(Coordinates.convertInWorldToInChunk(bctxt.getBlockInWorld(), null));
+			if (((TickableBlock) block).getTickingPolicy(blockContext) == TickingPolicy.REGULAR) {
+				tickingBlocks.add(blockInChunk);
 			}
 
-			bctxt.forEachFace(fctxt -> fctxt.forEachTile(tctxt -> {
-				TileLogic tile = tctxt.getTile();
+			for (RelFace face : RelFace.getFaces()) {
+				TileLogicStack stack = getTilesOrNull(blockInChunk, face);
+				if (stack == null || stack.isEmpty()) continue;
+				
+				for (int i = 0; i < stack.size(); ++i) {
+					ServerTileContextRO tileContext = blockContext.push(face, i);
+					
+					TileLogic tile = stack.get(i);
 
-				if (!(tile instanceof TickableTile))
-					return;
+					if (!(tile instanceof TickableTile))
+						return;
 
-				if (((TickableTile) tile).getTickingPolicy(tctxt) == TickingPolicy.REGULAR) {
-					tickingTiles.add(tctxt.getReference());
+					if (((TickableTile) tile).getTickingPolicy(tileContext) == TickingPolicy.REGULAR) {
+						tickingTiles.add(stack.getData().getReference(i));
+					}
+					
+					tileContext.pop();
 				}
-			}));
+			}
+			
+			blockContext.pop();
+			
 		});
 	}
 

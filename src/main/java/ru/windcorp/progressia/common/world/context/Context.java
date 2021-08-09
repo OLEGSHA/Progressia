@@ -135,5 +135,25 @@ public interface Context {
 	 * modifications to revert.
 	 */
 	void pop();
+	
+	default <T> T popAndReturn(T result) {
+		pop();
+		return result;
+	}
+	
+	default boolean popAndReturn(boolean result) {
+		pop();
+		return result;
+	}
+	
+	default int popAndReturn(int result) {
+		pop();
+		return result;
+	}
+	
+	default float popAndReturn(float result) {
+		pop();
+		return result;
+	}
 
 }

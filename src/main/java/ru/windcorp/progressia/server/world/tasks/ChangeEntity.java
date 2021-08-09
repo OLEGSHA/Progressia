@@ -21,6 +21,7 @@ package ru.windcorp.progressia.server.world.tasks;
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.state.StateChange;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.entity.PacketChangeEntity;
 import ru.windcorp.progressia.server.Server;
@@ -36,7 +37,7 @@ class ChangeEntity extends CachedChange {
 		super(disposer);
 	}
 
-	public <T extends EntityData> void set(T entity, StateChange<T> change) {
+	public void set(EntityData entity, StateChange<?> change) {
 		if (this.entity != null)
 			throw new IllegalStateException("Entity is not null. Current: " + this.entity + "; requested: " + entity);
 

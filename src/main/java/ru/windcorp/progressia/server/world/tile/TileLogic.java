@@ -21,6 +21,7 @@ package ru.windcorp.progressia.server.world.tile;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.generic.TileGeneric;
 import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.server.world.context.ServerTileContextRO;
 
 public class TileLogic extends Namespaced implements TileGeneric {
 
@@ -28,7 +29,7 @@ public class TileLogic extends Namespaced implements TileGeneric {
 		super(id);
 	}
 
-	public boolean canOccupyFace(TileTickContext context) {
+	public boolean canOccupyFace(ServerTileContextRO context) {
 		return canOccupyFace(context.getFace());
 	}
 
@@ -36,7 +37,7 @@ public class TileLogic extends Namespaced implements TileGeneric {
 		return true;
 	}
 
-	public boolean isSolid(TileTickContext context) {
+	public boolean isSolid(ServerTileContextRO context) {
 		return isSolid();
 	}
 

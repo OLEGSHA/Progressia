@@ -25,7 +25,6 @@ import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.TickAndUpdateUtil;
-import ru.windcorp.progressia.server.world.DefaultWorldLogic;
 
 class BlockTriggeredUpdate extends CachedEvaluation {
 
@@ -39,13 +38,11 @@ class BlockTriggeredUpdate extends CachedEvaluation {
 	public void evaluate(Server server) {
 		Vec3i cursor = new Vec3i(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 
-		DefaultWorldLogic world = server.getWorld();
-
 		for (AbsFace face : AbsFace.getFaces()) {
-			TickAndUpdateUtil.updateTiles(world, cursor, face);
+			TickAndUpdateUtil.updateTiles(server, cursor, face);
 			cursor.add(face.getVector());
-			TickAndUpdateUtil.updateBlock(world, cursor);
-			TickAndUpdateUtil.updateTiles(world, cursor, face.getCounter());
+			TickAndUpdateUtil.updateBlock(server, cursor);
+			TickAndUpdateUtil.updateTiles(server, cursor, face.getCounter());
 			cursor.sub(face.getVector());
 		}
 	}

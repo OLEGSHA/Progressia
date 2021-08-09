@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world;
 
 import glm.vec._3.i.Vec3i;
@@ -25,14 +25,14 @@ import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
-import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 
 public class UpdateTriggerer implements ChunkDataListener {
 
-	private final Server server;
+	private final WorldAccessor worldAccessor;
 
-	public UpdateTriggerer(Server server) {
-		this.server = server;
+	public UpdateTriggerer(WorldAccessor worldAccessor) {
+		this.worldAccessor = worldAccessor;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class UpdateTriggerer implements ChunkDataListener {
 		BlockData previous,
 		BlockData current
 	) {
-		server.getWorldAccessor().triggerUpdates(Coordinates.getInWorld(chunk.getPosition(), blockInChunk, null));
+		worldAccessor.triggerUpdates(Coordinates.getInWorld(chunk.getPosition(), blockInChunk, null));
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class UpdateTriggerer implements ChunkDataListener {
 		TileData tile,
 		boolean wasAdded
 	) {
-		server.getWorldAccessor().triggerUpdates(Coordinates.getInWorld(chunk.getPosition(), blockInChunk, null), face);
+		worldAccessor.triggerUpdates(Coordinates.getInWorld(chunk.getPosition(), blockInChunk, null), face);
 	}
 
 }
