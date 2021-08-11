@@ -109,7 +109,7 @@ public class Server {
 	 */
 	public ServerWorldContext createContext() {
 
-		return new ReportingServerContext(DefaultServerContext.empty().inRealWorldOf(this).build()).withListener(worldAccessor);
+		return new ReportingServerContext(DefaultServerContext.empty().inRealWorldOf(this).build()).withListener(worldAccessor).setPassToParent(false);
 		
 	}
 

@@ -31,65 +31,71 @@ public abstract class AbstractContextRO<
 	E  extends EntityGeneric
 > implements TileGenericContextRO<B, T, E> {
 //@formatter:on
-	
+
 	public static final int MAX_SUBCONTEXTS = 64;
-	
+
 	protected class Frame {
-		
+
 		public final Vec3i location = new Vec3i();
 		public RelFace face;
 		public int layer;
-		
+
+		@Override
+		public String toString() {
+			return "Frame [x=" + location.x + ", y=" + location.y + ", z=" + location.z + ", face=" + face + ", layer="
+				+ layer + "]";
+		}
+
 	}
-	
+
 	protected Frame frame = null;
-	
+
 	private final StashingStack<Frame> frameStack = new StashingStack<>(MAX_SUBCONTEXTS, Frame::new);
-	
+
 	@Override
 	public void pop() {
 		if (!isSubcontexting()) {
 			throw new IllegalStateException("Cannot pop(): already top frame");
 		}
-		
+
 		frame = frameStack.pop();
 	}
-	
+
 	@Override
 	public BlockGenericContextRO<B, T, E> push(Vec3i location) {
 		frame = frameStack.push();
-		
+
 		frame.location.set(location.x, location.y, location.z);
 		frame.face = null;
 		frame.layer = -1;
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public TileStackGenericContextRO<B, T, E> push(Vec3i location, RelFace face) {
 		frame = frameStack.push();
-		
+
 		frame.location.set(location.x, location.y, location.z);
 		frame.face = face;
 		frame.layer = -1;
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public TileGenericContextRO<B, T, E> push(Vec3i location, RelFace face, int layer) {
 		frame = frameStack.push();
-		
+
 		frame.location.set(location.x, location.y, location.z);
 		frame.face = face;
 		frame.layer = layer;
-		
+
 		return this;
 	}
-	
+
 	public boolean isSubcontexting() {
-		return frameStack.isEmpty();
+		return !frameStack.isEmpty();
 	}
 
 }

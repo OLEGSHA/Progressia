@@ -235,8 +235,10 @@ public class DefaultChunkLogic implements ChunkLogic {
 			BlockLogic block = blockContext.logic().getBlock();
 			Coordinates.convertInWorldToInChunk(location, blockInChunk);
 
-			if (!(block instanceof TickableBlock))
+			if (!(block instanceof TickableBlock)) {
+				blockContext.pop();
 				return;
+			}
 
 			if (((TickableBlock) block).getTickingPolicy(blockContext) == TickingPolicy.REGULAR) {
 				tickingBlocks.add(blockInChunk);
@@ -248,16 +250,17 @@ public class DefaultChunkLogic implements ChunkLogic {
 				
 				for (int i = 0; i < stack.size(); ++i) {
 					ServerTileContextRO tileContext = blockContext.push(face, i);
-					
 					TileLogic tile = stack.get(i);
 
-					if (!(tile instanceof TickableTile))
-						return;
+					if (!(tile instanceof TickableTile)) {
+						tileContext.pop();
+						continue;
+					}
 
 					if (((TickableTile) tile).getTickingPolicy(tileContext) == TickingPolicy.REGULAR) {
 						tickingTiles.add(stack.getData().getReference(i));
 					}
-					
+
 					tileContext.pop();
 				}
 			}

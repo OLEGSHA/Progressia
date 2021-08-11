@@ -109,7 +109,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	 */
 	public boolean requireContextRole(Role role) throws IllegalStateException {
 
-		boolean ok = !isBuilder && getRole().compareTo(role) <= 0;
+		boolean ok = !isBuilder && getRole().compareTo(role) >= 0;
 		if (!ok) {
 			complainAboutIllegalState(role, false);
 		}

@@ -179,17 +179,20 @@ public abstract class FilterServerContext implements ServerTileContext {
 
 	@Override
 	public ServerBlockContext push(Vec3i location) {
-		return parent.push(location);
+		parent.push(location);
+		return this;
 	}
 
 	@Override
 	public ServerTileStackContext push(Vec3i location, RelFace face) {
-		return parent.push(location, face);
+		parent.push(location, face);
+		return this;
 	}
 
 	@Override
 	public ServerTileContext push(Vec3i location, RelFace face, int layer) {
-		return parent.push(location, face, layer);
+		parent.push(location, face, layer);
+		return this;
 	}
 
 	@Override
