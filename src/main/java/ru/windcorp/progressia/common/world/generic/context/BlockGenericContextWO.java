@@ -92,7 +92,7 @@ public interface BlockGenericContextWO<
 	
 	@Override
 	default BlockGenericContextWO<B, T, E> pushRelative(AbsRelation direction) {
-		return push(direction.getVector());
+		return push(getLocation().add_(direction.getVector()));
 	}
 	
 	@Override

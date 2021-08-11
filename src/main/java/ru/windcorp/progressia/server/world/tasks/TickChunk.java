@@ -178,12 +178,16 @@ public class TickChunk extends Evaluation {
 			ServerTileContext tileContext = context.push(i);
 			
 			TileLogic logic = tileContext.logic().getTile();
-			if (!(logic instanceof TickableTile))
-				return;
+			if (!(logic instanceof TickableTile)) {
+				tileContext.pop();
+				continue;
+			}
 			TickableTile tickable = (TickableTile) logic;
 
-			if (tickable.getTickingPolicy(tileContext) != TickingPolicy.RANDOM)
-				return;
+			if (tickable.getTickingPolicy(tileContext) != TickingPolicy.RANDOM) {
+				tileContext.pop();
+				continue;
+			}
 			tickable.tick(tileContext);
 			
 			tileContext.pop();

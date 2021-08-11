@@ -49,9 +49,7 @@ public class HangingTileLogic extends TileLogic implements UpdateableTile {
 
 		context.pushOpposite();
 		BlockLogic complHost = context.logic().getBlock();
-		boolean result = complHost == null || !complHost.isSolid(context, context.getFace());
-		context.pop();
-		return result;
+		return context.popAndReturn(complHost == null || !complHost.isSolid(context, context.getFace()));
 	}
 
 	public boolean canBeSquashed(ServerTileContextRO context) {

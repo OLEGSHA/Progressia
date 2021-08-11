@@ -46,7 +46,7 @@ public interface ServerBlockContextRO extends ServerWorldContextRO, BlockDataCon
 		
 		@Override
 		default ServerBlockContextRO.Logic pushRelative(AbsRelation direction) {
-			return push(direction.getVector());
+			return push(getLocation().add_(direction.getVector()));
 		}
 		
 		@Override
@@ -76,7 +76,7 @@ public interface ServerBlockContextRO extends ServerWorldContextRO, BlockDataCon
 	
 	@Override
 	default ServerBlockContextRO pushRelative(AbsRelation direction) {
-		return push(direction.getVector());
+		return push(getLocation().add_(direction.getVector()));
 	}
 	
 	@Override

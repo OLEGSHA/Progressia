@@ -50,7 +50,7 @@ public class TestTileLogicGrass extends HangingTileLogic implements TickableTile
 	@Override
 	public void tick(ServerTileContext context) {
 		if (!isLocationSuitable(context)) {
-//			context.removeThisTile();
+			context.removeTile();
 		}
 	}
 

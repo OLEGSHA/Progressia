@@ -45,7 +45,7 @@ public interface BlockDataContextRO
 	
 	@Override
 	default BlockDataContextRO pushRelative(AbsRelation direction) {
-		return push(direction.getVector());
+		return push(getLocation().add_(direction.getVector()));
 	}
 	
 	@Override

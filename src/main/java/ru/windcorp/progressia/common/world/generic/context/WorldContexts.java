@@ -146,7 +146,7 @@ class WorldContexts {
 		 * @see #pop()
 		 */
 		default Block pushRelative(AbsRelation direction) {
-			return push(direction.getVector());
+			return push(getLocation().add_(direction.getVector()));
 		}
 
 		/**

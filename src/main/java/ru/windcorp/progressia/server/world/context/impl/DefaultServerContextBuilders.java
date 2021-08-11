@@ -29,7 +29,7 @@ public interface DefaultServerContextBuilders {
 
 	DefaultServerContext build();
 
-	public interface Empty /* does not extend RSCB */ {
+	public interface Empty /* does not extend DSCB */ {
 
 		WithWorld in(Server server, WorldData world);
 

@@ -150,7 +150,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 		switch (getRole()) {
 		case TILE:
 			result = String.format(
-				"ServerTileContext[x=%d, y=%d, z=%d, %s, index=%d]",
+				"ServerTileContext [x=%+4d, y=%+4d, z=%+4d, %s, index=%d]",
 				frame.location.x,
 				frame.location.y,
 				frame.location.z,
@@ -160,16 +160,16 @@ class DefaultServerContextImpl extends DefaultServerContext
 			break;
 		case TILE_STACK:
 			result = String
-				.format("ServerBlockFaceContext[x=%d, y=%d, z=%d, %s]", frame.location.x, frame.location.y, frame.location.z, frame.face);
+				.format("ServerBlockFaceContext [x=%+4d, y=%+4d, z=%+4d, %s]", frame.location.x, frame.location.y, frame.location.z, frame.face);
 			break;
 		case LOCATION:
-			result = String.format("ServerBlockContext[x=%d, y=%d, z=%d]", frame.location.x, frame.location.y, frame.location.z);
+			result = String.format("ServerBlockContext [x=%+4d, y=%+4d, z=%+4d]", frame.location.x, frame.location.y, frame.location.z);
 			break;
 		case WORLD:
-			result = String.format("ServerWorldContext");
+			result = "ServerWorldContext";
 			break;
 		default:
-			result = "Uninitialized ReusableServerContext";
+			result = "Uninitialized DefaultServerContext";
 			break;
 		}
 
@@ -188,7 +188,6 @@ class DefaultServerContextImpl extends DefaultServerContext
 	public Empty reuse() {
 
 		server = null;
-//		worldLogic = null;
 		world = null;
 		
 		while (isSubcontexting()) {

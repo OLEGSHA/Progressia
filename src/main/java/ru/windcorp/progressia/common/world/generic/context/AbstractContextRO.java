@@ -58,7 +58,8 @@ public abstract class AbstractContextRO<
 			throw new IllegalStateException("Cannot pop(): already top frame");
 		}
 
-		frame = frameStack.pop();
+		frameStack.pop();
+		frame = frameStack.peek();
 	}
 
 	@Override

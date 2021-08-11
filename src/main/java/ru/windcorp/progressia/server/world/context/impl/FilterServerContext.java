@@ -51,6 +51,11 @@ public abstract class FilterServerContext implements ServerTileContext {
 	public ServerTileContext getParent() {
 		return parent;
 	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " [" + parent + "]";
+	}
 
 	@Override
 	public int getLayer() {

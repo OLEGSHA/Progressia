@@ -41,7 +41,7 @@ public interface ServerBlockContext extends BlockDataContext, ServerWorldContext
 		
 		@Override
 		default ServerBlockContext.Logic pushRelative(AbsRelation direction) {
-			return push(direction.getVector());
+			return push(getLocation().add_(direction.getVector()));
 		}
 		
 		@Override
@@ -71,7 +71,7 @@ public interface ServerBlockContext extends BlockDataContext, ServerWorldContext
 	
 	@Override
 	default ServerBlockContext pushRelative(AbsRelation direction) {
-		return push(direction.getVector());
+		return push(getLocation().add_(direction.getVector()));
 	}
 	
 	@Override
