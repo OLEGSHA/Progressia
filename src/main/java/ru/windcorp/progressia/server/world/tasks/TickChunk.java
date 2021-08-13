@@ -27,17 +27,15 @@ import com.google.common.collect.ImmutableList;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.FloatMathUtil;
-import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.TileDataStack;
-import ru.windcorp.progressia.common.world.generic.ChunkGenericRO;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.DefaultChunkLogic;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
 import ru.windcorp.progressia.server.world.context.ServerBlockContext;
+import ru.windcorp.progressia.server.world.context.ServerContexts;
 import ru.windcorp.progressia.server.world.context.ServerTileContext;
 import ru.windcorp.progressia.server.world.context.ServerTileStackContext;
 import ru.windcorp.progressia.server.world.context.ServerWorldContext;
@@ -53,20 +51,21 @@ public class TickChunk extends Evaluation {
 		DefaultChunkData.BLOCKS_PER_CHUNK *
 		DefaultChunkData.BLOCKS_PER_CHUNK;
 
-	private final List<Consumer<Server>> randomTickMethods;
+	private final List<Consumer<ServerWorldContext>> randomTickMethods;
 
 	{
-		List<Consumer<Server>> randomTickMethods = new ArrayList<>();
+		List<Consumer<ServerWorldContext>> randomTickMethods = new ArrayList<>();
 		randomTickMethods.add(this::tickRandomBlock);
 
 		for (AbsFace face : AbsFace.getFaces()) {
-			randomTickMethods.add(s -> this.tickRandomTile(s, face));
+			randomTickMethods.add(context -> this.tickRandomTile(face, context));
 		}
 
 		this.randomTickMethods = ImmutableList.copyOf(randomTickMethods);
 	}
 
 	private final DefaultChunkLogic chunk;
+	private ServerWorldContext context;
 
 	public TickChunk(DefaultChunkLogic chunk) {
 		this.chunk = chunk;
@@ -74,44 +73,41 @@ public class TickChunk extends Evaluation {
 
 	@Override
 	public void evaluate(Server server) {
-		tickRegulars(server);
-		tickRandom(server);
+		if (context == null || context.getServer() != server) {
+			context = server.createContext(chunk.getUp());
+		}
+		
+		tickRegulars(context);
+		tickRandom(context);
 	}
 
-	private void tickRegulars(Server server) {
-		tickRegularBlocks(server);
-		tickRegularTiles(server);
+	private void tickRegulars(ServerWorldContext context) {
+		tickRegularBlocks(context);
+		tickRegularTiles(context);
 	}
 
-	private void tickRegularBlocks(Server server) {
+	private void tickRegularBlocks(ServerWorldContext context) {
 		if (!chunk.hasTickingBlocks())
 			return;
 
-		ServerWorldContext context = server.createContext();
-
 		chunk.forEachTickingBlock((blockInChunk, block) -> {
-			((TickableBlock) block).tick(contextPushBiC(context, chunk, blockInChunk));
+			((TickableBlock) block).tick(ServerContexts.pushAbs(context, chunk, blockInChunk));
 			context.pop();
 		});
 	}
 
-	private void tickRegularTiles(Server server) {
+	private void tickRegularTiles(ServerWorldContext context) {
 		if (!chunk.hasTickingTiles())
 			return;
 
-		ServerWorldContext context = server.createContext();
-		Vec3i blockInWorld = new Vec3i();
-
 		chunk.forEachTickingTile((ref, tile) -> {
-			((TickableTile) tile).tick(
-				context.push(ref.getStack().getBlockInWorld(blockInWorld), ref.getStack().getFace(), ref.getIndex())
-			);
+			((TickableTile) tile).tick(ServerContexts.pushAbs(context, chunk.getUp(), ref));
 			context.pop();
 		});
 	}
 
-	private void tickRandom(Server server) {
-		float ticks = computeRandomTicks(server);
+	private void tickRandom(ServerWorldContext context) {
+		float ticks = computeRandomTicks(context.getServer());
 
 		/*
 		 * If we are expected to run 3.25 random ticks per tick
@@ -122,23 +118,23 @@ public class TickChunk extends Evaluation {
 		float extraTickChance = ticks - unconditionalTicks;
 
 		for (int i = 0; i < unconditionalTicks; ++i) {
-			tickRandomOnce(server);
+			tickRandomOnce(context);
 		}
 
-		if (server.getAdHocRandom().nextFloat() < extraTickChance) {
-			tickRandomOnce(server);
+		if (context.getRandom().nextFloat() < extraTickChance) {
+			tickRandomOnce(context);
 		}
 	}
 
-	private void tickRandomOnce(Server server) {
+	private void tickRandomOnce(ServerWorldContext context) {
 		// Pick a target at random: a block or one of 3 primary block faces
 		randomTickMethods.get(
-			server.getAdHocRandom().nextInt(randomTickMethods.size())
-		).accept(server);
+			context.getRandom().nextInt(randomTickMethods.size())
+		).accept(context);
 	}
 
-	private void tickRandomBlock(Server server) {
-		Random random = server.getAdHocRandom();
+	private void tickRandomBlock(ServerWorldContext context) {
+		Random random = context.getRandom();
 
 		Vec3i blockInChunk = new Vec3i(
 			random.nextInt(BLOCKS_PER_CHUNK),
@@ -152,15 +148,17 @@ public class TickChunk extends Evaluation {
 			return;
 		TickableBlock tickable = (TickableBlock) block;
 
-		ServerBlockContext context = contextPushBiC(server.createContext(), chunk, blockInChunk);
+		ServerBlockContext blockContext = ServerContexts.pushAbs(context, chunk, blockInChunk);
 
-		if (tickable.getTickingPolicy(context) != TickingPolicy.RANDOM)
+		if (tickable.getTickingPolicy(blockContext) != TickingPolicy.RANDOM)
 			return;
-		tickable.tick(context);
+		tickable.tick(blockContext);
+		
+		blockContext.pop();
 	}
 
-	private void tickRandomTile(Server server, AbsFace face) {
-		Random random = server.getAdHocRandom();
+	private void tickRandomTile(AbsFace face, ServerWorldContext context) {
+		Random random = context.getRandom();
 
 		Vec3i blockInChunk = new Vec3i(
 			random.nextInt(BLOCKS_PER_CHUNK),
@@ -172,10 +170,10 @@ public class TickChunk extends Evaluation {
 		if (tiles == null || tiles.isEmpty())
 			return;
 
-		ServerTileStackContext context = contextPushBiC(server.createContext(), chunk, blockInChunk).push(face.relativize(chunk.getUp()));
+		ServerTileStackContext tsContext = ServerContexts.pushAbs(context, chunk, blockInChunk, face);
 
 		for (int i = 0; i < tiles.size(); ++i) {
-			ServerTileContext tileContext = context.push(i);
+			ServerTileContext tileContext = tsContext.push(i);
 			
 			TileLogic logic = tileContext.logic().getTile();
 			if (!(logic instanceof TickableTile)) {
@@ -192,24 +190,14 @@ public class TickChunk extends Evaluation {
 			
 			tileContext.pop();
 		}
+		
+		tsContext.pop();
 	}
 
 	private float computeRandomTicks(Server server) {
 		return (float) (server.getTickingSettings().getRandomTickFrequency() *
 			CHUNK_VOLUME * randomTickMethods.size() *
 			server.getTickLength());
-	}
-
-	private ServerBlockContext contextPushBiC(
-		ServerWorldContext context,
-		ChunkGenericRO<?, ?, ?, ?, ?> chunk,
-		Vec3i blockInChunk
-	) {
-		Vec3i blockInWorld = Vectors.grab3i();
-		Coordinates.getInWorld(chunk.getPosition(), blockInChunk, blockInWorld);
-		ServerBlockContext blockContext = context.push(blockInWorld);
-		Vectors.release(blockInWorld);
-		return blockContext;
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import java.util.Random;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
@@ -83,6 +84,26 @@ public class DefaultServerContextLogic implements ServerTileContext.Logic {
 	public ServerTileContext.Logic push(Vec3i location, RelFace face, int layer) {
 		parent.push(location, face, layer);
 		return this;
+	}
+	
+	@Override
+	public Vec3i toAbsolute(Vec3i contextLocation, Vec3i output) {
+		return parent.toAbsolute(contextLocation, output);
+	}
+	
+	@Override
+	public Vec3i toContext(Vec3i absoluteLocation, Vec3i output) {
+		return parent.toContext(absoluteLocation, output);
+	}
+	
+	@Override
+	public AbsFace toAbsolute(BlockFace contextFace) {
+		return parent.toAbsolute(contextFace);
+	}
+	
+	@Override
+	public RelFace toContext(AbsFace absoluteFace) {
+		return parent.toContext(absoluteFace);
 	}
 
 	@Override

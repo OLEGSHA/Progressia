@@ -21,12 +21,13 @@ package ru.windcorp.progressia.server.world;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
 import ru.windcorp.progressia.server.world.block.UpdateableBlock;
 import ru.windcorp.progressia.server.world.context.ServerBlockContext;
+import ru.windcorp.progressia.server.world.context.ServerContexts;
 import ru.windcorp.progressia.server.world.context.ServerTileContext;
 import ru.windcorp.progressia.server.world.context.ServerTileStackContext;
 import ru.windcorp.progressia.server.world.context.ServerWorldContext;
@@ -56,7 +57,7 @@ public class TickAndUpdateUtil {
 		if (!(block instanceof TickableBlock)) {
 			return;
 		}
-		ServerBlockContext context = server.createContext().push(blockInWorld);
+		ServerBlockContext context = server.createContext(blockInWorld);
 		tickBlock(context);
 	}
 
@@ -73,23 +74,22 @@ public class TickAndUpdateUtil {
 		}
 	}
 
-	public static void tickTile(Server server, Vec3i blockInWorld, BlockFace face, int layer) {
+	public static void tickTile(Server server, Vec3i blockInWorld, AbsFace face, int layer) {
 		TileLogic tile = server.getWorld().getTile(blockInWorld, face, layer);
 		if (!(tile instanceof TickableTile)) {
 			return;
 		}
-		ServerTileContext context = server.createContext()
-			.push(blockInWorld, face.relativize(server.getWorld().getUp(blockInWorld)), layer);
+		ServerTileContext context = ServerContexts.pushAbs(server.createContext(blockInWorld), blockInWorld, face)
+			.push(layer);
 		tickTile(context);
 	}
 
-	public static void tickTiles(Server server, Vec3i blockInWorld, BlockFace face) {
+	public static void tickTiles(Server server, Vec3i blockInWorld, AbsFace face) {
 		if (!server.getWorld().hasTiles(blockInWorld, face)) {
 			return;
 		}
 
-		ServerTileStackContext context = server.createContext()
-			.push(blockInWorld, face.relativize(server.getWorld().getUp(blockInWorld)));
+		ServerTileStackContext context = ServerContexts.pushAbs(server.createContext(blockInWorld), blockInWorld, face);
 		for (int i = 0; i < context.getTileCount(); ++i) {
 			tickTile(context.push(i));
 			context.pop();
@@ -114,7 +114,7 @@ public class TickAndUpdateUtil {
 		if (!(block instanceof UpdateableBlock)) {
 			return;
 		}
-		ServerBlockContext context = server.createContext().push(blockInWorld);
+		ServerBlockContext context = server.createContext(blockInWorld);
 		updateBlock(context);
 	}
 
@@ -131,23 +131,22 @@ public class TickAndUpdateUtil {
 		}
 	}
 
-	public static void updateTile(Server server, Vec3i blockInWorld, BlockFace face, int layer) {
+	public static void updateTile(Server server, Vec3i blockInWorld, AbsFace face, int layer) {
 		TileLogic tile = server.getWorld().getTile(blockInWorld, face, layer);
 		if (!(tile instanceof UpdateableTile)) {
 			return;
 		}
-		ServerTileContext context = server.createContext()
-			.push(blockInWorld, face.relativize(server.getWorld().getUp(blockInWorld)), layer);
+		ServerTileContext context = ServerContexts.pushAbs(server.createContext(blockInWorld), blockInWorld, face)
+			.push(layer);
 		updateTile(context);
 	}
 
-	public static void updateTiles(Server server, Vec3i blockInWorld, BlockFace face) {
+	public static void updateTiles(Server server, Vec3i blockInWorld, AbsFace face) {
 		if (!server.getWorld().hasTiles(blockInWorld, face)) {
 			return;
 		}
 
-		ServerTileStackContext context = server.createContext()
-			.push(blockInWorld, face.relativize(server.getWorld().getUp(blockInWorld)));
+		ServerTileStackContext context = ServerContexts.pushAbs(server.createContext(blockInWorld), blockInWorld, face);
 		for (int i = 0; i < context.getTileCount(); ++i) {
 			updateTile(context.push(i));
 			context.pop();
@@ -166,7 +165,7 @@ public class TickAndUpdateUtil {
 		tickEntity(
 			EntityLogicRegistry.getInstance().get(data.getId()),
 			data,
-			server.createContext()
+			server.createContext(data.getUpFace())
 		);
 	}
 

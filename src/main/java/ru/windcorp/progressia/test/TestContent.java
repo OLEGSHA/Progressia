@@ -383,7 +383,7 @@ public class TestContent {
 		ru.windcorp.progressia.server.comms.Client client
 	) {
 		Vec3i blockInWorld = ((ControlBreakBlockData) packet.getControl()).getBlockInWorld();
-		server.createContext().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
+		server.createAbsoluteContext().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
 	}
 
 	private static void onBlockPlaceTrigger(ControlData control) {
@@ -403,7 +403,7 @@ public class TestContent {
 		Vec3i blockInWorld = controlData.getBlockInWorld();
 		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null)
 			return;
-		server.createContext().setBlock(blockInWorld, block);
+		server.createAbsoluteContext().setBlock(blockInWorld, block);
 	}
 
 	private static void onTilePlaceTrigger(ControlData control) {
@@ -428,7 +428,7 @@ public class TestContent {
 			return;
 		if (server.getWorld().getData().getTiles(blockInWorld, face).isFull())
 			return;
-		server.createContext().addTile(blockInWorld, face, tile);
+		server.createAbsoluteContext().addTile(blockInWorld, face, tile);
 	}
 
 	private static void registerMisc() {

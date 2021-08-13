@@ -29,6 +29,7 @@ import ru.windcorp.progressia.common.world.WorldData;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.EntityGeneric;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
@@ -289,6 +290,41 @@ class DefaultServerContextImpl extends DefaultServerContext
 	public int getLayer() {
 		assert requireContextRole(Role.TILE);
 		return frame.layer;
+	}
+	
+	/*
+	 * ABSOLUTE COORDINATE CONVERSIONS
+	 * (or lack thereof)
+	 */
+	
+	@Override
+	public Vec3i toAbsolute(Vec3i contextLocation, Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+		
+		output.set(contextLocation.x, contextLocation.y, contextLocation.z);
+		return output;
+	}
+	
+	@Override
+	public Vec3i toContext(Vec3i absoluteLocation, Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+		
+		output.set(absoluteLocation.x, absoluteLocation.y, absoluteLocation.z);
+		return output;
+	}
+	
+	@Override
+	public AbsFace toAbsolute(BlockFace contextFace) {
+		return contextFace.resolve(AbsFace.POS_Z);
+	}
+	
+	@Override
+	public RelFace toContext(AbsFace absoluteFace) {
+		return absoluteFace.relativize(AbsFace.POS_Z);
 	}
 
 	/*

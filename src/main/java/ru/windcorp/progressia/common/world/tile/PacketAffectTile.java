@@ -51,6 +51,10 @@ public abstract class PacketAffectTile extends PacketAffectChunk {
 	}
 
 	public void set(Vec3i blockInWorld, AbsFace face, int tag) {
+		if (tag < 0) {
+			throw new IllegalArgumentException("Cannot affect tile with tag -1");
+		}
+		
 		this.blockInWorld.set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 		this.face = face;
 		this.tag = tag;

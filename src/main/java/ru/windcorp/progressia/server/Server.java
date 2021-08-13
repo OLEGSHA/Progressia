@@ -24,20 +24,26 @@ import org.apache.logging.log4j.LogManager;
 
 import com.google.common.eventbus.EventBus;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.jputil.functions.ThrowingRunnable;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.TaskQueue;
 import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AxisRotations;
 import ru.windcorp.progressia.server.comms.ClientManager;
 import ru.windcorp.progressia.server.events.ServerEvent;
 import ru.windcorp.progressia.server.management.load.ChunkRequestDaemon;
 import ru.windcorp.progressia.server.management.load.EntityRequestDaemon;
 import ru.windcorp.progressia.server.management.load.LoadManager;
 import ru.windcorp.progressia.server.world.DefaultWorldLogic;
+import ru.windcorp.progressia.server.world.context.ServerBlockContext;
+import ru.windcorp.progressia.server.world.context.ServerTileContext;
 import ru.windcorp.progressia.server.world.context.ServerWorldContext;
 import ru.windcorp.progressia.server.world.context.impl.DefaultServerContext;
 import ru.windcorp.progressia.server.world.context.impl.ReportingServerContext;
+import ru.windcorp.progressia.server.world.context.impl.RotatingServerContext;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Change;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
@@ -102,15 +108,54 @@ public class Server {
 
 	/**
 	 * Instantiates and returns an new {@link ServerWorldContext} instance
-	 * suitable for read and write access to the server's world. This is the
-	 * preferred way to query or change the world.
+	 * suitable for read and write access to the server's world. This context
+	 * uses the absolute coordinate space (not rotated to match positive Z =
+	 * up).
 	 * 
 	 * @return the context
+	 * @see #createContext(AbsFace)
 	 */
-	public ServerWorldContext createContext() {
+	public ServerWorldContext createAbsoluteContext() {
+		return doCreateAbsoluteContext();
+	}
 
-		return new ReportingServerContext(DefaultServerContext.empty().inRealWorldOf(this).build()).withListener(worldAccessor).setPassToParent(false);
-		
+	private ServerTileContext doCreateAbsoluteContext() {
+		return new ReportingServerContext(DefaultServerContext.empty().inRealWorldOf(this).build())
+			.withListener(worldAccessor).setPassToParent(false);
+	}
+
+	/**
+	 * Instantiates and returns an new {@link ServerWorldContext} instance
+	 * suitable for read and write access to the server's world. This is the
+	 * preferred way to query or change the world. This context uses the
+	 * coordinate space in which positive Z = {@code up}.
+	 * 
+	 * @param up the desired up direction
+	 * @return the context
+	 * @see #createContext(Vec3i)
+	 * @see #createAbsoluteContext()
+	 */
+	public ServerWorldContext createContext(AbsFace up) {
+		return new RotatingServerContext(doCreateAbsoluteContext(), up);
+	}
+
+	/**
+	 * Instantiates and returns an new {@link ServerBlockContext} instance
+	 * suitable for read and write access to the server's world. The context is
+	 * initialized to point to the provided block. This is the preferred way to
+	 * query or change the world. This context uses the coordinate space in
+	 * which positive Z matches the discrete up direction of the provided
+	 * location.
+	 * 
+	 * @param up the desired up direction
+	 * @return the context
+	 * @see #createContext(AbsFace)
+	 * @see #createAbsoluteContext()
+	 */
+	public ServerBlockContext createContext(Vec3i blockInWorld) {
+		AbsFace up = getWorld().getUp(blockInWorld);
+		Vec3i relativeBlockInWorld = AxisRotations.relativize(blockInWorld, up, null);
+		return new RotatingServerContext(doCreateAbsoluteContext(), up).push(relativeBlockInWorld);
 	}
 
 	/**
@@ -247,7 +292,7 @@ public class Server {
 //	public WorldAccessor getWorldAccessor() {
 //		return worldAccessor;
 //	}
-	
+
 	public WorldAccessor getWorldAccessor___really_bad_dont_use() {
 		return worldAccessor;
 	}

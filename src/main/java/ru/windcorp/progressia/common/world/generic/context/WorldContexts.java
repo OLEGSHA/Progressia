@@ -20,7 +20,9 @@ package ru.windcorp.progressia.common.world.generic.context;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.context.Context;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.AbsRelation;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 
 /**
@@ -80,6 +82,80 @@ class WorldContexts {
 		 * @see #pop()
 		 */
 		Tile push(Vec3i location, RelFace face, int layer);
+
+		/**
+		 * Converts the provided location given in the context's coordinate
+		 * space to the underlying absolute coordinate space.
+		 * <p>
+		 * The definition of "absolute coordinate space" for contexts that are
+		 * not {@linkplain #isReal() real} may be arbitrary, but methods
+		 * {@link #toAbsolute(Vec3i, Vec3i)}, {@link #toAbsolute(BlockFace)},
+		 * {@link #toContext(Vec3i, Vec3i)} and {@link #toContext(AbsFace)} are
+		 * guaranteed to be consistent for all contexts.
+		 * 
+		 * @param contextLocation the location expressed in context coordinate
+		 *                        system
+		 * @param output          the {@link Vec3i} object to output the result
+		 *                        into, or {@code null}
+		 * @return The location expressed in absolute coordinate system. If
+		 *         {@code output} is not {@code null}, {@code output} is
+		 *         returned; otherwise, a new {@link Vec3i} is instantiated and
+		 *         returned
+		 */
+		Vec3i toAbsolute(Vec3i contextLocation, Vec3i output);
+
+		/**
+		 * Converts the provided location given in the absolute coordinate
+		 * space to the context coordinate space.
+		 * <p>
+		 * The definition of "absolute coordinate space" for contexts that are
+		 * not {@linkplain #isReal() real} may be arbitrary, but methods
+		 * {@link #toAbsolute(Vec3i, Vec3i)}, {@link #toAbsolute(BlockFace)},
+		 * {@link #toContext(Vec3i, Vec3i)} and {@link #toContext(AbsFace)} are
+		 * guaranteed to be consistent for all contexts.
+		 * 
+		 * @param contextLocation the location expressed in absolute coordinate
+		 *                        system
+		 * @param output          the {@link Vec3i} object to output the result
+		 *                        into, or {@code null}
+		 * @return The location expressed in context coordinate system. If
+		 *         {@code output} is not {@code null}, {@code output} is
+		 *         returned; otherwise, a new {@link Vec3i} is instantiated and
+		 *         returned
+		 */
+		Vec3i toContext(Vec3i absoluteLocation, Vec3i output);
+
+		/**
+		 * Converts the provided face given in the context's coordinate
+		 * space to the underlying absolute coordinate space.
+		 * <p>
+		 * The definition of "absolute coordinate space" for contexts that are
+		 * not {@linkplain #isReal() real} may be arbitrary, but methods
+		 * {@link #toAbsolute(Vec3i, Vec3i)}, {@link #toAbsolute(BlockFace)},
+		 * {@link #toContext(Vec3i, Vec3i)} and {@link #toContext(AbsFace)} are
+		 * guaranteed to be consistent for all contexts.
+		 * 
+		 * @param contextLocation the face expressed in context coordinate
+		 *                        system
+		 * @return the face expressed in absolute coordinate system
+		 */
+		AbsFace toAbsolute(BlockFace contextFace);
+
+		/**
+		 * Converts the provided face given in the absolute coordinate
+		 * space to the context coordinate space.
+		 * <p>
+		 * The definition of "absolute coordinate space" for contexts that are
+		 * not {@linkplain #isReal() real} may be arbitrary, but methods
+		 * {@link #toAbsolute(Vec3i, Vec3i)}, {@link #toAbsolute(BlockFace)},
+		 * {@link #toContext(Vec3i, Vec3i)} and {@link #toContext(AbsFace)} are
+		 * guaranteed to be consistent for all contexts.
+		 * 
+		 * @param contextLocation the face expressed in absolute coordinate
+		 *                        system
+		 * @return the face expressed in context coordinate system
+		 */
+		RelFace toContext(AbsFace absoluteFace);
 
 	}
 
