@@ -19,6 +19,7 @@ package ru.windcorp.progressia.server.world.context.impl;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.AxisRotations;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.server.world.context.ServerTileContext;
 
@@ -30,15 +31,19 @@ public class RotatingServerContext extends TransformingServerContext {
 		super(parent);
 		this.up = up;
 	}
+	
+	public AbsFace getUp() {
+		return up;
+	}
 
 	@Override
 	protected void transform(Vec3i userLocation, Vec3i output) {
-		output.set(userLocation.x, userLocation.y, userLocation.z);
+		AxisRotations.resolve(userLocation, up, output);
 	}
 
 	@Override
 	protected void untransform(Vec3i parentLocation, Vec3i output) {
-		output.set(parentLocation.x, parentLocation.y, parentLocation.z);
+		AxisRotations.relativize(parentLocation, up, output);
 	}
 
 	@Override

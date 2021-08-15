@@ -35,7 +35,7 @@ public abstract class TransformingServerContext extends FilterServerContext {
 	private final Vec3i location = new Vec3i();
 	private boolean isLocationValid = false;
 
-	private RelFace face;
+	private RelFace face = null;
 
 	private final List<Vec3i> vectorCache = new ArrayList<>(1);
 
@@ -107,28 +107,40 @@ public abstract class TransformingServerContext extends FilterServerContext {
 
 	@Override
 	public ServerBlockContext push(Vec3i userLocation) {
-		transform(userLocation, location);
+		Vec3i parentLocation = grabVector(userLocation);
+		super.push(parentLocation);
+		releaseVector(parentLocation);
+		
+		location.set(userLocation.x, userLocation.y, userLocation.z);
 		isLocationValid = true;
-		super.push(location);
 		face = null;
+		
 		return this;
 	}
 
 	@Override
 	public ServerTileStackContext push(Vec3i userLocation, RelFace userFace) {
-		transform(userLocation, location);
+		Vec3i parentLocation = grabVector(userLocation);
+		super.push(parentLocation, transform(userFace));
+		releaseVector(parentLocation);
+		
+		location.set(userLocation.x, userLocation.y, userLocation.z);
 		isLocationValid = true;
-		face = transform(userFace);
-		super.push(location, face);
+		face = userFace;
+		
 		return this;
 	}
 
 	@Override
 	public ServerTileContext push(Vec3i userLocation, RelFace userFace, int layer) {
-		transform(userLocation, location);
+		Vec3i parentLocation = grabVector(userLocation);
+		super.push(parentLocation, transform(userFace), layer);
+		releaseVector(parentLocation);
+		
+		location.set(userLocation.x, userLocation.y, userLocation.z);
 		isLocationValid = true;
-		face = transform(userFace);
-		super.push(location, face, layer);
+		face = userFace;
+		
 		return this;
 	}
 	

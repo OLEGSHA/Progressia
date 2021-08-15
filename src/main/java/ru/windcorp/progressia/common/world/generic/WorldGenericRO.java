@@ -137,7 +137,8 @@ public interface WorldGenericRO<
 	 * @return {@code true} iff the tile exists
 	 */
 	default boolean hasTile(Vec3i location, BlockFace face, int layer) {
-		return hasTile(location, face, layer);
+		TS stack = getTilesOrNull(location, face);
+		return stack != null && stack.size() > layer;
 	}
 
 	default boolean isChunkLoaded(Vec3i chunkPos) {
