@@ -24,7 +24,6 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
-import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.Server;
@@ -97,7 +96,7 @@ public class DefaultServerContextLogic implements ServerTileContext.Logic {
 	}
 	
 	@Override
-	public AbsFace toAbsolute(BlockFace contextFace) {
+	public AbsFace toAbsolute(RelFace contextFace) {
 		return parent.toAbsolute(contextFace);
 	}
 	
@@ -112,13 +111,13 @@ public class DefaultServerContextLogic implements ServerTileContext.Logic {
 	}
 
 	@Override
-	public TileLogic getTile(Vec3i location, BlockFace face, int layer) {
+	public TileLogic getTile(Vec3i location, RelFace face, int layer) {
 		TileData data = parent.getTile(location, face, layer);
 		return data == null ? null : TileLogicRegistry.getInstance().get(data.getId());
 	}
 
 	@Override
-	public TileLogic getTileByTag(Vec3i location, BlockFace face, int tag) {
+	public TileLogic getTileByTag(Vec3i location, RelFace face, int tag) {
 		TileData data = parent.getTileByTag(location, face, tag);
 		return data == null ? null : TileLogicRegistry.getInstance().get(data.getId());
 	}
@@ -129,12 +128,12 @@ public class DefaultServerContextLogic implements ServerTileContext.Logic {
 	}
 
 	@Override
-	public boolean hasTile(Vec3i location, BlockFace face, int layer) {
+	public boolean hasTile(Vec3i location, RelFace face, int layer) {
 		return parent.hasTile(location, face, layer);
 	}
 
 	@Override
-	public boolean isTagValid(Vec3i location, BlockFace face, int tag) {
+	public boolean isTagValid(Vec3i location, RelFace face, int tag) {
 		return parent.isTagValid(location, face, tag);
 	}
 
@@ -144,7 +143,7 @@ public class DefaultServerContextLogic implements ServerTileContext.Logic {
 	}
 
 	@Override
-	public int getTileCount(Vec3i location, BlockFace face) {
+	public int getTileCount(Vec3i location, RelFace face) {
 		return parent.getTileCount(location, face);
 	}
 

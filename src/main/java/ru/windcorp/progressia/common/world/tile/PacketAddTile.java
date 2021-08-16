@@ -44,7 +44,7 @@ public class PacketAddTile extends PacketAffectTile {
 	}
 
 	public void set(TileData tile, Vec3i blockInWorld, AbsFace face) {
-		super.set(blockInWorld, face, -1);
+		super.set(blockInWorld, face, TAG_NOT_APPLICABLE);
 		this.tileId = tile.getId();
 	}
 

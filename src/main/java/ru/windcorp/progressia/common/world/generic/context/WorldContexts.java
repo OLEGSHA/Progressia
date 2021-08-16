@@ -21,9 +21,9 @@ package ru.windcorp.progressia.common.world.generic.context;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.context.Context;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
-import ru.windcorp.progressia.common.world.rels.AbsRelation;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.common.world.rels.RelRelation;
 
 /**
  * This class defines several {@link Context} subinterfaces that are further
@@ -139,7 +139,7 @@ class WorldContexts {
 		 *                        system
 		 * @return the face expressed in absolute coordinate system
 		 */
-		AbsFace toAbsolute(BlockFace contextFace);
+		AbsFace toAbsolute(RelFace contextFace);
 
 		/**
 		 * Converts the provided face given in the absolute coordinate
@@ -221,8 +221,8 @@ class WorldContexts {
 		 * @return this object
 		 * @see #pop()
 		 */
-		default Block pushRelative(AbsRelation direction) {
-			return push(getLocation().add_(direction.getVector()));
+		default Block pushRelative(RelRelation direction) {
+			return push(getLocation().add_(direction.getRelVector()));
 		}
 
 		/**

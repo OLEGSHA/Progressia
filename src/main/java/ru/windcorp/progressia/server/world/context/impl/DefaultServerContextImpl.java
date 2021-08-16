@@ -318,7 +318,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	}
 	
 	@Override
-	public AbsFace toAbsolute(BlockFace contextFace) {
+	public AbsFace toAbsolute(RelFace contextFace) {
 		return contextFace.resolve(AbsFace.POS_Z);
 	}
 	
@@ -362,19 +362,19 @@ class DefaultServerContextImpl extends DefaultServerContext
 	}
 
 	@Override
-	public TileData getTile(Vec3i location, BlockFace face, int layer) {
+	public TileData getTile(Vec3i location, RelFace face, int layer) {
 		assert requireContextRole(Role.WORLD);
 		return world.getTile(location, face, layer);
 	}
 
 	@Override
-	public boolean hasTile(Vec3i location, BlockFace face, int layer) {
+	public boolean hasTile(Vec3i location, RelFace face, int layer) {
 		assert requireContextRole(Role.WORLD);
 		return world.hasTile(location, face, layer);
 	}
 
 	@Override
-	public TileData getTileByTag(Vec3i location, BlockFace face, int tag) {
+	public TileData getTileByTag(Vec3i location, RelFace face, int tag) {
 		assert requireContextRole(Role.WORLD);
 		TileDataStack stack = world.getTilesOrNull(location, face);
 		if (stack == null)
@@ -386,7 +386,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	}
 
 	@Override
-	public boolean isTagValid(Vec3i location, BlockFace face, int tag) {
+	public boolean isTagValid(Vec3i location, RelFace face, int tag) {
 		assert requireContextRole(Role.WORLD);
 		TileDataStack stack = world.getTilesOrNull(location, face);
 		if (stack == null)
@@ -404,7 +404,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	}
 
 	@Override
-	public int getTileCount(Vec3i location, BlockFace face) {
+	public int getTileCount(Vec3i location, RelFace face) {
 		assert requireContextRole(Role.TILE_STACK);
 		TileDataStack stack = world.getTilesOrNull(frame.location, frame.face);
 		if (stack == null)
@@ -453,13 +453,13 @@ class DefaultServerContextImpl extends DefaultServerContext
 	}
 
 	@Override
-	public void addTile(Vec3i location, BlockFace face, TileData tile) {
+	public void addTile(Vec3i location, RelFace face, TileData tile) {
 		assert requireContextRole(Role.WORLD);
 		world.getTiles(location, face).addFarthest(tile);
 	}
 
 	@Override
-	public void removeTile(Vec3i location, BlockFace face, int tag) {
+	public void removeTile(Vec3i location, RelFace face, int tag) {
 		assert requireContextRole(Role.WORLD);
 		TileDataStack stack = world.getTilesOrNull(location, face);
 		if (stack == null)

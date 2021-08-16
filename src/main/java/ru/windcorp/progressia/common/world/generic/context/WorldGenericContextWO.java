@@ -22,7 +22,6 @@ import ru.windcorp.progressia.common.state.StateChange;
 import ru.windcorp.progressia.common.state.StatefulObject;
 import ru.windcorp.progressia.common.world.context.Context;
 import ru.windcorp.progressia.common.world.generic.*;
-import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 
 /**
@@ -76,7 +75,7 @@ public interface WorldGenericContextWO<
 	 * @param face     the face of the block to add the tile to
 	 * @param tile     the tile to add
 	 */
-	void addTile(Vec3i location, BlockFace face, T tile);
+	void addTile(Vec3i location, RelFace face, T tile);
 
 	/**
 	 * Requests that a tile identified by its tag is removed from the specified
@@ -88,7 +87,7 @@ public interface WorldGenericContextWO<
 	 * @param face     the of the block to remove the tile from
 	 * @param tag      the tag of the tile to remove
 	 */
-	void removeTile(Vec3i location, BlockFace face, int tag);
+	void removeTile(Vec3i location, RelFace face, int tag);
 
 	/**
 	 * Requests that the referenced tile is removed from its tile stack. If the

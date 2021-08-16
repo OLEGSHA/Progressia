@@ -20,9 +20,8 @@ package ru.windcorp.progressia.common.world.generic.context;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.context.Context;
 import ru.windcorp.progressia.common.world.generic.*;
-import ru.windcorp.progressia.common.world.rels.AbsRelation;
-import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.common.world.rels.RelRelation;
 
 /**
  * A writable {@link Context} referencing a world with a block location
@@ -59,7 +58,7 @@ public interface BlockGenericContextWO<
 	 * @param face the face of the block to add the tile to
 	 * @param tile the tile to add
 	 */
-	default void addTile(BlockFace face, T tile) {
+	default void addTile(RelFace face, T tile) {
 		addTile(getLocation(), face, tile);
 	}
 
@@ -72,7 +71,7 @@ public interface BlockGenericContextWO<
 	 * @param face the of the block to remove the tile from
 	 * @param tag  the tag of the tile to remove
 	 */
-	default void removeTile(BlockFace face, int tag) {
+	default void removeTile(RelFace face, int tag) {
 		removeTile(getLocation(), face, tag);
 	}
 	
@@ -91,8 +90,8 @@ public interface BlockGenericContextWO<
 	}
 	
 	@Override
-	default BlockGenericContextWO<B, T, E> pushRelative(AbsRelation direction) {
-		return push(getLocation().add_(direction.getVector()));
+	default BlockGenericContextWO<B, T, E> pushRelative(RelRelation direction) {
+		return push(getLocation().add_(direction.getRelVector()));
 	}
 	
 	@Override

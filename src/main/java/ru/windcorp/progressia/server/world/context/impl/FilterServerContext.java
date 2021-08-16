@@ -28,7 +28,6 @@ import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.EntityGeneric;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
-import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.Server;
@@ -99,12 +98,12 @@ public abstract class FilterServerContext implements ServerTileContext {
 	}
 
 	@Override
-	public void addTile(Vec3i location, BlockFace face, TileData tile) {
+	public void addTile(Vec3i location, RelFace face, TileData tile) {
 		parent.addTile(location, face, tile);
 	}
 
 	@Override
-	public void removeTile(Vec3i location, BlockFace face, int tag) {
+	public void removeTile(Vec3i location, RelFace face, int tag) {
 		parent.removeTile(location, face, tag);
 	}
 
@@ -149,27 +148,27 @@ public abstract class FilterServerContext implements ServerTileContext {
 	}
 
 	@Override
-	public TileData getTile(Vec3i location, BlockFace face, int layer) {
+	public TileData getTile(Vec3i location, RelFace face, int layer) {
 		return parent.getTile(location, face, layer);
 	}
 
 	@Override
-	public TileData getTileByTag(Vec3i location, BlockFace face, int tag) {
+	public TileData getTileByTag(Vec3i location, RelFace face, int tag) {
 		return parent.getTileByTag(location, face, tag);
 	}
 
 	@Override
-	public boolean hasTile(Vec3i location, BlockFace face, int layer) {
+	public boolean hasTile(Vec3i location, RelFace face, int layer) {
 		return parent.hasTile(location, face, layer);
 	}
 
 	@Override
-	public boolean isTagValid(Vec3i location, BlockFace face, int tag) {
+	public boolean isTagValid(Vec3i location, RelFace face, int tag) {
 		return parent.isTagValid(location, face, tag);
 	}
 
 	@Override
-	public int getTileCount(Vec3i location, BlockFace face) {
+	public int getTileCount(Vec3i location, RelFace face) {
 		return parent.getTileCount(location, face);
 	}
 
@@ -212,7 +211,7 @@ public abstract class FilterServerContext implements ServerTileContext {
 	}
 
 	@Override
-	public AbsFace toAbsolute(BlockFace contextFace) {
+	public AbsFace toAbsolute(RelFace contextFace) {
 		return parent.toAbsolute(contextFace);
 	}
 

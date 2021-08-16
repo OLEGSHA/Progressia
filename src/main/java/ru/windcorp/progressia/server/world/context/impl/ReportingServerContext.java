@@ -24,6 +24,7 @@ import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.EntityGeneric;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.world.context.ServerTileContext;
 
@@ -83,7 +84,7 @@ public class ReportingServerContext extends FilterServerContext {
 	}
 
 	@Override
-	public void addTile(Vec3i location, BlockFace face, TileData tile) {
+	public void addTile(Vec3i location, RelFace face, TileData tile) {
 		if (passToParent) {
 			super.addTile(location, face, tile);
 		}
@@ -93,7 +94,7 @@ public class ReportingServerContext extends FilterServerContext {
 	}
 
 	@Override
-	public void removeTile(Vec3i location, BlockFace face, int tag) {
+	public void removeTile(Vec3i location, RelFace face, int tag) {
 		if (passToParent) {
 			super.removeTile(location, face, tag);
 		}

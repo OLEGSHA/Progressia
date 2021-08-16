@@ -21,8 +21,8 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.context.BlockDataContextRO;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.context.BlockGenericContextRO;
-import ru.windcorp.progressia.common.world.rels.AbsRelation;
 import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.common.world.rels.RelRelation;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.tile.TileLogic;
 
@@ -45,8 +45,8 @@ public interface ServerBlockContextRO extends ServerWorldContextRO, BlockDataCon
 		}
 		
 		@Override
-		default ServerBlockContextRO.Logic pushRelative(AbsRelation direction) {
-			return push(getLocation().add_(direction.getVector()));
+		default ServerBlockContextRO.Logic pushRelative(RelRelation direction) {
+			return push(getLocation().add_(direction.getRelVector()));
 		}
 		
 		@Override
@@ -75,8 +75,8 @@ public interface ServerBlockContextRO extends ServerWorldContextRO, BlockDataCon
 	}
 	
 	@Override
-	default ServerBlockContextRO pushRelative(AbsRelation direction) {
-		return push(getLocation().add_(direction.getVector()));
+	default ServerBlockContextRO pushRelative(RelRelation direction) {
+		return push(getLocation().add_(direction.getRelVector()));
 	}
 	
 	@Override

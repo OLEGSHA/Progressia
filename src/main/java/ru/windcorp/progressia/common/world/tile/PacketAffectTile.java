@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.tile;
 
 import java.io.DataInput;
@@ -34,6 +34,12 @@ public abstract class PacketAffectTile extends PacketAffectChunk {
 	private AbsFace face;
 	private int tag;
 
+	/**
+	 * Indicates to the safeguards in {@link #set(Vec3i, AbsFace, int)} that the
+	 * concept of a tile tag is not applicable to this action.
+	 */
+	protected static final int TAG_NOT_APPLICABLE = -2;
+
 	public PacketAffectTile(String id) {
 		super(id);
 	}
@@ -51,10 +57,10 @@ public abstract class PacketAffectTile extends PacketAffectChunk {
 	}
 
 	public void set(Vec3i blockInWorld, AbsFace face, int tag) {
-		if (tag < 0) {
-			throw new IllegalArgumentException("Cannot affect tile with tag -1");
+		if (tag < 0 && tag != TAG_NOT_APPLICABLE) {
+			throw new IllegalArgumentException("Cannot affect tile with tag " + tag);
 		}
-		
+
 		this.blockInWorld.set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 		this.face = face;
 		this.tag = tag;

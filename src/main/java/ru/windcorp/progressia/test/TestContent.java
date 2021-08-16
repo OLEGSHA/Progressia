@@ -428,7 +428,7 @@ public class TestContent {
 			return;
 		if (server.getWorld().getData().getTiles(blockInWorld, face).isFull())
 			return;
-		server.createAbsoluteContext().addTile(blockInWorld, face, tile);
+		server.createAbsoluteContext().addTile(blockInWorld, face.relativize(AbsFace.POS_Z), tile);
 	}
 
 	private static void registerMisc() {

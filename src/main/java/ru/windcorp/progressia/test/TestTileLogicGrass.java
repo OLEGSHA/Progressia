@@ -18,7 +18,6 @@
  
 package ru.windcorp.progressia.test;
 
-import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.context.ServerTileContext;
@@ -65,8 +64,7 @@ public class TestTileLogicGrass extends HangingTileLogic implements TickableTile
 	}
 
 	private boolean isBlockAboveTransparent(ServerTileContextRO context) {
-		// TODO rework
-		context.pushRelative(RelFace.UP.resolve(AbsFace.POS_Z));
+		context.pushRelative(RelFace.UP);
 		BlockLogic block = context.logic().getBlock();
 		return context.popAndReturn(block == null || block.isTransparent(context));
 	}

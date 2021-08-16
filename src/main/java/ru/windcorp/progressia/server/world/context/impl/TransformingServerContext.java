@@ -23,7 +23,6 @@ import java.util.List;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
-import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.world.context.ServerBlockContext;
@@ -163,8 +162,8 @@ public abstract class TransformingServerContext extends FilterServerContext {
 	}
 	
 	@Override
-	public AbsFace toAbsolute(BlockFace contextFace) {
-		return super.toAbsolute(transform(contextFace.relativize(AbsFace.POS_Z)));
+	public AbsFace toAbsolute(RelFace contextFace) {
+		return super.toAbsolute(transform(contextFace));
 	}
 	
 	@Override
@@ -206,77 +205,77 @@ public abstract class TransformingServerContext extends FilterServerContext {
 	}
 
 	@Override
-	public boolean hasTile(Vec3i userLocation, BlockFace userFace, int layer) {
+	public boolean hasTile(Vec3i userLocation, RelFace userFace, int layer) {
 		Vec3i parentLocation = grabVector(userLocation);
 
 		try {
-			return super.hasTile(parentLocation, transform(userFace.relativize(AbsFace.POS_Z)), layer);
+			return super.hasTile(parentLocation, transform(userFace), layer);
 		} finally {
 			releaseVector(parentLocation);
 		}
 	}
 
 	@Override
-	public TileData getTile(Vec3i userLocation, BlockFace userFace, int layer) {
+	public TileData getTile(Vec3i userLocation, RelFace userFace, int layer) {
 		Vec3i parentLocation = grabVector(userLocation);
 
 		try {
-			return super.getTile(parentLocation, transform(userFace.relativize(AbsFace.POS_Z)), layer);
+			return super.getTile(parentLocation, transform(userFace), layer);
 		} finally {
 			releaseVector(parentLocation);
 		}
 	}
 
 	@Override
-	public boolean isTagValid(Vec3i userLocation, BlockFace userFace, int tag) {
+	public boolean isTagValid(Vec3i userLocation, RelFace userFace, int tag) {
 		Vec3i parentLocation = grabVector(userLocation);
 
 		try {
-			return super.isTagValid(parentLocation, transform(userFace.relativize(AbsFace.POS_Z)), tag);
+			return super.isTagValid(parentLocation, transform(userFace), tag);
 		} finally {
 			releaseVector(parentLocation);
 		}
 	}
 
 	@Override
-	public TileData getTileByTag(Vec3i userLocation, BlockFace userFace, int tag) {
+	public TileData getTileByTag(Vec3i userLocation, RelFace userFace, int tag) {
 		Vec3i parentLocation = grabVector(userLocation);
 
 		try {
-			return super.getTileByTag(parentLocation, transform(userFace.relativize(AbsFace.POS_Z)), tag);
+			return super.getTileByTag(parentLocation, transform(userFace), tag);
 		} finally {
 			releaseVector(parentLocation);
 		}
 	}
 
 	@Override
-	public int getTileCount(Vec3i userLocation, BlockFace userFace) {
+	public int getTileCount(Vec3i userLocation, RelFace userFace) {
 		Vec3i parentLocation = grabVector(userLocation);
 
 		try {
-			return super.getTileCount(parentLocation, transform(userFace.relativize(AbsFace.POS_Z)));
+			return super.getTileCount(parentLocation, transform(userFace));
 		} finally {
 			releaseVector(parentLocation);
 		}
 	}
 
 	@Override
-	public void addTile(Vec3i userLocation, BlockFace userFace, TileData tile) {
+	public void addTile(Vec3i userLocation, RelFace userFace, TileData tile) {
 		Vec3i parentLocation = grabVector(userLocation);
 
 		try {
-			super.addTile(parentLocation, transform(userFace.relativize(AbsFace.POS_Z)), tile);
+			super.addTile(parentLocation, transform(userFace), tile);
 		} finally {
 			releaseVector(parentLocation);
 		}
 	}
 
 	@Override
-	public void removeTile(Vec3i userLocation, BlockFace userFace, int tag) {
+	public void removeTile(Vec3i userLocation, RelFace userFace, int tag) {
 		Vec3i parentLocation = grabVector(userLocation);
 
 		try {
-			super.removeTile(parentLocation, transform(userFace.relativize(AbsFace.POS_Z)), tag);
+			super.removeTile(parentLocation, transform(userFace), tag);
 		} finally {
 			releaseVector(parentLocation);
 		}

@@ -20,9 +20,8 @@ package ru.windcorp.progressia.common.world.generic.context;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.context.Context;
 import ru.windcorp.progressia.common.world.generic.*;
-import ru.windcorp.progressia.common.world.rels.AbsRelation;
-import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.common.world.rels.RelRelation;
 
 /**
  * A {@link Context} referencing a world with a block location specified. The
@@ -68,7 +67,7 @@ public interface BlockGenericContextRO<
 	 * @param layer the layer of the tile
 	 * @return {@code true} iff the tile exists
 	 */
-	default boolean hasTile(BlockFace face, int layer) {
+	default boolean hasTile(RelFace face, int layer) {
 		return hasTile(getLocation(), face, layer);
 	}
 
@@ -80,7 +79,7 @@ public interface BlockGenericContextRO<
 	 * @param tag  the tag of the tile
 	 * @return {@code true} iff the tile exists
 	 */
-	default boolean isTagValid(BlockFace face, int tag) {
+	default boolean isTagValid(RelFace face, int tag) {
 		return isTagValid(getLocation(), face, tag);
 	}
 
@@ -97,7 +96,7 @@ public interface BlockGenericContextRO<
 	 * @param layer the layer of the tile stack that the tile occupies
 	 * @return the tile or {@code null} if the position does not contain a tile
 	 */
-	default T getTile(BlockFace face, int layer) {
+	default T getTile(RelFace face, int layer) {
 		return getTile(getLocation(), face, layer);
 	}
 
@@ -115,7 +114,7 @@ public interface BlockGenericContextRO<
 	 * @param tag  the tag of the tile
 	 * @return the tile or {@code null} if the position does not contain a tile
 	 */
-	default T getTileByTag(BlockFace face, int tag) {
+	default T getTileByTag(RelFace face, int tag) {
 		return getTileByTag(getLocation(), face, tag);
 	}
 
@@ -129,7 +128,7 @@ public interface BlockGenericContextRO<
 	 * @return the count of tiles in the tile stack or {@code -1} if the tile
 	 *         stack could not exist
 	 */
-	default int getTileCount(BlockFace face) {
+	default int getTileCount(RelFace face) {
 		return getTileCount(face);
 	}
 	
@@ -148,8 +147,8 @@ public interface BlockGenericContextRO<
 	}
 	
 	@Override
-	default BlockGenericContextRO<B, T, E> pushRelative(AbsRelation direction) {
-		return push(getLocation().add_(direction.getVector()));
+	default BlockGenericContextRO<B, T, E> pushRelative(RelRelation direction) {
+		return push(getLocation().add_(direction.getRelVector()));
 	}
 	
 	@Override
