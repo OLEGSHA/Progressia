@@ -23,7 +23,6 @@ import ru.windcorp.progressia.common.state.StatefulObject;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.EntityGeneric;
-import ru.windcorp.progressia.common.world.rels.BlockFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.world.context.ServerTileContext;
@@ -34,9 +33,9 @@ public class ReportingServerContext extends FilterServerContext {
 
 		void onBlockSet(Vec3i location, BlockData block);
 
-		void onTileAdded(Vec3i location, BlockFace face, TileData tile);
+		void onTileAdded(Vec3i location, RelFace face, TileData tile);
 
-		void onTileRemoved(Vec3i location, BlockFace face, int tag);
+		void onTileRemoved(Vec3i location, RelFace face, int tag);
 
 		void onEntityAdded(EntityData entity);
 

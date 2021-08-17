@@ -364,19 +364,19 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public TileData getTile(Vec3i location, RelFace face, int layer) {
 		assert requireContextRole(Role.WORLD);
-		return world.getTile(location, face, layer);
+		return world.getTile(location, face.resolve(AbsFace.POS_Z), layer);
 	}
 
 	@Override
 	public boolean hasTile(Vec3i location, RelFace face, int layer) {
 		assert requireContextRole(Role.WORLD);
-		return world.hasTile(location, face, layer);
+		return world.hasTile(location, face.resolve(AbsFace.POS_Z), layer);
 	}
 
 	@Override
 	public TileData getTileByTag(Vec3i location, RelFace face, int tag) {
 		assert requireContextRole(Role.WORLD);
-		TileDataStack stack = world.getTilesOrNull(location, face);
+		TileDataStack stack = world.getTilesOrNull(location, face.resolve(AbsFace.POS_Z));
 		if (stack == null)
 			return null;
 		int layer = stack.getIndexByTag(tag);
@@ -388,7 +388,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public boolean isTagValid(Vec3i location, RelFace face, int tag) {
 		assert requireContextRole(Role.WORLD);
-		TileDataStack stack = world.getTilesOrNull(location, face);
+		TileDataStack stack = world.getTilesOrNull(location, face.resolve(AbsFace.POS_Z));
 		if (stack == null)
 			return false;
 		return stack.getIndexByTag(tag) != -1;
@@ -397,7 +397,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public int getTag() {
 		assert requireContextRole(Role.TILE);
-		TileDataStack stack = world.getTilesOrNull(frame.location, frame.face);
+		TileDataStack stack = world.getTilesOrNull(frame.location, frame.face.resolve(AbsFace.POS_Z));
 		if (stack == null)
 			return -1;
 		return stack.getTagByIndex(frame.layer);
@@ -406,7 +406,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public int getTileCount(Vec3i location, RelFace face) {
 		assert requireContextRole(Role.TILE_STACK);
-		TileDataStack stack = world.getTilesOrNull(frame.location, frame.face);
+		TileDataStack stack = world.getTilesOrNull(location, face.resolve(AbsFace.POS_Z));
 		if (stack == null)
 			return 0;
 		return stack.size();
@@ -455,13 +455,13 @@ class DefaultServerContextImpl extends DefaultServerContext
 	@Override
 	public void addTile(Vec3i location, RelFace face, TileData tile) {
 		assert requireContextRole(Role.WORLD);
-		world.getTiles(location, face).addFarthest(tile);
+		world.getTiles(location, face.resolve(AbsFace.POS_Z)).addFarthest(tile);
 	}
 
 	@Override
 	public void removeTile(Vec3i location, RelFace face, int tag) {
 		assert requireContextRole(Role.WORLD);
-		TileDataStack stack = world.getTilesOrNull(location, face);
+		TileDataStack stack = world.getTilesOrNull(location, face.resolve(AbsFace.POS_Z));
 		if (stack == null)
 			return;
 		int layer = stack.getIndexByTag(tag);

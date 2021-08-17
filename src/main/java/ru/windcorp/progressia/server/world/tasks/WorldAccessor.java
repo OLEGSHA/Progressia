@@ -27,7 +27,9 @@ import ru.windcorp.progressia.common.util.MultiLOC;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.EntityGeneric;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.context.impl.ReportingServerContext;
@@ -64,16 +66,16 @@ public class WorldAccessor implements ReportingServerContext.ChangeListener {
 	}
 
 	@Override
-	public void onTileAdded(Vec3i blockInWorld, BlockFace face, TileData tile) {
+	public void onTileAdded(Vec3i blockInWorld, RelFace face, TileData tile) {
 		AddTile change = cache.grab(AddTile.class);
-		change.getPacket().set(tile, blockInWorld, face.resolve(server.getWorld().getUp(blockInWorld)));
+		change.getPacket().set(tile, blockInWorld, face.resolve(AbsFace.POS_Z));
 		server.requestChange(change);
 	}
 
 	@Override
-	public void onTileRemoved(Vec3i blockInWorld, BlockFace face, int tag) {
+	public void onTileRemoved(Vec3i blockInWorld, RelFace face, int tag) {
 		RemoveTile change = cache.grab(RemoveTile.class);
-		change.getPacket().set(blockInWorld, face.resolve(server.getWorld().getUp(blockInWorld)), tag);
+		change.getPacket().set(blockInWorld, face.resolve(AbsFace.POS_Z), tag);
 		server.requestChange(change);
 	}
 	
@@ -131,7 +133,7 @@ public class WorldAccessor implements ReportingServerContext.ChangeListener {
 	// TODO rename to something meaningful
 	public void triggerUpdates(Vec3i blockInWorld, BlockFace face) {
 		TileTriggeredUpdate evaluation = cache.grab(TileTriggeredUpdate.class);
-		evaluation.init(blockInWorld, face.resolve(server.getWorld().getUp(blockInWorld)));
+		evaluation.init(blockInWorld, face.resolve(AbsFace.POS_Z));
 		server.requestEvaluation(evaluation);
 	}
 
