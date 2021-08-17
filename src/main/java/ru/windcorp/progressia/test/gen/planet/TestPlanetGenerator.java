@@ -81,7 +81,7 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 		DefaultChunkData chunk = getWorldData().getChunk(chunkPos);
 		
 		if (!isChunkReady(chunk.getGenerationHint())) {
-			featureGenerator.generateFeatures(chunk);
+			featureGenerator.generateFeatures(getServer(), chunk);
 		}
 		
 		return chunk;

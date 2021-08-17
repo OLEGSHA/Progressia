@@ -22,9 +22,9 @@ import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.rels.RelFace;
-import ru.windcorp.progressia.server.world.block.BlockLogicRegistry;
 import ru.windcorp.progressia.test.gen.surface.SurfaceTopLayerFeature;
-import ru.windcorp.progressia.test.gen.surface.SurfaceWorld;
+import ru.windcorp.progressia.test.gen.surface.context.SurfaceBlockContext;
+import ru.windcorp.progressia.test.gen.surface.context.SurfaceWorldContext;
 
 public class TestBushFeature extends SurfaceTopLayerFeature {
 
@@ -32,35 +32,35 @@ public class TestBushFeature extends SurfaceTopLayerFeature {
 		super(id);
 	}
 	
-	private void tryToSetLeaves(SurfaceWorld world, Vec3i posSfc, BlockData leaves) {
-		if (world.getBlockSfc(posSfc).getId().equals("Test:Air")) {
-			world.setBlockSfc(posSfc, leaves, false);
+	private void tryToSetLeaves(SurfaceWorldContext context, Vec3i location, BlockData leaves) {
+		if (context.getBlock(location).getId().equals("Test:Air")) {
+			context.setBlock(location, leaves);
 		}
 	}
 	
 	@Override
-	protected void processTopBlock(SurfaceWorld world, Request request, Vec3i topBlock) {
-		if (request.getRandom().nextInt(10*10) > 0) return;
+	protected void processTopBlock(SurfaceBlockContext context) {
+		if (context.getRandom().nextInt(10*10) > 0) return;
 		
-		Vec3i center = topBlock.add_(0, 0, 1);
+		Vec3i center = context.getLocation().add_(0, 0, 1);
 
 		BlockData log = BlockDataRegistry.getInstance().get("Test:Log");
 		BlockData leaves = BlockDataRegistry.getInstance().get("Test:TemporaryLeaves");
 		
-		world.setBlockSfc(center, log, false);
+		context.setBlock(center, log);
 		
 		VectorUtil.iterateCuboidAround(center.x, center.y, center.z, 3, 3, 3, p -> {
-			tryToSetLeaves(world, p, leaves);
+			tryToSetLeaves(context, p, leaves);
 		});
 		
 		VectorUtil.iterateCuboidAround(center.x, center.y, center.z, 5, 5, 1, p -> {
-			tryToSetLeaves(world, p, leaves);
+			tryToSetLeaves(context, p, leaves);
 		});
 	}
 	
 	@Override
-	protected boolean isSolid(SurfaceWorld world, Vec3i surfaceBlockInWorld) {
-		return BlockLogicRegistry.getInstance().get(world.getBlockSfc(surfaceBlockInWorld).getId()).isSolid(RelFace.UP);
+	protected boolean isSolid(SurfaceBlockContext context) {
+		return context.logic().getBlock().isSolid(RelFace.UP);
 	}
 
 }

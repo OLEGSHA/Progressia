@@ -25,6 +25,7 @@ import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.test.TestBushFeature;
 import ru.windcorp.progressia.test.TestGrassFeature;
 import ru.windcorp.progressia.test.TestTreeFeature;
@@ -57,11 +58,11 @@ public class PlanetFeatureGenerator {
 		return parent;
 	}
 
-	public void generateFeatures(DefaultChunkData chunk) {
+	public void generateFeatures(Server server, DefaultChunkData chunk) {
 		if (isOrdinaryChunk(chunk.getPosition())) {
-			generateOrdinaryFeatures(chunk);
+			generateOrdinaryFeatures(server, chunk);
 		} else {
-			generateBorderFeatures(chunk);
+			generateBorderFeatures(server, chunk);
 		}
 		
 		chunk.setGenerationHint(true);
@@ -72,11 +73,11 @@ public class PlanetFeatureGenerator {
 		return sorted.x != sorted.y;
 	}
 
-	private void generateOrdinaryFeatures(DefaultChunkData chunk) {
-		surfaceGenerators.get(chunk.getUp()).generateFeatures(chunk);
+	private void generateOrdinaryFeatures(Server server, DefaultChunkData chunk) {
+		surfaceGenerators.get(chunk.getUp()).generateFeatures(server, chunk);
 	}
 
-	private void generateBorderFeatures(DefaultChunkData chunk) {
+	private void generateBorderFeatures(Server server, DefaultChunkData chunk) {
 		// Do nothing
 	}
 

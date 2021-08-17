@@ -47,6 +47,7 @@ import ru.windcorp.progressia.server.world.context.impl.RotatingServerContext;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Change;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
+import ru.windcorp.progressia.server.world.ticking.TickerCoordinator;
 import ru.windcorp.progressia.test.gen.planet.Planet;
 import ru.windcorp.progressia.test.gen.planet.TestPlanetGenerator;
 
@@ -232,12 +233,40 @@ public class Server {
 		schedule(() -> task.accept(this));
 	}
 
-	public void requestChange(Change change) {
+	/**
+	 * Delayed
+	 */
+	public void scheduleChange(Change change) {
 		serverThread.getTicker().requestChange(change);
 	}
-
-	public void requestEvaluation(Evaluation evaluation) {
+	
+	/**
+	 * Delayed
+	 */
+	public void scheduleEvaluation(Evaluation evaluation) {
 		serverThread.getTicker().requestEvaluation(evaluation);
+	}
+	
+	/**
+	 * Immediate if possible, otherwise delayed
+	 */
+	public void requestChange(Change change) {
+		if (serverThread.getTicker().getPhase() == TickerCoordinator.TickPhase.SYNCHRONOUS) {
+			change.affect(this);
+		} else {
+			serverThread.getTicker().requestChange(change);
+		}
+	}
+
+	/**
+	 * Immediate if possible, otherwise delayed
+	 */
+	public void requestEvaluation(Evaluation evaluation) {
+		if (serverThread.getTicker().getPhase() == TickerCoordinator.TickPhase.SYNCHRONOUS) {
+			evaluation.evaluate(this);
+		} else {
+			serverThread.getTicker().requestEvaluation(evaluation);
+		}
 	}
 
 	public void subscribe(Object object) {
@@ -279,20 +308,7 @@ public class Server {
 	public long getUptimeTicks() {
 		return this.serverThread.getTicker().getUptimeTicks();
 	}
-
-//	/**
-//	 * Returns the {@link WorldAccessor} object for this server. Use the
-//	 * provided accessor to request common {@link Evaluation}s and
-//	 * {@link Change}s.
-//	 * 
-//	 * @return a {@link WorldAccessor}
-//	 * @see #requestChange(Change)
-//	 * @see #requestEvaluation(Evaluation)
-//	 */
-//	public WorldAccessor getWorldAccessor() {
-//		return worldAccessor;
-//	}
-
+	
 	public WorldAccessor getWorldAccessor___really_bad_dont_use() {
 		return worldAccessor;
 	}
@@ -338,8 +354,8 @@ public class Server {
 	}
 
 	private void scheduleWorldTicks(Server server) {
-		server.getWorld().getChunks().forEach(chunk -> requestEvaluation(chunk.getTickTask()));
-		requestEvaluation(server.getWorld().getTickEntitiesTask());
+		server.getWorld().getChunks().forEach(chunk -> scheduleEvaluation(chunk.getTickTask()));
+		scheduleEvaluation(server.getWorld().getTickEntitiesTask());
 	}
 
 	/**

@@ -18,15 +18,13 @@
 package ru.windcorp.progressia.test.gen.surface;
 
 import java.util.Random;
-import java.util.function.Consumer;
 
 import glm.Glm;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.VectorUtil;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.generic.GenericChunks;
+import ru.windcorp.progressia.test.gen.surface.context.SurfaceWorldContext;
 
 public abstract class SurfaceFeature extends Namespaced {
 
@@ -107,60 +105,6 @@ public abstract class SurfaceFeature extends Namespaced {
 		super(id);
 	}
 
-	public abstract void process(SurfaceWorld world, Request request);
-	
-	/*
-	 * Utility methods
-	 */
-
-	public boolean contains(Request request, Vec3i surfaceBlockInWorld) {
-		Vec3i bic = Vectors.grab3i();
-		bic.set(surfaceBlockInWorld.x, surfaceBlockInWorld.y, surfaceBlockInWorld.z);
-		bic.sub(request.minSfc);
-		boolean result = GenericChunks.containsBiC(bic);
-		Vectors.release(bic);
-		return result;
-	}
-
-	public void forEach(Request request, Consumer<? super Vec3i> action) {
-		VectorUtil.iterateCuboid(
-			request.minSfc.x,
-			request.minSfc.y,
-			request.minSfc.z,
-			request.maxSfc.x + 1,
-			request.maxSfc.y + 1,
-			request.maxSfc.z + 1,
-			action
-		);
-	}
-
-	/**
-	 * Provided vectors have z set to {@link #getMinZ()}.
-	 */
-	public void forEachOnFloor(Request request, Consumer<? super Vec3i> action) {
-		forEachOnLayer(request, action, request.getMinZ());
-	}
-	
-	/**
-	 * Provided vectors have z set to {@link #getMaxZ()}.
-	 */
-	public void forEachOnCeiling(Request request, Consumer<? super Vec3i> action) {
-		forEachOnLayer(request, action, request.getMaxZ());
-	}
-	
-	/**
-	 * Provided vectors have z set to layer.
-	 */
-	public void forEachOnLayer(Request request, Consumer<? super Vec3i> action, int layer) {
-		VectorUtil.iterateCuboid(
-			request.minSfc.x,
-			request.minSfc.y,
-			layer,
-			request.maxSfc.x + 1,
-			request.maxSfc.y + 1,
-			layer + 1,
-			action
-		);
-	}
+	public abstract void process(SurfaceWorldContext context);
 
 }

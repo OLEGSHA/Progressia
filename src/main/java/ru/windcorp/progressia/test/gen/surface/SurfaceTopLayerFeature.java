@@ -18,41 +18,47 @@
 package ru.windcorp.progressia.test.gen.surface;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.test.gen.surface.context.SurfaceBlockContext;
+import ru.windcorp.progressia.test.gen.surface.context.SurfaceWorldContext;
 
 public abstract class SurfaceTopLayerFeature extends SurfaceFeature {
-	
+
 	public SurfaceTopLayerFeature(String id) {
 		super(id);
 	}
 
-	protected abstract void processTopBlock(SurfaceWorld world, Request request, Vec3i topBlock);
-	
-	protected abstract boolean isSolid(SurfaceWorld world, Vec3i surfaceBlockInWorld);
-	
+	protected abstract void processTopBlock(SurfaceBlockContext context);
+
+	protected abstract boolean isSolid(SurfaceBlockContext context);
+
 	@Override
-	public void process(SurfaceWorld world, Request request) {
-		Vec3i cursor = Vectors.grab3i();
-		
-		forEachOnLayer(request, pos -> {
-			
+	public void process(SurfaceWorldContext context) {
+		Vec3i cursor = new Vec3i();
+
+		context.forEachOnFloor(pos -> {
+
 			cursor.set(pos.x, pos.y, pos.z);
-			
-			if (!isSolid(world, cursor)) {
+
+			if (!isSolid(context.push(cursor))) {
+				context.pop();
 				return;
 			}
-			
-			for (cursor.z += 1; cursor.z <= request.getMaxZ() + 1; ++cursor.z) {
-				if (!isSolid(world, cursor)) {
-					cursor.z -= 1;
-					processTopBlock(world, request, cursor);
+			context.pop();
+
+			for (cursor.z += 1; cursor.z <= context.getMaxZ() + 1; ++cursor.z) {
+				SurfaceBlockContext blockContext = context.push(cursor);
+
+				if (!isSolid(blockContext)) {
+					processTopBlock(blockContext.pushRelative(0, 0, -1));
+					context.pop();
+					context.pop();
 					return;
 				}
+
+				context.pop();
 			}
-			
-		}, request.getMinZ());
-		
-		Vectors.release(cursor);
+
+		});
 	}
 
 }

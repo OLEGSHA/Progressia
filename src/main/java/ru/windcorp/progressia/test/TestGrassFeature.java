@@ -21,13 +21,11 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 
-import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
-import ru.windcorp.progressia.server.world.block.BlockLogicRegistry;
 import ru.windcorp.progressia.test.gen.surface.SurfaceTopLayerFeature;
-import ru.windcorp.progressia.test.gen.surface.SurfaceWorld;
+import ru.windcorp.progressia.test.gen.surface.context.SurfaceBlockContext;
 
 public class TestGrassFeature extends SurfaceTopLayerFeature {
 	
@@ -44,8 +42,8 @@ public class TestGrassFeature extends SurfaceTopLayerFeature {
 	}
 
 	@Override
-	protected void processTopBlock(SurfaceWorld world, Request request, Vec3i topBlock) {
-		if (!WHITELIST.contains(world.getBlockSfc(topBlock).getId())) {
+	protected void processTopBlock(SurfaceBlockContext context) {
+		if (!WHITELIST.contains(context.getBlock().getId())) {
 			return;
 		}
 		
@@ -54,15 +52,19 @@ public class TestGrassFeature extends SurfaceTopLayerFeature {
 		for (RelFace face : RelFace.getFaces()) {
 			if (face == RelFace.DOWN) continue;
 			
-			if (BlockLogicRegistry.getInstance().get(world.getBlockSfc(topBlock.add_(face.getRelVector())).getId()).isTransparent()) {
-				world.getTilesSfc(topBlock, face).addFarthest(grass);
+			if (context.pushRelative(face).logic().getBlock().isTransparent()) {
+				context.pop();
+				context.addTile(face, grass);
+			} else {
+				context.pop();
 			}
+			
 		}
 	}
 
 	@Override
-	protected boolean isSolid(SurfaceWorld world, Vec3i surfaceBlockInWorld) {
-		return BlockLogicRegistry.getInstance().get(world.getBlockSfc(surfaceBlockInWorld).getId()).isSolid(RelFace.UP);
+	protected boolean isSolid(SurfaceBlockContext context) {
+		return context.logic().getBlock().isSolid(RelFace.UP);
 	}
 
 }
