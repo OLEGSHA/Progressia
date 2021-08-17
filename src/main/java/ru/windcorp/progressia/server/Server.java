@@ -82,7 +82,8 @@ public class Server {
 		this.world = new DefaultWorldLogic(
 			world,
 			this,
-			new TestPlanetGenerator("Test:PlanetGenerator", this, new Planet(4, 9.8f, 16f, 16f))
+			new TestPlanetGenerator("Test:PlanetGenerator", this, new Planet(4, 9.8f, 16f, 16f)),
+			worldAccessor
 		);
 		this.serverThread = new ServerThread(this);
 
@@ -307,10 +308,6 @@ public class Server {
 	 */
 	public long getUptimeTicks() {
 		return this.serverThread.getTicker().getUptimeTicks();
-	}
-	
-	public WorldAccessor getWorldAccessor___really_bad_dont_use() {
-		return worldAccessor;
 	}
 
 	/**

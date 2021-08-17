@@ -88,11 +88,8 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 	}
 	
 	private void conjureTerrain(Vec3i chunkPos) {
+		getServer().getLoadManager().getChunkManager().loadChunk(chunkPos);
 		DefaultChunkData chunk = getWorldData().getChunk(chunkPos);
-		
-		if (chunk == null) {
-			chunk = getWorldData().getChunk(chunkPos);
-		}
 
 		if (chunk == null) {
 			chunk = terrainGenerator.generateTerrain(chunkPos);

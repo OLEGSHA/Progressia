@@ -33,6 +33,7 @@ import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.generation.WorldGenerator;
 import ru.windcorp.progressia.server.world.tasks.TickEntitiesTask;
+import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
 
 public class DefaultWorldLogic implements WorldLogic {
@@ -46,7 +47,7 @@ public class DefaultWorldLogic implements WorldLogic {
 
 	private final Evaluation tickEntitiesTask = new TickEntitiesTask();
 
-	public DefaultWorldLogic(DefaultWorldData data, Server server, WorldGenerator generator) {
+	public DefaultWorldLogic(DefaultWorldData data, Server server, WorldGenerator generator, WorldAccessor accessor) {
 		this.data = data;
 		this.server = server;
 		
@@ -65,7 +66,7 @@ public class DefaultWorldLogic implements WorldLogic {
 			}
 		});
 
-		data.addListener(ChunkDataListeners.createAdder(new UpdateTriggerer(server.getWorldAccessor___really_bad_dont_use())));
+		data.addListener(ChunkDataListeners.createAdder(new UpdateTriggerer(accessor)));
 	}
 
 	@Override
