@@ -97,7 +97,7 @@ public class ChunkRender
 		return data;
 	}
 
-	public synchronized void markForUpdate() {
+	public void markForUpdate() {
 		getWorld().markChunkForUpdate(getPosition());
 	}
 
