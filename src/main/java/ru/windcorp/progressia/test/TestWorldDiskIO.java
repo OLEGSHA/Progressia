@@ -21,6 +21,8 @@ package ru.windcorp.progressia.test;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -52,7 +54,7 @@ import ru.windcorp.progressia.server.Server;
 public class TestWorldDiskIO {
 
 	private static Path SAVE_DIR = Paths.get("tmp_world");
-	private static String formatFile = "world.format";
+	private static final String formatFile = "world.format";
 	private static final Logger LOG = LogManager.getLogger("TestWorldDiskIO");
 
 	private static final boolean ENABLE = true;
@@ -218,6 +220,12 @@ public class TestWorldDiskIO {
 					)
 				);
 				
+				/*if (!dosave)
+				{
+					return;
+				}
+				dosave = false;*/
+				
 				try (
 					RandomAccessFile output = new RandomAccessFile(path.toFile(), "rw")
 				) {
@@ -242,27 +250,30 @@ public class TestWorldDiskIO {
 						output.seek(shortOffset);
 						output.writeInt(offset<<8);
 						output.seek(outputLen);
-						while (output.length()<fullOffset+sectorSize*offset)
+						/*while (output.length()<fullOffset+sectorSize*offset)
 						{
-							output.write(0);
-						}
+							output.write((int) (output.length()%256));
+						}*/
+						output.setLength(fullOffset+offset*sectorSize);
 						//output.write(200);
 					}
-					output.seek((long) fullOffset+sectorSize*offset);
 					
 					//int bytestoWrite = output.readInt();
 					//output.mark(sectorSize*sectorLength);
 
-					CountingOutputStream counter = new CountingOutputStream(new BufferedOutputStream(Channels.newOutputStream(output.getChannel())));
+					//BufferedOutputStream counter = new BufferedOutputStream(Files.newOutputStream( SAVE_DIR.resolve(tempFile)));
+					ByteArrayOutputStream tempDataStream = new ByteArrayOutputStream();
 					DataOutputStream trueOutput = new DataOutputStream(
 						new DeflaterOutputStream(
-							counter
+							new BufferedOutputStream(tempDataStream)
 						)
 					);
 					// CountingOutputStream countOutput = new
 					// CountingOutputStream(trueOutput);
 	
 					//LOG.info("Before: {}",output.);
+					//trueOutput.writeBytes("uh try this");
+					//counter.
 					ChunkIO.save(chunk, trueOutput, IOContext.SAVE);
 					writeGenerationHint(chunk, trueOutput, server);
 					
@@ -270,11 +281,23 @@ public class TestWorldDiskIO {
 						counter.write(0);
 					}*/
 					
-					output.seek(shortOffset+offsetBytes);
-					LOG.info("Wrote {} bytes to {},{},{}",counter.getCount(),chunk.getPosition().x,chunk.getPosition().y,chunk.getPosition().z);
-					output.write((int) counter.getCount()/sectorSize);
+					
+					LOG.info("Wrote {} bytes to {},{},{}",trueOutput.size(),chunk.getPosition().x,chunk.getPosition().y,chunk.getPosition().z);
+					
 					
 					trueOutput.close();
+					
+					byte tempData[] = tempDataStream.toByteArray();
+					
+					output.seek((long) fullOffset+sectorSize*offset);
+					output.write(tempData);
+					
+					output.seek(shortOffset+offsetBytes);
+					output.write((int) tempData.length/sectorSize + 1);
+					LOG.info("Used {} sectors",(int) tempData.length/sectorSize + 1);
+					
+					output.close();
+					
 				}
 			}
 			// else if (currentFormat)
@@ -514,15 +537,19 @@ public class TestWorldDiskIO {
 				offset*=256;
 				offset += input.read();
 			}
-			int sectorLength = offset & 255;
-			offset = offset >> 8;
+			int sectorLength = input.read();
 			input.skipNBytes(fullOffset-shortOffset-offsetBytes-1);
 			input.skipNBytes(sectorSize*offset);
-			input.mark(sectorSize*sectorLength);
+			
+			LOG.info("Read {} sectors", sectorLength);
+			
+			byte tempData[] = input.readNBytes(sectorSize*sectorLength);
+			
 			DataInputStream trueInput = new DataInputStream(
-				new InflaterInputStream(input));
+				new InflaterInputStream(new BufferedInputStream(new ByteArrayInputStream(tempData))));
 			ChunkData chunk = ChunkIO.load(world, chunkPos, trueInput, IOContext.SAVE);
 			readGenerationHint(chunk, trueInput, server);
+			trueInput.close();
 			return chunk;
 		}
 	}
