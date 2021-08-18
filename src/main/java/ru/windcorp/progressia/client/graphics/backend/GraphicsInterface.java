@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend;
 
 import glm.vec._2.i.Vec2i;
@@ -81,11 +81,11 @@ public class GraphicsInterface {
 		}
 		GraphicsBackend.setVSyncEnabled(GraphicsBackend.isVSyncEnabled());
 	}
-	
+
 	public static boolean isMouseCaptured() {
 		return GraphicsBackend.isMouseCaptured();
 	}
-	
+
 	public static void setMouseCaptured(boolean capture) {
 		GraphicsBackend.setMouseCaptured(capture);
 	}

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client;
 
 import ru.windcorp.progressia.client.comms.localhost.LocalServerCommsChannel;
@@ -36,7 +36,7 @@ import ru.windcorp.progressia.test.TestContent;
 public class ClientState {
 
 	private static Client instance;
-	
+
 	private static boolean firstLoad;
 	private static LayerTestText layer;
 
@@ -55,7 +55,7 @@ public class ClientState {
 		LocalServerCommsChannel channel = new LocalServerCommsChannel(
 			ServerState.getInstance()
 		);
-		
+
 		firstLoad = true;
 
 		Client client = new Client(world, channel);
@@ -65,41 +65,41 @@ public class ClientState {
 		setInstance(client);
 
 		MutableString t = new MutableStringLocalized("LayerText.Load");
-		layer = new LayerTestText("Text",() -> {t.update(); return t.get();});
-		
-		ServerState.getInstance().getChunkManager().register((ChunksLoadStartListener)() -> {
-			if (firstLoad)
-			{
-				
+		layer = new LayerTestText("Text", () -> {
+			t.update();
+			return t.get();
+		});
+
+		ServerState.getInstance().getChunkManager().register((ChunksLoadStartListener) () -> {
+			if (firstLoad) {
+
 				GUI.addTopLayer(layer);
-			}});
-		
-		ServerState.getInstance().getChunkManager().register((ChunksLoadFinishListener)() -> {
-			if (firstLoad)
-			{
+			}
+		});
+
+		ServerState.getInstance().getChunkManager().register((ChunksLoadFinishListener) () -> {
+			if (firstLoad) {
 				GUI.removeLayer(layer);
-				
+
 				LayerWorld layerWorld = new LayerWorld(client);
 				LayerTestUI layerUI = new LayerTestUI();
 				LayerAbout layerAbout = new LayerAbout();
 				GUI.addBottomLayer(layerWorld);
 				GUI.addTopLayer(layerUI);
 				GUI.addTopLayer(layerAbout);
-			
+
 				firstLoad = false;
 			}
 		});
-		
+
 	}
-	
-	public static void disconnectFromLocalServer()
-	{
-		for (Layer layer : GUI.getLayers())
-		{
+
+	public static void disconnectFromLocalServer() {
+		for (Layer layer : GUI.getLayers()) {
 			GUI.removeLayer(layer);
 		}
-		
-		//ServerState.getInstance().getClientManager();
+
+		// ServerState.getInstance().getClientManager();
 	}
 
 	private ClientState() {

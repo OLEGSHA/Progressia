@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.audio.backend;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
@@ -56,7 +56,7 @@ public class SoundType extends Namespaced {
 	public void initSpeaker(Speaker speaker) {
 		speaker.setAudioData(audioBuffer);
 	}
-	
+
 	public double getDuration() {
 		return duration;
 	}

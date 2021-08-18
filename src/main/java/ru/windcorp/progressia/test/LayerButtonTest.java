@@ -39,87 +39,88 @@ import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.ServerState;
 
 public class LayerButtonTest extends MenuLayer {
-	
+
 	boolean alive = true;
 
 	public LayerButtonTest() {
 		super("ButtonTest");
-		
+
 		addTitle();
-		
+
 		Button blockableButton;
 		getContent().addChild((blockableButton = new Button("BlockableButton", "Blockable")).addAction(b -> {
 			System.out.println("Button Blockable!");
 		}));
 		blockableButton.setEnabled(false);
-		
+
 		getContent().addChild(new Checkbox("EnableButton", "Enable").addAction(b -> {
 			blockableButton.setEnabled(((Checkbox) b).isChecked());
 		}));
-		
+
 		RadioButtonGroup group = new RadioButtonGroup().addAction(g -> {
 			System.out.println("RBG! " + g.getSelected().getLabel().getCurrentText());
 		});
-		
+
 		getContent().addChild(new RadioButton("RB1", "Moon").setGroup(group));
 		getContent().addChild(new RadioButton("RB2", "Type").setGroup(group));
 		getContent().addChild(new RadioButton("RB3", "Ice").setGroup(group));
 		getContent().addChild(new RadioButton("RB4", "Cream").setGroup(group));
-		
+
 		getContent().getChild(getContent().getChildren().size() - 1).setEnabled(false);
-		
+
 		getContent().addChild(new Label("Hint", new Font().withColor(Colors.LIGHT_GRAY), "This is a MenuLayer"));
-		
+
 		getContent().addChild(new Button("Continue", "Continue").addAction(b -> {
 			getCloseAction().run();
 		}));
-		
+
 		getContent().addChild(new Button("Menu", "Back To Menu").addAction(b -> {
-			//System.exit(0);
-			//for (Layer layer : GUI.getLayers())
-			//{
-			//	GUI.removeLayer(layer);
-			//}
+			// System.exit(0);
+			// for (Layer layer : GUI.getLayers())
+			// {
+			// GUI.removeLayer(layer);
+			// }
 			getCloseAction().run();
-			
-			//ClientState.getInstance().;
-			
+
+			// ClientState.getInstance().;
+
 			Collection<Player> players = ServerState.getInstance().getPlayerManager().getPlayers();
 			players.clear();
-			
+
 			ClientState.disconnectFromLocalServer();
-			
+
 			MutableString t = new MutableStringLocalized("LayerText.Save");
-			LayerTestText layer = new LayerTestText("Text",() -> {t.update(); return t.get();});
-			
+			LayerTestText layer = new LayerTestText("Text", () -> {
+				t.update();
+				return t.get();
+			});
+
 			GUI.addTopLayer(layer);
-			
+
 			ChunkManager cm = ServerState.getInstance().getChunkManager();
 			alive = true;
-			cm.register((ChunksLoadFinishListener)() -> {
-				if (alive)
-				{
+			cm.register((ChunksLoadFinishListener) () -> {
+				if (alive) {
 					GUI.removeLayer(layer);
 					GUI.addTopLayer(new LayerTitle("Title"));
-					//cm.unregisterAll();
+					// cm.unregisterAll();
 					alive = false;
-					
-					//ServerState.getInstance().;
+
+					// ServerState.getInstance().;
 					ServerState.getInstance().shutdown("Safe Exit");
 
 					ServerState.setInstance(null);
-					
+
 					TestPlayerControls.resetInstance();
 				}
 			});
-			
-			//ClientState.getInstance();
+
+			// ClientState.getInstance();
 			ClientState.setInstance(null);
-			//ServerState.getInstance().getChunkManager().unloadAll();
-			
-			
+			// ServerState.getInstance().getChunkManager().unloadAll();
+
 		}));
-		
+
 		getContent().takeFocus();
 	}
 

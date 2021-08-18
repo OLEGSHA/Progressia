@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import static ru.windcorp.progressia.client.world.block.BlockRenderRegistry.getBlockTexture;
@@ -287,7 +287,7 @@ public class TestContent {
 			)
 		);
 		logic.register(ControlLogic.of("Test:PlaceTile", TestContent::onTilePlaceReceived));
-		
+
 		triggers.register(
 			ControlTriggers.localOf(
 				"Test:StartNextMusic",

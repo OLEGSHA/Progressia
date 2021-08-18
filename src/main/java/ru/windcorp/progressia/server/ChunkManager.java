@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
 
 import java.util.ArrayList;
@@ -79,27 +79,23 @@ public class ChunkManager {
 		}
 
 	}
-	
+
 	@FunctionalInterface
-	public interface ChunksLoadListener
-	{
+	public interface ChunksLoadListener {
 		void handle(boolean starting);
 	}
-	
+
 	@FunctionalInterface
-	private interface ChunksLoadEventListener
-	{
+	private interface ChunksLoadEventListener {
 		void handle();
 	}
-	
-	public interface ChunksLoadStartListener extends ChunksLoadEventListener
-	{
-		
+
+	public interface ChunksLoadStartListener extends ChunksLoadEventListener {
+
 	}
-	
-	public interface ChunksLoadFinishListener extends ChunksLoadEventListener
-	{
-		
+
+	public interface ChunksLoadFinishListener extends ChunksLoadEventListener {
+
 	}
 
 	private final Server server;
@@ -109,10 +105,11 @@ public class ChunkManager {
 	private final ChunkSet toLoad = ChunkSets.newHashSet();
 	private final ChunkSet toUnload = ChunkSets.newHashSet();
 
-	private Collection<ChunksLoadListener> listeners = Collections.synchronizedCollection( new ArrayList<>());
-	private Collection<ChunksLoadStartListener> startListeners = Collections.synchronizedCollection( new ArrayList<>());
-	private Collection<ChunksLoadFinishListener> finishListeners = Collections.synchronizedCollection( new ArrayList<>());
-	
+	private Collection<ChunksLoadListener> listeners = Collections.synchronizedCollection(new ArrayList<>());
+	private Collection<ChunksLoadStartListener> startListeners = Collections.synchronizedCollection(new ArrayList<>());
+	private Collection<ChunksLoadFinishListener> finishListeners = Collections
+		.synchronizedCollection(new ArrayList<>());
+
 	// TODO replace with a normal Map managed by some sort of PlayerListener,
 	// weak maps are weak
 	private final Map<Player, PlayerVision> visions = Collections.synchronizedMap(new WeakHashMap<>());
@@ -132,26 +129,22 @@ public class ChunkManager {
 		}
 	}
 
-	public void register(ChunksLoadListener cll)
-	{
+	public void register(ChunksLoadListener cll) {
 		listeners.add(cll);
 	}
-	
-	public void register(ChunksLoadStartListener clsl)
-	{
+
+	public void register(ChunksLoadStartListener clsl) {
 		startListeners.add(clsl);
 	}
-	
-	public void register(ChunksLoadFinishListener clfl)
-	{
+
+	public void register(ChunksLoadFinishListener clfl) {
 		finishListeners.add(clfl);
 	}
-	
-	public void unregisterAll()
-	{
+
+	public void unregisterAll() {
 		listeners.clear();
 	}
-	
+
 	private void gatherRequests() {
 		requested.clear();
 
@@ -177,14 +170,13 @@ public class ChunkManager {
 	}
 
 	private void processQueues() {
-		
-		if (toUnload.size()!=0 || toLoad.size()!=0)
-		{
-			LogManager.getLogger().info(String.valueOf(toUnload.size())+" "+String.valueOf( toLoad.size()));
+
+		if (toUnload.size() != 0 || toLoad.size() != 0) {
+			LogManager.getLogger().info(String.valueOf(toUnload.size()) + " " + String.valueOf(toLoad.size()));
 		}
 		listeners.forEach(l -> l.handle(false));
 		startListeners.forEach(sl -> sl.handle());
-		
+
 		toUnload.forEach(this::unloadChunk);
 		toUnload.clear();
 		toLoad.forEach(this::loadChunk);
@@ -195,7 +187,7 @@ public class ChunkManager {
 		});
 		listeners.forEach(l -> l.handle(true));
 		finishListeners.forEach(fl -> fl.handle());
-		
+
 	}
 
 	private PlayerVision getVision(Player player, boolean createIfMissing) {
@@ -236,22 +228,22 @@ public class ChunkManager {
 		TestWorldDiskIO.saveChunk(chunk, getServer());
 
 	}
-	
+
 	public void unloadAll() // dont use probably
 	{
 		WorldData world = getServer().getWorld().getData();
-		
-		//Collection<ChunkData> chunks = world.getChunks();
+
+		// Collection<ChunkData> chunks = world.getChunks();
 		Collection<Vec3i> chunkPoss = new HashSet<Vec3i>();
-		
+
 		world.forEachChunk(c -> {
 			chunkPoss.add(c.getPosition());
 		});
-		
+
 		chunkPoss.forEach(v -> {
 			ChunkData c = world.getChunk(v);
 			world.removeChunk(c);
-		
+
 			TestWorldDiskIO.saveChunk(c, getServer());
 		});
 	}

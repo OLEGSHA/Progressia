@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
 
 import java.util.concurrent.Executors;
@@ -29,7 +29,7 @@ import ru.windcorp.progressia.server.world.ticking.TickerCoordinator;
 public class ServerThread implements Runnable {
 
 	private static final ThreadLocal<Server> SERVER_THREADS_MAP = new ThreadLocal<>();
-	
+
 	private static boolean isShuttingDown;
 
 	public static Server getCurrentServer() {
@@ -73,8 +73,7 @@ public class ServerThread implements Runnable {
 	@Override
 	public void run() {
 		try {
-			if (isShuttingDown)
-			{
+			if (isShuttingDown) {
 				getTicker().stop();
 				executor.shutdown();
 				return;
@@ -87,10 +86,10 @@ public class ServerThread implements Runnable {
 	}
 
 	public void stop() {
-		
+
 		isShuttingDown = true;
 
-		//getTicker().stop();
+		// getTicker().stop();
 	}
 
 	public Server getServer() {

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.tile;
 
 import java.util.function.Consumer;
@@ -44,7 +44,7 @@ public abstract class TileRenderSurface extends TileRender implements TileOptimi
 		super(id);
 		this.texture = texture;
 	}
-	
+
 	public TileRenderSurface(String id) {
 		this(id, null);
 	}
@@ -52,23 +52,27 @@ public abstract class TileRenderSurface extends TileRender implements TileOptimi
 	public Texture getTexture(BlockFace blockFace) {
 		return texture;
 	}
-	
+
 	public Vec4 getColorMultiplier(BlockFace blockFace) {
 		return Colors.WHITE;
 	}
-	
+
 	@Override
 	public final void getFaces(
-		ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace,
+		ChunkData chunk,
+		Vec3i blockInChunk,
+		BlockFace blockFace,
 		boolean inner,
 		Consumer<Face> output,
 		Vec3 offset
 	) {
 		output.accept(createFace(chunk, blockInChunk, blockFace, inner, offset));
 	}
-	
+
 	private Face createFace(
-		ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace,
+		ChunkData chunk,
+		Vec3i blockInChunk,
+		BlockFace blockFace,
 		boolean inner,
 		Vec3 offset
 	) {
@@ -87,9 +91,9 @@ public abstract class TileRenderSurface extends TileRender implements TileOptimi
 		return new Shape(
 			Usage.STATIC,
 			WorldRenderProgram.getDefault(),
-			
+
 			createFace(chunk, blockInChunk, blockFace, false, Vectors.ZERO_3),
-			createFace(chunk, blockInChunk, blockFace, true,  Vectors.ZERO_3)
+			createFace(chunk, blockInChunk, blockFace, true, Vectors.ZERO_3)
 		);
 	}
 

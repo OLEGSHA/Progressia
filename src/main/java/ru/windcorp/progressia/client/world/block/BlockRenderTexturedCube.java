@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.block;
 
 import static ru.windcorp.progressia.common.world.block.BlockFace.*;
@@ -68,23 +68,27 @@ public abstract class BlockRenderTexturedCube
 	public Texture getTexture(BlockFace blockFace) {
 		return textures.get(blockFace);
 	}
-	
+
 	public Vec4 getColorMultiplier(BlockFace blockFace) {
 		return Colors.WHITE;
 	}
 
 	@Override
 	public final void getFaces(
-		ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace,
+		ChunkData chunk,
+		Vec3i blockInChunk,
+		BlockFace blockFace,
 		boolean inner,
 		Consumer<Face> output,
 		Vec3 offset
 	) {
 		output.accept(createFace(chunk, blockInChunk, blockFace, inner, offset));
 	}
-	
+
 	private Face createFace(
-		ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace,
+		ChunkData chunk,
+		Vec3i blockInChunk,
+		BlockFace blockFace,
 		boolean inner,
 		Vec3 offset
 	) {
@@ -101,19 +105,25 @@ public abstract class BlockRenderTexturedCube
 	@Override
 	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk) {
 		boolean opaque = isBlockOpaque();
-		
+
 		Face[] faces = new Face[BLOCK_FACE_COUNT + (opaque ? BLOCK_FACE_COUNT : 0)];
-		
+
 		for (int i = 0; i < BLOCK_FACE_COUNT; ++i) {
 			faces[i] = createFace(chunk, blockInChunk, BlockFace.getFaces().get(i), false, Vectors.ZERO_3);
 		}
-		
+
 		if (!opaque) {
 			for (int i = 0; i < BLOCK_FACE_COUNT; ++i) {
-				faces[i + BLOCK_FACE_COUNT] = createFace(chunk, blockInChunk, BlockFace.getFaces().get(i), true, Vectors.ZERO_3);
+				faces[i + BLOCK_FACE_COUNT] = createFace(
+					chunk,
+					blockInChunk,
+					BlockFace.getFaces().get(i),
+					true,
+					Vectors.ZERO_3
+				);
 			}
 		}
-		
+
 		return new Shape(Usage.STATIC, WorldRenderProgram.getDefault(), faces);
 	}
 

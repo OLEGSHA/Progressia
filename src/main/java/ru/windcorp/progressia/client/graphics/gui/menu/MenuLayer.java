@@ -41,47 +41,47 @@ public class MenuLayer extends GUILayer {
 
 	private final Component content;
 	private final Component background;
-	
+
 	private final Runnable closeAction = () -> {
 		GUI.removeLayer(this);
 	};
-	
+
 	public MenuLayer(String name, Component content) {
 		super(name, new LayoutFill(0));
-		
+
 		setCursorPolicy(CursorPolicy.REQUIRE);
-		
+
 		this.background = new Panel(name + ".Background", new LayoutAlign(10), Colors.toVector(0x66000000), null);
 		this.content = content;
-		
+
 		background.addChild(content);
 		getRoot().addChild(background);
 	}
-	
+
 	public MenuLayer(String name, Layout contentLayout) {
 		this(name, new Panel(name + ".Content", contentLayout));
 	}
-	
+
 	public MenuLayer(String name) {
 		this(name, new LayoutVertical(20, 10));
 	}
-	
+
 	public Component getContent() {
 		return content;
 	}
-	
+
 	public Component getBackground() {
 		return background;
 	}
-	
+
 	protected void addTitle() {
 		String translationKey = "Layer" + getName() + ".Title";
 		MutableString titleText = new MutableStringLocalized(translationKey);
 		Font titleFont = new Font().deriveBold().withColor(Colors.BLACK).withAlign(0.5f);
-		
+
 		Label label = new Label(getName() + ".Title", titleFont, titleText);
 		getContent().addChild(label);
-		
+
 		Panel panel = new Panel(getName() + ".Title.Underscore", null, Colors.BLUE, null);
 		panel.setLayout(new LayoutFill() {
 			@Override
@@ -91,17 +91,17 @@ public class MenuLayer extends GUILayer {
 		});
 		getContent().addChild(panel);
 	}
-	
+
 	protected Runnable getCloseAction() {
 		return closeAction;
 	}
-	
+
 	@Override
 	protected void handleInput(Input input) {
-		
+
 		if (!input.isConsumed()) {
 			InputEvent event = input.getEvent();
-			
+
 			if (event instanceof KeyEvent) {
 				KeyEvent keyEvent = (KeyEvent) event;
 				if (keyEvent.isPress() && keyEvent.getKey() == GLFW.GLFW_KEY_ESCAPE) {
@@ -109,9 +109,9 @@ public class MenuLayer extends GUILayer {
 				}
 			}
 		}
-		
+
 		super.handleInput(input);
 		input.consume();
 	}
-	
+
 }

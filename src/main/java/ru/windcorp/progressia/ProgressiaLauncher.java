@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia;
 
 import ru.windcorp.progressia.client.ClientProxy;
@@ -33,14 +33,13 @@ public class ProgressiaLauncher {
 	public static void launch(String[] args, ClientProxy inProxy) {
 		arguments = args.clone();
 		setupCrashReports();
-		
+
 		inProxy.initialize();
 		proxy = inProxy;
 		GUI.addTopLayer(new LayerTitle("Title"));
 	}
-	
-	public static void play()
-	{
+
+	public static void play() {
 		proxy.setupServer();
 	}
 

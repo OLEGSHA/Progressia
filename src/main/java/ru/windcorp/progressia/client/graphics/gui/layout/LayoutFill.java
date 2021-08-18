@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.gui.layout;
 
 import static java.lang.Math.max;
@@ -27,7 +27,7 @@ import ru.windcorp.progressia.client.graphics.gui.Layout;
 public class LayoutFill implements Layout {
 
 	private final int margin;
-	
+
 	public LayoutFill(int margin) {
 		this.margin = margin;
 	}

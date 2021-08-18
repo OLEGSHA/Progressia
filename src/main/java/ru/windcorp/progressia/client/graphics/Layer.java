@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,7 +30,7 @@ public abstract class Layer {
 	private boolean hasInitialized = false;
 
 	private final AtomicBoolean isValid = new AtomicBoolean(false);
-	
+
 	/**
 	 * Represents various requests that a {@link Layer} can make regarding the
 	 * presence of a visible cursor. The value of the highest layer that is not
@@ -53,13 +53,13 @@ public abstract class Layer {
 		 */
 		FORBID
 	}
-	
+
 	private CursorPolicy cursorPolicy = CursorPolicy.INDIFFERENT;
 
 	public Layer(String name) {
 		this.name = name;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -68,11 +68,11 @@ public abstract class Layer {
 	public String toString() {
 		return "Layer " + name;
 	}
-	
+
 	public CursorPolicy getCursorPolicy() {
 		return cursorPolicy;
 	}
-	
+
 	public void setCursorPolicy(CursorPolicy cursorPolicy) {
 		this.cursorPolicy = cursorPolicy;
 	}
@@ -115,11 +115,11 @@ public abstract class Layer {
 	protected int getHeight() {
 		return GraphicsInterface.getFrameHeight();
 	}
-	
+
 	protected void onAdded() {
 		// Do nothing
 	}
-	
+
 	protected void onRemoved() {
 		// Do nothing
 	}

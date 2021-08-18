@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
 
 import java.util.ArrayList;
@@ -72,9 +72,8 @@ public class PlayerManager {
 
 		return player;
 	}
-	
-	public void removePlayer(Player player)
-	{
+
+	public void removePlayer(Player player) {
 		players.remove(player);
 	}
 

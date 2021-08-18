@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.ticking;
 
 import java.util.ArrayList;
@@ -152,7 +152,7 @@ public class TickerCoordinator {
 	public double getTPS() {
 		return 1 / tickLength;
 	}
-	
+
 	public long getUptimeTicks() {
 		return ticks;
 	}
@@ -168,7 +168,7 @@ public class TickerCoordinator {
 
 		tickStart = System.currentTimeMillis();
 	}
-	
+
 	private void onTickEnd() {
 		ticks++;
 	}
@@ -191,7 +191,7 @@ public class TickerCoordinator {
 				logger.debug("Pass complete");
 				passes++;
 			}
-			
+
 			onTickEnd();
 
 			logger.debug("Tick complete; run {} passes", passes);

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.comms.controls;
 
 import java.util.function.BiConsumer;
@@ -142,7 +142,7 @@ public class ControlTriggers {
 			predicates
 		);
 	}
-	
+
 	//
 	//
 	///
@@ -156,7 +156,7 @@ public class ControlTriggers {
 	//
 	//
 	//
-	
+
 	public static ControlTriggerInputBased localOf(
 		String id,
 		Consumer<InputEvent> action,
@@ -239,7 +239,7 @@ public class ControlTriggers {
 	) {
 		return (inputEvent, control) -> dataWriter.accept(inputType.cast(inputEvent), control);
 	}
-	
+
 	private static <I extends InputEvent> Consumer<InputEvent> createCheckedAction(
 		Class<I> inputType,
 		Consumer<I> action

@@ -10,15 +10,15 @@ import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 
 public class LayerTestText extends GUILayer {
 	public LayerTestText(String name, Supplier<String> value) {
-		super(name, new LayoutVertical(20,10));
-		
-		//MutableString title = new MutableStringLocalized("Layer"+name+".Title");
+		super(name, new LayoutVertical(20, 10));
+
+		// MutableString title = new
+		// MutableStringLocalized("Layer"+name+".Title");
 		Font titleFont = new Font().deriveBold().withColor(Colors.BLACK).withAlign(0.5f);
-		getRoot().addChild(new Label(name+".Text", titleFont, value));
+		getRoot().addChild(new Label(name + ".Text", titleFont, value));
 	}
-	
-	public LayerTestText(String name, String value)
-	{
-		this(name,() -> value);
+
+	public LayerTestText(String name, String value) {
+		this(name, () -> value);
 	}
 }

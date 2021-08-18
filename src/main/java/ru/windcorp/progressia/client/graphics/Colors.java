@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics;
 
 import glm.vec._4.Vec4;
@@ -35,7 +35,7 @@ public class Colors {
 		DEBUG_CYAN = toVector(0xFF00FFFF),
 		DEBUG_MAGENTA = toVector(0xFFFF00FF),
 		DEBUG_YELLOW = toVector(0xFFFFFF00),
-	
+
 		LIGHT_GRAY = toVector(0xFFCBCBD0),
 		BLUE = toVector(0xFF37A2E6),
 		HOVER_BLUE = toVector(0xFFC3E4F7),

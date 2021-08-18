@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.world;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class LayerWorld extends Layer {
 		super("World");
 		this.client = client;
 		this.inputBasedControls = new InputBasedControls(client);
-		
+
 		setCursorPolicy(CursorPolicy.FORBID);
 	}
 

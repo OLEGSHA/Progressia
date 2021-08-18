@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import glm.Glm;
@@ -90,9 +90,8 @@ public class TestPlayerControls {
 
 	private LayerTestGUI debugLayer = null;
 	private Runnable updateCallback = null;
-	
-	public static void resetInstance()
-	{
+
+	public static void resetInstance() {
 		INSTANCE = new TestPlayerControls();
 	}
 
@@ -188,7 +187,7 @@ public class TestPlayerControls {
 		case GLFW.GLFW_KEY_ESCAPE:
 			if (!event.isPress())
 				return false;
-			
+
 			handleEscape();
 			break;
 

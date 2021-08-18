@@ -78,25 +78,29 @@ public class TestWorldDiskIO {
 		return loc << 1;
 	}
 
-	/*private static int intFromNat(int loc) // Possibly unused
-	{
-		if ((loc & 1) == 1)
-			return -loc >> 1;
-		return loc >> 1;
-	}*/
+	/*
+	 * private static int intFromNat(int loc) // Possibly unused
+	 * {
+	 * if ((loc & 1) == 1)
+	 * return -loc >> 1;
+	 * return loc >> 1;
+	 * }
+	 */
 
 	private static Vec3i getRegion(Vec3i chunkLoc) {
-		return new Vec3i(natFromInt(chunkLoc.x/regionSize.x), natFromInt(chunkLoc.y/regionSize.y), natFromInt(chunkLoc.z/regionSize.z));
+		return new Vec3i(
+			natFromInt(chunkLoc.x / regionSize.x),
+			natFromInt(chunkLoc.y / regionSize.y),
+			natFromInt(chunkLoc.z / regionSize.z)
+		);
 	}
-	
-	private static int mod(int a, int m)
-	{
-		return ((a%m)+m)%m;
+
+	private static int mod(int a, int m) {
+		return ((a % m) + m) % m;
 	}
-	
-	private static Vec3i getRegionLoc(Vec3i chunkLoc)
-	{
-		return new Vec3i(mod(chunkLoc.x,regionSize.x),mod(chunkLoc.y,regionSize.y),mod(chunkLoc.z,regionSize.z));
+
+	private static Vec3i getRegionLoc(Vec3i chunkLoc) {
+		return new Vec3i(mod(chunkLoc.x, regionSize.x), mod(chunkLoc.y, regionSize.y), mod(chunkLoc.z, regionSize.z));
 	}
 
 	public static void initRegions() {
@@ -129,10 +133,9 @@ public class TestWorldDiskIO {
 			break;
 		}
 	}
-	
-	private static void expand(int sectors)
-	{
-		
+
+	private static void expand(int sectors) {
+
 	}
 
 	public static void saveChunk(ChunkData chunk, Server server) {
@@ -197,20 +200,18 @@ public class TestWorldDiskIO {
 					ChunkIO.save(chunk, output, IOContext.SAVE);
 					writeGenerationHint(chunk, output, server);
 				}
-			}
-			else if (currentFormat == 65536)
-			{
+			} else if (currentFormat == 65536) {
 				LOG.debug(
 					"Saving {} {} {}",
 					chunk.getPosition().x,
 					chunk.getPosition().y,
 					chunk.getPosition().z
 				);
-				
+
 				Files.createDirectories(SAVE_DIR);
-				
+
 				Vec3i saveCoords = getRegion(chunk.getPosition());
-				
+
 				Path path = SAVE_DIR.resolve(
 					String.format(
 						"%d_%d_%d" + extension,
@@ -219,49 +220,53 @@ public class TestWorldDiskIO {
 						saveCoords.z
 					)
 				);
-				
-				/*if (!dosave)
-				{
-					return;
-				}
-				dosave = false;*/
-				
+
+				/*
+				 * if (!dosave)
+				 * {
+				 * return;
+				 * }
+				 * dosave = false;
+				 */
+
 				try (
 					RandomAccessFile output = new RandomAccessFile(path.toFile(), "rw")
 				) {
-					//LOG.debug(output.read());
-					if (output.read()<0)
-					{
+					// LOG.debug(output.read());
+					if (output.read() < 0) {
 						LOG.info("Making header");
-						output.writeChars("\0".repeat((offsetBytes+1)*chunksPerRegion));
+						output.writeChars("\0".repeat((offsetBytes + 1) * chunksPerRegion));
 					}
-					
+
 					Vec3i pos = getRegionLoc(chunk.getPosition());
-					int shortOffset = (offsetBytes+1)*(pos.z+regionSize.z*(pos.y + regionSize.y*pos.x));
-					int fullOffset = (offsetBytes+1)*(chunksPerRegion);
+					int shortOffset = (offsetBytes + 1) * (pos.z + regionSize.z * (pos.y + regionSize.y * pos.x));
+					int fullOffset = (offsetBytes + 1) * (chunksPerRegion);
 					output.seek(shortOffset);
 					int offset = output.readInt();
-					int sectorLength = offset&255;
+					int sectorLength = offset & 255;
 					offset = offset >> 8;
-					if (sectorLength == 0)
-					{
+					if (sectorLength == 0) {
 						int outputLen = (int) output.length();
-						offset = (int) (outputLen-fullOffset)/sectorSize+1;
+						offset = (int) (outputLen - fullOffset) / sectorSize + 1;
 						output.seek(shortOffset);
-						output.writeInt(offset<<8);
+						output.writeInt(offset << 8);
 						output.seek(outputLen);
-						/*while (output.length()<fullOffset+sectorSize*offset)
-						{
-							output.write((int) (output.length()%256));
-						}*/
-						output.setLength(fullOffset+offset*sectorSize);
-						//output.write(200);
+						/*
+						 * while (output.length()<fullOffset+sectorSize*offset)
+						 * {
+						 * output.write((int) (output.length()%256));
+						 * }
+						 */
+						output.setLength(fullOffset + offset * sectorSize);
+						// output.write(200);
 					}
-					
-					//int bytestoWrite = output.readInt();
-					//output.mark(sectorSize*sectorLength);
 
-					//BufferedOutputStream counter = new BufferedOutputStream(Files.newOutputStream( SAVE_DIR.resolve(tempFile)));
+					// int bytestoWrite = output.readInt();
+					// output.mark(sectorSize*sectorLength);
+
+					// BufferedOutputStream counter = new
+					// BufferedOutputStream(Files.newOutputStream(
+					// SAVE_DIR.resolve(tempFile)));
 					ByteArrayOutputStream tempDataStream = new ByteArrayOutputStream();
 					DataOutputStream trueOutput = new DataOutputStream(
 						new DeflaterOutputStream(
@@ -270,34 +275,36 @@ public class TestWorldDiskIO {
 					);
 					// CountingOutputStream countOutput = new
 					// CountingOutputStream(trueOutput);
-	
-					//LOG.info("Before: {}",output.);
-					//trueOutput.writeBytes("uh try this");
-					//counter.
+
+					// LOG.info("Before: {}",output.);
+					// trueOutput.writeBytes("uh try this");
+					// counter.
 					ChunkIO.save(chunk, trueOutput, IOContext.SAVE);
 					writeGenerationHint(chunk, trueOutput, server);
-					
-					/*while (counter.getCount()%sectorSize != 0) {
-						counter.write(0);
-					}*/
-					
-					
-					LOG.info("Wrote {} bytes to {},{},{}",trueOutput.size(),chunk.getPosition().x,chunk.getPosition().y,chunk.getPosition().z);
-					
-					
+
+					/*
+					 * while (counter.getCount()%sectorSize != 0) {
+					 * counter.write(0);
+					 * }
+					 */
+
+					// LOG.info("Wrote {} bytes to
+					// {},{},{}",trueOutput.size(),chunk.getPosition().x,chunk.getPosition().y,chunk.getPosition().z);
+
 					trueOutput.close();
-					
+
 					byte tempData[] = tempDataStream.toByteArray();
-					
-					output.seek((long) fullOffset+sectorSize*offset);
+
+					output.seek((long) fullOffset + sectorSize * offset);
 					output.write(tempData);
-					
-					output.seek(shortOffset+offsetBytes);
-					output.write((int) tempData.length/sectorSize + 1);
-					LOG.info("Used {} sectors",(int) tempData.length/sectorSize + 1);
-					
+
+					output.seek(shortOffset + offsetBytes);
+					output.write((int) tempData.length / sectorSize + 1);
+					// LOG.info("Used {} sectors",(int)
+					// tempData.length/sectorSize + 1);
+
 					output.close();
-					
+
 				}
 			}
 			// else if (currentFormat)
@@ -339,29 +346,30 @@ public class TestWorldDiskIO {
 				setRegionSize(formatNum);
 			} else {
 				setRegionSize(bestFormat);
-				
+
 				LOG.debug("Making new world with format {}", bestFormat);
 
 				BufferedWriter bw;
 				try {
 					bw = new BufferedWriter(new FileWriter(format));
-					
+
 					int bfClone = bestFormat;
-					
-					for (int i=0;i<4;i++)
-					{
-						bw.write(bfClone>>24);
-						LOG.debug(bfClone>>24);
+
+					for (int i = 0; i < 4; i++) {
+						bw.write(bfClone >> 24);
+						LOG.debug(bfClone >> 24);
 						bfClone = bfClone << 8;
 					}
 
-					/*bw.write(
-						new char[] {
-							(char) bestFormat / (256 * 256 * 256),
-							(char) (bestFormat % 256) / (256 * 256),
-							(char) (bestFormat % (256 * 256)) / (256),
-							(char) (bestFormat % (256 * 256 * 256)) }
-					);*/
+					/*
+					 * bw.write(
+					 * new char[] {
+					 * (char) bestFormat / (256 * 256 * 256),
+					 * (char) (bestFormat % 256) / (256 * 256),
+					 * (char) (bestFormat % (256 * 256)) / (256),
+					 * (char) (bestFormat % (256 * 256 * 256)) }
+					 * );
+					 */
 
 					bw.close();
 				} catch (IOException e) {
@@ -470,7 +478,7 @@ public class TestWorldDiskIO {
 					saveCoords.z
 				)
 			);
-			
+
 			if (!Files.exists(path)) {
 				LOG.debug(
 					"Not found {} {} {}",
@@ -520,33 +528,34 @@ public class TestWorldDiskIO {
 			return chunk;
 		}
 	}
-	
-	private static ChunkData loadRegion(Path path, Vec3i chunkPos, WorldData world, Server server) throws IOException, DecodingException
-	{
+
+	private static ChunkData loadRegion(Path path, Vec3i chunkPos, WorldData world, Server server)
+		throws IOException,
+		DecodingException {
 		try (
 			BufferedInputStream input = new BufferedInputStream(Files.newInputStream(path))
 		) {
-			LOG.info(path.toString());
+			// LOG.info(path.toString());
 			Vec3i pos = getRegionLoc(chunkPos);
-			int shortOffset = (offsetBytes+1)*(pos.z+regionSize.z*(pos.y + regionSize.y*pos.x));
-			int fullOffset = (offsetBytes+1)*(chunksPerRegion);
+			int shortOffset = (offsetBytes + 1) * (pos.z + regionSize.z * (pos.y + regionSize.y * pos.x));
+			int fullOffset = (offsetBytes + 1) * (chunksPerRegion);
 			input.skipNBytes(shortOffset);
 			int offset = 0;
-			for (int i=0;i<offsetBytes;i++)
-			{
-				offset*=256;
+			for (int i = 0; i < offsetBytes; i++) {
+				offset *= 256;
 				offset += input.read();
 			}
 			int sectorLength = input.read();
-			input.skipNBytes(fullOffset-shortOffset-offsetBytes-1);
-			input.skipNBytes(sectorSize*offset);
-			
-			LOG.info("Read {} sectors", sectorLength);
-			
-			byte tempData[] = input.readNBytes(sectorSize*sectorLength);
-			
+			input.skipNBytes(fullOffset - shortOffset - offsetBytes - 1);
+			input.skipNBytes(sectorSize * offset);
+
+			// LOG.info("Read {} sectors", sectorLength);
+
+			byte tempData[] = input.readNBytes(sectorSize * sectorLength);
+
 			DataInputStream trueInput = new DataInputStream(
-				new InflaterInputStream(new BufferedInputStream(new ByteArrayInputStream(tempData))));
+				new InflaterInputStream(new BufferedInputStream(new ByteArrayInputStream(tempData)))
+			);
 			ChunkData chunk = ChunkIO.load(world, chunkPos, trueInput, IOContext.SAVE);
 			readGenerationHint(chunk, trueInput, server);
 			trueInput.close();

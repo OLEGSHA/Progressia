@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.gui;
 
 import glm.mat._4.Mat4;
@@ -82,7 +82,7 @@ public class Label extends Component {
 	public Font getFont() {
 		return font;
 	}
-	
+
 	public void setFont(Font font) {
 		this.font = font;
 		requestReassembly();

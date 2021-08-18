@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics;
 
 import java.util.ArrayList;
@@ -92,33 +92,33 @@ public class GUI {
 
 	public static void render() {
 		synchronized (LAYERS) {
-			
+
 			if (!MODIFICATION_QUEUE.isEmpty()) {
 				MODIFICATION_QUEUE.forEach(action -> action.affect(LAYERS));
 				MODIFICATION_QUEUE.clear();
-				
+
 				boolean isMouseCurrentlyCaptured = GraphicsInterface.isMouseCaptured();
 				Layer.CursorPolicy policy = Layer.CursorPolicy.REQUIRE;
-				
+
 				for (Layer layer : LAYERS) {
 					Layer.CursorPolicy currentPolicy = layer.getCursorPolicy();
-					
+
 					if (currentPolicy != Layer.CursorPolicy.INDIFFERENT) {
 						policy = currentPolicy;
 						break;
 					}
 				}
-				
+
 				boolean shouldCaptureMouse = (policy == Layer.CursorPolicy.FORBID);
 				if (shouldCaptureMouse != isMouseCurrentlyCaptured) {
 					GraphicsInterface.setMouseCaptured(shouldCaptureMouse);
 				}
 			}
-			
+
 			for (int i = LAYERS.size() - 1; i >= 0; --i) {
 				LAYERS.get(i).render();
 			}
-			
+
 		}
 	}
 

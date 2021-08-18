@@ -7,5 +7,5 @@ public class EnableEvent extends ComponentEvent {
 	public EnableEvent(Component component) {
 		super(component);
 	}
-	
+
 }

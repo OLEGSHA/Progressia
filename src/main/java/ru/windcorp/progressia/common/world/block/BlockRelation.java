@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.block;
 
 import static java.lang.Math.abs;
@@ -43,7 +43,7 @@ public class BlockRelation {
 	public Vec3i getVector() {
 		return vector;
 	}
-	
+
 	public Vec3 getFloatVector() {
 		return floatVector;
 	}

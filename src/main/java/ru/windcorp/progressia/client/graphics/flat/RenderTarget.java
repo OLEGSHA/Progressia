@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.flat;
 
 import java.util.ArrayList;
@@ -189,7 +189,7 @@ public class RenderTarget {
 
 	public void addCustomRenderer(Renderable renderable) {
 		assembleCurrentClipFromFaces();
-		
+
 		float depth = this.depth--;
 		Mat4 transform = new Mat4().translate(0, 0, depth).mul(getTransform());
 		assembled.add(new Clip(maskStack, transform, renderable));

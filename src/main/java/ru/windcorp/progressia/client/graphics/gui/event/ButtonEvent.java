@@ -21,26 +21,26 @@ package ru.windcorp.progressia.client.graphics.gui.event;
 import ru.windcorp.progressia.client.graphics.gui.BasicButton;
 
 public class ButtonEvent extends ComponentEvent {
-	
+
 	public static class Press extends ButtonEvent {
 		public Press(BasicButton button) {
 			super(button, true);
 		}
 	}
-	
+
 	public static class Release extends ButtonEvent {
 		public Release(BasicButton button) {
 			super(button, false);
 		}
 	}
-	
+
 	private final boolean isPress;
 
 	protected ButtonEvent(BasicButton button, boolean isPress) {
 		super(button);
 		this.isPress = isPress;
 	}
-	
+
 	public static ButtonEvent create(BasicButton button, boolean isPress) {
 		if (isPress) {
 			return new Press(button);
@@ -56,5 +56,5 @@ public class ButtonEvent extends ComponentEvent {
 	public boolean isRelease() {
 		return !isPress;
 	}
-	
+
 }

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world;
 
 import static ru.windcorp.progressia.common.world.ChunkData.BLOCKS_PER_CHUNK;
@@ -158,7 +158,7 @@ public class Coordinates {
 
 		return output;
 	}
-	
+
 	public static boolean isOnChunkBorder(int blockInChunk) {
 		return blockInChunk == 0 || blockInChunk == BLOCKS_PER_CHUNK - 1;
 	}

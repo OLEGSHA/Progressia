@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.gui;
 
 import java.util.Collections;
@@ -66,7 +66,7 @@ public class Component extends Named {
 
 	private Object layoutHint = null;
 	private Layout layout = null;
-	
+
 	private boolean isEnabled = true;
 
 	private boolean isFocusable = false;
@@ -303,7 +303,7 @@ public class Component extends Named {
 	public boolean isFocusable() {
 		return isFocusable;
 	}
-	
+
 	/**
 	 * Checks whether this component can become focused at this moment.
 	 * <p>
@@ -460,11 +460,11 @@ public class Component extends Named {
 
 		return null;
 	}
-	
+
 	public boolean isEnabled() {
 		return isEnabled;
 	}
-	
+
 	/**
 	 * Enables or disables this component. An {@link EnableEvent} is dispatched
 	 * if the state changes.
@@ -478,7 +478,7 @@ public class Component extends Named {
 			if (isFocused() && isEnabled()) {
 				focusNext();
 			}
-			
+
 			if (isEnabled()) {
 				setHovered(false);
 			}
@@ -715,7 +715,7 @@ public class Component extends Named {
 	protected void assembleChildren(RenderTarget target) {
 		getChildren().forEach(child -> child.assemble(target));
 	}
-	
+
 	/*
 	 * Automatic Reassembly
 	 */

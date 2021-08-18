@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend;
 
 import glm.vec._2.i.Vec2i;
@@ -61,7 +61,7 @@ public class GraphicsBackend {
 	static void setOpenGLInitialized(boolean isOpenGLInitialized) {
 		GraphicsBackend.isOpenGLInitialized = isOpenGLInitialized;
 	}
-	
+
 	public static void initialize() {
 		startRenderThread();
 	}
@@ -166,7 +166,8 @@ public class GraphicsBackend {
 			0,
 			vidmode.width(),
 			vidmode.height(),
-			0);
+			0
+		);
 		isFullscreen = true;
 	}
 
@@ -179,7 +180,8 @@ public class GraphicsBackend {
 			(vidmode.height() - getFrameHeight()) / 2,
 			getFrameWidth(),
 			getFrameHeight(),
-			0);
+			0
+		);
 		isFullscreen = false;
 	}
 
@@ -192,18 +194,18 @@ public class GraphicsBackend {
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		return vidmode.refreshRate();
 	}
-	
+
 	public static boolean isMouseCaptured() {
 		return glfwGetInputMode(windowHandle, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
 	}
-	
+
 	public static void setMouseCaptured(boolean capture) {
 		int mode = capture ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL;
 		glfwSetInputMode(windowHandle, GLFW_CURSOR, mode);
-		
+
 		if (!capture) {
 			glfwSetCursorPos(windowHandle, FRAME_SIZE.x / 2.0, FRAME_SIZE.y / 2.0);
 		}
 	}
-	
+
 }

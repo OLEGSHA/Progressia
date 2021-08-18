@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.audio;
 
 import glm.vec._3.Vec3;
@@ -29,9 +29,9 @@ public class Sound {
 	protected float pitch = 1.0f;
 	protected float gain = 1.0f;
 	protected int timeLength = 0;
-	
+
 	protected SoundType soundType;
-	
+
 	public Sound(SoundType soundType) {
 		this.soundType = soundType;
 	}
@@ -39,7 +39,7 @@ public class Sound {
 	public Sound(String id) {
 		this(AudioRegistry.getInstance().get(id));
 	}
-	
+
 	public Sound(
 		String id,
 		int timeLength,
@@ -54,7 +54,7 @@ public class Sound {
 		this.pitch = pitch;
 		this.gain = gain;
 	}
-	
+
 	public Sound(
 		SoundType soundType,
 		int timeLength,
@@ -69,7 +69,7 @@ public class Sound {
 		this.pitch = pitch;
 		this.gain = gain;
 	}
-	
+
 	protected Speaker initSpeaker() {
 		return AudioManager.initSpeaker(soundType);
 	}
@@ -119,7 +119,7 @@ public class Sound {
 	public float getPitch() {
 		return pitch;
 	}
-	
+
 	public double getDuration() {
 		return soundType.getDuration();
 	}

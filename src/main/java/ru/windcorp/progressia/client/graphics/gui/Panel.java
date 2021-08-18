@@ -30,43 +30,43 @@ public class Panel extends Group {
 
 	public Panel(String name, Layout layout, Vec4 fill, Vec4 border) {
 		super(name, layout);
-		
+
 		this.fill = Objects.requireNonNull(fill, "fill");
 		this.border = border;
 	}
-	
+
 	public Panel(String name, Layout layout) {
 		this(name, layout, Colors.WHITE, Colors.LIGHT_GRAY);
 	}
-	
+
 	/**
 	 * @return the fill
 	 */
 	public Vec4 getFill() {
 		return fill;
 	}
-	
+
 	/**
 	 * @param fill the fill to set
 	 */
 	public void setFill(Vec4 fill) {
 		this.fill = Objects.requireNonNull(fill, "fill");
 	}
-	
+
 	/**
 	 * @return the border
 	 */
 	public Vec4 getBorder() {
 		return border;
 	}
-	
+
 	/**
 	 * @param border the border to set
 	 */
 	public void setBorder(Vec4 border) {
 		this.border = border;
 	}
-	
+
 	@Override
 	protected void assembleSelf(RenderTarget target) {
 		if (border == null) {
