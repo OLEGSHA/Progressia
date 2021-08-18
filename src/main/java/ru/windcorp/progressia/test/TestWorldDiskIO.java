@@ -34,6 +34,7 @@ import java.nio.channels.Channels;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
@@ -41,10 +42,9 @@ import java.util.zip.InflaterInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.common.io.CountingOutputStream;
-
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.state.IOContext;
+import ru.windcorp.progressia.common.util.HashableVec3i;
 import ru.windcorp.progressia.common.world.ChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.WorldData;
@@ -56,7 +56,8 @@ public class TestWorldDiskIO {
 	private static Path SAVE_DIR = Paths.get("tmp_world");
 	private static final String formatFile = "world.format";
 	private static final Logger LOG = LogManager.getLogger("TestWorldDiskIO");
-
+	
+	private static HashMap<HashableVec3i, RandomAccessFile> randomAccessMap;
 	private static final boolean ENABLE = true;
 
 	private static int maxSize = 1048576;
@@ -116,6 +117,7 @@ public class TestWorldDiskIO {
 	}
 
 	private static void setRegionSize(int format) {
+		randomAccessMap = new HashMap<HashableVec3i, RandomAccessFile>();
 		switch (format) {
 		case 0:
 		case 1:
@@ -134,9 +136,9 @@ public class TestWorldDiskIO {
 		}
 	}
 
-	private static void expand(int sectors) {
+	/*private static void expand(int sectors) {
 
-	}
+	}*/
 
 	public static void saveChunk(ChunkData chunk, Server server) {
 		if (!ENABLE)
@@ -229,9 +231,13 @@ public class TestWorldDiskIO {
 				 * dosave = false;
 				 */
 
-				try (
-					RandomAccessFile output = new RandomAccessFile(path.toFile(), "rw")
-				) {
+				
+					RandomAccessFile output = randomAccessMap.get(new HashableVec3i(saveCoords));
+					if (output == null)
+					{
+						output = new RandomAccessFile(path.toFile(), "rw");
+						randomAccessMap.put(new HashableVec3i(saveCoords), output);
+					}
 					// LOG.debug(output.read());
 					if (output.read() < 0) {
 						LOG.info("Making header");
@@ -303,9 +309,6 @@ public class TestWorldDiskIO {
 					// LOG.info("Used {} sectors",(int)
 					// tempData.length/sectorSize + 1);
 
-					output.close();
-
-				}
 			}
 			// else if (currentFormat)
 		} catch (IOException e) {
@@ -532,35 +535,40 @@ public class TestWorldDiskIO {
 	private static ChunkData loadRegion(Path path, Vec3i chunkPos, WorldData world, Server server)
 		throws IOException,
 		DecodingException {
-		try (
-			BufferedInputStream input = new BufferedInputStream(Files.newInputStream(path))
-		) {
+			Vec3i streamCoords = getRegion(chunkPos);
+			
+			RandomAccessFile input = randomAccessMap.get(new HashableVec3i(streamCoords));
+			if (input == null)
+			{
+				input = new RandomAccessFile(path.toFile(), "rw");
+				randomAccessMap.put(new HashableVec3i(streamCoords), input);
+			}
+
 			// LOG.info(path.toString());
 			Vec3i pos = getRegionLoc(chunkPos);
+			
 			int shortOffset = (offsetBytes + 1) * (pos.z + regionSize.z * (pos.y + regionSize.y * pos.x));
 			int fullOffset = (offsetBytes + 1) * (chunksPerRegion);
-			input.skipNBytes(shortOffset);
+			input.seek(shortOffset);
 			int offset = 0;
 			for (int i = 0; i < offsetBytes; i++) {
 				offset *= 256;
 				offset += input.read();
 			}
 			int sectorLength = input.read();
-			input.skipNBytes(fullOffset - shortOffset - offsetBytes - 1);
-			input.skipNBytes(sectorSize * offset);
+			input.seek(fullOffset + sectorSize * offset);
 
 			// LOG.info("Read {} sectors", sectorLength);
 
-			byte tempData[] = input.readNBytes(sectorSize * sectorLength);
+			byte tempData[] = new byte[sectorSize * sectorLength];
+			input.read(tempData);
 
 			DataInputStream trueInput = new DataInputStream(
 				new InflaterInputStream(new BufferedInputStream(new ByteArrayInputStream(tempData)))
 			);
 			ChunkData chunk = ChunkIO.load(world, chunkPos, trueInput, IOContext.SAVE);
 			readGenerationHint(chunk, trueInput, server);
-			trueInput.close();
 			return chunk;
-		}
 	}
 
 	private static void readGenerationHint(ChunkData chunk, DataInputStream input, Server server)

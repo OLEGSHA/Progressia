@@ -22,7 +22,6 @@ import java.util.Collection;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.GUI;
-import ru.windcorp.progressia.client.graphics.Layer;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.Button;
 import ru.windcorp.progressia.client.graphics.gui.Checkbox;
@@ -34,7 +33,6 @@ import ru.windcorp.progressia.client.localization.MutableString;
 import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 import ru.windcorp.progressia.server.ChunkManager;
 import ru.windcorp.progressia.server.ChunkManager.ChunksLoadFinishListener;
-import ru.windcorp.progressia.server.ChunkManager.ChunksLoadListener;
 import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.ServerState;
 

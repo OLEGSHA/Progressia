@@ -26,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.server.world.ticking.TickerCoordinator;
 
+@SuppressWarnings("unused")
 public class ServerThread implements Runnable {
 
 	private static final ThreadLocal<Server> SERVER_THREADS_MAP = new ThreadLocal<>();

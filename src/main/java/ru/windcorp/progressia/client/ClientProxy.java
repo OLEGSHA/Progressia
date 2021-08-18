@@ -33,7 +33,6 @@ import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.server.ServerState;
 import ru.windcorp.progressia.test.TestContent;
 import ru.windcorp.progressia.test.TestMusicPlayer;
-import ru.windcorp.progressia.test.TestPlayerControls;
 
 public class ClientProxy implements Proxy {
 
