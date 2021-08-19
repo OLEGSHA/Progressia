@@ -20,7 +20,16 @@ public class HashableVec3i {
 	@Override
 	public boolean equals(Object comparee)
 	{
-		return hashCode() == comparee.hashCode();
+		if (comparee == null)
+		{
+			return false;
+		}
+		if (comparee.getClass() != HashableVec3i.class)
+		{
+			return false;
+		}
+		HashableVec3i compareeCast = (HashableVec3i) comparee;
+		return compareeCast.value == value;
 	}
 	
 }

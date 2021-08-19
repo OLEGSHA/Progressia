@@ -25,12 +25,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.channels.Channels;
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,7 +60,7 @@ public class TestWorldDiskIO {
 	private static final String formatFile = "world.format";
 	private static final Logger LOG = LogManager.getLogger("TestWorldDiskIO");
 	
-	private static HashMap<HashableVec3i, RandomAccessFile> randomAccessMap;
+	private static HashMap<HashableVec3i, MappedByteBuffer> mappedByteMap;
 	private static final boolean ENABLE = true;
 
 	private static int maxSize = 1048576;
@@ -75,8 +78,8 @@ public class TestWorldDiskIO {
 
 	private static int natFromInt(int loc) {
 		if (loc < 0)
-			return (-loc) << 1 + 1;
-		return loc << 1;
+			return -2*loc - 1;
+		return 2*loc;
 	}
 
 	/*
@@ -89,10 +92,40 @@ public class TestWorldDiskIO {
 	 */
 
 	private static Vec3i getRegion(Vec3i chunkLoc) {
+		int x = chunkLoc.x;
+		if (x<0)
+		{
+			x /= regionSize.x;
+			x--;
+		}
+		else
+		{
+			x /= regionSize.x;
+		}
+		int y = chunkLoc.y;
+		if (y<0)
+		{
+			y /= regionSize.y;
+			y--;
+		}
+		else
+		{
+			y /= regionSize.y;
+		}
+		int z = chunkLoc.z;
+		if (z<0)
+		{
+			z /= regionSize.z;
+			z--;
+		}
+		else
+		{
+			z /= regionSize.z;
+		}
 		return new Vec3i(
-			natFromInt(chunkLoc.x / regionSize.x),
-			natFromInt(chunkLoc.y / regionSize.y),
-			natFromInt(chunkLoc.z / regionSize.z)
+			natFromInt(x),
+			natFromInt(y),
+			natFromInt(z)
 		);
 	}
 
@@ -115,9 +148,19 @@ public class TestWorldDiskIO {
 
 		// regions.put(new Vec3i(0,0,0), new Vec3i(1,1,1));
 	}
+	
+	public static int getAvailableSector(MappedByteBuffer mbb)
+	{
+		int sectorsUsed = 0;
+		for (int i=offsetBytes; i<(offsetBytes+1)*chunksPerRegion; i+= (offsetBytes+1))
+		{
+			sectorsUsed += mbb.get(i);
+		}
+		return sectorsUsed;
+	}
 
 	private static void setRegionSize(int format) {
-		randomAccessMap = new HashMap<HashableVec3i, RandomAccessFile>();
+		mappedByteMap = new HashMap<HashableVec3i, MappedByteBuffer>();
 		switch (format) {
 		case 0:
 		case 1:
@@ -232,38 +275,54 @@ public class TestWorldDiskIO {
 				 */
 
 				
-					RandomAccessFile output = randomAccessMap.get(new HashableVec3i(saveCoords));
+					MappedByteBuffer output = mappedByteMap.get(new HashableVec3i(saveCoords));
+					LOG.info("saveCoords {},{},{}", saveCoords.x, saveCoords.y, saveCoords.z);
 					if (output == null)
 					{
-						output = new RandomAccessFile(path.toFile(), "rw");
-						randomAccessMap.put(new HashableVec3i(saveCoords), output);
+						output = makeNew(path, new HashableVec3i(saveCoords));
 					}
 					// LOG.debug(output.read());
-					if (output.read() < 0) {
+					if (output.get() < 0) {
 						LOG.info("Making header");
-						output.writeChars("\0".repeat((offsetBytes + 1) * chunksPerRegion));
+						ByteBuffer headerBytes = ByteBuffer.allocate((offsetBytes + 1) * chunksPerRegion);
+						for (int i=0;i<(offsetBytes + 1) * chunksPerRegion;i++)
+						{
+							headerBytes.put(i, (byte) 0);
+						}
+						output.put(headerBytes);
 					}
 
 					Vec3i pos = getRegionLoc(chunk.getPosition());
 					int shortOffset = (offsetBytes + 1) * (pos.z + regionSize.z * (pos.y + regionSize.y * pos.x));
 					int fullOffset = (offsetBytes + 1) * (chunksPerRegion);
-					output.seek(shortOffset);
-					int offset = output.readInt();
-					int sectorLength = offset & 255;
-					offset = offset >> 8;
+					output.position(shortOffset);
+					int offset = 0;
+					for (int i = 0; i < offsetBytes; i++) {
+						offset *= 256;
+						offset += output.get();
+					}
+					ByteBuffer readOffset = ByteBuffer.allocate(offsetBytes);
+					int sectorLength = output.get();
 					if (sectorLength == 0) {
-						int outputLen = (int) output.length();
-						offset = (int) (outputLen - fullOffset) / sectorSize + 1;
-						output.seek(shortOffset);
-						output.writeInt(offset << 8);
-						output.seek(outputLen);
-						/*
-						 * while (output.length()<fullOffset+sectorSize*offset)
-						 * {
-						 * output.write((int) (output.length()%256));
-						 * }
-						 */
-						output.setLength(fullOffset + offset * sectorSize);
+						//int outputLen = (int) output.size();
+						//offset = (int) (outputLen - fullOffset) / sectorSize + 1;
+						offset = getAvailableSector(output);
+						output.position(shortOffset);
+						
+						//readInt.putInt(offset<<8);
+						for (int i=0;i<offsetBytes;i++)
+						{
+							readOffset.put(offsetBytes-i-1, (byte) (offset<<8));
+						}
+						output.put(readOffset);
+						/*output.position(outputLen);
+						
+						while (output.size()<fullOffset+sectorSize*offset)
+						{
+							output.write(ByteBuffer.wrap( new byte[]{0} ));
+						}*/
+						 
+						//output.setLength(fullOffset + offset * sectorSize);
 						// output.write(200);
 					}
 
@@ -301,11 +360,11 @@ public class TestWorldDiskIO {
 
 					byte tempData[] = tempDataStream.toByteArray();
 
-					output.seek((long) fullOffset + sectorSize * offset);
-					output.write(tempData);
+					output.position( fullOffset + sectorSize * offset);
+					output.put(ByteBuffer.wrap( tempData));
 
-					output.seek(shortOffset + offsetBytes);
-					output.write((int) tempData.length / sectorSize + 1);
+					output.position(shortOffset + offsetBytes);
+					output.put(ByteBuffer.wrap( new byte[] {(byte) (tempData.length / sectorSize + 1)}));
 					// LOG.info("Used {} sectors",(int)
 					// tempData.length/sectorSize + 1);
 
@@ -314,6 +373,23 @@ public class TestWorldDiskIO {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static MappedByteBuffer makeNew(Path path, Object hashObj) {
+		try
+		{
+		RandomAccessFile raf = new RandomAccessFile(path.toFile(), "rw");
+		FileChannel fc = raf.getChannel();
+		MappedByteBuffer output = fc.map(FileChannel.MapMode.READ_WRITE, 0, maxSize*chunksPerRegion);
+		output.limit(maxSize*chunksPerRegion);
+		mappedByteMap.put((HashableVec3i) hashObj, output);
+		return output;
+		}
+		catch (IOException e)
+		{
+			LOG.warn("bad things");
+		}
+		return null;
 	}
 
 	private static void writeGenerationHint(ChunkData chunk, DataOutputStream output, Server server)
@@ -535,13 +611,17 @@ public class TestWorldDiskIO {
 	private static ChunkData loadRegion(Path path, Vec3i chunkPos, WorldData world, Server server)
 		throws IOException,
 		DecodingException {
+		try
+		{
 			Vec3i streamCoords = getRegion(chunkPos);
 			
-			RandomAccessFile input = randomAccessMap.get(new HashableVec3i(streamCoords));
+			MappedByteBuffer input = mappedByteMap.get(new HashableVec3i(streamCoords));
+			LOG.info("streamCoords {},{},{}", streamCoords.x,streamCoords.y,streamCoords.z);
 			if (input == null)
 			{
-				input = new RandomAccessFile(path.toFile(), "rw");
-				randomAccessMap.put(new HashableVec3i(streamCoords), input);
+				//input = new RandomAccessFile(path.toFile(), "rw");
+				//input = Files.newByteChannel(path);
+				input = makeNew(path, new HashableVec3i(streamCoords));
 			}
 
 			// LOG.info(path.toString());
@@ -549,19 +629,19 @@ public class TestWorldDiskIO {
 			
 			int shortOffset = (offsetBytes + 1) * (pos.z + regionSize.z * (pos.y + regionSize.y * pos.x));
 			int fullOffset = (offsetBytes + 1) * (chunksPerRegion);
-			input.seek(shortOffset);
+			input.position(shortOffset);
 			int offset = 0;
 			for (int i = 0; i < offsetBytes; i++) {
 				offset *= 256;
-				offset += input.read();
+				offset += input.get();
 			}
-			int sectorLength = input.read();
-			input.seek(fullOffset + sectorSize * offset);
+			int sectorLength = input.get();
+			input.position(fullOffset + sectorSize * offset);
 
 			// LOG.info("Read {} sectors", sectorLength);
 
 			byte tempData[] = new byte[sectorSize * sectorLength];
-			input.read(tempData);
+			input.get(tempData);
 
 			DataInputStream trueInput = new DataInputStream(
 				new InflaterInputStream(new BufferedInputStream(new ByteArrayInputStream(tempData)))
@@ -569,6 +649,13 @@ public class TestWorldDiskIO {
 			ChunkData chunk = ChunkIO.load(world, chunkPos, trueInput, IOContext.SAVE);
 			readGenerationHint(chunk, trueInput, server);
 			return chunk;
+		}
+		catch (EOFException e)
+		{
+			LOG.warn("Reached end of file");
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private static void readGenerationHint(ChunkData chunk, DataInputStream input, Server server)
