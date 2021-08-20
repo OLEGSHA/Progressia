@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.surface.context;
+package ru.windcorp.progressia.server.world.generation.surface.context;
 
 import ru.windcorp.progressia.server.world.context.ServerTileStackContext;
 

@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.surface;
+package ru.windcorp.progressia.server.world.generation.surface;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 import glm.Glm;
@@ -27,15 +27,15 @@ import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.context.ServerTileContext;
-import ru.windcorp.progressia.test.gen.surface.context.SurfaceContextImpl;
+import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceContextImpl;
 
 public class SurfaceFeatureGenerator {
 	
 	private final Surface surface;
 	
-	private final Collection<SurfaceFeature> features; // TODO make ordered
+	private final List<SurfaceFeature> features;
 	
-	public SurfaceFeatureGenerator(Surface surface, Collection<SurfaceFeature> features) {
+	public SurfaceFeatureGenerator(Surface surface, List<SurfaceFeature> features) {
 		this.surface = surface;
 		this.features = new ArrayList<>(features);
 	}

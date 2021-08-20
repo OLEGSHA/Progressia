@@ -15,10 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.surface;
+package ru.windcorp.progressia.server.world.generation.surface;
+
+import java.util.List;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.test.gen.surface.context.SurfaceWorldContext;
+import ru.windcorp.progressia.server.world.context.ServerContext;
+import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceWorldContext;
 
 public abstract class SurfaceFeature extends Namespaced {
 
@@ -27,5 +30,17 @@ public abstract class SurfaceFeature extends Namespaced {
 	}
 
 	public abstract void process(SurfaceWorldContext context);
+	
+	protected static double randomDouble(ServerContext context, double from, double to) {
+		return from + (to - from) * context.getRandom().nextDouble();
+	}
+	
+	protected static double stretch(double t, double from, double to) {
+		return from + (to - from) * t;
+	}
+	
+	protected static <T> T pickRandom(ServerContext context, List<T> from) {
+		return from.get(context.getRandom().nextInt(from.size()));
+	}
 
 }

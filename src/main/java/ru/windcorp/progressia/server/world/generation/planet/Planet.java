@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.planet;
+package ru.windcorp.progressia.server.world.generation.planet;
 
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 
@@ -23,7 +23,7 @@ public class Planet {
 	
 	private final int radiusInChunks;
 	
-	private final TestPlanetGravityModel.Settings gravityModelSettings;
+	private final PlanetGravityModel.Settings gravityModelSettings;
 	
 	public Planet(
 		int radiusInChunks,
@@ -32,7 +32,7 @@ public class Planet {
 		float innerGravityRadius
 	) {
 		this.radiusInChunks = radiusInChunks;
-		this.gravityModelSettings = new TestPlanetGravityModel.Settings(
+		this.gravityModelSettings = new PlanetGravityModel.Settings(
 			surfaceGravitationalAcceleration,
 			curvature,
 			innerGravityRadius
@@ -82,7 +82,7 @@ public class Planet {
 	/**
 	 * @return the gravityModelSettings
 	 */
-	public TestPlanetGravityModel.Settings getGravityModelSettings() {
+	public PlanetGravityModel.Settings getGravityModelSettings() {
 		return gravityModelSettings;
 	}
 

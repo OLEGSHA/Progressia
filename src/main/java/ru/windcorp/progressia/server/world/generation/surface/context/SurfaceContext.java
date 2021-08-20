@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.surface.context;
+package ru.windcorp.progressia.server.world.generation.surface.context;
 
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
-import ru.windcorp.progressia.test.gen.surface.Surface;
+import ru.windcorp.progressia.server.world.generation.surface.Surface;
 
 public interface SurfaceContext {
 

@@ -15,16 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen;
+package ru.windcorp.progressia.server.world.generation.surface;
 
 import java.util.Random;
 
-import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.block.BlockData;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 @FunctionalInterface
 public interface TerrainLayer {
 
-	BlockData get(float north, float west, float depth, Random random, DefaultChunkData chunk);
+	BlockData get(AbsFace face, float north, float west, float depth, Random random);
 	
 }

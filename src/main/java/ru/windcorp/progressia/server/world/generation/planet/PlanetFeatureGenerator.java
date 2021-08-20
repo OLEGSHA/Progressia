@@ -15,10 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.planet;
+package ru.windcorp.progressia.server.world.generation.planet;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import glm.vec._3.i.Vec3i;
@@ -26,26 +25,18 @@ import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.test.TestBushFeature;
-import ru.windcorp.progressia.test.TestGrassFeature;
-import ru.windcorp.progressia.test.TestTreeFeature;
-import ru.windcorp.progressia.test.gen.surface.Surface;
-import ru.windcorp.progressia.test.gen.surface.SurfaceFeature;
-import ru.windcorp.progressia.test.gen.surface.SurfaceFeatureGenerator;
+import ru.windcorp.progressia.server.world.generation.surface.Surface;
+import ru.windcorp.progressia.server.world.generation.surface.SurfaceFeature;
+import ru.windcorp.progressia.server.world.generation.surface.SurfaceFeatureGenerator;
 
 public class PlanetFeatureGenerator {
 
-	private final TestPlanetGenerator parent;
+	private final PlanetGenerator parent;
 	
 	private final Map<AbsFace, SurfaceFeatureGenerator> surfaceGenerators;
 
-	public PlanetFeatureGenerator(TestPlanetGenerator generator) {
+	public PlanetFeatureGenerator(PlanetGenerator generator, List<SurfaceFeature> features) {
 		this.parent = generator;
-
-		Collection<SurfaceFeature> features = new ArrayList<>();
-		features.add(new TestBushFeature("Test:BushFeature"));
-		features.add(new TestTreeFeature("Test:TreeFeature"));
-		features.add(new TestGrassFeature("Test:GrassFeature"));
 		
 		int seaLevel = (int) parent.getPlanet().getRadius();
 		this.surfaceGenerators = AbsFace.mapToFaces(face -> new SurfaceFeatureGenerator(
@@ -54,7 +45,7 @@ public class PlanetFeatureGenerator {
 		));
 	}
 
-	public TestPlanetGenerator getGenerator() {
+	public PlanetGenerator getGenerator() {
 		return parent;
 	}
 

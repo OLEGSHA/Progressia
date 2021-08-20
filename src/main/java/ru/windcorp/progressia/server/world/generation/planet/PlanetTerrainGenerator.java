@@ -15,11 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.planet;
+package ru.windcorp.progressia.server.world.generation.planet;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.ArrayFloatRangeMap;
 import ru.windcorp.progressia.common.util.FloatRangeMap;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
@@ -27,37 +26,22 @@ import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.generic.GenericChunks;
-import ru.windcorp.progressia.test.gen.TerrainLayer;
-import ru.windcorp.progressia.test.gen.surface.SurfaceFloatField;
-import ru.windcorp.progressia.test.gen.surface.SurfaceTerrainGenerator;
+import ru.windcorp.progressia.server.world.generation.surface.SurfaceFloatField;
+import ru.windcorp.progressia.server.world.generation.surface.SurfaceTerrainGenerator;
+import ru.windcorp.progressia.server.world.generation.surface.TerrainLayer;
 
 class PlanetTerrainGenerator {
 
-	private final TestPlanetGenerator parent;
+	private final PlanetGenerator parent;
 	private final SurfaceTerrainGenerator surfaceGenerator;
 
-	public PlanetTerrainGenerator(TestPlanetGenerator generator) {
+	public PlanetTerrainGenerator(PlanetGenerator generator, SurfaceFloatField heightMap, FloatRangeMap<TerrainLayer> layers) {
 		this.parent = generator;
-
-		SurfaceFloatField heightMap = new TestHeightMap(
-			generator.getPlanet().getRadius() - DefaultChunkData.BLOCKS_PER_CHUNK,
-			generator.getPlanet().getRadius() / 4,
-			5,
-			6
-		);
-
-		FloatRangeMap<TerrainLayer> layers = new ArrayFloatRangeMap<>();
-		BlockData granite = BlockDataRegistry.getInstance().get("Test:GraniteMonolith");
-		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
-		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
-		layers.put(Float.NEGATIVE_INFINITY, 0, (n, w, d, r, c) -> air);
-		layers.put(0, 4, (n, w, d, r, c) -> dirt);
-		layers.put(4, Float.POSITIVE_INFINITY, (n, w, d, r, c) -> granite);
-
-		this.surfaceGenerator = new SurfaceTerrainGenerator((f, n, w) -> heightMap.get(f, n, w) + generator.getPlanet().getRadius(), layers);
+		SurfaceFloatField adjustedHeightMap = (f, n, w) -> heightMap.get(f, n, w) + generator.getPlanet().getRadius();
+		this.surfaceGenerator = new SurfaceTerrainGenerator(adjustedHeightMap, layers);
 	}
 
-	public TestPlanetGenerator getGenerator() {
+	public PlanetGenerator getGenerator() {
 		return parent;
 	}
 
@@ -69,7 +53,7 @@ class PlanetTerrainGenerator {
 		} else {
 			generateBorderTerrain(chunk);
 		}
-		
+
 		chunk.setGenerationHint(false);
 
 		return chunk;
@@ -87,24 +71,24 @@ class PlanetTerrainGenerator {
 	private void generateBorderTerrain(DefaultChunkData chunk) {
 		BlockData stone = BlockDataRegistry.getInstance().get("Test:Stone");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
-		
+
 		float radius = parent.getPlanet().getRadius();
 
 		Vec3 biw = new Vec3();
-		
+
 		GenericChunks.forEachBiC(bic -> {
-			
+
 			biw.set(
 				Coordinates.getInWorld(chunk.getX(), bic.x),
 				Coordinates.getInWorld(chunk.getY(), bic.y),
 				Coordinates.getInWorld(chunk.getZ(), bic.z)
 			);
-			
+
 			biw.sub(DefaultChunkData.CHUNK_RADIUS - 0.5f);
 			VectorUtil.sortAfterAbs(biw, biw);
-			
+
 			chunk.setBlock(bic, biw.x <= radius ? stone : air, false);
-			
+
 		});
 	}
 

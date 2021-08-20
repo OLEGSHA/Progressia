@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.surface;
+package ru.windcorp.progressia.server.world.generation.surface;
 
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.test.gen.surface.context.SurfaceBlockContext;
-import ru.windcorp.progressia.test.gen.surface.context.SurfaceWorldContext;
+import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceBlockContext;
+import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceWorldContext;
 
 public abstract class SurfaceTopLayerFeature extends SurfaceFeature {
 

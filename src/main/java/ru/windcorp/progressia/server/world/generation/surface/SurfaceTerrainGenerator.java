@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.surface;
+package ru.windcorp.progressia.server.world.generation.surface;
 
 import java.util.Random;
 
@@ -26,7 +26,6 @@ import ru.windcorp.progressia.common.util.FloatRangeMap;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.rels.AxisRotations;
-import ru.windcorp.progressia.test.gen.TerrainLayer;
 
 public class SurfaceTerrainGenerator {
 	
@@ -44,7 +43,7 @@ public class SurfaceTerrainGenerator {
 		
 		Vec3 offset = new Vec3(chunk.getMinX(), chunk.getMinY(), chunk.getMinZ());
 		AxisRotations.relativize(offset, chunk.getUp(), offset);
-		offset.sub(DefaultChunkData.CHUNK_RADIUS - 0.5f);
+		offset.z -= DefaultChunkData.CHUNK_RADIUS - 0.5f;
 		
 		Random random = new Random(CoordinatePacker.pack3IntsIntoLong(chunk.getPosition()) /* ^ seed*/);
 		
@@ -65,7 +64,7 @@ public class SurfaceTerrainGenerator {
 		
 		for (relBIC.z = 0; relBIC.z < DefaultChunkData.BLOCKS_PER_CHUNK; ++relBIC.z) {
 			float depth = relSurface - relBIC.z;
-			BlockData block = layers.get(depth).get(north, west, depth, random, chunk);
+			BlockData block = layers.get(depth).get(chunk.getUp(), north, west, depth, random);
 			
 			chunk.resolve(relBIC, relBIC);
 			chunk.setBlock(relBIC, block, false);

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.planet;
+package ru.windcorp.progressia.server.world.generation.planet;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
@@ -30,7 +30,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class TestPlanetGravityModel extends GravityModel {
+public class PlanetGravityModel extends GravityModel {
 	
 	public static class Settings {
 		public float surfaceGravitationalAcceleration;
@@ -66,7 +66,7 @@ public class TestPlanetGravityModel extends GravityModel {
 	
 	private Settings settings = new Settings();
 
-	public TestPlanetGravityModel(String id) {
+	public PlanetGravityModel(String id) {
 		super(id);
 	}
 
@@ -90,7 +90,6 @@ public class TestPlanetGravityModel extends GravityModel {
 	protected void doGetGravity(Vec3 pos, Vec3 output) {
 		float r = getInnerRadius();
 		float c = getCurvature();
-		float g = getSurfaceGravitationalAcceleration();
 		
 		// Change to a CS where (0;0;0) is the center of the center chunk
 		float px = pos.x - DefaultChunkData.CHUNK_RADIUS + 0.5f;
@@ -142,14 +141,14 @@ public class TestPlanetGravityModel extends GravityModel {
 			assert output.dot(output) == 1 : "maxAbs - midAbs = " + maxAbs + " - " + midAbs + " > " + c + " yet l*l != 1";
 		}
 		
-		output.mul(-g);
+		output.mul(-getSurfaceGravitationalAcceleration());
 	}
 
 	private void computeEdgeGravity(float lx, float ly, float lz, float rx, float ry, float rz, Vec3 output) {
 		// da math is gud, no worry
 		//  - Javapony
 		
-		float r = getInnerRadius();
+		float c = getCurvature();
 		
 		if (lx == 0) rx = 0;
 		if (ly == 0) ry = 0;
@@ -159,10 +158,10 @@ public class TestPlanetGravityModel extends GravityModel {
 		float rSquared = rx*rx + ry*ry + rz*rz;
 		
 		float distanceAlongEdge = scalarProduct - (float) sqrt(
-			scalarProduct*scalarProduct - rSquared + r*r
+			scalarProduct*scalarProduct - rSquared + c*c
 		);
 		
-		output.set(lx, ly, lz).mul(-distanceAlongEdge).add(rx, ry, rz).div(r);
+		output.set(lx, ly, lz).mul(-distanceAlongEdge).add(rx, ry, rz).div(c);
 		
 		final float f = (float) sqrt(3.0/2);
 		

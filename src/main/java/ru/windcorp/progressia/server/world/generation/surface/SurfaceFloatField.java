@@ -15,13 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.surface;
+package ru.windcorp.progressia.server.world.generation.surface;
 
+import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceBlockContext;
 
 @FunctionalInterface
 public interface SurfaceFloatField {
 	
-	float get(AbsFace face, float north, float west);
+	float get(AbsFace face, float x, float y);
+	
+	default float get(SurfaceBlockContext context) {
+		Vec3i location = context.getLocation();
+		return get(context.getSurface().getUp(), location.x, location.y);
+	}
 
 }

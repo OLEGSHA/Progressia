@@ -15,49 +15,61 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen.planet;
+package ru.windcorp.progressia.server.world.generation.planet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.util.FloatRangeMap;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.generation.AbstractWorldGenerator;
+import ru.windcorp.progressia.server.world.generation.surface.SurfaceFeature;
+import ru.windcorp.progressia.server.world.generation.surface.SurfaceFloatField;
+import ru.windcorp.progressia.server.world.generation.surface.TerrainLayer;
 
-public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
-	
+public class PlanetGenerator extends AbstractWorldGenerator<Boolean> {
+
 	private final Planet planet;
-	
+
 	private final PlanetTerrainGenerator terrainGenerator;
 	private final PlanetFeatureGenerator featureGenerator;
 
-	public TestPlanetGenerator(String id, Server server, Planet planet) {
+	public PlanetGenerator(
+		String id,
+		Server server,
+		Planet planet,
+		SurfaceFloatField heightMap,
+		FloatRangeMap<TerrainLayer> layers,
+		List<SurfaceFeature> features
+	) {
 		super(id, server, Boolean.class, "Test:PlanetGravityModel");
-		
+
 		this.planet = planet;
-		
-		TestPlanetGravityModel model = (TestPlanetGravityModel) this.getGravityModel();
+
+		PlanetGravityModel model = (PlanetGravityModel) this.getGravityModel();
 		model.configure(planet.getGravityModelSettings());
-		
-		this.terrainGenerator = new PlanetTerrainGenerator(this);
-		this.featureGenerator = new PlanetFeatureGenerator(this);
+
+		this.terrainGenerator = new PlanetTerrainGenerator(this, heightMap, layers);
+		this.featureGenerator = new PlanetFeatureGenerator(this, features);
 	}
-	
+
 	/**
 	 * @return the planet
 	 */
 	public Planet getPlanet() {
 		return planet;
 	}
-	
+
 	@Override
 	public Vec3 suggestSpawnLocation() {
-		return new Vec3(7f, 7f, getPlanet().getRadius() + 10);
+		return new Vec3(407f, 1f, getPlanet().getRadius() + 10);
 	}
 
 	@Override
@@ -79,14 +91,14 @@ public class TestPlanetGenerator extends AbstractWorldGenerator<Boolean> {
 	public DefaultChunkData generate(Vec3i chunkPos) {
 		VectorUtil.iterateCuboidAround(chunkPos, 3, r -> conjureTerrain(r));
 		DefaultChunkData chunk = getWorldData().getChunk(chunkPos);
-		
+
 		if (!isChunkReady(chunk.getGenerationHint())) {
 			featureGenerator.generateFeatures(getServer(), chunk);
 		}
-		
+
 		return chunk;
 	}
-	
+
 	private void conjureTerrain(Vec3i chunkPos) {
 		getServer().getLoadManager().getChunkManager().loadChunk(chunkPos);
 		DefaultChunkData chunk = getWorldData().getChunk(chunkPos);

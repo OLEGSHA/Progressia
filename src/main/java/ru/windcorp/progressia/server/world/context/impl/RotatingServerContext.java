@@ -18,8 +18,8 @@
 package ru.windcorp.progressia.server.world.context.impl;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.world.generic.GenericChunks;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
-import ru.windcorp.progressia.common.world.rels.AxisRotations;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.server.world.context.ServerTileContext;
 
@@ -38,12 +38,12 @@ public class RotatingServerContext extends TransformingServerContext {
 
 	@Override
 	protected void transform(Vec3i userLocation, Vec3i output) {
-		AxisRotations.resolve(userLocation, up, output);
+		GenericChunks.resolve(userLocation, up, output);
 	}
 
 	@Override
 	protected void untransform(Vec3i parentLocation, Vec3i output) {
-		AxisRotations.relativize(parentLocation, up, output);
+		GenericChunks.relativize(parentLocation, up, output);
 	}
 
 	@Override

@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-
 import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.i.Vec3i;
@@ -56,9 +55,9 @@ import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.comms.controls.*;
 import ru.windcorp.progressia.server.world.block.*;
 import ru.windcorp.progressia.server.world.entity.*;
+import ru.windcorp.progressia.server.world.generation.planet.PlanetGravityModel;
 import ru.windcorp.progressia.server.world.tile.*;
 import ru.windcorp.progressia.test.gen.TestGravityModel;
-import ru.windcorp.progressia.test.gen.planet.TestPlanetGravityModel;
 
 public class TestContent {
 
@@ -435,7 +434,7 @@ public class TestContent {
 		ChunkIO.registerCodec(new TestChunkCodec());
 		ChunkRenderOptimizerRegistry.getInstance().register("Core:SurfaceOptimizer", ChunkRenderOptimizerSurface::new);
 		GravityModelRegistry.getInstance().register("Test:TheGravityModel", TestGravityModel::new);
-		GravityModelRegistry.getInstance().register("Test:PlanetGravityModel", TestPlanetGravityModel::new);
+		GravityModelRegistry.getInstance().register("Test:PlanetGravityModel", PlanetGravityModel::new);
 	}
 
 }

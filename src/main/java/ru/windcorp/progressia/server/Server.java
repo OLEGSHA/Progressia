@@ -19,6 +19,7 @@
 package ru.windcorp.progressia.server;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -44,12 +45,11 @@ import ru.windcorp.progressia.server.world.context.ServerWorldContext;
 import ru.windcorp.progressia.server.world.context.impl.DefaultServerContext;
 import ru.windcorp.progressia.server.world.context.impl.ReportingServerContext;
 import ru.windcorp.progressia.server.world.context.impl.RotatingServerContext;
+import ru.windcorp.progressia.server.world.generation.WorldGenerator;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Change;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
 import ru.windcorp.progressia.server.world.ticking.TickerCoordinator;
-import ru.windcorp.progressia.test.gen.planet.Planet;
-import ru.windcorp.progressia.test.gen.planet.TestPlanetGenerator;
 
 public class Server {
 
@@ -78,11 +78,11 @@ public class Server {
 
 	private final TickingSettings tickingSettings = new TickingSettings();
 
-	public Server(DefaultWorldData world) {
+	public Server(DefaultWorldData world, Function<Server, WorldGenerator> generatorCreator) {
 		this.world = new DefaultWorldLogic(
 			world,
 			this,
-			new TestPlanetGenerator("Test:PlanetGenerator", this, new Planet(4, 9.8f, 16f, 16f)),
+			generatorCreator.apply(this),
 			worldAccessor
 		);
 		this.serverThread = new ServerThread(this);

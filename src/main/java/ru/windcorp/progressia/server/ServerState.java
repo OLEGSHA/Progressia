@@ -19,6 +19,7 @@
 package ru.windcorp.progressia.server;
 
 import ru.windcorp.progressia.common.world.DefaultWorldData;
+import ru.windcorp.progressia.test.gen.TestGenerationConfig;
 
 public class ServerState {
 
@@ -33,7 +34,7 @@ public class ServerState {
 	}
 
 	public static void startServer() {
-		Server server = new Server(new DefaultWorldData());
+		Server server = new Server(new DefaultWorldData(), TestGenerationConfig.createGenerator());
 		setInstance(server);
 		server.start();
 	}
