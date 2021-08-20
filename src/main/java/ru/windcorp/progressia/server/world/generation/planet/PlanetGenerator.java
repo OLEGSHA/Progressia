@@ -69,7 +69,7 @@ public class PlanetGenerator extends AbstractWorldGenerator<Boolean> {
 
 	@Override
 	public Vec3 suggestSpawnLocation() {
-		return new Vec3(407f, 1f, getPlanet().getRadius() + 10);
+		return new Vec3(7f, 1f, getPlanet().getRadius() + 10);
 	}
 
 	@Override

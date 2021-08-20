@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import org.lwjgl.glfw.GLFW;
 
 import com.google.common.eventbus.Subscribe;
 
-import glm.mat._4.Mat4;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
@@ -30,9 +29,6 @@ import ru.windcorp.progressia.client.graphics.flat.AssembledFlatLayer;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
-import ru.windcorp.progressia.client.graphics.model.LambdaModel;
-import ru.windcorp.progressia.client.graphics.texture.SimpleTextures;
-import ru.windcorp.progressia.client.graphics.texture.Texture;
 
 public class LayerTestUI extends AssembledFlatLayer {
 
@@ -42,55 +38,13 @@ public class LayerTestUI extends AssembledFlatLayer {
 		GraphicsInterface.subscribeToInputEvents(this);
 	}
 
-	private boolean flag = false;
-
-	private static final int SCALE = 4;
-	private static final int TEX_SIZE = 16 * SCALE;
-	private static final int TEX_SHADOW = SCALE / 2;
-	private static final int BORDER = 5;
-	private static final int HEIGHT = TEX_SIZE + 4 * BORDER;
-	private static final int WIDTH = HEIGHT;
+	private boolean drawUI = true;
 
 	@Override
 	protected void assemble(RenderTarget target) {
-		final int boxColor = flag ? 0xFFEE8888 : 0xFFEEEE88;
-		final int borderColor = flag ? 0xFFAA4444 : 0xFFAAAA44;
-		final int boxShadowColor = flag ? 0xFF440000 : 0xFF444400;
-
-		int x = 2 * BORDER;
-		int y = 2 * BORDER;
-
-		target.fill(x + BORDER, y - BORDER, WIDTH, HEIGHT, boxShadowColor);
-		target.fill(x - 1, y - 1, WIDTH + 2, HEIGHT + 2, boxShadowColor);
-		target.fill(x, y, WIDTH, HEIGHT, borderColor);
-		target.fill(x + BORDER, y + BORDER, WIDTH - 2 * BORDER, HEIGHT - 2 * BORDER, boxColor);
-
-		target.pushTransform(new Mat4().identity().translate(x + 2 * BORDER, y + 2 * BORDER, 0));
-
-		final Texture compassBg = SimpleTextures.get("compass_icon");
-		final Texture compassFg = SimpleTextures.get("compass_icon_arrow");
-
-		target.drawTexture(TEX_SHADOW, -TEX_SHADOW, TEX_SIZE, TEX_SIZE, Colors.BLACK, compassBg);
-		target.drawTexture(0, 0, TEX_SIZE, TEX_SIZE, compassBg);
-
-		target.addCustomRenderer(
-			new LambdaModel(
-				LambdaModel.lambdaBuilder()
-					.addDynamicPart(
-						target.createRectagle(0, 0, TEX_SIZE, TEX_SIZE, Colors.WHITE, compassFg),
-						mat -> mat.translate(TEX_SIZE / 2, TEX_SIZE / 2, 0)
-							.rotateZ(getCompassRotation())
-							.translate(-TEX_SIZE / 2, -TEX_SIZE / 2, 0)
-					)
-			)
-		);
-		target.popTransform();
-
-		drawCross(target);
-	}
-
-	private double getCompassRotation() {
-		return 0;
+		if (drawUI) {
+			drawCross(target);
+		}
 	}
 
 	private void drawCross(RenderTarget target) {
@@ -138,16 +92,16 @@ public class LayerTestUI extends AssembledFlatLayer {
 
 	@Override
 	protected void handleInput(Input input) {
-
+		// Do nothing
 	}
 
 	@Subscribe
 	public void onKeyEvent(KeyEvent event) {
-		if (event.isRepeat() || event.getKey() != GLFW.GLFW_KEY_LEFT_CONTROL) {
+		if (!event.isPress() || event.getKey() != GLFW.GLFW_KEY_F1) {
 			return;
 		}
 
-		flag = event.isPress();
+		drawUI = !drawUI;
 		invalidate();
 	}
 
