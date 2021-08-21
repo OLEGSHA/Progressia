@@ -19,15 +19,9 @@ package ru.windcorp.progressia.server.world.generation.surface;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-
-import glm.Glm;
-import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.CoordinatePacker;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.world.context.ServerTileContext;
-import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceContextImpl;
+import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceWorldContext;
 
 public class SurfaceFeatureGenerator {
 	
@@ -48,23 +42,7 @@ public class SurfaceFeatureGenerator {
 	}
 	
 	public void generateFeatures(Server server, DefaultChunkData chunk) {
-		
-		Random random = new Random(CoordinatePacker.pack3IntsIntoLong(chunk.getPosition()) /* ^ seed*/);
-		
-		SurfaceContextImpl context = new SurfaceContextImpl((ServerTileContext) server.createAbsoluteContext(), surface);
-		context.setRandom(random);
-		
-		Vec3i tmpA = new Vec3i();
-		Vec3i tmpB = new Vec3i();
-		
-		chunk.getMinBIW(tmpA);
-		chunk.getMaxBIW(tmpB);
-		
-		context.toContext(tmpA, tmpA);
-		context.toContext(tmpB, tmpB);
-		
-		Glm.min(tmpA, tmpB, context.getMin());
-		Glm.max(tmpA, tmpB, context.getMax());
+		SurfaceWorldContext context = surface.createContext(server, chunk, 0);
 		
 		for (SurfaceFeature feature : features) {
 			feature.process(context);

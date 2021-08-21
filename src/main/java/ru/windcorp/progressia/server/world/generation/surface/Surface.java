@@ -17,18 +17,28 @@
  */
 package ru.windcorp.progressia.server.world.generation.surface;
 
+import java.util.Random;
+
+import glm.Glm;
+import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.util.CoordinatePacker;
+import ru.windcorp.progressia.common.world.generic.ChunkGenericRO;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.world.context.ServerTileContext;
+import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceContextImpl;
+import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceWorldContext;
 
 public class Surface {
-	
+
 	private final AbsFace up;
 	private final int seaLevel;
-	
+
 	public Surface(AbsFace up, int seaLevel) {
 		this.up = up;
 		this.seaLevel = seaLevel;
 	}
-	
+
 	/**
 	 * @return the up
 	 */
@@ -41,6 +51,29 @@ public class Surface {
 	 */
 	public int getSeaLevel() {
 		return seaLevel;
+	}
+
+	public SurfaceWorldContext createContext(Server server, ChunkGenericRO<?, ?, ?, ?, ?> chunk, long seed) {
+
+		Random random = new Random(CoordinatePacker.pack3IntsIntoLong(chunk.getPosition()) ^ seed);
+
+		SurfaceContextImpl context = new SurfaceContextImpl((ServerTileContext) server.createAbsoluteContext(), this);
+		context.setRandom(random);
+
+		Vec3i tmpA = new Vec3i();
+		Vec3i tmpB = new Vec3i();
+
+		chunk.getMinBIW(tmpA);
+		chunk.getMaxBIW(tmpB);
+
+		context.toContext(tmpA, tmpA);
+		context.toContext(tmpB, tmpB);
+
+		Glm.min(tmpA, tmpB, context.getMin());
+		Glm.max(tmpA, tmpB, context.getMax());
+		
+		return context;
+
 	}
 
 }

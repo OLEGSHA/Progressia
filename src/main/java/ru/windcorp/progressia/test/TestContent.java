@@ -29,8 +29,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import org.lwjgl.glfw.GLFW;
 
-import com.google.common.collect.ImmutableList;
-
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.audio.Sound;
@@ -59,6 +57,7 @@ import ru.windcorp.progressia.server.world.block.*;
 import ru.windcorp.progressia.server.world.entity.*;
 import ru.windcorp.progressia.server.world.generation.planet.PlanetGravityModel;
 import ru.windcorp.progressia.server.world.tile.*;
+import ru.windcorp.progressia.test.Rocks.RockType;
 import ru.windcorp.progressia.test.gen.TestGravityModel;
 
 public class TestContent {
@@ -69,6 +68,8 @@ public class TestContent {
 
 	public static final List<BlockData> PLACEABLE_BLOCKS = new ArrayList<>();
 	public static final List<TileData> PLACEABLE_TILES = new ArrayList<>();
+	
+	public static final Rocks ROCKS = new Rocks();
 
 	public static void registerContent() {
 		registerWorldContent();
@@ -150,33 +151,16 @@ public class TestContent {
 	}
 
 	private static void registerRocks() {
-		List<String> rockNames = ImmutableList.of(
-			"BlackGranite",
-			"Dolomite",
-			"Eclogite",
-			"Gabbro",
-			"Limestone",
-			"Marble",
-			"RedGranite"
-		);
 		
-		List<String> rockVariants = ImmutableList.of(
-			"Monolith",
-			"Cracked",
-			"Gravel",
-			"Sand"
-		);
+		ROCKS.create(RockType.IGNEOUS, "BlackGranite");
+		ROCKS.create(RockType.IGNEOUS, "RedGranite");
+		ROCKS.create(RockType.IGNEOUS, "Gabbro");
+		ROCKS.create(RockType.METAMORPHIC, "Marble");
+		ROCKS.create(RockType.METAMORPHIC, "Eclogite");
+		ROCKS.create(RockType.SEDIMENTARY, "Limestone");
+		ROCKS.create(RockType.SEDIMENTARY, "Dolomite");
 		
-		for (String name : rockNames) {
-			for (String variant : rockVariants) {
-				String fullName = name + variant;
-				String id = "Test:" + fullName;
-				
-				register(new BlockData(id));
-				register(new BlockRenderOpaqueCube(id, getBlockTexture(fullName)));
-				register(new BlockLogic(id));
-			}
-		}
+		ROCKS.registerAllRocks();
 	}
 
 	private static void registerTiles() {

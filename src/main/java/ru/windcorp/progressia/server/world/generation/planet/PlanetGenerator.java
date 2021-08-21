@@ -104,7 +104,7 @@ public class PlanetGenerator extends AbstractWorldGenerator<Boolean> {
 		DefaultChunkData chunk = getWorldData().getChunk(chunkPos);
 
 		if (chunk == null) {
-			chunk = terrainGenerator.generateTerrain(chunkPos);
+			chunk = terrainGenerator.generateTerrain(getServer(), chunkPos);
 			getWorldData().addChunk(chunk);
 		}
 	}

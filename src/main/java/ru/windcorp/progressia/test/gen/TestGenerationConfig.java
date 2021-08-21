@@ -26,6 +26,7 @@ import java.util.function.Function;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.ArrayFloatRangeMap;
 import ru.windcorp.progressia.common.util.FloatRangeMap;
+import ru.windcorp.progressia.common.util.noise.discrete.WorleyProceduralNoise;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
@@ -36,15 +37,19 @@ import ru.windcorp.progressia.server.world.generation.planet.PlanetGenerator;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceFeature;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceFloatField;
 import ru.windcorp.progressia.server.world.generation.surface.TerrainLayer;
+import ru.windcorp.progressia.test.Rocks.RockVariant;
+import ru.windcorp.progressia.test.TestContent;
 
 public class TestGenerationConfig {
+
+	private static final long SEED = "No bugs please".hashCode();
 
 	private static final float PLANET_RADIUS = Units.get("0.5 km");
 	private static final float SURFACE_GRAVITY = Units.get("9.8 m/s^2");
 	private static final float CURVATURE = Units.get("100 m");
 	private static final float INNER_RADIUS = Units.get("200 m");
 
-	private static final Fields FIELDS = new Fields("No bugs please".hashCode());
+	private static final Fields FIELDS = new Fields(SEED);
 
 	public static Function<Server, WorldGenerator> createGenerator() {
 
@@ -68,31 +73,36 @@ public class TestGenerationConfig {
 	}
 
 	private static void registerTerrainLayers(FloatRangeMap<TerrainLayer> layers) {
-		BlockData granite = BlockDataRegistry.getInstance().get("Test:RedGraniteMonolith");
-		BlockData graniteCracked = BlockDataRegistry.getInstance().get("Test:RedGraniteCracked");
-		BlockData graniteGravel = BlockDataRegistry.getInstance().get("Test:RedGraniteGravel");
-
 		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 
 		SurfaceFloatField cliffs = FIELDS.get("Test:CliffSelector");
 
-		layers.put(Float.NEGATIVE_INFINITY, 0, (f, n, w, d, r) -> air);
-		layers.put(0, 4, (f, n, w, d, r) -> {
-			if (cliffs.get(f, n, w) > 0) {
-				switch (r.nextInt(4)) {
-				case 0:
-					return granite;
-				case 1:
-					return graniteCracked;
-				default:
-					return graniteGravel;
+		WorleyProceduralNoise.Builder<TerrainLayer> builder = WorleyProceduralNoise.builder();
+		TestContent.ROCKS.getRocks().forEach(rock -> {
+			builder.add((c, d) -> {
+				if (c.getRandom().nextInt(3) == 0) {
+					return rock.getBlock(RockVariant.CRACKED);
+				} else {
+					return rock.getBlock(RockVariant.MONOLITH);
 				}
+			}, 1);
+		});
+		SurfaceFloatField rockDepthOffsets = FIELDS.register(
+			"Test:RockDepthOffsets",
+			() -> tweak(FIELDS.primitive(), 40, 5)
+		);
+		RockLayer rockLayer = new RockLayer(builder.build(SEED), rockDepthOffsets);
+
+		layers.put(Float.NEGATIVE_INFINITY, 0, (c, d) -> air);
+		layers.put(0, 4, (c, d) -> {
+			if (cliffs.get(c.getSurface().getUp(), c.getLocation().x, c.getLocation().y) > 0) {
+				return rockLayer.get(c, d);
 			} else {
 				return dirt;
 			}
 		});
-		layers.put(4, Float.POSITIVE_INFINITY, (f, n, w, d, r) -> granite);
+		layers.put(4, Float.POSITIVE_INFINITY, rockLayer);
 	}
 
 	private static void registerFeatures(List<SurfaceFeature> features) {
@@ -101,7 +111,7 @@ public class TestGenerationConfig {
 			"Test:Forestiness",
 			() -> squash(scale(FIELDS.primitive(), 200), 5)
 		);
-		
+
 		SurfaceFloatField floweriness = FIELDS.register(
 			"Test:Floweriness",
 			f -> multiply(

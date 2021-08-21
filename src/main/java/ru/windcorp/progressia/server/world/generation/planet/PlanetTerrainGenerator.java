@@ -17,6 +17,8 @@
  */
 package ru.windcorp.progressia.server.world.generation.planet;
 
+import java.util.Map;
+
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.FloatRangeMap;
@@ -26,6 +28,9 @@ import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.generic.GenericChunks;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.world.generation.surface.Surface;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceFloatField;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceTerrainGenerator;
 import ru.windcorp.progressia.server.world.generation.surface.TerrainLayer;
@@ -33,25 +38,38 @@ import ru.windcorp.progressia.server.world.generation.surface.TerrainLayer;
 class PlanetTerrainGenerator {
 
 	private final PlanetGenerator parent;
-	private final SurfaceTerrainGenerator surfaceGenerator;
+	private final Map<AbsFace, SurfaceTerrainGenerator> surfaceGenerators;
 
-	public PlanetTerrainGenerator(PlanetGenerator generator, SurfaceFloatField heightMap, FloatRangeMap<TerrainLayer> layers) {
+	public PlanetTerrainGenerator(
+		PlanetGenerator generator,
+		SurfaceFloatField heightMap,
+		FloatRangeMap<TerrainLayer> layers
+	) {
 		this.parent = generator;
+
+		int seaLevel = (int) parent.getPlanet().getRadius();
 		SurfaceFloatField adjustedHeightMap = (f, n, w) -> heightMap.get(f, n, w) + generator.getPlanet().getRadius();
-		this.surfaceGenerator = new SurfaceTerrainGenerator(adjustedHeightMap, layers);
+
+		this.surfaceGenerators = AbsFace.mapToFaces(
+			face -> new SurfaceTerrainGenerator(
+				new Surface(face, seaLevel),
+				adjustedHeightMap,
+				layers
+			)
+		);
 	}
 
 	public PlanetGenerator getGenerator() {
 		return parent;
 	}
 
-	public DefaultChunkData generateTerrain(Vec3i chunkPos) {
+	public DefaultChunkData generateTerrain(Server server, Vec3i chunkPos) {
 		DefaultChunkData chunk = new DefaultChunkData(chunkPos, getGenerator().getWorldData());
 
 		if (isOrdinaryChunk(chunkPos)) {
-			generateOrdinaryTerrain(chunk);
+			generateOrdinaryTerrain(server, chunk);
 		} else {
-			generateBorderTerrain(chunk);
+			generateBorderTerrain(server, chunk);
 		}
 
 		chunk.setGenerationHint(false);
@@ -64,11 +82,11 @@ class PlanetTerrainGenerator {
 		return sorted.x != sorted.y;
 	}
 
-	private void generateOrdinaryTerrain(DefaultChunkData chunk) {
-		surfaceGenerator.generateTerrain(chunk);
+	private void generateOrdinaryTerrain(Server server, DefaultChunkData chunk) {
+		surfaceGenerators.get(chunk.getUp()).generateTerrain(server, chunk);
 	}
 
-	private void generateBorderTerrain(DefaultChunkData chunk) {
+	private void generateBorderTerrain(Server server, DefaultChunkData chunk) {
 		BlockData stone = BlockDataRegistry.getInstance().get("Test:Stone");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 

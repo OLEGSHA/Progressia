@@ -15,14 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.server.world.generation.surface;
+package ru.windcorp.progressia.common.util.noise.discrete;
 
-import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceBlockContext;
-
-@FunctionalInterface
-public interface TerrainLayer {
-
-	BlockData get(SurfaceBlockContext context, float depth);
+public interface DiscreteNoise<T> {
 	
+	T get(double x, double y);
+	T get(double x, double y, double z);
+
 }
