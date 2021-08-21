@@ -68,9 +68,9 @@ public class TestGenerationConfig {
 	}
 
 	private static void registerTerrainLayers(FloatRangeMap<TerrainLayer> layers) {
-		BlockData granite = BlockDataRegistry.getInstance().get("Test:GraniteMonolith");
-		BlockData graniteCracked = BlockDataRegistry.getInstance().get("Test:GraniteCracked");
-		BlockData graniteGravel = BlockDataRegistry.getInstance().get("Test:GraniteGravel");
+		BlockData granite = BlockDataRegistry.getInstance().get("Test:RedGraniteMonolith");
+		BlockData graniteCracked = BlockDataRegistry.getInstance().get("Test:RedGraniteCracked");
+		BlockData graniteGravel = BlockDataRegistry.getInstance().get("Test:RedGraniteGravel");
 
 		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");

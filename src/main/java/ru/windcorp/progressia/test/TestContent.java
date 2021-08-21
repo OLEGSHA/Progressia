@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import org.lwjgl.glfw.GLFW;
 
+import com.google.common.collect.ImmutableList;
+
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.audio.Sound;
@@ -101,13 +103,7 @@ public class TestContent {
 		register(new BlockRenderOpaqueCube("Test:Stone", getBlockTexture("Stone")));
 		register(new BlockLogic("Test:Stone"));
 
-		for (String type : new String[] { "Monolith", "Cracked", "Gravel" }) {
-			String id = "Test:Granite" + type;
-
-			register(new BlockData(id));
-			register(new BlockRenderOpaqueCube(id, getBlockTexture("Granite" + type)));
-			register(new BlockLogic(id));
-		}
+		registerRocks();
 
 		register(new BlockData("Test:Brick"));
 		register(new BlockRenderOpaqueCube("Test:Brick", getBlockTexture("Brick")));
@@ -151,6 +147,36 @@ public class TestContent {
 		PLACEABLE_BLOCKS.removeIf(b -> placeableBlacklist.contains(b.getId()));
 		PLACEABLE_BLOCKS.sort(Comparator.comparing(BlockData::getId));
 
+	}
+
+	private static void registerRocks() {
+		List<String> rockNames = ImmutableList.of(
+			"BlackGranite",
+			"Dolomite",
+			"Eclogite",
+			"Gabbro",
+			"Limestone",
+			"Marble",
+			"RedGranite"
+		);
+		
+		List<String> rockVariants = ImmutableList.of(
+			"Monolith",
+			"Cracked",
+			"Gravel",
+			"Sand"
+		);
+		
+		for (String name : rockNames) {
+			for (String variant : rockVariants) {
+				String fullName = name + variant;
+				String id = "Test:" + fullName;
+				
+				register(new BlockData(id));
+				register(new BlockRenderOpaqueCube(id, getBlockTexture(fullName)));
+				register(new BlockLogic(id));
+			}
+		}
 	}
 
 	private static void registerTiles() {
