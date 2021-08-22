@@ -21,7 +21,8 @@ public class TestEntityRenderFallingBlock extends EntityRender {
 
 	public TestEntityRenderFallingBlock(String id) {
 		super(id);
-		cube = new Shapes.PppBuilder(WorldRenderProgram.getDefault(), BlockRenderRegistry.getBlockTexture(id) )
+		String dflt = "Sand";//(String) TestEntityLogicFallingBlock.FallingBlocks.toArray()[0];
+		cube = new Shapes.PppBuilder(WorldRenderProgram.getDefault(), BlockRenderRegistry.getBlockTexture(dflt ) )// TODO idk actual ggood this
 						.create();
 	}
 
