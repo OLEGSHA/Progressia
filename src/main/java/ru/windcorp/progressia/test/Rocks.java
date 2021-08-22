@@ -82,6 +82,10 @@ public class Rocks {
 		public BlockData getBlock(RockVariant variant) {
 			return blocks.get(variant);
 		}
+		
+		public Collection<BlockData> getBlocks() {
+			return blocks.values();
+		}
 
 		private void register() {
 			for (RockVariant variant : RockVariant.values()) {

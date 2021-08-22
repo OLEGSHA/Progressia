@@ -405,7 +405,7 @@ class DefaultServerContextImpl extends DefaultServerContext
 
 	@Override
 	public int getTileCount(Vec3i location, RelFace face) {
-		assert requireContextRole(Role.TILE_STACK);
+		assert requireContextRole(Role.WORLD);
 		TileDataStack stack = world.getTilesOrNull(location, face.resolve(AbsFace.POS_Z));
 		if (stack == null)
 			return 0;

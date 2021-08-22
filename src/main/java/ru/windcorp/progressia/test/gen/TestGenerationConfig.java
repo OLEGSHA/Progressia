@@ -76,7 +76,7 @@ public class TestGenerationConfig {
 		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 
-		SurfaceFloatField cliffs = FIELDS.get("Test:CliffSelector");
+		SurfaceFloatField cliffs = FIELDS.get("Test:Cliff");
 
 		WorleyProceduralNoise.Builder<TerrainLayer> builder = WorleyProceduralNoise.builder();
 		TestContent.ROCKS.getRocks().forEach(rock -> {
@@ -108,21 +108,32 @@ public class TestGenerationConfig {
 	private static void registerFeatures(List<SurfaceFeature> features) {
 
 		SurfaceFloatField forestiness = FIELDS.register(
-			"Test:Forestiness",
+			"Test:Forest",
 			() -> squash(scale(FIELDS.primitive(), 200), 5)
 		);
-
-		SurfaceFloatField floweriness = FIELDS.register(
-			"Test:Floweriness",
+		
+		SurfaceFloatField grassiness = FIELDS.register(
+			"Test:Grass",
 			f -> multiply(
-				scale(octaves(FIELDS.primitive(), 2, 2), 40),
-				tweak(FIELDS.get("Test:Forestiness", f), 1, -1, 1.1)
+				tweak(octaves(FIELDS.primitive(), 2, 2), 40, 0.5, 1.2),
+				squash(tweak(FIELDS.get("Test:Forest", f), 1, -0.7, 1), 10),
+				anti(squash(FIELDS.get("Test:Cliff", f), 10))
+			)
+		);
+
+		Function<String, SurfaceFloatField> floweriness = flowerName -> FIELDS.register(
+			"Test:Flower" + flowerName,
+			f -> multiply(
+				selectPositive(squash(scale(octaves(FIELDS.primitive(), 2, 3), 100), 2), 1, 0.5),
+				tweak(FIELDS.get("Test:Forest", f), 1, -1, 1.1),
+				anti(squash(FIELDS.get("Test:Cliff", f), 10))
 			)
 		);
 
 		features.add(new TestBushFeature("Test:BushFeature", forestiness));
 		features.add(new TestTreeFeature("Test:TreeFeature", forestiness));
-		features.add(new TestGrassFeature("Test:GrassFeature", FIELDS.get("Test:CliffSelector"), floweriness));
+		features.add(new TestGrassFeature("Test:GrassFeature", grassiness));
+		features.add(new TestFlowerFeature("Test:FlowerFeature", floweriness));
 	}
 
 }

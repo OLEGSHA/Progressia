@@ -38,6 +38,7 @@ import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
 import ru.windcorp.progressia.client.graphics.world.Selection;
 import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerRegistry;
+import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSimple;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSurface;
 import ru.windcorp.progressia.client.world.entity.*;
 import ru.windcorp.progressia.client.world.tile.*;
@@ -174,9 +175,20 @@ public class TestContent {
 		register(new TileRenderTransparentSurface("Test:Stones", getTileTexture("Stones")));
 		register(new HangingTileLogic("Test:Stones"));
 
-		register(new TileData("Test:YellowFlowers"));
-		register(new TileRenderTransparentSurface("Test:YellowFlowers", getTileTexture("YellowFlowers")));
-		register(new HangingTileLogic("Test:YellowFlowers"));
+		for (String color : new String[] {
+			"Yellow",
+			"White",
+			"Purple",
+			"Blue"
+		}) {
+			
+			String fullName = color + "Flowers";
+			String id = "Test:" + fullName;
+			
+			register(new TileData(id));
+			register(new TileRenderTransparentSurface(id, getTileTexture(fullName)));
+			register(new HangingTileLogic(id));
+		}
 
 		register(new TileData("Test:Sand"));
 		register(new TileRenderTransparentSurface("Test:Sand", getTileTexture("Sand")));
@@ -241,6 +253,32 @@ public class TestContent {
 		register(new TileData("Test:TilesSmall"));
 		register(new TileRenderOpaqueSurface("Test:TilesSmall", getTileTexture("TilesSmall")));
 		register(new HangingTileLogic("Test:TilesSmall"));
+		
+		for (String variant : new String[] {
+			"Low", "Medium", "Tall"
+		}) {
+			String fullName = variant + "Grass";
+			String id = "Test:" + fullName;
+			
+			register(new TileData(id));
+			register(new TileRenderHerb(id, getTileTexture(fullName), 6));
+			register(new HangingTileLogic(id));
+		}
+		
+		for (String variant : new String[] {
+			"Dandelion", "Lavander"
+		}) {
+			String fullName = "Tiny" + variant + "Flowers";
+			String id = "Test:" + fullName;
+			
+			register(new TileData(id));
+			register(new TileRenderTinyFlower(id, getTileTexture(fullName), 8, 0.5f));
+			register(new HangingTileLogic(id));
+		}
+		
+		register(new TileData("Test:Bush"));
+		register(new TileRenderHerb("Test:Bush", getTileTexture("Bush"), 1));
+		register(new HangingTileLogic("Test:Bush"));
 
 		TileDataRegistry.getInstance().values().forEach(PLACEABLE_TILES::add);
 		PLACEABLE_TILES.removeIf(b -> placeableBlacklist.contains(b.getId()));
@@ -285,6 +323,7 @@ public class TestContent {
 				i -> isAnythingSelected() && TestPlayerControls.getInstance().isBlockSelected()
 			)
 		);
+		
 		logic.register(ControlLogic.of("Test:PlaceBlock", TestContent::onBlockPlaceReceived));
 
 		data.register("Test:PlaceTile", ControlPlaceTileData::new);
@@ -442,7 +481,10 @@ public class TestContent {
 
 	private static void registerMisc() {
 		ChunkIO.registerCodec(new TestChunkCodec());
+		
 		ChunkRenderOptimizerRegistry.getInstance().register("Core:SurfaceOptimizer", ChunkRenderOptimizerSurface::new);
+		ChunkRenderOptimizerRegistry.getInstance().register("Core:SimpleOptimizer", ChunkRenderOptimizerSimple::new);
+		
 		GravityModelRegistry.getInstance().register("Test:TheGravityModel", TestGravityModel::new);
 		GravityModelRegistry.getInstance().register("Test:PlanetGravityModel", PlanetGravityModel::new);
 	}

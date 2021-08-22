@@ -17,14 +17,11 @@
  */
 package ru.windcorp.progressia.test.gen;
 
-import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import ru.windcorp.progressia.common.util.ArrayFloatRangeMap;
-import ru.windcorp.progressia.common.util.FloatRangeMap;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
@@ -33,7 +30,23 @@ import ru.windcorp.progressia.server.world.generation.surface.SurfaceTopLayerFea
 import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceBlockContext;
 import ru.windcorp.progressia.test.TestContent;
 
-public class TestGrassFeature extends SurfaceTopLayerFeature {
+public class TestFlowerFeature extends SurfaceTopLayerFeature {
+
+	private static class FlowerGenerator {
+		private final TileData tile;
+		private final SurfaceFloatField floweriness;
+
+		public FlowerGenerator(TileData tile, Function<String, SurfaceFloatField> flowerinessGenerator) {
+			this.tile = tile;
+			this.floweriness = flowerinessGenerator.apply(tile.getName());
+		}
+
+		public void generate(SurfaceBlockContext context) {
+			if (context.getRandom().nextDouble() < floweriness.get(context)) {
+				context.addTile(RelFace.UP, tile);
+			}
+		}
+	}
 
 	private final Set<String> soilWhitelist;
 	{
@@ -43,27 +56,15 @@ public class TestGrassFeature extends SurfaceTopLayerFeature {
 		soilWhitelist = b.build();
 	}
 
-	private final SurfaceFloatField grassiness;
-	private final double scatterDensity = 1.0 / (3 * 3);
+	private final FlowerGenerator[] flowers;
 
-	private final TileData grass = TileDataRegistry.getInstance().get("Test:Grass");
-
-	private final FloatRangeMap<TileData> grasses = new ArrayFloatRangeMap<>();
-	{
-		grasses.put(0.6f, 1, TileDataRegistry.getInstance().get("Test:TallGrass"));
-		grasses.put(0.4f, 0.6f, TileDataRegistry.getInstance().get("Test:MediumGrass"));
-		grasses.put(0.1f, 0.4f, TileDataRegistry.getInstance().get("Test:LowGrass"));
-	}
-
-	private final List<TileData> scatter = ImmutableList.of(
-		TileDataRegistry.getInstance().get("Test:Stones"),
-		TileDataRegistry.getInstance().get("Test:Sand"),
-		TileDataRegistry.getInstance().get("Test:Bush")
-	);
-
-	public TestGrassFeature(String id, SurfaceFloatField grassiness) {
+	public TestFlowerFeature(String id, Function<String, SurfaceFloatField> flowerinessGenerator) {
 		super(id);
-		this.grassiness = grassiness;
+
+		this.flowers = TileDataRegistry.getInstance().values().stream()
+			.filter(tile -> tile.getName().endsWith("Flowers"))
+			.map(tile -> new FlowerGenerator(tile, flowerinessGenerator))
+			.toArray(FlowerGenerator[]::new);
 	}
 
 	@Override
@@ -81,40 +82,8 @@ public class TestGrassFeature extends SurfaceTopLayerFeature {
 		}
 		context.pop();
 
-		double grassiness = this.grassiness.get(context);
-		if (grassiness > 0.1) {
-			growGrass(context, grassiness);
-		}
-
-		placeScatter(context);
-	}
-
-	private void placeScatter(SurfaceBlockContext context) {
-		if (context.getRandom().nextDouble() < scatterDensity) {
-			TileData tile = pickRandom(context, scatter);
-			context.addTile(RelFace.UP, tile);
-		}
-	}
-
-	private void growGrass(SurfaceBlockContext context, double grassiness) {
-		for (RelFace face : RelFace.getFaces()) {
-			if (face == RelFace.DOWN)
-				continue;
-
-			if (context.pushRelative(face).logic().getBlock().isTransparent()) {
-				context.pop();
-				context.addTile(face, grass);
-			} else {
-				context.pop();
-			}
-
-		}
-
-		if (context.getRandom().nextDouble() < grassiness) {
-			TileData herbGrass = grasses.get((float) grassiness);
-			if (herbGrass != null) {
-				context.addTile(RelFace.UP, herbGrass);
-			}
+		for (FlowerGenerator flower : flowers) {
+			flower.generate(context);
 		}
 	}
 

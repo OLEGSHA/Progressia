@@ -20,7 +20,9 @@ package ru.windcorp.progressia.server.world.generation.surface.context;
 import java.util.Random;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.world.generic.TileGenericStackRO;
 import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.world.context.ServerTileContext;
 import ru.windcorp.progressia.server.world.context.impl.RotatingServerContext;
 import ru.windcorp.progressia.server.world.generation.surface.Surface;
@@ -109,6 +111,13 @@ public class SurfaceContextImpl extends RotatingServerContext implements Surface
 	public SurfaceTileContext push(Vec3i location, RelFace face, int layer) {
 		super.push(location, face, layer);
 		return this;
+	}
+	
+	@Override
+	public void addTile(Vec3i userLocation, RelFace userFace, TileData tile) {
+		if (getTileCount(userLocation, userFace) < TileGenericStackRO.TILES_PER_FACE) {
+			super.addTile(userLocation, userFace, tile);
+		}
 	}
 
 }

@@ -214,6 +214,10 @@ public class Fields {
 	public static Field bias(Field f, double bias) {
 		return tweak(f, 1, 1, bias);
 	}
+	
+	public static Field anti(Field f) {
+		return tweak(f, 1, -1, 1);
+	}
 
 	public static Field octaves(Field f, double scaleFactor, double amplitudeFactor, int octaves) {
 		return (x, y) -> {
@@ -221,14 +225,16 @@ public class Fields {
 
 			double scale = 1;
 			double amplitude = 1;
+			double cumulativeAmplitude = 0;
 
 			for (int i = 0; i < octaves; ++i) {
 				result += f.compute(x * scale, y * scale) * amplitude;
+				cumulativeAmplitude += amplitude;
 				scale *= scaleFactor;
 				amplitude /= amplitudeFactor;
 			}
 
-			return result;
+			return result / cumulativeAmplitude;
 		};
 	}
 

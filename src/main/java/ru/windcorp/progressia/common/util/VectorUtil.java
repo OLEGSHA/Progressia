@@ -180,6 +180,25 @@ public class VectorUtil {
 		return applyMat4(inOut, mat, inOut);
 	}
 	
+	public static Vec3 rotateOnly(Vec3 in, Mat4 mat, Vec3 out) {
+		if (out == null) {
+			out = new Vec3();
+		}
+		
+		Mat3 mat3 = Matrices.grab3();
+		mat3.set(mat);
+
+		mat3.mul(in, out);
+
+		Matrices.release(mat3);
+		
+		return out;
+	}
+	
+	public static Vec3 rotateOnly(Vec3 inOut, Mat4 mat) {
+		return rotateOnly(inOut, mat, inOut);
+	}
+	
 	public static Vec3 rotate(Vec3 in, Vec3 axis, float angle, Vec3 out) {
 		if (out == null) {
 			out = new Vec3();

@@ -54,9 +54,9 @@ public class TestHeightMap implements SurfaceFloatField {
 				tweak(octaves(fields.primitive(), 2, 3), 50, 0.2)
 			);
 			
-			fields.register("Test:CliffSelector", face, multiply(
+			fields.register("Test:Cliff", face, multiply(
 				shoreCliffSelector,
-				bias(select(shoreCliffs, 0, 0.07), 0)
+				select(shoreCliffs, 0, 0.07)
 			));
 			
 			fields.register("Test:Height", face, cutoff(add(
