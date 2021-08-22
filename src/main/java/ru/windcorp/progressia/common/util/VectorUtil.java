@@ -20,6 +20,8 @@ package ru.windcorp.progressia.common.util;
 
 import java.util.function.Consumer;
 
+import glm.Glm;
+import glm.mat._3.Mat3;
 import glm.mat._4.Mat4;
 import glm.vec._2.Vec2;
 import glm.vec._2.d.Vec2d;
@@ -35,6 +37,40 @@ public class VectorUtil {
 
 	public static enum Axis {
 		X, Y, Z, W;
+	}
+	
+	public static enum SignedAxis {
+		POS_X(Axis.X, +1),
+		NEG_X(Axis.X, -1),
+		POS_Y(Axis.Y, +1),
+		NEG_Y(Axis.Y, -1),
+		POS_Z(Axis.Z, +1),
+		NEG_Z(Axis.Z, -1),
+		POS_W(Axis.W, +1),
+		NEG_W(Axis.W, -1);
+		
+		private final Axis axis;
+		private final boolean isPositive;
+		
+		private SignedAxis(Axis axis, int sign) {
+			this.axis = axis;
+			this.isPositive = (sign == +1 ? true : false);
+		}
+		
+		/**
+		 * @return the axis
+		 */
+		public Axis getAxis() {
+			return axis;
+		}
+		
+		public boolean isPositive() {
+			return isPositive;
+		}
+		
+		public int getSign() {
+			return isPositive ? +1 : -1;
+		}
 	}
 
 	public static void iterateCuboid(
@@ -124,7 +160,11 @@ public class VectorUtil {
 		iterateCuboidAround(center.x, center.y, center.z, diameter, action);
 	}
 
-	public static void applyMat4(Vec3 in, Mat4 mat, Vec3 out) {
+	public static Vec3 applyMat4(Vec3 in, Mat4 mat, Vec3 out) {
+		if (out == null) {
+			out = new Vec3();
+		}
+		
 		Vec4 vec4 = Vectors.grab4();
 		vec4.set(in, 1f);
 
@@ -132,15 +172,83 @@ public class VectorUtil {
 
 		out.set(vec4.x, vec4.y, vec4.z);
 		Vectors.release(vec4);
+		
+		return out;
 	}
 
-	public static void applyMat4(Vec3 inOut, Mat4 mat) {
-		Vec4 vec4 = Vectors.grab4();
-		vec4.set(inOut, 1f);
-
-		mat.mul(vec4);
-
-		inOut.set(vec4.x, vec4.y, vec4.z);
+	public static Vec3 applyMat4(Vec3 inOut, Mat4 mat) {
+		return applyMat4(inOut, mat, inOut);
+	}
+	
+	public static Vec3 rotate(Vec3 in, Vec3 axis, float angle, Vec3 out) {
+		if (out == null) {
+			out = new Vec3();
+		}
+		
+		Mat3 mat = Matrices.grab3();
+		
+		mat.identity().rotate(angle, axis);
+		mat.mul(in, out);
+		
+		Matrices.release(mat);
+		
+		return out;
+	}
+	
+	public static Vec3 rotate(Vec3 inOut, Vec3 axis, float angle) {
+		return rotate(inOut, axis, angle, inOut);
+	}
+	
+	public static double getAngle(Vec3 from, Vec3 to, Vec3 normal) {
+		Vec3 left = Vectors.grab3();
+		
+		left.set(normal).cross(from);
+		double sign = Math.signum(left.dot(to));
+		
+		double result = (float) Math.acos(Glm.clamp(from.dot(to), -1, +1)) * sign;
+		
+		Vectors.release(left);
+		return result;
+	}
+	
+	public static Vec3 projectOnSurface(Vec3 in, Vec3 normal, Vec3 out) {
+		if (in == out) {
+			return projectOnSurface(in, normal);
+		}
+		
+		if (out == null) {
+			out = new Vec3();
+		}
+		
+		out.set(normal).mul(-normal.dot(in)).add(in);
+		
+		return out;
+	}
+	
+	public static Vec3 projectOnSurface(Vec3 inOut, Vec3 normal) {
+		Vec3 buffer = Vectors.grab3();
+		
+		projectOnSurface(inOut, normal, buffer);
+		inOut.set(buffer);
+		
+		Vectors.release(buffer);
+		
+		return inOut;
+	}
+	
+	public static Vec3 projectOnVector(Vec3 in, Vec3 vector, Vec3 out) {
+		if (out == null) {
+			out = new Vec3();
+		}
+		
+		float dot = vector.dot(in);
+		out.set(vector).mul(dot);
+		
+		return out;
+	}
+	
+	public static Vec3 projectOnVector(Vec3 inOut, Vec3 vector) {
+		return projectOnVector(inOut, vector);
 	}
 
 	public static Vec3 linearCombination(
@@ -150,6 +258,10 @@ public class VectorUtil {
 		float kb,
 		Vec3 output
 	) {
+		if (output == null) {
+			output = new Vec3();
+		}
+		
 		output.set(
 			va.x * ka + vb.x * kb,
 			va.y * ka + vb.y * kb,
@@ -167,12 +279,98 @@ public class VectorUtil {
 		float kc,
 		Vec3 output
 	) {
+		if (output == null) {
+			output = new Vec3();
+		}
+		
 		output.set(
 			va.x * ka + vb.x * kb + vc.x * kc,
 			va.y * ka + vb.y * kb + vc.y * kc,
 			va.z * ka + vb.z * kb + vc.z * kc
 		);
 		return output;
+	}
+	
+	public static Vec3i sort(Vec3i input, Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+		
+		int ax = input.x, ay = input.y, az = input.z;
+
+		if (ax > ay) {
+			if (ax > az) {
+				output.x = ax;
+				output.y = ay > az ? ay : az;
+				output.z = ay > az ? az : ay;
+			} else {
+				output.x = az;
+				output.y = ax;
+				output.z = ay;
+			}
+		} else {
+			if (ay > az) {
+				output.x = ay;
+				output.y = ax > az ? ax : az;
+				output.z = ax > az ? az : ax;
+			} else {
+				output.x = az;
+				output.y = ay;
+				output.z = ax;
+			}
+		}
+		
+		return output;
+	}
+	
+	public static Vec3 sort(Vec3 input, Vec3 output) {
+		if (output == null) {
+			output = new Vec3();
+		}
+		
+		float ax = input.x, ay = input.y, az = input.z;
+
+		if (ax > ay) {
+			if (ax > az) {
+				output.x = ax;
+				output.y = ay > az ? ay : az;
+				output.z = ay > az ? az : ay;
+			} else {
+				output.x = az;
+				output.y = ax;
+				output.z = ay;
+			}
+		} else {
+			if (ay > az) {
+				output.x = ay;
+				output.y = ax > az ? ax : az;
+				output.z = ax > az ? az : ax;
+			} else {
+				output.x = az;
+				output.y = ay;
+				output.z = ax;
+			}
+		}
+		
+		return output;
+	}
+	
+	public static Vec3i sortAfterAbs(Vec3i input, Vec3i output) {
+		if (output == null) {
+			output = new Vec3i();
+		}
+		
+		input.abs(output);
+		return sort(output, output);
+	}
+	
+	public static Vec3 sortAfterAbs(Vec3 input, Vec3 output) {
+		if (output == null) {
+			output = new Vec3();
+		}
+		
+		input.abs(output);
+		return sort(output, output);
 	}
 
 	public static float get(Vec2 v, Axis a) {

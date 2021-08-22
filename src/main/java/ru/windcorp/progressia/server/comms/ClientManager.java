@@ -28,6 +28,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import ru.windcorp.progressia.common.comms.CommsChannel.State;
 import ru.windcorp.progressia.common.comms.packets.Packet;
+import ru.windcorp.progressia.common.world.PacketSetGravityModel;
 import ru.windcorp.progressia.common.world.PacketSetLocalPlayer;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.Player;
@@ -73,10 +74,14 @@ public class ClientManager {
 
 	private void addClientPlayer(ClientPlayer client) {
 		String login = client.getLogin();
+		
+		PacketSetGravityModel setGravityModelPacket = new PacketSetGravityModel();
+		setGravityModelPacket.set(getServer().getWorld().getData().getGravityModel());
+		client.sendPacket(setGravityModelPacket);
 
 		EntityData entity = getServer().getPlayerManager().conjurePlayerEntity(login);
 		Player player = new Player(entity, getServer(), client);
-		getServer().getPlayerManager().getPlayers().add(player);
+		getServer().getPlayerManager().addPlayer(player);
 
 		PacketSetLocalPlayer packet = new PacketSetLocalPlayer();
 		packet.set(entity.getEntityId());

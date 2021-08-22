@@ -59,24 +59,32 @@ public class EntityAnchor implements Anchor {
 	}
 
 	@Override
-	public void getCameraPosition(Vec3 output) {
+	public Vec3 getCameraPosition(Vec3 output) {
+		if (output == null) output = new Vec3();
 		model.getViewPoint(output);
-		output.add(entity.getPosition());
+		output.add(model.getPosition());
+		return output;
 	}
 
 	@Override
-	public void getCameraVelocity(Vec3 output) {
+	public Vec3 getCameraVelocity(Vec3 output) {
+		if (output == null) output = new Vec3();
 		output.set(entity.getVelocity());
+		return output;
 	}
 
 	@Override
-	public float getCameraYaw() {
-		return entity.getYaw();
+	public Vec3 getLookingAt(Vec3 output) {
+		if (output == null) output = new Vec3();
+		model.getLookingAt(output);
+		return output;
 	}
-
+	
 	@Override
-	public float getCameraPitch() {
-		return entity.getPitch();
+	public Vec3 getUpVector(Vec3 output) {
+		if (output == null) output = new Vec3();
+		model.getUpVector(output);
+		return output;
 	}
 
 	@Override

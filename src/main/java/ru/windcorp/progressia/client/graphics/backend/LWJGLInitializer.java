@@ -65,8 +65,6 @@ class LWJGLInitializer {
 
 		GraphicsBackend.setWindowHandle(handle);
 
-		glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 		glfwMakeContextCurrent(handle);
 		glfwSwapInterval(0);	// TODO: remove after config system is added
 	}

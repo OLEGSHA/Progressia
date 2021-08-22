@@ -41,6 +41,8 @@ import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.colliders.Collider;
 import ru.windcorp.progressia.common.util.FloatMathUtil;
+import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.test.CollisionModelRenderer;
 import ru.windcorp.progressia.test.TestPlayerControls;
@@ -57,6 +59,8 @@ public class LayerWorld extends Layer {
 		super("World");
 		this.client = client;
 		this.inputBasedControls = new InputBasedControls(client);
+		
+		setCursorPolicy(CursorPolicy.FORBID);
 	}
 
 	@Override
@@ -197,16 +201,25 @@ public class LayerWorld extends Layer {
 		entity.getVelocity().mul((float) Math.exp(-FRICTION_COEFF / entity.getCollisionMass() * tickLength));
 	}
 
-	private static final float MC_g = Units.get("32  m/s^2");
-	private static final float IRL_g = Units.get("9.8 m/s^2");
-
 	private void tmp_applyGravity(EntityData entity, float tickLength) {
+		GravityModel gm = ClientState.getInstance().getWorld().getData().getGravityModel();
+		
+		Vec3 upVector = Vectors.grab3();
+		gm.getUp(entity.getPosition(), upVector);
+		entity.changeUpVector(upVector);
+		Vectors.release(upVector);
+		
 		if (ClientState.getInstance().getLocalPlayer().getEntity() == entity && tmp_testControls.isFlying()) {
 			return;
 		}
 
-		final float gravitationalAcceleration = tmp_testControls.useMinecraftGravity() ? MC_g : IRL_g;
-		entity.getVelocity().add(0, 0, -gravitationalAcceleration * tickLength);
+		Vec3 gravitationalAcceleration = Vectors.grab3();
+		gm.getGravity(entity.getPosition(), gravitationalAcceleration);
+		
+		gravitationalAcceleration.mul(tickLength);
+		entity.getVelocity().add(gravitationalAcceleration);
+		
+		Vectors.release(gravitationalAcceleration);
 	}
 
 	@Override

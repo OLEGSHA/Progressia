@@ -29,8 +29,8 @@ import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
-import ru.windcorp.progressia.client.graphics.model.Face;
-import ru.windcorp.progressia.client.graphics.model.Faces;
+import ru.windcorp.progressia.client.graphics.model.ShapePart;
+import ru.windcorp.progressia.client.graphics.model.ShapeParts;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
@@ -84,7 +84,7 @@ public class RenderTarget {
 
 	private final Deque<TransformedMask> maskStack = new LinkedList<>();
 	private final Deque<Mat4> transformStack = new LinkedList<>();
-	private final List<Face> currentClipFaces = new ArrayList<>();
+	private final List<ShapePart> currentClipFaces = new ArrayList<>();
 
 	private int depth = 0;
 
@@ -94,8 +94,8 @@ public class RenderTarget {
 
 	protected void assembleCurrentClipFromFaces() {
 		if (!currentClipFaces.isEmpty()) {
-			Face[] faces = currentClipFaces.toArray(
-				new Face[currentClipFaces.size()]
+			ShapePart[] faces = currentClipFaces.toArray(
+				new ShapePart[currentClipFaces.size()]
 			);
 			currentClipFaces.clear();
 
@@ -189,16 +189,13 @@ public class RenderTarget {
 
 	public void addCustomRenderer(Renderable renderable) {
 		assembleCurrentClipFromFaces();
-		assembled.add(
-			new Clip(
-				maskStack,
-				getTransform(),
-				renderable
-			)
-		);
+		
+		float depth = this.depth--;
+		Mat4 transform = new Mat4().translate(0, 0, depth).mul(getTransform());
+		assembled.add(new Clip(maskStack, transform, renderable));
 	}
 
-	protected void addFaceToCurrentClip(Face face) {
+	protected void addFaceToCurrentClip(ShapePart face) {
 		currentClipFaces.add(face);
 	}
 
@@ -270,7 +267,7 @@ public class RenderTarget {
 		fill(Colors.toVector(color));
 	}
 
-	public Face createRectagleFace(
+	public ShapePart createRectagleFace(
 		int x,
 		int y,
 		int width,
@@ -280,7 +277,7 @@ public class RenderTarget {
 	) {
 		float depth = this.depth--;
 
-		return Faces.createRectangle(
+		return ShapeParts.createRectangle(
 			FlatRenderProgram.getDefault(),
 			texture,
 			color,
@@ -291,7 +288,7 @@ public class RenderTarget {
 		);
 	}
 
-	public Face createRectagleFace(
+	public ShapePart createRectagleFace(
 		int x,
 		int y,
 		int width,

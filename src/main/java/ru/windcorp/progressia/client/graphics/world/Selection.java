@@ -23,13 +23,13 @@ import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.world.WorldRender;
 import ru.windcorp.progressia.common.world.BlockRay;
-import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class Selection {
 
 	private final Vec3i block = new Vec3i();
-	private BlockFace surface = null;
+	private AbsFace surface = null;
 	private final Vec2 pointOnSurface = new Vec2(0.5f, 0.5f);
 	private final Vec3 point = new Vec3();
 
@@ -38,10 +38,9 @@ public class Selection {
 	private BlockRay ray = new BlockRay();
 
 	public void update(WorldRender world, EntityData player) {
-		Vec3 direction = new Vec3();
 		Vec3 start = new Vec3();
-
-		player.getLookingAtVector(direction);
+		Vec3 direction = player.getLookingAt();
+		
 		world.getEntityRenderable(player).getViewPoint(start);
 		start.add(player.getPosition());
 
@@ -71,7 +70,7 @@ public class Selection {
 		return exists ? point : null;
 	}
 
-	public BlockFace getSurface() {
+	public AbsFace getSurface() {
 		return exists ? surface : null;
 	}
 

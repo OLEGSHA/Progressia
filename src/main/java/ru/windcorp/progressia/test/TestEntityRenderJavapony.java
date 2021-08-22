@@ -25,8 +25,8 @@ import glm.vec._3.Vec3;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
-import ru.windcorp.progressia.client.graphics.model.Face;
-import ru.windcorp.progressia.client.graphics.model.Faces;
+import ru.windcorp.progressia.client.graphics.model.ShapePart;
+import ru.windcorp.progressia.client.graphics.model.ShapeParts;
 import ru.windcorp.progressia.client.graphics.model.LambdaModel;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.Shape;
@@ -39,8 +39,8 @@ import ru.windcorp.progressia.client.world.entity.EntityRender;
 import ru.windcorp.progressia.client.world.entity.EntityRenderRegistry;
 import ru.windcorp.progressia.client.world.entity.EntityRenderable;
 import ru.windcorp.progressia.client.world.entity.QuadripedModel;
-import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class TestEntityRenderJavapony extends EntityRender {
 
@@ -78,14 +78,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addStaticPart(
 			new PppBuilder(
 				WorldRenderProgram.getDefault(),
-				BlockFace.mapToFaces(
-					tailStartTexture,
-					tailStartTexture,
-					tailStartTexture,
-					tailStartTexture,
-					tailStartTexture,
-					tailStartTexture
-				)
+				tailStartTexture
 			)
 				.setOrigin(-60, -4, 14)
 				.setDepth(32, 0, -16).setWidth(8).setHeight(8)
@@ -97,14 +90,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addStaticPart(
 			new PppBuilder(
 				WorldRenderProgram.getDefault(),
-				BlockFace.mapToFaces(
-					neckTexture,
-					neckTexture,
-					neckTexture,
-					neckTexture,
-					neckTexture,
-					neckTexture
-				)
+				neckTexture
 			)
 				.setOrigin(0, -8, 8)
 				.setWidth(16).setDepth(16).setHeight(2, 0, 16)
@@ -124,11 +110,11 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 	private static Renderable createMainBody(ComplexTexture texture) {
 		WorldRenderProgram program = WorldRenderProgram.getDefault();
-		List<Face> faces = new ArrayList<>();
+		List<ShapePart> faces = new ArrayList<>();
 
 		// F BODY
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(80, 16, 32, 32),
 				Colors.WHITE,
@@ -141,7 +127,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// NECK BASE
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(80, 48, 32, 16),
 				Colors.WHITE,
@@ -154,7 +140,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// T BODY (BACK)
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(128, 0, 32, 48),
 				Colors.WHITE,
@@ -167,7 +153,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// BOTTOM B (upper)
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(144, 48, 32, 16),
 				Colors.WHITE,
@@ -180,7 +166,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// BOTTOM B (lower)
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(144, 48, 32, 16),
 				Colors.WHITE,
@@ -193,7 +179,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// BOTTOM B (stomach)
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(144, 48, 32, 16),
 				Colors.WHITE,
@@ -206,7 +192,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// STOMACH
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(224, 96, 32, 32),
 				Colors.WHITE,
@@ -219,7 +205,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// BOTTOM F
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(112, 48, 32, 16),
 				Colors.WHITE,
@@ -232,7 +218,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// BODY L
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(112, 16, 16, 32),
 				Colors.WHITE,
@@ -245,7 +231,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// BODY SIDES (left)
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(96, 96, 32, 32),
 				Colors.WHITE,
@@ -258,7 +244,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// QT MARK (left)
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(16, 96, 16, 32),
 				Colors.WHITE,
@@ -271,7 +257,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// BODY R
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(64, 16, 16, 32),
 				Colors.WHITE,
@@ -284,7 +270,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// BODY SIDES (right)
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(96, 96, 32, 32),
 				Colors.WHITE,
@@ -297,7 +283,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 
 		// QT MARK (right)
 		faces.add(
-			Faces.createRectangle(
+			ShapeParts.createRectangle(
 				program,
 				texture.get(16, 96, 16, 32),
 				Colors.WHITE,
@@ -311,7 +297,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		return new Shape(
 			Usage.STATIC,
 			program,
-			faces.toArray(new Face[faces.size()])
+			faces.toArray(new ShapePart[faces.size()])
 		);
 	}
 
@@ -360,7 +346,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addPart(
 			new PppBuilder(
 				program,
-				BlockFace.mapToFaces(
+				AbsFace.mapToFaces(
 					texture.get(32, 64, 0, 0),
 					texture.get(32, 64, 0, 0),
 					texture.get(32 + 8, 64, 16, 8),
@@ -375,7 +361,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addPart(
 			new PppBuilder(
 				program,
-				BlockFace.mapToFaces(
+				AbsFace.mapToFaces(
 					texture.get(32, 64, 0, 0),
 					texture.get(32, 64, 0, 0),
 					texture.get(32 + 12, 64 + 8, 8, 4),
@@ -416,7 +402,7 @@ public class TestEntityRenderJavapony extends EntityRender {
 		b.addPart(
 			new PppBuilder(
 				program,
-				BlockFace.mapToFaces(
+				AbsFace.mapToFaces(
 					texture.get(128, 96, 16, 16),
 					texture.get(128, 96, 16, 16),
 					texture.get(128, 96, 16, 32),

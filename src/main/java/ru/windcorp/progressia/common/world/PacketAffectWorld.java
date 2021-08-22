@@ -26,6 +26,6 @@ public abstract class PacketAffectWorld extends Packet {
 		super(id);
 	}
 
-	public abstract void apply(WorldData world);
+	public abstract void apply(DefaultWorldData world);
 
 }

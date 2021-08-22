@@ -19,18 +19,23 @@
 package ru.windcorp.progressia.client.graphics.gui;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.lwjgl.glfw.GLFW;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.backend.InputTracker;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.gui.event.ChildAddedEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.ChildRemovedEvent;
+import ru.windcorp.progressia.client.graphics.gui.event.EnableEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.FocusEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.HoverEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.ParentChangedEvent;
@@ -61,6 +66,8 @@ public class Component extends Named {
 
 	private Object layoutHint = null;
 	private Layout layout = null;
+	
+	private boolean isEnabled = true;
 
 	private boolean isFocusable = false;
 	private boolean isFocused = false;
@@ -285,8 +292,29 @@ public class Component extends Named {
 		return this;
 	}
 
+	/**
+	 * Checks whether this component is focusable. A component needs to be
+	 * focusable to become focused. A component that is focusable may not
+	 * necessarily be ready to gain focus (see {@link #canGainFocusNow()}).
+	 * 
+	 * @return {@code true} iff the component is focusable
+	 * @see #canGainFocusNow()
+	 */
 	public boolean isFocusable() {
 		return isFocusable;
+	}
+	
+	/**
+	 * Checks whether this component can become focused at this moment.
+	 * <p>
+	 * The implementation of this method in {@link Component} considers the
+	 * component a focus candidate if it is both focusable and enabled.
+	 * 
+	 * @return {@code true} iff the component can receive focus
+	 * @see #isFocusable()
+	 */
+	public boolean canGainFocusNow() {
+		return isFocusable() && isEnabled();
 	}
 
 	public Component setFocusable(boolean focusable) {
@@ -337,7 +365,7 @@ public class Component extends Named {
 				return;
 			}
 
-			if (component.isFocusable()) {
+			if (component.canGainFocusNow()) {
 				setFocused(false);
 				component.setFocused(true);
 				return;
@@ -379,7 +407,7 @@ public class Component extends Named {
 				return;
 			}
 
-			if (component.isFocusable()) {
+			if (component.canGainFocusNow()) {
 				setFocused(false);
 				component.setFocused(true);
 				return;
@@ -432,13 +460,52 @@ public class Component extends Named {
 
 		return null;
 	}
+	
+	public boolean isEnabled() {
+		return isEnabled;
+	}
+	
+	/**
+	 * Enables or disables this component. An {@link EnableEvent} is dispatched
+	 * if the state changes.
+	 * 
+	 * @param enabled {@code true} to enable the component, {@code false} to
+	 *                disable the component
+	 * @see #setEnabledRecursively(boolean)
+	 */
+	public void setEnabled(boolean enabled) {
+		if (this.isEnabled != enabled) {
+			if (isFocused() && isEnabled()) {
+				focusNext();
+			}
+			
+			if (isEnabled()) {
+				setHovered(false);
+			}
+
+			this.isEnabled = enabled;
+			dispatchEvent(new EnableEvent(this));
+		}
+	}
+
+	/**
+	 * Enables or disables this component and all of its children recursively.
+	 * 
+	 * @param enabled {@code true} to enable the components, {@code false} to
+	 *                disable the components
+	 * @see #setEnabled(boolean)
+	 */
+	public void setEnabledRecursively(boolean enabled) {
+		setEnabled(enabled);
+		getChildren().forEach(c -> c.setEnabledRecursively(enabled));
+	}
 
 	public boolean isHovered() {
 		return isHovered;
 	}
 
 	protected void setHovered(boolean isHovered) {
-		if (this.isHovered != isHovered) {
+		if (this.isHovered != isHovered && isEnabled()) {
 			this.isHovered = isHovered;
 
 			if (!isHovered && !getChildren().isEmpty()) {
@@ -502,7 +569,7 @@ public class Component extends Named {
 	}
 
 	protected void handleInput(Input input) {
-		if (inputBus != null) {
+		if (inputBus != null && isEnabled()) {
 			inputBus.dispatch(input);
 		}
 	}
@@ -598,6 +665,17 @@ public class Component extends Named {
 		}
 	}
 
+	/**
+	 * Schedules the reassembly to occur.
+	 * <p>
+	 * This method is invoked in root components whenever a
+	 * {@linkplain #requestReassembly() reassembly request} is made by one of
+	 * its children. When creating the dedicated root component, override this
+	 * method to perform any implementation-specific actions that will cause a
+	 * reassembly as soon as possible.
+	 * <p>
+	 * The default implementation of this method does nothing.
+	 */
 	protected void handleReassemblyRequest() {
 		// To be overridden
 	}
@@ -636,6 +714,135 @@ public class Component extends Named {
 
 	protected void assembleChildren(RenderTarget target) {
 		getChildren().forEach(child -> child.assemble(target));
+	}
+	
+	/*
+	 * Automatic Reassembly
+	 */
+
+	/**
+	 * The various kinds of changes that may be used with
+	 * {@link Component#reassembleAt(ARTrigger...)}.
+	 */
+	protected static enum ARTrigger {
+		/**
+		 * Reassemble the component whenever its hover status changes, e.g.
+		 * whenever the pointer enters or leaves its bounds.
+		 */
+		HOVER,
+
+		/**
+		 * Reassemble the component whenever it gains or loses focus.
+		 * <p>
+		 * <em>Component must be focusable to be able to gain focus.</em> The
+		 * component will not be reassembled unless
+		 * {@link Component#setFocusable(boolean) setFocusable(true)} has been
+		 * invoked.
+		 */
+		FOCUS,
+
+		/**
+		 * Reassemble the component whenever it is enabled or disabled.
+		 */
+		ENABLE
+	}
+
+	/**
+	 * All trigger objects (event listeners) that are currently registered with
+	 * {@link #eventBus}. The field is {@code null} until the first trigger is
+	 * installed.
+	 */
+	private Map<ARTrigger, Object> autoReassemblyTriggerObjects = null;
+
+	private Object createTriggerObject(ARTrigger type) {
+		switch (type) {
+		case HOVER:
+			return new Object() {
+				@Subscribe
+				public void onHoverChanged(HoverEvent e) {
+					requestReassembly();
+				}
+			};
+		case FOCUS:
+			return new Object() {
+				@Subscribe
+				public void onFocusChanged(FocusEvent e) {
+					requestReassembly();
+				}
+			};
+		case ENABLE:
+			return new Object() {
+				@Subscribe
+				public void onEnabled(EnableEvent e) {
+					requestReassembly();
+				}
+			};
+		default:
+			throw new NullPointerException("type");
+		}
+	}
+
+	/**
+	 * Requests that {@link #requestReassembly()} is invoked on this component
+	 * whenever any of the specified changes occur. Duplicate attempts to
+	 * register the same trigger are silently ignored.
+	 * <p>
+	 * {@code triggers} may be empty, which results in a no-op. It must not be
+	 * {@code null}.
+	 * 
+	 * @param triggers the {@linkplain ARTrigger triggers} to
+	 *                 request reassembly with.
+	 * @see #disableAutoReassemblyAt(ARTrigger...)
+	 */
+	protected synchronized void reassembleAt(ARTrigger... triggers) {
+
+		Objects.requireNonNull(triggers, "triggers");
+		if (triggers.length == 0)
+			return;
+
+		if (autoReassemblyTriggerObjects == null) {
+			autoReassemblyTriggerObjects = new EnumMap<>(ARTrigger.class);
+		}
+
+		for (ARTrigger trigger : triggers) {
+			if (!autoReassemblyTriggerObjects.containsKey(trigger)) {
+				Object triggerObject = createTriggerObject(trigger);
+				addListener(trigger);
+				autoReassemblyTriggerObjects.put(trigger, triggerObject);
+			}
+		}
+
+	}
+
+	/**
+	 * Requests that {@link #requestReassembly()} is no longer invoked on this
+	 * component whenever any of the specified changes occur. After a trigger is
+	 * removed, it may be reinstalled with
+	 * {@link #reassembleAt(ARTrigger...)}. Attempts to remove a
+	 * nonexistant trigger are silently ignored.
+	 * <p>
+	 * {@code triggers} may be empty, which results in a no-op. It must not be
+	 * {@code null}.
+	 * 
+	 * @param triggers the {@linkplain ARTrigger triggers} to remove
+	 * @see #reassemblyAt(ARTrigger...)
+	 */
+	protected synchronized void disableAutoReassemblyAt(ARTrigger... triggers) {
+
+		Objects.requireNonNull(triggers, "triggers");
+		if (triggers.length == 0)
+			return;
+
+		if (autoReassemblyTriggerObjects == null)
+			return;
+
+		for (ARTrigger trigger : triggers) {
+			Object triggerObject = autoReassemblyTriggerObjects.remove(trigger);
+			if (triggerObject != null) {
+				removeListener(trigger);
+			}
+		}
+
 	}
 
 	// /**

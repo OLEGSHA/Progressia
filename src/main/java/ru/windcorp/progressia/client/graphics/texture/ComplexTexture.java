@@ -21,7 +21,7 @@ package ru.windcorp.progressia.client.graphics.texture;
 import java.util.Map;
 
 import glm.vec._2.Vec2;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class ComplexTexture {
 
@@ -54,14 +54,14 @@ public class ComplexTexture {
 		);
 	}
 
-	public Map<BlockFace, Texture> getCuboidTextures(
+	public Map<AbsFace, Texture> getCuboidTextures(
 		int x,
 		int y,
 		int width,
 		int height,
 		int depth
 	) {
-		return BlockFace.mapToFaces(
+		return AbsFace.mapToFaces(
 			get(
 				x + depth + width,
 				y + height + depth,
@@ -86,7 +86,7 @@ public class ComplexTexture {
 		);
 	}
 
-	public Map<BlockFace, Texture> getCuboidTextures(
+	public Map<AbsFace, Texture> getCuboidTextures(
 		int x,
 		int y,
 		int size

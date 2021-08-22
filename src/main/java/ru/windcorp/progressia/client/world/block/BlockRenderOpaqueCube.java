@@ -19,7 +19,7 @@
 package ru.windcorp.progressia.client.world.block;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public class BlockRenderOpaqueCube extends BlockRenderTexturedCube {
 
@@ -29,8 +29,8 @@ public class BlockRenderOpaqueCube extends BlockRenderTexturedCube {
 		Texture bottomTexture,
 		Texture northTexture,
 		Texture southTexture,
-		Texture eastTexture,
-		Texture westTexture
+		Texture westTexture,
+		Texture eastTexture
 	) {
 		super(
 			id,
@@ -38,8 +38,8 @@ public class BlockRenderOpaqueCube extends BlockRenderTexturedCube {
 			bottomTexture,
 			northTexture,
 			southTexture,
-			eastTexture,
-			westTexture
+			westTexture,
+			eastTexture
 		);
 	}
 
@@ -54,9 +54,21 @@ public class BlockRenderOpaqueCube extends BlockRenderTexturedCube {
 			texture
 		);
 	}
+	
+	public BlockRenderOpaqueCube(String id, Texture topTexture, Texture bottomTexture, Texture sideTexture) {
+		this(
+			id,
+			topTexture,
+			bottomTexture,
+			sideTexture,
+			sideTexture,
+			sideTexture,
+			sideTexture
+		);
+	}
 
 	@Override
-	public boolean isOpaque(BlockFace face) {
+	public boolean isOpaque(RelFace face) {
 		return true;
 	}
 

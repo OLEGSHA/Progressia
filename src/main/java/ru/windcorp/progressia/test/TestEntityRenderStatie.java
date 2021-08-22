@@ -44,7 +44,7 @@ public class TestEntityRenderStatie extends EntityRender {
 	public EntityRenderable createRenderable(EntityData entity) {
 		return new EntityRenderable(entity) {
 			@Override
-			public void render(ShapeRenderHelper renderer) {
+			public void doRender(ShapeRenderHelper renderer) {
 				renderer.pushTransform().scale(
 					((TestEntityDataStatie) entity).getSize() / 24.0f
 				);

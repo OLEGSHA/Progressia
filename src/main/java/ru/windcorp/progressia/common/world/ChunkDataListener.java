@@ -20,7 +20,7 @@ package ru.windcorp.progressia.common.world;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 public interface ChunkDataListener {
@@ -36,7 +36,7 @@ public interface ChunkDataListener {
 	 * @param previous     the previous occupant of {@code blockInChunk}
 	 * @param current      the current (new) occupant of {@code blockInChunk}
 	 */
-	default void onChunkBlockChanged(ChunkData chunk, Vec3i blockInChunk, BlockData previous, BlockData current) {
+	default void onChunkBlockChanged(DefaultChunkData chunk, Vec3i blockInChunk, BlockData previous, BlockData current) {
 	}
 
 	/**
@@ -53,9 +53,9 @@ public interface ChunkDataListener {
 	 *                     {@code false} iff the tile has been removed
 	 */
 	default void onChunkTilesChanged(
-		ChunkData chunk,
+		DefaultChunkData chunk,
 		Vec3i blockInChunk,
-		BlockFace face,
+		RelFace face,
 		TileData tile,
 		boolean wasAdded
 	) {
@@ -70,7 +70,7 @@ public interface ChunkDataListener {
 	 * 
 	 * @param chunk the chunk that has changed
 	 */
-	default void onChunkChanged(ChunkData chunk) {
+	default void onChunkChanged(DefaultChunkData chunk) {
 	}
 
 	/**
@@ -78,7 +78,7 @@ public interface ChunkDataListener {
 	 * 
 	 * @param chunk the chunk that has loaded
 	 */
-	default void onChunkLoaded(ChunkData chunk) {
+	default void onChunkLoaded(DefaultChunkData chunk) {
 	}
 
 	/**
@@ -86,7 +86,7 @@ public interface ChunkDataListener {
 	 * 
 	 * @param chunk the chunk that is going to be loaded
 	 */
-	default void beforeChunkUnloaded(ChunkData chunk) {
+	default void beforeChunkUnloaded(DefaultChunkData chunk) {
 	}
 
 }

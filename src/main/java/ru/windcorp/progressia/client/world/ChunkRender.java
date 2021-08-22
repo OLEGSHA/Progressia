@@ -27,25 +27,29 @@ import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.block.BlockRenderRegistry;
 import ru.windcorp.progressia.client.world.tile.TileRender;
+import ru.windcorp.progressia.client.world.tile.TileRenderReference;
 import ru.windcorp.progressia.client.world.tile.TileRenderRegistry;
 import ru.windcorp.progressia.client.world.tile.TileRenderStack;
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
-import ru.windcorp.progressia.common.world.generic.GenericChunk;
-import ru.windcorp.progressia.common.world.tile.TileDataStack;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
+import ru.windcorp.progressia.common.world.TileDataReference;
+import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.generic.ChunkGenericRO;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public class ChunkRender
-	implements GenericChunk<ChunkRender, BlockRender, TileRender, TileRenderStack> {
+	implements ChunkGenericRO<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender> {
 
 	private final WorldRender world;
-	private final ChunkData data;
+	private final DefaultChunkData data;
 
 	private final ChunkRenderModel model;
 
 	private final Map<TileDataStack, TileRenderStackImpl> tileRenderLists = Collections
 		.synchronizedMap(new WeakHashMap<>());
 
-	public ChunkRender(WorldRender world, ChunkData data) {
+	public ChunkRender(WorldRender world, DefaultChunkData data) {
 		this.world = world;
 		this.data = data;
 		this.model = new ChunkRenderModel(this);
@@ -54,6 +58,11 @@ public class ChunkRender
 	@Override
 	public Vec3i getPosition() {
 		return getData().getPosition();
+	}
+	
+	@Override
+	public AbsFace getUp() {
+		return getData().getUp();
 	}
 
 	@Override
@@ -84,11 +93,11 @@ public class ChunkRender
 		return world;
 	}
 
-	public ChunkData getData() {
+	public DefaultChunkData getData() {
 		return data;
 	}
 
-	public synchronized void markForUpdate() {
+	public void markForUpdate() {
 		getWorld().markChunkForUpdate(getPosition());
 	}
 
@@ -101,6 +110,28 @@ public class ChunkRender
 	}
 
 	private class TileRenderStackImpl extends TileRenderStack {
+		private class TileRenderReferenceImpl implements TileRenderReference {
+			private final TileDataReference parent;
+
+			public TileRenderReferenceImpl(TileDataReference parent) {
+				this.parent = parent;
+			}
+
+			@Override
+			public TileRender get() {
+				return TileRenderRegistry.getInstance().get(parent.get().getId());
+			}
+
+			@Override
+			public int getIndex() {
+				return parent.getIndex();
+			}
+
+			@Override
+			public TileRenderStack getStack() {
+				return TileRenderStackImpl.this;
+			}
+		}
 
 		private final TileDataStack parent;
 
@@ -119,8 +150,23 @@ public class ChunkRender
 		}
 
 		@Override
-		public BlockFace getFace() {
+		public RelFace getFace() {
 			return parent.getFace();
+		}
+		
+		@Override
+		public TileRenderReference getReference(int index) {
+			return new TileRenderReferenceImpl(parent.getReference(index));
+		}
+
+		@Override
+		public int getIndexByTag(int tag) {
+			return parent.getIndexByTag(tag);
+		}
+
+		@Override
+		public int getTagByIndex(int index) {
+			return parent.getTagByIndex(index);
 		}
 
 		@Override

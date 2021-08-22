@@ -29,12 +29,13 @@ import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.Label;
-import ru.windcorp.progressia.client.graphics.gui.Panel;
+import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.client.localization.MutableString;
 import ru.windcorp.progressia.client.localization.MutableStringLocalized;
+import ru.windcorp.progressia.client.world.WorldRender;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.dynstr.DynamicStrings;
 import ru.windcorp.progressia.server.Server;
@@ -50,14 +51,14 @@ public class LayerTestGUI extends GUILayer {
 	public LayerTestGUI() {
 		super("LayerTestGui", new LayoutAlign(0, 1, 5));
 
-		Panel panel = new Panel("ControlDisplays", new LayoutVertical(5));
+		Group group = new Group("ControlDisplays", new LayoutVertical(5));
 
 		Vec4 color = Colors.WHITE;
 		Font font = new Font().withColor(color).deriveOutlined();
 
 		TestPlayerControls tpc = TestPlayerControls.getInstance();
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"IsFlyingDisplay",
 				font,
@@ -65,7 +66,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"IsSprintingDisplay",
 				font,
@@ -73,15 +74,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
-			new Label(
-				"IsMouseCapturedDisplay",
-				font,
-				tmp_dynFormat("LayerTestGUI.IsMouseCapturedDisplay", tpc::isMouseCaptured)
-			)
-		);
-
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"CameraModeDisplay",
 				font,
@@ -92,18 +85,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
-			new Label(
-				"GravityModeDisplay",
-				font,
-				tmp_dynFormat(
-					"LayerTestGUI.GravityModeDisplay",
-					() -> tpc.useMinecraftGravity() ? "Minecraft" : "Realistic"
-				)
-			)
-		);
-
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"LanguageDisplay",
 				font,
@@ -111,7 +93,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"FullscreenDisplay",
 				font,
@@ -119,7 +101,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"VSyncDisplay",
 				font,
@@ -127,7 +109,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new DynamicLabel(
 				"FPSDisplay",
 				font,
@@ -139,7 +121,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new DynamicLabel(
 				"TPSDisplay",
 				font,
@@ -147,20 +129,43 @@ public class LayerTestGUI extends GUILayer {
 				128
 			)
 		);
-
-		panel.addChild(
+		
+		group.addChild(
 			new DynamicLabel(
-				"ChunkUpdatesDisplay",
+				"ChunkStatsDisplay",
 				font,
 				DynamicStrings.builder()
-					.addDyn(new MutableStringLocalized("LayerTestGUI.ChunkUpdatesDisplay"))
-					.addDyn(ClientState.getInstance().getWorld()::getPendingChunkUpdates)
+					.addDyn(new MutableStringLocalized("LayerTestGUI.ChunkStatsDisplay"))
+					.addDyn(() -> {
+						if (ClientState.getInstance() == null) {
+							return -1;
+						} else {
+							WorldRender world = ClientState.getInstance().getWorld();
+							return world.getChunks().size() - world.getPendingChunkUpdates();
+						}
+					}, 4)
+					.add('/')
+					.addDyn(() -> {
+						if (ClientState.getInstance() == null) {
+							return -1;
+						} else {
+							return ClientState.getInstance().getWorld().getPendingChunkUpdates();
+						}
+					}, 4)
+					.add('/')
+					.addDyn(() -> {
+						if (ServerState.getInstance() == null) {
+							return -1;
+						} else {
+							return ServerState.getInstance().getWorld().getChunks().size();
+						}
+					}, 4)
 					.buildSupplier(),
 				128
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new DynamicLabel(
 				"PosDisplay",
 				font,
@@ -169,7 +174,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"SelectedBlockDisplay",
 				font,
@@ -180,7 +185,7 @@ public class LayerTestGUI extends GUILayer {
 				)
 			)
 		);
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"SelectedTileDisplay",
 				font,
@@ -191,7 +196,7 @@ public class LayerTestGUI extends GUILayer {
 				)
 			)
 		);
-		panel.addChild(
+		group.addChild(
 			new Label(
 				"PlacementModeHint",
 				font,
@@ -199,7 +204,7 @@ public class LayerTestGUI extends GUILayer {
 			)
 		);
 
-		getRoot().addChild(panel);
+		getRoot().addChild(group);
 	}
 
 	public Runnable getUpdateCallback() {

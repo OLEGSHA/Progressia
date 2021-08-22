@@ -27,7 +27,7 @@ import glm.vec._3.Vec3;
 import ru.windcorp.progressia.common.collision.*;
 import ru.windcorp.progressia.common.util.LowOverheadCache;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 
 public class Collider {
 
@@ -36,7 +36,7 @@ public class Collider {
 	/**
 	 * Dear Princess Celestia,
 	 * <p>
-	 * When {@linkplain #advanceTime(Collection, Collision, WorldData, float)
+	 * When {@linkplain #advanceTime(Collection, Collision, DefaultWorldData, float)
 	 * advancing time},
 	 * time step for all entities <em>except</em> currently colliding bodies is
 	 * the current
@@ -61,7 +61,7 @@ public class Collider {
 
 	public static void performCollisions(
 		List<? extends Collideable> colls,
-		WorldData world,
+		DefaultWorldData world,
 		float tickLength,
 		ColliderWorkspace workspace
 	) {
@@ -96,7 +96,7 @@ public class Collider {
 	private static Collision getFirstCollision(
 		List<? extends Collideable> colls,
 		float tickLength,
-		WorldData world,
+		DefaultWorldData world,
 		ColliderWorkspace workspace
 	) {
 		Collision result = null;
@@ -126,7 +126,7 @@ public class Collider {
 	private static void tuneWorldCollisionHelper(
 		Collideable coll,
 		float tickLength,
-		WorldData world,
+		DefaultWorldData world,
 		ColliderWorkspace workspace
 	) {
 		WorldCollisionHelper wch = workspace.worldCollisionHelper;
@@ -194,7 +194,7 @@ public class Collider {
 		Collision collision,
 
 		Collection<? extends Collideable> colls,
-		WorldData world,
+		DefaultWorldData world,
 		float tickLength,
 		ColliderWorkspace workspace
 	) {
@@ -212,66 +212,72 @@ public class Collider {
 		handlePhysics(collision);
 	}
 
+	// @formatter:off
 	/*
 	 * Here we compute the change in body velocities due to a collision.
+	 * 
 	 * We make the following simplifications:
-	 * 1) The bodies are perfectly rigid;
-	 * 2) The collision is perfectly inelastic
-	 * (no bouncing);
-	 * 3) The bodies are spherical;
-	 * 4) No tangential friction exists
-	 * (bodies do not experience friction when sliding against each other);
-	 * 5) Velocities are not relativistic.
+	 *   1)  The bodies are perfectly rigid;
+	 *   2)  The collision is perfectly inelastic
+	 *       (no bouncing);
+	 *   3)  The bodies are spherical;
+	 *   4)  No tangential friction exists
+	 *       (bodies do not experience friction when sliding against each other);
+	 *   5)  Velocities are not relativistic.
+	 *   
 	 * Angular momentum is ignored per 3) and 4),
-	 * e.g. when something pushes an end of a long stick, the stick does not
-	 * rotate.
+	 * e.g. when something pushes an end of a long stick, the stick does not rotate.
+	 * 
 	 * DETAILED EXPLANATION:
-	 * Two spherical (sic) bodies, a and b, experience a perfectly inelastic
-	 * collision
+	 * 
+	 * Two spherical (sic) bodies, a and b, experience a perfectly inelastic collision
 	 * along a unit vector
-	 * _ _ _ _ _
-	 * n = (w ⨯ h) / (|w ⨯ h|),
-	 * _ _
+	 *   _    _   _      _   _
+	 *   n = (w ⨯ h) / (|w ⨯ h|),
+	 *       _     _
 	 * where w and h are two noncollinear nonzero vectors on the dividing plane.
-	 * ___ ___
+	 *                                             ___  ___
 	 * Body masses and velocities are M_a, M_b and v_a, v_b, respectively.
-	 * ___ ___
+	 *                                            ___     ___
 	 * After the collision desired velocities are u_a and u_b, respectively.
-	 * _
-	 * (Notation convention: suffix 'n' denotes a vector projection onto vector
-	 * n,
+	 *                                                                          _
+	 * (Notation convention: suffix 'n' denotes a vector projection onto vector n,
 	 * and suffix 't' denotes a vector projection onto the dividing plane.)
-	 * Consider the law of conservation of momentum for axis n and the dividing
-	 * plane:
-	 * ____________ ____________ ________________
-	 * n: ⎧ p_a_before_n + p_b_before_n = p_common_after_n;
-	 * ⎨ ___________ ____________
-	 * t: ⎩ p_i_after_t = p_i_before_t for any i in {a, b}.
+	 * 
+	 * Consider the law of conservation of momentum for axis n and the dividing plane:
+	 *        ____________   ____________   ________________
+	 *   n: ⎧ p_a_before_n + p_b_before_n = p_common_after_n;
+	 *      ⎨ ___________   ____________
+	 *   t: ⎩ p_i_after_t = p_i_before_t    for any i in {a, b}.
+	 *   
 	 * Expressing all p_* in given terms:
-	 * ___ _ ___ _ ___ ___ ____ ____
-	 * n: ⎧ M_a * (v_a ⋅ n) + M_b * (v_b ⋅ n) = (M_a + M_b) * u_n, where u_n ≡
-	 * u_an = u_bn;
-	 * ⎨ ____ ___ _ ___ _
-	 * t: ⎩ u_it = v_i - n * (v_i ⋅ n) for any i in {a, b}.
+	 *               ___   _           ___   _                  ___           ___   ____   ____
+	 *   n: ⎧ M_a * (v_a ⋅ n) + M_b * (v_b ⋅ n) = (M_a + M_b) * u_n,    where u_n ≡ u_an = u_bn;
+	 *      ⎨ ____   ___   _    ___   _
+	 *   t: ⎩ u_it = v_i - n * (v_i ⋅ n)                                for any i in {a, b}.
+	 *   
 	 * Therefore:
-	 * ___ _ ___ _ ___ _
-	 * u_n = n * ( M_a/(M_a + M_b) * v_a ⋅ n + M_b/(M_a + M_b) * v_b ⋅ n );
+	 *   ___   _                       ___   _                       ___   _
+	 *   u_n = n * ( M_a/(M_a + M_b) * v_a ⋅ n  +  M_b/(M_a + M_b) * v_b ⋅ n );
+	 * 
 	 * or, equivalently,
-	 * ___ _ ___ _ ___ _
-	 * u_n = n * ( m_a * v_a ⋅ n + m_b * v_b ⋅ n ),
+	 *   ___   _           ___   _           ___   _
+	 *   u_n = n * ( m_a * v_a ⋅ n  +  m_b * v_b ⋅ n ),
+	 * 
 	 * where m_a and m_b are relative masses (see below).
+	 * 
 	 * Finally,
-	 * ___ ____ ___
-	 * u_i = u_it + u_n for any i in {a, b}.
-	 * The usage of relative masses m_i permits a convenient generalization of
-	 * the algorithm
-	 * for infinite masses, signifying masses "significantly greater" than
-	 * finite masses:
-	 * 1) If both M_a and M_b are finite, let m_i = M_i / (M_a + M_b) for any i
-	 * in {a, b}.
-	 * 2) If M_i is finite but M_j is infinite, let m_i = 0 and m_j = 1.
-	 * 3) If both M_a and M_b are infinite, let m_i = 1/2 for any i in {a, b}.
+	 *   ___   ____   ___
+	 *   u_i = u_it + u_n    for any i in {a, b}.
+	 *   
+	 * The usage of relative masses m_i permits a convenient generalization of the algorithm
+	 * for infinite masses, signifying masses "significantly greater" than finite masses:
+	 * 
+	 *   1)  If both M_a and M_b are finite,       let m_i = M_i / (M_a + M_b)    for any i in {a, b}.
+	 *   2)  If M_i is finite but M_j is infinite, let m_i = 0 and m_j = 1.
+	 *   3)  If both M_a and M_b are infinite,     let m_i = 1/2                  for any i in {a, b}.
 	 */
+	// @formatter:on
 	private static void handlePhysics(Collision collision) {
 		// Fuck JGLM
 		Vec3 n = Vectors.grab3();
@@ -355,7 +361,7 @@ public class Collider {
 	private static void advanceTime(
 		Collection<? extends Collideable> colls,
 		Collision exceptions,
-		WorldData world,
+		DefaultWorldData world,
 		float step
 	) {
 		world.advanceTime(step);

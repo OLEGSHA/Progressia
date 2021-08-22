@@ -18,7 +18,7 @@
  
 package ru.windcorp.progressia.test;
 
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 
 public class TestBlockLogicGlass extends BlockLogic {
@@ -28,7 +28,7 @@ public class TestBlockLogicGlass extends BlockLogic {
 	}
 
 	@Override
-	public boolean isSolid(BlockFace face) {
+	public boolean isSolid(RelFace face) {
 		return false;
 	}
 

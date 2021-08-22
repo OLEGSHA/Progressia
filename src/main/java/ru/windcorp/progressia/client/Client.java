@@ -24,7 +24,7 @@ import ru.windcorp.progressia.client.graphics.world.Camera;
 import ru.windcorp.progressia.client.graphics.world.EntityAnchor;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.world.WorldRender;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class Client {
@@ -36,7 +36,7 @@ public class Client {
 
 	private final ServerCommsChannel comms;
 
-	public Client(WorldData world, ServerCommsChannel comms) {
+	public Client(DefaultWorldData world, ServerCommsChannel comms) {
 		this.world = new WorldRender(world, this);
 		this.comms = comms;
 

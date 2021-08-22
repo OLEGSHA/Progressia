@@ -24,7 +24,7 @@ import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class Shapes {
 
@@ -50,7 +50,7 @@ public class Shapes {
 		boolean flip
 	) {
 
-		Face top = Faces.createRectangle(
+		ShapePart top = ShapeParts.createRectangle(
 			program,
 			topTexture,
 			colorMultiplier,
@@ -60,7 +60,7 @@ public class Shapes {
 			flip
 		);
 
-		Face bottom = Faces.createRectangle(
+		ShapePart bottom = ShapeParts.createRectangle(
 			program,
 			bottomTexture,
 			colorMultiplier,
@@ -70,7 +70,7 @@ public class Shapes {
 			flip
 		);
 
-		Face north = Faces.createRectangle(
+		ShapePart north = ShapeParts.createRectangle(
 			program,
 			northTexture,
 			colorMultiplier,
@@ -80,7 +80,7 @@ public class Shapes {
 			flip
 		);
 
-		Face south = Faces.createRectangle(
+		ShapePart south = ShapeParts.createRectangle(
 			program,
 			southTexture,
 			colorMultiplier,
@@ -90,7 +90,7 @@ public class Shapes {
 			flip
 		);
 
-		Face east = Faces.createRectangle(
+		ShapePart east = ShapeParts.createRectangle(
 			program,
 			eastTexture,
 			colorMultiplier,
@@ -100,7 +100,7 @@ public class Shapes {
 			flip
 		);
 
-		Face west = Faces.createRectangle(
+		ShapePart west = ShapeParts.createRectangle(
 			program,
 			westTexture,
 			colorMultiplier,
@@ -165,16 +165,16 @@ public class Shapes {
 
 		public PppBuilder(
 			ShapeRenderProgram program,
-			Map<BlockFace, Texture> textureMap
+			Map<AbsFace, Texture> textureMap
 		) {
 			this(
 				program,
-				textureMap.get(BlockFace.TOP),
-				textureMap.get(BlockFace.BOTTOM),
-				textureMap.get(BlockFace.NORTH),
-				textureMap.get(BlockFace.SOUTH),
-				textureMap.get(BlockFace.EAST),
-				textureMap.get(BlockFace.WEST)
+				textureMap.get(AbsFace.POS_Z),
+				textureMap.get(AbsFace.NEG_Z),
+				textureMap.get(AbsFace.POS_X),
+				textureMap.get(AbsFace.NEG_X),
+				textureMap.get(AbsFace.NEG_Y),
+				textureMap.get(AbsFace.POS_Y)
 			);
 		}
 
