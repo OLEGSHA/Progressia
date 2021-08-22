@@ -20,9 +20,13 @@ package ru.windcorp.progressia.server;
 
 import java.util.function.Consumer;
 
+import glm.mat._3.Mat3;
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.Units;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.util.Matrices;
+import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.PlayerData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
@@ -55,15 +59,40 @@ public class Player extends PlayerData implements ChunkLoader {
 		Coordinates.convertInWorldToChunk(start, start);
 
 		Vec3i cursor = new Vec3i();
-		float radius = getServer().getLoadDistance(this) / Units.get(ChunkData.BLOCKS_PER_CHUNK, "m");
+		float radius = getServer().getLoadDistance(this) / Units.get(DefaultChunkData.BLOCKS_PER_CHUNK, "m");
 
 		float radiusSq = radius * radius;
 		int iRadius = (int) Math.ceil(radius);
 
+		// The sphere around the player is stretched by this factor vertically
+		// (along the player's up vector)
+		final float verticalStretching = 0.4f;
+		
+		float factor = (1/verticalStretching - 1);
+		Vec3 up = getServer().getWorld().getData().getGravityModel().getUp(getEntity().getPosition(), null);
+		
+		Mat3 transform = Matrices.grab3();
+		
+		//@formatter:off
+		transform.set(
+			1 + factor * up.x * up.x,   0 + factor * up.x * up.y,   0 + factor * up.x * up.z,
+			0 + factor * up.y * up.x,   1 + factor * up.y * up.y,   0 + factor * up.y * up.z,
+			0 + factor * up.z * up.x,   0 + factor * up.z * up.y,   1 + factor * up.z * up.z
+		);
+		//@formatter:on
+		
+		Vec3 transformedCursor = Vectors.grab3();
+		
 		for (cursor.x = -iRadius; cursor.x <= +iRadius; ++cursor.x) {
 			for (cursor.y = -iRadius; cursor.y <= +iRadius; ++cursor.y) {
 				for (cursor.z = -iRadius; cursor.z <= +iRadius; ++cursor.z) {
-					if (cursor.x * cursor.x + cursor.y * cursor.y + (cursor.z * 2) * (cursor.z * 2) <= radiusSq) {
+					
+					transformedCursor.set(cursor.x, cursor.y, cursor.z);
+					
+					// .mul(Vec3) is cursed
+					transform.mul(transformedCursor, transformedCursor);
+					
+					if (transformedCursor.dot(transformedCursor) <= radiusSq) {
 
 						cursor.add(start);
 						chunkConsumer.accept(cursor);
@@ -73,6 +102,9 @@ public class Player extends PlayerData implements ChunkLoader {
 				}
 			}
 		}
+		
+		Matrices.release(transform);
+		Vectors.release(transformedCursor);
 	}
 
 	public String getLogin() {

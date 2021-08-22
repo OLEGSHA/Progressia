@@ -24,7 +24,7 @@ import ru.windcorp.progressia.client.world.ChunkRender;
 import ru.windcorp.progressia.client.world.block.BlockRender;
 import ru.windcorp.progressia.client.world.tile.TileRender;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 /**
  * Chunk render optimizer (CRO) is an object that produces optimized models for
@@ -35,15 +35,22 @@ import ru.windcorp.progressia.common.world.block.BlockFace;
  * tiles. An example of a CRO is {@link ChunkRenderOptimizerSurface}: it removes
  * block surfaces and tiles that it knows cannot be seen, thus significantly
  * reducing total polygon count.
- * <h3>CRO lifecycle</h3> A CRO instance is created by
- * {@link ChunkRenderOptimizerRegistry}. It may then be used to work on multiple
- * chunks sequentially. Each chunk is processed in the following way:
+ * <p>
+ * As with everything related to rendering chunks, CROs are interacted with
+ * using the relative local chunk coordinate system. In this coordinate system,
+ * the coordinates are the chunk coordinates relativized using the chunks's up
+ * direction. In simpler terms, coordinates are {@code [0; BLOCKS_PER_CHUNK)}
+ * and Z is always up.
+ * <h3>CRO lifecycle</h3>
+ * A CRO instance is created by {@link ChunkRenderOptimizerRegistry}. It may
+ * then be used to work on multiple chunks sequentially. Each chunk is processed
+ * in the following way:
  * <ol>
  * <li>{@link #setup(ChunkRender)} is invoked to provide the {@link ChunkRender}
  * instance.</li>
  * <li>{@link #startRender()} is invoked. The CRO must reset its state.</li>
  * <li>{@link #addBlock(BlockRender, Vec3i)} and
- * {@link #addTile(TileRender, Vec3i, BlockFace)} are invoked for each block and
+ * {@link #addTile(TileRender, Vec3i, RelFace)} are invoked for each block and
  * tile that this CRO should optimize. {@code addTile} specifies tiles in order
  * of ascension within a tile stack.</li>
  * <li>{@link #endRender()} is invoked. The CRO may perform any pending
@@ -62,8 +69,7 @@ public abstract class ChunkRenderOptimizer extends Namespaced {
 	/**
 	 * Creates a new CRO instance with the specified ID.
 	 * 
-	 * @param id
-	 *            the ID of this CRO
+	 * @param id the ID of this CRO
 	 */
 	public ChunkRenderOptimizer(String id) {
 		super(id);
@@ -74,8 +80,7 @@ public abstract class ChunkRenderOptimizer extends Namespaced {
 	 * specify the chunk. When overriding, {@code super.setup(chunk)} must be
 	 * invoked.
 	 * 
-	 * @param chunk
-	 *            the chunk that will be processed next
+	 * @param chunk the chunk that will be processed next
 	 */
 	public void setup(ChunkRender chunk) {
 		this.chunk = chunk;
@@ -99,13 +104,13 @@ public abstract class ChunkRenderOptimizer extends Namespaced {
 	 * method is only invoked once per block. This method is not necessarily
 	 * invoked for each block.
 	 * 
-	 * @param block
-	 *            a {@link BlockRender} instance describing the block. It
-	 *            corresponds to {@code getChunk().getBlock(blockInChunk)}.
-	 * @param blockInChunk
-	 *            the position of the block
+	 * @param block           a {@link BlockRender} instance describing the
+	 *                        block.
+	 *                        It corresponds to
+	 *                        {@code getChunk().getBlock(blockInChunk)}.
+	 * @param relBlockInChunk the relative position of the block
 	 */
-	public abstract void addBlock(BlockRender block, Vec3i blockInChunk);
+	public abstract void addBlock(BlockRender block, Vec3i relBlockInChunk);
 
 	/**
 	 * Requests that this CRO processes the provided tile. This method may only
@@ -114,14 +119,12 @@ public abstract class ChunkRenderOptimizer extends Namespaced {
 	 * invoked for each tile. When multiple tiles in a tile stack are requested,
 	 * this method is invoked for lower tiles first.
 	 * 
-	 * @param tile
-	 *            a {@link BlockRender} instance describing the tile
-	 * @param blockInChunk
-	 *            the position of the block that the tile belongs to
-	 * @param blockFace
-	 *            the face that the tile belongs to
+	 * @param tile            a {@link BlockRender} instance describing the tile
+	 * @param relBlockInChunk the relative position of the block that the tile
+	 *                        belongs to
+	 * @param blockFace       the face that the tile belongs to
 	 */
-	public abstract void addTile(TileRender tile, Vec3i blockInChunk, BlockFace blockFace);
+	public abstract void addTile(TileRender tile, Vec3i relBlockInChunk, RelFace blockFace);
 
 	/**
 	 * Requests that the CRO assembles and outputs its model. This method may

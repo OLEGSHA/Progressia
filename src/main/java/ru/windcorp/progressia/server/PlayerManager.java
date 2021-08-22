@@ -15,17 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package ru.windcorp.progressia.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import glm.vec._2.Vec2;
+import glm.vec._3.Vec3;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
+import ru.windcorp.progressia.server.events.PlayerJoinedEvent;
 import ru.windcorp.progressia.test.TestContent;
 
 public class PlayerManager {
@@ -44,6 +45,7 @@ public class PlayerManager {
 
 	public void addPlayer(Player player) {
 		this.players.add(player);
+		getServer().postEvent(new PlayerJoinedEvent.Immutable(getServer(), player));
 	}
 
 	public EntityData conjurePlayerEntity(String login) {
@@ -60,12 +62,18 @@ public class PlayerManager {
 		EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
 
 		player.setEntityId(TestContent.PLAYER_ENTITY_ID);
-		player.setPosition(TestContent.SPAWN);
-		player.setDirection(new Vec2(Math.toRadians(40), Math.toRadians(10)));
+		player.setPosition(getServer().getWorld().getGenerator().suggestSpawnLocation());
+		
+		player.setUpVector(new Vec3(0, 0, 1));
+		player.setLookingAt(new Vec3(2, 1, 0));
 
 		getServer().getWorld().getData().addEntity(player);
 
 		return player;
+	}
+	
+	public Object getMutex() {
+		return players;
 	}
 
 	public Server getServer() {

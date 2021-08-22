@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +34,7 @@ import com.google.common.collect.ImmutableList;
 
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.ChunkDataListeners;
 import ru.windcorp.progressia.server.Server;
@@ -46,6 +46,12 @@ import ru.windcorp.progressia.server.Server;
  * @author javapony
  */
 public class TickerCoordinator {
+	
+	public enum TickPhase {
+		SYNCHRONOUS,
+		EVALUATION,
+		CHANGE
+	}
 
 	static final int INITIAL_QUEUE_SIZE = 1024;
 
@@ -75,7 +81,7 @@ public class TickerCoordinator {
 
 	private final AtomicInteger workingTickers = new AtomicInteger();
 
-	private final AtomicBoolean canChange = new AtomicBoolean(true);
+	private final AtomicReference<TickPhase> phase = new AtomicReference<>(TickPhase.SYNCHRONOUS);
 
 	private boolean isTickStartSet = false;
 	private long tickStart = -1;
@@ -94,17 +100,14 @@ public class TickerCoordinator {
 		}
 
 		this.tickers = ImmutableList.copyOf(tickerCollection);
-		this.threads = Collections2.transform(this.tickers, Ticker::getThread); // Immutable
-																				// because
-																				// it
-																				// is
-																				// a
-																				// view
+		
+		// Immutable because it is a view
+		this.threads = Collections2.transform(this.tickers, Ticker::getThread);
 
 		server.getWorld().getData().addListener(ChunkDataListeners.createAdder(new ChunkDataListener() {
 			@Override
-			public void onChunkChanged(ChunkData chunk) {
-				if (!canChange.get()) {
+			public void onChunkChanged(DefaultChunkData chunk) {
+				if (phase.get() == TickPhase.EVALUATION) {
 					throw CrashReports.report(null, "A change has been detected during evaluation phase");
 				}
 			}
@@ -154,8 +157,14 @@ public class TickerCoordinator {
 	public long getUptimeTicks() {
 		return ticks;
 	}
+	
+	public TickPhase getPhase() {
+		return phase.get();
+	}
 
 	private void onTickStart() {
+		phase.set(TickPhase.EVALUATION);
+		
 		long now = System.currentTimeMillis();
 
 		if (isTickStartSet) {
@@ -169,6 +178,7 @@ public class TickerCoordinator {
 
 	private void onTickEnd() {
 		ticks++;
+		phase.set(TickPhase.SYNCHRONOUS);
 	}
 
 	/*
@@ -210,9 +220,9 @@ public class TickerCoordinator {
 	}
 
 	private synchronized void runOnePass() throws InterruptedException {
-		canChange.set(false);
+		phase.set(TickPhase.EVALUATION);
 		runPassStage(pendingEvaluations, "EVALUATION");
-		canChange.set(true);
+		phase.set(TickPhase.CHANGE);
 		runPassStage(pendingChanges, "CHANGE");
 	}
 

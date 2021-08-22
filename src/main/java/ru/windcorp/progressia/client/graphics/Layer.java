@@ -30,14 +30,51 @@ public abstract class Layer {
 	private boolean hasInitialized = false;
 
 	private final AtomicBoolean isValid = new AtomicBoolean(false);
+	
+	/**
+	 * Represents various requests that a {@link Layer} can make regarding the
+	 * presence of a visible cursor. The value of the highest layer that is not
+	 * {@link #INDIFFERENT} is used.
+	 */
+	public static enum CursorPolicy {
+		/**
+		 * Require that a cursor is visible.
+		 */
+		REQUIRE,
+
+		/**
+		 * The {@link Layer} should not affect the presence or absence of a
+		 * visible cursor; lower layers should be consulted.
+		 */
+		INDIFFERENT,
+
+		/**
+		 * Forbid a visible cursor.
+		 */
+		FORBID
+	}
+	
+	private CursorPolicy cursorPolicy = CursorPolicy.INDIFFERENT;
 
 	public Layer(String name) {
 		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
 	}
 
 	@Override
 	public String toString() {
 		return "Layer " + name;
+	}
+	
+	public CursorPolicy getCursorPolicy() {
+		return cursorPolicy;
+	}
+	
+	public void setCursorPolicy(CursorPolicy cursorPolicy) {
+		this.cursorPolicy = cursorPolicy;
 	}
 
 	void render() {
@@ -77,6 +114,14 @@ public abstract class Layer {
 
 	protected int getHeight() {
 		return GraphicsInterface.getFrameHeight();
+	}
+	
+	protected void onAdded() {
+		// Do nothing
+	}
+	
+	protected void onRemoved() {
+		// Do nothing
 	}
 
 }

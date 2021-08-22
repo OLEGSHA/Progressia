@@ -15,63 +15,83 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package ru.windcorp.progressia.client.graphics.model;
 
-import static ru.windcorp.progressia.common.world.block.BlockFace.*;
+import static ru.windcorp.progressia.common.world.rels.AbsFace.*;
 
 import com.google.common.collect.ImmutableMap;
 
 import glm.vec._3.Vec3;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 class BlockFaceVectors {
 
 	private static BlockFaceVectors createInner(BlockFaceVectors outer) {
-		ImmutableMap.Builder<BlockFace, Vec3> originBuilder = ImmutableMap.builder();
+		ImmutableMap.Builder<AbsFace, Vec3> originBuilder = ImmutableMap.builder();
 
-		ImmutableMap.Builder<BlockFace, Vec3> widthBuilder = ImmutableMap.builder();
+		ImmutableMap.Builder<AbsFace, Vec3> widthBuilder = ImmutableMap.builder();
 
-		ImmutableMap.Builder<BlockFace, Vec3> heightBuilder = ImmutableMap.builder();
+		ImmutableMap.Builder<AbsFace, Vec3> heightBuilder = ImmutableMap.builder();
 
-		for (BlockFace face : getFaces()) {
+		for (AbsFace face : getFaces()) {
 			Vec3 width = outer.getWidth(face);
 			Vec3 height = outer.getHeight(face);
 
-			originBuilder.put(face, new Vec3(outer.getOrigin(face)));
+			originBuilder.put(
+				face,
+				new Vec3(outer.getOrigin(face))
+			);
 
 			widthBuilder.put(face, new Vec3(width));
 			heightBuilder.put(face, new Vec3(height));
 		}
 
-		return new BlockFaceVectors(originBuilder.build(), widthBuilder.build(), heightBuilder.build());
+		return new BlockFaceVectors(
+			originBuilder.build(),
+			widthBuilder.build(),
+			heightBuilder.build()
+		);
 	}
 
 	private static final BlockFaceVectors OUTER;
 	private static final BlockFaceVectors INNER;
 
 	static {
-		OUTER = new BlockFaceVectors(ImmutableMap.<BlockFace, Vec3>builder()
+		OUTER = new BlockFaceVectors(
+			ImmutableMap.<AbsFace, Vec3>builder()
 
-				.put(TOP, new Vec3(-0.5f, +0.5f, +0.5f)).put(BOTTOM, new Vec3(-0.5f, -0.5f, -0.5f))
-				.put(NORTH, new Vec3(+0.5f, -0.5f, -0.5f)).put(SOUTH, new Vec3(-0.5f, +0.5f, -0.5f))
-				.put(WEST, new Vec3(+0.5f, +0.5f, -0.5f)).put(EAST, new Vec3(-0.5f, -0.5f, -0.5f))
+				.put(POS_Z, new Vec3(-0.5f, +0.5f, +0.5f))
+				.put(NEG_Z, new Vec3(-0.5f, -0.5f, -0.5f))
+				.put(POS_X, new Vec3(+0.5f, -0.5f, -0.5f))
+				.put(NEG_X, new Vec3(-0.5f, +0.5f, -0.5f))
+				.put(POS_Y, new Vec3(+0.5f, +0.5f, -0.5f))
+				.put(NEG_Y, new Vec3(-0.5f, -0.5f, -0.5f))
 
 				.build(),
 
-				ImmutableMap.<BlockFace, Vec3>builder()
+			ImmutableMap.<AbsFace, Vec3>builder()
 
-						.put(TOP, new Vec3(0, -1, 0)).put(BOTTOM, new Vec3(0, +1, 0)).put(NORTH, new Vec3(0, +1, 0))
-						.put(SOUTH, new Vec3(0, -1, 0)).put(WEST, new Vec3(-1, 0, 0)).put(EAST, new Vec3(+1, 0, 0))
+				.put(POS_Z, new Vec3(0, -1, 0))
+				.put(NEG_Z, new Vec3(0, +1, 0))
+				.put(POS_X, new Vec3(0, +1, 0))
+				.put(NEG_X, new Vec3(0, -1, 0))
+				.put(POS_Y, new Vec3(-1, 0, 0))
+				.put(NEG_Y, new Vec3(+1, 0, 0))
 
-						.build(),
+				.build(),
 
-				ImmutableMap.<BlockFace, Vec3>builder()
+			ImmutableMap.<AbsFace, Vec3>builder()
 
-						.put(TOP, new Vec3(+1, 0, 0)).put(BOTTOM, new Vec3(+1, 0, 0)).put(NORTH, new Vec3(0, 0, +1))
-						.put(SOUTH, new Vec3(0, 0, +1)).put(WEST, new Vec3(0, 0, +1)).put(EAST, new Vec3(0, 0, +1))
+				.put(POS_Z, new Vec3(+1, 0, 0))
+				.put(NEG_Z, new Vec3(+1, 0, 0))
+				.put(POS_X, new Vec3(0, 0, +1))
+				.put(NEG_X, new Vec3(0, 0, +1))
+				.put(POS_Y, new Vec3(0, 0, +1))
+				.put(NEG_Y, new Vec3(0, 0, +1))
 
-						.build());
+				.build()
+		);
 
 		INNER = createInner(OUTER);
 	}
@@ -80,26 +100,29 @@ class BlockFaceVectors {
 		return inner ? INNER : OUTER;
 	}
 
-	private final ImmutableMap<BlockFace, Vec3> origins;
-	private final ImmutableMap<BlockFace, Vec3> widths;
-	private final ImmutableMap<BlockFace, Vec3> heights;
+	private final ImmutableMap<AbsFace, Vec3> origins;
+	private final ImmutableMap<AbsFace, Vec3> widths;
+	private final ImmutableMap<AbsFace, Vec3> heights;
 
-	public BlockFaceVectors(ImmutableMap<BlockFace, Vec3> origins, ImmutableMap<BlockFace, Vec3> widths,
-			ImmutableMap<BlockFace, Vec3> heights) {
+	public BlockFaceVectors(
+		ImmutableMap<AbsFace, Vec3> origins,
+		ImmutableMap<AbsFace, Vec3> widths,
+		ImmutableMap<AbsFace, Vec3> heights
+	) {
 		this.origins = origins;
 		this.widths = widths;
 		this.heights = heights;
 	}
 
-	public Vec3 getOrigin(BlockFace face) {
+	public Vec3 getOrigin(AbsFace face) {
 		return origins.get(face);
 	}
 
-	public Vec3 getWidth(BlockFace face) {
+	public Vec3 getWidth(AbsFace face) {
 		return widths.get(face);
 	}
 
-	public Vec3 getHeight(BlockFace face) {
+	public Vec3 getHeight(AbsFace face) {
 		return heights.get(face);
 	}
 }

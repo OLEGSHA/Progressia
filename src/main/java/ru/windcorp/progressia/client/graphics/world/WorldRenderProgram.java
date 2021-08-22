@@ -33,7 +33,7 @@ import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.backend.VertexBufferObject;
 import ru.windcorp.progressia.client.graphics.backend.shaders.attributes.*;
 import ru.windcorp.progressia.client.graphics.backend.shaders.uniforms.*;
-import ru.windcorp.progressia.client.graphics.model.Face;
+import ru.windcorp.progressia.client.graphics.model.ShapePart;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
@@ -120,12 +120,12 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 	public void preprocess(Shape shape) {
 		super.preprocess(shape);
 
-		for (Face face : shape.getFaces()) {
+		for (ShapePart face : shape.getParts()) {
 			computeNormals(face);
 		}
 	}
 
-	private void computeNormals(Face face) {
+	private void computeNormals(ShapePart face) {
 		Vec3 a = Vectors.grab3();
 		Vec3 b = Vectors.grab3();
 		Vec3 c = Vectors.grab3();
@@ -160,7 +160,7 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 		normal.normalize();
 	}
 
-	private void loadVertexPosition(Face face, int index, Vec3 result) {
+	private void loadVertexPosition(ShapePart face, int index, Vec3 result) {
 		ByteBuffer vertices = face.getVertices();
 		int offset = vertices.position() + index * getBytesPerVertex();
 
@@ -168,7 +168,7 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 				vertices.getFloat(offset + 2 * Float.BYTES));
 	}
 
-	private void saveVertexNormal(Face face, int index, Vec3 normal) {
+	private void saveVertexNormal(ShapePart face, int index, Vec3 normal) {
 		ByteBuffer vertices = face.getVertices();
 		int offset = vertices.position() + index * getBytesPerVertex()
 				+ (3 * Float.BYTES + 4 * Float.BYTES + 2 * Float.BYTES);

@@ -15,14 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package ru.windcorp.progressia.client.world.entity;
 
-import static java.lang.Math.atan2;
-import static java.lang.Math.min;
 import static java.lang.Math.pow;
 import static java.lang.Math.toRadians;
-import static ru.windcorp.progressia.common.util.FloatMathUtil.normalizeAngle;
 
 import glm.Glm;
 import glm.mat._4.Mat4;
@@ -32,6 +29,9 @@ import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.common.Units;
+import ru.windcorp.progressia.common.util.FloatMathUtil;
+import ru.windcorp.progressia.common.util.VectorUtil;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public abstract class NPedModel extends EntityRenderable {
@@ -47,29 +47,33 @@ public abstract class NPedModel extends EntityRenderable {
 			}
 		}
 
-		protected void render(ShapeRenderHelper renderer, NPedModel model) {
-			renderer.pushTransform().translate(translation);
+		protected void render(
+			ShapeRenderHelper renderer,
+			NPedModel model
+		) {
 			applyTransform(renderer.pushTransform(), model);
 			renderable.render(renderer);
 			renderer.popTransform();
-			renderer.popTransform();
 		}
 
-		protected abstract void applyTransform(Mat4 mat, NPedModel model);
+		protected void applyTransform(Mat4 mat, NPedModel model) {
+			mat.translate(getTranslation());
+		}
 
 		public Vec3 getTranslation() {
 			return translation;
+		}
+		
+		public Mat4 getTransform(Mat4 output, NPedModel model) {
+			if (output == null) output = new Mat4().identity();
+			applyTransform(output, model);
+			return output;
 		}
 	}
 
 	public static class Body extends BodyPart {
 		public Body(Renderable renderable) {
 			super(renderable, null);
-		}
-
-		@Override
-		protected void applyTransform(Mat4 mat, NPedModel model) {
-			// Do nothing
 		}
 	}
 
@@ -79,7 +83,13 @@ public abstract class NPedModel extends EntityRenderable {
 
 		private final Vec3 viewPoint;
 
-		public Head(Renderable renderable, Vec3 joint, double maxYawDegrees, double maxPitchDegrees, Vec3 viewPoint) {
+		public Head(
+			Renderable renderable,
+			Vec3 joint,
+			double maxYawDegrees,
+			double maxPitchDegrees,
+			Vec3 viewPoint
+		) {
 			super(renderable, joint);
 			this.maxYaw = (float) toRadians(maxYawDegrees);
 			this.maxPitch = (float) toRadians(maxPitchDegrees);
@@ -88,13 +98,16 @@ public abstract class NPedModel extends EntityRenderable {
 
 		@Override
 		protected void applyTransform(Mat4 mat, NPedModel model) {
-			mat.rotateZ(model.getHeadYaw()).rotateY(model.getHeadPitch());
+			super.applyTransform(mat, model);
+			mat.rotateZ(-model.getHeadYaw()).rotateY(-model.getHeadPitch());
 		}
 
 		public Vec3 getViewPoint() {
 			return viewPoint;
 		}
 	}
+
+	public static boolean flag;
 
 	protected final Body body;
 	protected final Head head;
@@ -119,7 +132,9 @@ public abstract class NPedModel extends EntityRenderable {
 
 	private float walkingFrequency;
 
-	private float bodyYaw = Float.NaN;
+	private final Vec3 bodyLookingAt = new Vec3().set(0);
+	private final Mat4 bodyTransform = new Mat4(); 
+	
 	private float headYaw;
 	private float headPitch;
 
@@ -129,63 +144,121 @@ public abstract class NPedModel extends EntityRenderable {
 		this.head = head;
 		this.scale = scale;
 
-		evaluateAngles();
+		computeRotations();
 	}
 
 	@Override
-	public void render(ShapeRenderHelper renderer) {
-		renderer.pushTransform().scale(scale).rotateZ(bodyYaw);
+	protected void doRender(ShapeRenderHelper renderer) {
+		renderer.pushTransform().scale(scale).mul(bodyTransform);
 		renderBodyParts(renderer);
 		renderer.popTransform();
-
-		accountForVelocity();
-		evaluateAngles();
 	}
 
 	protected void renderBodyParts(ShapeRenderHelper renderer) {
 		body.render(renderer, this);
 		head.render(renderer, this);
 	}
-
-	private void evaluateAngles() {
-		float globalYaw = normalizeAngle(getData().getYaw());
-
-		if (Float.isNaN(bodyYaw)) {
-			bodyYaw = globalYaw;
-			headYaw = 0;
-		} else {
-			headYaw = normalizeAngle(globalYaw - bodyYaw);
-
-			if (headYaw > +head.maxYaw) {
-				bodyYaw += headYaw - +head.maxYaw;
-				headYaw = +head.maxYaw;
-			} else if (headYaw < -head.maxYaw) {
-				bodyYaw += headYaw - -head.maxYaw;
-				headYaw = -head.maxYaw;
-			}
-		}
-
-		bodyYaw = normalizeAngle(bodyYaw);
-
-		headPitch = Glm.clamp(getData().getPitch(), -head.maxPitch, head.maxPitch);
+	
+	@Override
+	protected void update() {
+		advanceTime();
+		computeRotations();
 	}
 
-	private void accountForVelocity() {
-		Vec3 horizontal = new Vec3(getData().getVelocity());
-		horizontal.z = 0;
+	private void computeRotations() {
+		if (!bodyLookingAt.any()) {
+			getData().getForwardVector(bodyLookingAt);
+			headYaw = 0;
+		} else {
+			ensureBodyLookingAtIsPerpendicularToUpVector();
+			computeDesiredHeadYaw();
+			clampHeadYawAndChangeBodyLookingAt();
+		}
+		
+		recomputeBodyTransform();
+
+		setHeadPitch();
+	}
+
+	private void ensureBodyLookingAtIsPerpendicularToUpVector() {
+		Vec3 up = getData().getUpVector();
+		if (up.dot(bodyLookingAt) > 1 - 1e-4) return;
+		
+		Vec3 tmp = Vectors.grab3();
+		
+		tmp.set(up).mul(-up.dot(bodyLookingAt)).add(bodyLookingAt);
+		
+		float tmpLength = tmp.length();
+		if (tmpLength > 1e-4) {
+			bodyLookingAt.set(tmp).div(tmpLength);
+		} else {
+			// bodyLookingAt is suddenly parallel to up vector -- PANIC! ENTERING RESCUE MODE!
+			getData().getForwardVector(bodyLookingAt);
+		}
+		
+		Vectors.release(tmp);
+	}
+
+	private void computeDesiredHeadYaw() {
+		Vec3 newDirection = getData().getForwardVector(null);
+		Vec3 oldDirection = bodyLookingAt;
+		Vec3 up = getData().getUpVector();
+		
+		headYaw = (float) VectorUtil.getAngle(oldDirection, newDirection, up);
+	}
+
+	private void clampHeadYawAndChangeBodyLookingAt() {
+		float bodyYawChange = 0;
+		
+		if (headYaw > +head.maxYaw) {
+			bodyYawChange = headYaw - +head.maxYaw;
+			headYaw = +head.maxYaw;
+		} else if (headYaw < -head.maxYaw) {
+			bodyYawChange = headYaw - -head.maxYaw;
+			headYaw = -head.maxYaw;
+		}
+		
+		if (bodyYawChange != 0) {
+			VectorUtil.rotate(bodyLookingAt, getData().getUpVector(), bodyYawChange);
+		}
+	}
+
+	private void recomputeBodyTransform() {
+		Vec3 u = getData().getUpVector();
+		Vec3 f = bodyLookingAt;
+		Vec3 s = Vectors.grab3();
+		
+		s.set(u).cross(f);
+		
+		bodyTransform.identity().set(
+			+f.x, +f.y, +f.z,    0,
+			-s.x, -s.y, -s.z,    0,
+			+u.x, +u.y, +u.z,    0,
+			   0,    0,    0,    1
+		);
+		
+		Vectors.release(s);
+	}
+
+	private void setHeadPitch() {
+		headPitch = Glm.clamp((float) getData().getPitch(), -head.maxPitch, +head.maxPitch);
+	}
+
+	private void advanceTime() {
+		Vec3 horizontal = getData().getUpVector()
+			.mul_(-getData().getUpVector().dot(getData().getVelocity()))
+			.add(getData().getVelocity());
 
 		velocity = horizontal.length();
 
-		evaluateVelocityCoeff();
+		computeVelocityParameter();
 
-		// TODO switch to world time
 		walkingParameter += velocity * GraphicsInterface.getFrameLength() * 1000;
-
-		bodyYaw += velocityParameter * normalizeAngle((float) (atan2(horizontal.y, horizontal.x) - bodyYaw))
-				* min(1, GraphicsInterface.getFrameLength() * 10);
+		
+		rotateBodyWithMovement(horizontal);
 	}
 
-	private void evaluateVelocityCoeff() {
+	private void computeVelocityParameter() {
 		if (velocity > maxEffectiveVelocity) {
 			velocityParameter = 1;
 		} else {
@@ -193,12 +266,39 @@ public abstract class NPedModel extends EntityRenderable {
 		}
 	}
 
+	private void rotateBodyWithMovement(Vec3 target) {
+		if (velocityParameter == 0 || !target.any() || Glm.equals(target, bodyLookingAt)) {
+			return;
+		}
+		
+		Vec3 axis = getData().getUpVector();
+		
+		float yawDifference = FloatMathUtil.normalizeAngle(
+			(float) VectorUtil.getAngle(
+				bodyLookingAt,
+				target.normalize_(),
+				axis
+			)
+		);
+		
+		float bodyYawChange =
+			velocityParameter *
+			yawDifference *
+			(float) Math.expm1(GraphicsInterface.getFrameLength() * 10);
+		
+		VectorUtil.rotate(bodyLookingAt, axis, bodyYawChange);
+	}
+
 	@Override
-	public void getViewPoint(Vec3 output) {
+	protected void doGetViewPoint(Vec3 output) {
 		Mat4 m = new Mat4();
 		Vec4 v = new Vec4();
 
-		m.identity().scale(scale).rotateZ(bodyYaw).translate(head.getTranslation()).rotateZ(headYaw).rotateY(headPitch);
+		m.identity()
+			.scale(scale)
+			.mul(bodyTransform);
+		
+		head.getTransform(m, this);
 
 		v.set(head.getViewPoint(), 1);
 		m.mul(v);
@@ -213,9 +313,9 @@ public abstract class NPedModel extends EntityRenderable {
 	public Head getHead() {
 		return head;
 	}
-
-	public float getBodyYaw() {
-		return bodyYaw;
+	
+	public Vec3 getBodyLookingAt() {
+		return bodyLookingAt;
 	}
 
 	public float getHeadYaw() {
@@ -228,8 +328,9 @@ public abstract class NPedModel extends EntityRenderable {
 
 	/**
 	 * Returns a number in the range [0; 1] that can be used to scale animation
-	 * effects that depend on speed. This parameter is 0 when the entity is not
-	 * moving and 1 when it's moving "fast".
+	 * effects that depend on speed.
+	 * This parameter is 0 when the entity is not moving and 1 when it's moving
+	 * "fast".
 	 * 
 	 * @return velocity parameter
 	 */
@@ -239,8 +340,9 @@ public abstract class NPedModel extends EntityRenderable {
 
 	/**
 	 * Returns a number that can be used to parameterize animation effects that
-	 * depend on walking. This parameter increases when the entity moves (e.g.
-	 * this can be total traveled distance).
+	 * depend on walking.
+	 * This parameter increases when the entity moves (e.g. this can be total
+	 * traveled distance).
 	 * 
 	 * @return walking parameter
 	 */

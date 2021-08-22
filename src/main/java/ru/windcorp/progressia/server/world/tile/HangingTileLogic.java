@@ -19,6 +19,8 @@
 package ru.windcorp.progressia.server.world.tile;
 
 import ru.windcorp.progressia.server.world.block.BlockLogic;
+import ru.windcorp.progressia.server.world.context.ServerTileContext;
+import ru.windcorp.progressia.server.world.context.ServerTileContextRO;
 
 public class HangingTileLogic extends TileLogic implements UpdateableTile {
 
@@ -27,15 +29,15 @@ public class HangingTileLogic extends TileLogic implements UpdateableTile {
 	}
 
 	@Override
-	public void update(TileTickContext context) {
+	public void update(ServerTileContext context) {
 		if (!canOccupyFace(context)) {
-			context.removeThisTile();
+			context.removeTile();
 		}
 	}
 
 	@Override
-	public boolean canOccupyFace(TileTickContext context) {
-		BlockLogic host = context.getBlock();
+	public boolean canOccupyFace(ServerTileContextRO context) {
+		BlockLogic host = context.logic().getBlock();
 		if (host == null)
 			return false;
 
@@ -45,13 +47,12 @@ public class HangingTileLogic extends TileLogic implements UpdateableTile {
 		if (canBeSquashed(context))
 			return true;
 
-		return context.evalComplementary(ctxt -> {
-			BlockLogic complHost = ctxt.getBlock();
-			return complHost == null || !complHost.isSolid(ctxt, context.getFace());
-		});
+		context.pushOpposite();
+		BlockLogic complHost = context.logic().getBlock();
+		return context.popAndReturn(complHost == null || !complHost.isSolid(context, context.getFace()));
 	}
 
-	public boolean canBeSquashed(TileTickContext context) {
+	public boolean canBeSquashed(ServerTileContextRO context) {
 		return false;
 	}
 

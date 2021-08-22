@@ -15,14 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package ru.windcorp.progressia.client.world.tile;
 
-import ru.windcorp.progressia.client.world.ChunkRender;
-import ru.windcorp.progressia.common.world.generic.GenericTileStack;
-import ru.windcorp.progressia.common.world.tile.TileDataStack;
+import java.util.AbstractList;
 
-public abstract class TileRenderStack extends GenericTileStack<TileRenderStack, TileRender, ChunkRender> {
+import ru.windcorp.progressia.client.world.ChunkRender;
+import ru.windcorp.progressia.client.world.block.BlockRender;
+import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.generic.TileGenericStackRO;
+public abstract class TileRenderStack
+	extends AbstractList<TileRender>
+	implements TileGenericStackRO<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender> {
 
 	public abstract TileDataStack getData();
 

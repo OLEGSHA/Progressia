@@ -18,12 +18,14 @@
 
 package ru.windcorp.progressia.server.world.tile;
 
+import ru.windcorp.progressia.server.world.context.ServerTileContext;
+import ru.windcorp.progressia.server.world.context.ServerTileContextRO;
 import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
 
 public interface TickableTile {
 
-	void tick(TileTickContext context);
+	void tick(ServerTileContext context);
 
-	TickingPolicy getTickingPolicy(TileTickContext context);
+	TickingPolicy getTickingPolicy(ServerTileContextRO context);
 
 }

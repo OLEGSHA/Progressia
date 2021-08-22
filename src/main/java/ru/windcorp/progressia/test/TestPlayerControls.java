@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package ru.windcorp.progressia.test;
 
 import glm.Glm;
 import glm.mat._3.Mat3;
-import glm.vec._2.Vec2;
+import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import org.lwjgl.glfw.GLFW;
 import ru.windcorp.progressia.client.ClientState;
@@ -36,7 +36,9 @@ import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.common.Units;
-import ru.windcorp.progressia.common.util.FloatMathUtil;
+import ru.windcorp.progressia.common.util.Matrices;
+import ru.windcorp.progressia.common.util.VectorUtil;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.tile.TileData;
@@ -82,9 +84,6 @@ public class TestPlayerControls {
 	private double lastSpacePress = Double.NEGATIVE_INFINITY;
 	private double lastSprintPress = Double.NEGATIVE_INFINITY;
 
-	private boolean captureMouse = true;
-	private boolean useMinecraftGravity = false;
-
 	private int selectedBlock = 0;
 	private int selectedTile = 0;
 	private boolean isBlockSelected = true;
@@ -109,32 +108,54 @@ public class TestPlayerControls {
 			authority = WALKING_CONTROL_AUTHORITY;
 		}
 
-		Mat3 angMat = new Mat3().identity().rotateZ(player.getYaw());
-		Vec3 desiredVelocity = new Vec3(movementForward, -movementRight, 0);
-
-		if (movementForward != 0 && movementRight != 0)
+		Mat3 movementTransform = getMovementTransform(player, null);
+		Vec3 desiredVelocity = new Vec3(movementForward, movementRight, 0);
+		if (movementForward != 0 && movementRight != 0) {
 			desiredVelocity.normalize();
-		angMat.mul_(desiredVelocity); // bug in jglm, .mul() and mul_() are
-										// swapped
+		}
 		desiredVelocity.z = movementUp;
+		movementTransform.mul_(desiredVelocity); // bug in jglm, .mul() and .mul_() are
+										         // swapped
 		desiredVelocity.mul(speed);
 
-		Vec3 change = new Vec3().set(desiredVelocity).sub(player.getVelocity())
-				.mul((float) Math.exp(-authority * GraphicsInterface.getFrameLength())).negate().add(desiredVelocity);
+		Vec3 newVelocity = new Vec3()
+			.set(desiredVelocity)
+			.sub(player.getVelocity())
+			.mul((float) Math.exp(-authority * GraphicsInterface.getFrameLength()))
+			.negate()
+			.add(desiredVelocity);
 
 		if (!isFlying) {
-			change.z = player.getVelocity().z;
+			Vec3 up = player.getUpVector();
+			Vec3 wantedVertical = VectorUtil.projectOnVector(player.getVelocity(), up, null);
+			VectorUtil.projectOnSurface(newVelocity, up).add(wantedVertical);
 		}
 
-		player.getVelocity().set(change);
+		player.getVelocity().set(newVelocity);
 
 		// THIS IS TERRIBLE TEST
 		EntityData serverEntity = ServerState.getInstance().getWorld().getData()
-				.getEntity(TestContent.PLAYER_ENTITY_ID);
+			.getEntity(TestContent.PLAYER_ENTITY_ID);
 		if (serverEntity != null) {
 			serverEntity.setPosition(player.getPosition());
 		}
 
+	}
+
+	private Mat3 getMovementTransform(EntityData player, Mat3 mat) {
+		if (mat == null) {
+			mat = new Mat3();
+		}
+		
+		Vec3 f = player.getForwardVector(null);
+		Vec3 u = player.getUpVector();
+		Vec3 s = u.cross_(f);
+		
+		return mat.set(
+			+f.x, +f.y, +f.z,
+			-s.x, -s.y, -s.z,
+			+u.x, +u.y, +u.z
+		);
 	}
 
 	public void handleInput(Input input) {
@@ -180,6 +201,7 @@ public class TestPlayerControls {
 		case GLFW.GLFW_KEY_ESCAPE:
 			if (!event.isPress())
 				return false;
+			
 			handleEscape();
 			break;
 
@@ -207,12 +229,6 @@ public class TestPlayerControls {
 			if (!event.isPress())
 				return false;
 			handleCameraMode();
-			break;
-
-		case GLFW.GLFW_KEY_G:
-			if (!event.isPress())
-				return false;
-			handleGravitySwitch();
 			break;
 
 		case GLFW.GLFW_KEY_L:
@@ -279,7 +295,13 @@ public class TestPlayerControls {
 			return;
 		}
 
-		getEntity().getVelocity().add(0, 0, JUMP_VELOCITY * (useMinecraftGravity ? 2 : 1));
+		Vec3 up = getEntity().getUpVector();
+		
+		getEntity().getVelocity().add(
+			up.x * JUMP_VELOCITY,
+			up.y * JUMP_VELOCITY,
+			up.z * JUMP_VELOCITY
+		);
 	}
 
 	private void handleShift(int multiplier) {
@@ -289,14 +311,10 @@ public class TestPlayerControls {
 	}
 
 	private void handleEscape() {
-		if (captureMouse) {
-			GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
-		} else {
-			GLFW.glfwSetInputMode(GraphicsBackend.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
-		}
-
-		captureMouse = !captureMouse;
-		updateGUI();
+		movementForward = 0;
+		movementRight = 0;
+		movementUp = 0;
+		GUI.addTopLayer(new LayerButtonTest());
 	}
 
 	private void handleDebugLayerSwitch() {
@@ -323,11 +341,6 @@ public class TestPlayerControls {
 		}
 	}
 
-	private void handleGravitySwitch() {
-		useMinecraftGravity = !useMinecraftGravity;
-		updateGUI();
-	}
-
 	private void handleLanguageSwitch() {
 		Localizer localizer = Localizer.getInstance();
 		if (localizer.getLanguage().equals("ru-RU")) {
@@ -340,28 +353,40 @@ public class TestPlayerControls {
 	}
 
 	private void onMouseMoved(CursorMoveEvent event) {
-		if (!captureMouse)
-			return;
-
 		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
 			return;
 		}
 
-		final float yawScale = -0.002f;
-		final float pitchScale = yawScale;
+		final double yawScale = -0.002f;
+		final double pitchScale = -yawScale;
+		final double pitchExtremum = Math.PI/2 * 0.95f;
+		
+		double yawChange = event.getChangeX() * yawScale;
+		double pitchChange = event.getChangeY() * pitchScale;
 
 		EntityData player = getEntity();
+		
+		double startPitch = player.getPitch();
+		double endPitch = startPitch + pitchChange;
+		endPitch = Glm.clamp(endPitch, -pitchExtremum, +pitchExtremum);
+		pitchChange = endPitch - startPitch;
+		
+		Mat4 mat = Matrices.grab4();
+		Vec3 lookingAt = Vectors.grab3();		
+		Vec3 rightVector = Vectors.grab3();
 
-		normalizeAngles(player.getDirection().add((float) (event.getChangeX() * yawScale),
-				(float) (event.getChangeY() * pitchScale)));
-	}
-
-	private void normalizeAngles(Vec2 dir) {
-		// Normalize yaw
-		dir.x = FloatMathUtil.normalizeAngle(dir.x);
-
-		// Clamp pitch
-		dir.y = Glm.clamp(dir.y, -FloatMathUtil.PI_F / 2, +FloatMathUtil.PI_F / 2);
+		rightVector.set(player.getLookingAt()).cross(player.getUpVector()).normalize();
+		
+		mat.identity()
+			.rotate((float) yawChange, player.getUpVector())
+			.rotate((float) pitchChange, rightVector);
+		
+		VectorUtil.applyMat4(player.getLookingAt(), mat, lookingAt);
+		player.setLookingAt(lookingAt);
+		
+		Vectors.release(rightVector);
+		Vectors.release(lookingAt);
+		Matrices.release(mat);
 	}
 
 	private void onWheelScroll(WheelScrollEvent event) {
@@ -423,14 +448,6 @@ public class TestPlayerControls {
 
 	public boolean isSprinting() {
 		return isSprinting;
-	}
-
-	public boolean isMouseCaptured() {
-		return captureMouse;
-	}
-
-	public boolean useMinecraftGravity() {
-		return useMinecraftGravity;
 	}
 
 	public BlockData getSelectedBlock() {

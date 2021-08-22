@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 
 public class PacketSetBlock extends PacketAffectBlock {
 
@@ -60,7 +60,7 @@ public class PacketSetBlock extends PacketAffectBlock {
 	}
 
 	@Override
-	public void apply(WorldData world) {
+	public void apply(DefaultWorldData world) {
 		BlockData block = BlockDataRegistry.getInstance().get(getBlockId());
 		world.setBlock(getBlockInWorld(), block, true);
 	}

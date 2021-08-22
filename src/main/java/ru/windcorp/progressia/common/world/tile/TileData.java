@@ -19,9 +19,9 @@
 package ru.windcorp.progressia.common.world.tile;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.generic.GenericTile;
+import ru.windcorp.progressia.common.world.generic.TileGeneric;
 
-public class TileData extends Namespaced implements GenericTile {
+public class TileData extends Namespaced implements TileGeneric {
 
 	public TileData(String id) {
 		super(id);

@@ -15,16 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package ru.windcorp.progressia.server.world.block;
 
-import org.apache.logging.log4j.LogManager;
+import ru.windcorp.progressia.server.world.context.ServerBlockContext;
 
 public interface UpdateableBlock {
 
-	default void update(BlockTickContext context) {
-		LogManager.getLogger().info("Updating block {} @ ({}; {}; {})", context.getBlock(), context.getBlockInWorld().x,
-				context.getBlockInWorld().y, context.getBlockInWorld().z);
-	}
+	void update(ServerBlockContext context);
 
 }

@@ -44,13 +44,13 @@ public abstract class ClientPlayer extends ClientChat {
 	public boolean isChunkVisible(Vec3i chunkPos) {
 		if (player == null)
 			return false;
-		return player.getServer().getChunkManager().isChunkVisible(chunkPos, player);
+		return player.getServer().getLoadManager().getVisionManager().isChunkVisible(chunkPos, player);
 	}
 
 	public ChunkSet getVisibleChunks() {
 		if (player == null)
 			return ChunkSets.empty();
-		return player.getServer().getChunkManager().getVisibleChunks(player);
+		return player.getServer().getLoadManager().getVisionManager().getVisibleChunks(player);
 	}
 
 	public boolean isChunkVisible(long entityId) {

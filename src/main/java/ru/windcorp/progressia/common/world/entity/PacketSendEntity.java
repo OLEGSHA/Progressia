@@ -26,7 +26,7 @@ import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.DataBuffer;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 
 public class PacketSendEntity extends PacketAffectEntity {
 
@@ -85,7 +85,7 @@ public class PacketSendEntity extends PacketAffectEntity {
 	}
 
 	@Override
-	public void apply(WorldData world) {
+	public void apply(DefaultWorldData world) {
 		EntityData entity = EntityDataRegistry.getInstance().create(getEntityTypeId());
 
 		entity.setEntityId(getEntityId());

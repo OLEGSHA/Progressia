@@ -15,14 +15,66 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package ru.windcorp.progressia.client.graphics.gui;
 
-public class Panel extends Component {
+import java.util.Objects;
 
+import glm.vec._4.Vec4;
+import ru.windcorp.progressia.client.graphics.Colors;
+import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
+
+public class Panel extends Group {
+
+	private Vec4 fill;
+	private Vec4 border;
+
+	public Panel(String name, Layout layout, Vec4 fill, Vec4 border) {
+		super(name, layout);
+		
+		this.fill = Objects.requireNonNull(fill, "fill");
+		this.border = border;
+	}
+	
 	public Panel(String name, Layout layout) {
-		super(name);
-		setLayout(layout);
+		this(name, layout, Colors.WHITE, Colors.LIGHT_GRAY);
+	}
+	
+	/**
+	 * @return the fill
+	 */
+	public Vec4 getFill() {
+		return fill;
+	}
+	
+	/**
+	 * @param fill the fill to set
+	 */
+	public void setFill(Vec4 fill) {
+		this.fill = Objects.requireNonNull(fill, "fill");
+	}
+	
+	/**
+	 * @return the border
+	 */
+	public Vec4 getBorder() {
+		return border;
+	}
+	
+	/**
+	 * @param border the border to set
+	 */
+	public void setBorder(Vec4 border) {
+		this.border = border;
+	}
+	
+	@Override
+	protected void assembleSelf(RenderTarget target) {
+		if (border == null) {
+			target.fill(getX(), getY(), getWidth(), getHeight(), fill);
+		} else {
+			target.fill(getX(), getY(), getWidth(), getHeight(), border);
+			target.fill(getX() + 2, getY() + 2, getWidth() - 4, getHeight() - 4, fill);
+		}
 	}
 
 }

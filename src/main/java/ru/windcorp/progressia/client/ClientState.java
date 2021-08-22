@@ -21,7 +21,7 @@ package ru.windcorp.progressia.client;
 import ru.windcorp.progressia.client.comms.localhost.LocalServerCommsChannel;
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.world.LayerWorld;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.ServerState;
 import ru.windcorp.progressia.test.LayerAbout;
 import ru.windcorp.progressia.test.LayerTestUI;
@@ -41,7 +41,7 @@ public class ClientState {
 
 	public static void connectToLocalServer() {
 
-		WorldData world = new WorldData();
+		DefaultWorldData world = new DefaultWorldData();
 
 		LocalServerCommsChannel channel = new LocalServerCommsChannel(ServerState.getInstance());
 

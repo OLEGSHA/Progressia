@@ -19,24 +19,25 @@
 package ru.windcorp.progressia.server.world.tile;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.block.BlockFace;
-import ru.windcorp.progressia.common.world.generic.GenericTile;
+import ru.windcorp.progressia.common.world.generic.TileGeneric;
+import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.server.world.context.ServerTileContextRO;
 
-public class TileLogic extends Namespaced implements GenericTile {
+public class TileLogic extends Namespaced implements TileGeneric {
 
 	public TileLogic(String id) {
 		super(id);
 	}
 
-	public boolean canOccupyFace(TileTickContext context) {
+	public boolean canOccupyFace(ServerTileContextRO context) {
 		return canOccupyFace(context.getFace());
 	}
 
-	public boolean canOccupyFace(BlockFace face) {
+	public boolean canOccupyFace(RelFace face) {
 		return true;
 	}
 
-	public boolean isSolid(TileTickContext context) {
+	public boolean isSolid(ServerTileContextRO context) {
 		return isSolid();
 	}
 

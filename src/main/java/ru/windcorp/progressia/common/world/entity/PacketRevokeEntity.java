@@ -23,7 +23,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 
 public class PacketRevokeEntity extends PacketAffectEntity {
 
@@ -51,7 +51,7 @@ public class PacketRevokeEntity extends PacketAffectEntity {
 	}
 
 	@Override
-	public void apply(WorldData world) {
+	public void apply(DefaultWorldData world) {
 		world.removeEntity(getEntityId());
 	}
 

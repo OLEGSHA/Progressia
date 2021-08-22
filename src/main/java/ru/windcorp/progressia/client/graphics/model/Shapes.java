@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package ru.windcorp.progressia.client.graphics.model;
 
 import java.util.Map;
@@ -24,42 +24,102 @@ import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class Shapes {
 
 	public static Shape createParallelepiped(
-			// Try saying that 10 times fast
-			ShapeRenderProgram program,
+		// Try saying that 10 times fast
+		ShapeRenderProgram program,
 
-			Vec3 origin,
+		Vec3 origin,
 
-			Vec3 width, Vec3 height, Vec3 depth,
+		Vec3 width,
+		Vec3 height,
+		Vec3 depth,
 
-			Vec4 colorMultiplier,
+		Vec4 colorMultiplier,
 
-			Texture topTexture, Texture bottomTexture, Texture northTexture, Texture southTexture, Texture eastTexture,
-			Texture westTexture,
+		Texture topTexture,
+		Texture bottomTexture,
+		Texture northTexture,
+		Texture southTexture,
+		Texture eastTexture,
+		Texture westTexture,
 
-			boolean flip) {
+		boolean flip
+	) {
 
-		Face top = Faces.createRectangle(program, topTexture, colorMultiplier, origin.add_(height).add(width),
-				width.negate_(), depth, flip);
+		ShapePart top = ShapeParts.createRectangle(
+			program,
+			topTexture,
+			colorMultiplier,
+			origin.add_(height).add(width),
+			width.negate_(),
+			depth,
+			flip
+		);
 
-		Face bottom = Faces.createRectangle(program, bottomTexture, colorMultiplier, origin, width, depth, flip);
+		ShapePart bottom = ShapeParts.createRectangle(
+			program,
+			bottomTexture,
+			colorMultiplier,
+			origin,
+			width,
+			depth,
+			flip
+		);
 
-		Face north = Faces.createRectangle(program, northTexture, colorMultiplier, origin.add_(depth), width, height,
-				flip);
+		ShapePart north = ShapeParts.createRectangle(
+			program,
+			northTexture,
+			colorMultiplier,
+			origin.add_(depth),
+			width,
+			height,
+			flip
+		);
 
-		Face south = Faces.createRectangle(program, southTexture, colorMultiplier, origin.add_(width), width.negate_(),
-				height, flip);
+		ShapePart south = ShapeParts.createRectangle(
+			program,
+			southTexture,
+			colorMultiplier,
+			origin.add_(width),
+			width.negate_(),
+			height,
+			flip
+		);
 
-		Face east = Faces.createRectangle(program, eastTexture, colorMultiplier, origin, depth, height, flip);
+		ShapePart east = ShapeParts.createRectangle(
+			program,
+			eastTexture,
+			colorMultiplier,
+			origin,
+			depth,
+			height,
+			flip
+		);
 
-		Face west = Faces.createRectangle(program, westTexture, colorMultiplier, origin.add_(width).add(depth),
-				depth.negate_(), height, flip);
+		ShapePart west = ShapeParts.createRectangle(
+			program,
+			westTexture,
+			colorMultiplier,
+			origin.add_(width).add(depth),
+			depth.negate_(),
+			height,
+			flip
+		);
 
-		Shape result = new Shape(Usage.STATIC, program, top, bottom, north, south, east, west);
+		Shape result = new Shape(
+			Usage.STATIC,
+			program,
+			top,
+			bottom,
+			north,
+			south,
+			east,
+			west
+		);
 
 		return result;
 	}
@@ -85,8 +145,15 @@ public class Shapes {
 
 		private boolean flip = false;
 
-		public PppBuilder(ShapeRenderProgram program, Texture top, Texture bottom, Texture north, Texture south,
-				Texture east, Texture west) {
+		public PppBuilder(
+			ShapeRenderProgram program,
+			Texture top,
+			Texture bottom,
+			Texture north,
+			Texture south,
+			Texture east,
+			Texture west
+		) {
 			this.program = program;
 			this.topTexture = top;
 			this.bottomTexture = bottom;
@@ -96,10 +163,19 @@ public class Shapes {
 			this.westTexture = west;
 		}
 
-		public PppBuilder(ShapeRenderProgram program, Map<BlockFace, Texture> textureMap) {
-			this(program, textureMap.get(BlockFace.TOP), textureMap.get(BlockFace.BOTTOM),
-					textureMap.get(BlockFace.NORTH), textureMap.get(BlockFace.SOUTH), textureMap.get(BlockFace.EAST),
-					textureMap.get(BlockFace.WEST));
+		public PppBuilder(
+			ShapeRenderProgram program,
+			Map<AbsFace, Texture> textureMap
+		) {
+			this(
+				program,
+				textureMap.get(AbsFace.POS_Z),
+				textureMap.get(AbsFace.NEG_Z),
+				textureMap.get(AbsFace.POS_X),
+				textureMap.get(AbsFace.NEG_X),
+				textureMap.get(AbsFace.NEG_Y),
+				textureMap.get(AbsFace.POS_Y)
+			);
 		}
 
 		public PppBuilder(ShapeRenderProgram program, Texture texture) {
@@ -190,8 +266,21 @@ public class Shapes {
 		}
 
 		public Shape create() {
-			return createParallelepiped(program, origin, width, height, depth, colorMultiplier, topTexture,
-					bottomTexture, northTexture, southTexture, eastTexture, westTexture, flip);
+			return createParallelepiped(
+				program,
+				origin,
+				width,
+				height,
+				depth,
+				colorMultiplier,
+				topTexture,
+				bottomTexture,
+				northTexture,
+				southTexture,
+				eastTexture,
+				westTexture,
+				flip
+			);
 		}
 
 	}

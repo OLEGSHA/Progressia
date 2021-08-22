@@ -179,4 +179,18 @@ public class GraphicsBackend {
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		return vidmode.refreshRate();
 	}
+	
+	public static boolean isMouseCaptured() {
+		return glfwGetInputMode(windowHandle, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
+	}
+	
+	public static void setMouseCaptured(boolean capture) {
+		int mode = capture ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL;
+		glfwSetInputMode(windowHandle, GLFW_CURSOR, mode);
+		
+		if (!capture) {
+			glfwSetCursorPos(windowHandle, FRAME_SIZE.x / 2.0, FRAME_SIZE.y / 2.0);
+		}
+	}
+	
 }

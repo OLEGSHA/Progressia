@@ -28,7 +28,7 @@ public class ChunkDataListeners {
 	public static WorldDataListener createAdder(Supplier<ChunkDataListener> listenerSupplier) {
 		return new WorldDataListener() {
 			@Override
-			public void getChunkListeners(WorldData world, Vec3i chunk, Consumer<ChunkDataListener> chunkListenerSink) {
+			public void getChunkListeners(DefaultWorldData world, Vec3i chunk, Consumer<ChunkDataListener> chunkListenerSink) {
 				chunkListenerSink.accept(listenerSupplier.get());
 			}
 		};

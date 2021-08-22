@@ -45,7 +45,7 @@ public class LongBasedChunkSet implements ChunkSet {
 		addAll(copyFrom);
 	}
 
-	public LongBasedChunkSet(TLongSet impl, GenericWorld<?, ?, ?, ?, ?> copyFrom) {
+	public LongBasedChunkSet(TLongSet impl, WorldGenericRO<?, ?, ?, ?, ?, ?> copyFrom) {
 		this(impl);
 		addAllChunks(copyFrom.getChunks());
 	}

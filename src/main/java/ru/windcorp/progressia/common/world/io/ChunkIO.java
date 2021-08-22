@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package ru.windcorp.progressia.common.world.io;
 
 import java.io.DataInputStream;
@@ -31,17 +31,18 @@ import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 
 public class ChunkIO {
 
 	private static final TByteObjectMap<ChunkCodec> CODECS_BY_ID = new TByteObjectHashMap<>();
 	private static final List<ChunkCodec> CODECS_BY_PRIORITY = new ArrayList<>();
 
-	public static ChunkData load(WorldData world, Vec3i position, DataInputStream data, IOContext context)
-			throws DecodingException, IOException {
+	public static DefaultChunkData load(DefaultWorldData world, Vec3i position, DataInputStream data, IOContext context)
+		throws DecodingException,
+		IOException {
 		if (CODECS_BY_ID.isEmpty())
 			throw new IllegalStateException("No codecs registered");
 
@@ -52,7 +53,8 @@ public class ChunkIO {
 		ChunkCodec codec = getCodec((byte) signature);
 		if (codec == null) {
 			throw new DecodingException(
-					"Unknown codec signature " + Integer.toHexString(signature) + "; is it from the future?");
+				"Unknown codec signature " + Integer.toHexString(signature) + "; is it from the future?"
+			);
 		}
 
 		try {
@@ -60,12 +62,19 @@ public class ChunkIO {
 		} catch (IOException | DecodingException e) {
 			throw e;
 		} catch (Throwable t) {
-			throw CrashReports.report(t, "Codec %s has failed to decode chunk (%d; %d; %d)", codec.getId(), position.x,
-					position.y, position.z);
+			throw CrashReports.report(
+				t,
+				"Codec %s has failed to decode chunk (%d; %d; %d)",
+				codec.getId(),
+				position.x,
+				position.y,
+				position.z
+			);
 		}
 	}
 
-	public static void save(ChunkData chunk, DataOutputStream output, IOContext context) throws IOException {
+	public static void save(DefaultChunkData chunk, DataOutputStream output, IOContext context)
+		throws IOException {
 		ChunkCodec codec = getCodec(chunk, context);
 
 		try {
@@ -74,8 +83,14 @@ public class ChunkIO {
 		} catch (IOException e) {
 			throw e;
 		} catch (Throwable t) {
-			throw CrashReports.report(t, "Codec %s has failed to encode chunk (%d; %d; %d)", codec.getId(),
-					chunk.getPosition().x, chunk.getPosition().y, chunk.getPosition().z);
+			throw CrashReports.report(
+				t,
+				"Codec %s has failed to encode chunk (%d; %d; %d)",
+				codec.getId(),
+				chunk.getPosition().x,
+				chunk.getPosition().y,
+				chunk.getPosition().z
+			);
 		}
 	}
 
@@ -85,7 +100,7 @@ public class ChunkIO {
 		return CODECS_BY_ID.get(signature);
 	}
 
-	public static ChunkCodec getCodec(ChunkData chunk, IOContext context) {
+	public static ChunkCodec getCodec(DefaultChunkData chunk, IOContext context) {
 		for (ChunkCodec codec : CODECS_BY_PRIORITY) {
 			if (codec.shouldEncode(chunk, context)) {
 				return codec;

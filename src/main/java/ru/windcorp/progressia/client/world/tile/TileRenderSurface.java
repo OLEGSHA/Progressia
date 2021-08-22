@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package ru.windcorp.progressia.client.world.tile;
 
 import java.util.function.Consumer;
@@ -25,16 +25,17 @@ import glm.vec._3.i.Vec3i;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
-import ru.windcorp.progressia.client.graphics.model.Face;
-import ru.windcorp.progressia.client.graphics.model.Faces;
+import ru.windcorp.progressia.client.graphics.model.ShapePart;
+import ru.windcorp.progressia.client.graphics.model.ShapeParts;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSurface.TileOptimizedSurface;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public abstract class TileRenderSurface extends TileRender implements TileOptimizedSurface {
 
@@ -44,36 +45,53 @@ public abstract class TileRenderSurface extends TileRender implements TileOptimi
 		super(id);
 		this.texture = texture;
 	}
-
+	
 	public TileRenderSurface(String id) {
 		this(id, null);
 	}
 
-	public Texture getTexture(BlockFace blockFace) {
+	public Texture getTexture(RelFace blockFace) {
 		return texture;
 	}
-
-	public Vec4 getColorMultiplier(BlockFace blockFace) {
+	
+	public Vec4 getColorMultiplier(RelFace blockFace) {
 		return Colors.WHITE;
 	}
-
+	
 	@Override
-	public final void getFaces(ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace, boolean inner,
-			Consumer<Face> output, Vec3 offset) {
-		output.accept(createFace(chunk, blockInChunk, blockFace, inner, offset));
+	public final void getShapeParts(
+		DefaultChunkData chunk, Vec3i relBlockInChunk, RelFace blockFace,
+		boolean inner,
+		Consumer<ShapePart> output,
+		Vec3 offset
+	) {
+		output.accept(createFace(chunk, relBlockInChunk, blockFace, inner, offset));
+	}
+	
+	private ShapePart createFace(
+		DefaultChunkData chunk, Vec3i blockInChunk, RelFace blockFace,
+		boolean inner,
+		Vec3 offset
+	) {
+		return ShapeParts.createBlockFace(
+			WorldRenderProgram.getDefault(),
+			getTexture(blockFace),
+			getColorMultiplier(blockFace),
+			offset,
+			blockFace.resolve(AbsFace.POS_Z),
+			inner
+		);
 	}
 
-	private Face createFace(ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace, boolean inner, Vec3 offset) {
-		return Faces.createBlockFace(WorldRenderProgram.getDefault(), getTexture(blockFace),
-				getColorMultiplier(blockFace), offset, blockFace, inner);
-	}
-
 	@Override
-	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace) {
-		return new Shape(Usage.STATIC, WorldRenderProgram.getDefault(),
-
-				createFace(chunk, blockInChunk, blockFace, false, Vectors.ZERO_3),
-				createFace(chunk, blockInChunk, blockFace, true, Vectors.ZERO_3));
+	public Renderable createRenderable(DefaultChunkData chunk, Vec3i blockInChunk, RelFace blockFace) {
+		return new Shape(
+			Usage.STATIC,
+			WorldRenderProgram.getDefault(),
+			
+			createFace(chunk, blockInChunk, blockFace, false, Vectors.ZERO_3),
+			createFace(chunk, blockInChunk, blockFace, true,  Vectors.ZERO_3)
+		);
 	}
 
 	@Override

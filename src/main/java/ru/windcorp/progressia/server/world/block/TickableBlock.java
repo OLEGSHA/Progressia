@@ -18,12 +18,14 @@
 
 package ru.windcorp.progressia.server.world.block;
 
+import ru.windcorp.progressia.server.world.context.ServerBlockContext;
+import ru.windcorp.progressia.server.world.context.ServerBlockContextRO;
 import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
 
 public interface TickableBlock {
 
-	void tick(BlockTickContext context);
+	void tick(ServerBlockContext context);
 
-	TickingPolicy getTickingPolicy(BlockTickContext context);
+	TickingPolicy getTickingPolicy(ServerBlockContextRO context);
 
 }

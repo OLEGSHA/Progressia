@@ -53,9 +53,9 @@ public class PacketRevokeChunk extends PacketAffectChunk {
 	}
 
 	@Override
-	public void apply(WorldData world) {
+	public void apply(DefaultWorldData world) {
 		synchronized (world) {
-			ChunkData chunk = world.getChunk(position);
+			DefaultChunkData chunk = world.getChunk(position);
 			if (chunk != null) {
 				world.removeChunk(chunk);
 			}

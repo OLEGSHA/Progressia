@@ -100,7 +100,7 @@ public class ShapeRenderProgram extends Program {
 
 		try {
 			enableAttributes();
-			for (FaceGroup group : shape.getGroups()) {
+			for (ShapePartGroup group : shape.getGroups()) {
 				renderFaceGroup(group);
 			}
 		} finally {
@@ -145,7 +145,7 @@ public class ShapeRenderProgram extends Program {
 		indices.bind(BindTarget.ELEMENT_ARRAY);
 	}
 
-	protected void renderFaceGroup(FaceGroup group) {
+	protected void renderFaceGroup(ShapePartGroup group) {
 		TexturePrimitive texture = group.getTexture();
 
 		if (texture != null) {
@@ -165,12 +165,12 @@ public class ShapeRenderProgram extends Program {
 	}
 
 	public void preprocess(Shape shape) {
-		for (Face face : shape.getFaces()) {
+		for (ShapePart face : shape.getParts()) {
 			applySprites(face);
 		}
 	}
 
-	private void applySprites(Face face) {
+	private void applySprites(ShapePart face) {
 		if (face.getTexture() == null)
 			return;
 
