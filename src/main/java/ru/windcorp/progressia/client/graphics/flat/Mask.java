@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.flat;
 
 public class Mask {
@@ -88,8 +88,7 @@ public class Mask {
 
 	@Override
 	public String toString() {
-		return "(" + getStartX() + "; " + getStartY() +
-			") -> (" + getEndX() + "; " + getEndY() + ")";
+		return "(" + getStartX() + "; " + getStartY() + ") -> (" + getEndX() + "; " + getEndY() + ")";
 	}
 
 }

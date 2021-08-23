@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.tile;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public class TileRenderTransparentSurface extends TileRenderSurface {
 
@@ -28,7 +28,7 @@ public class TileRenderTransparentSurface extends TileRenderSurface {
 	}
 
 	@Override
-	public boolean isOpaque(BlockFace face) {
+	public boolean isOpaque(RelFace face) {
 		return false;
 	}
 

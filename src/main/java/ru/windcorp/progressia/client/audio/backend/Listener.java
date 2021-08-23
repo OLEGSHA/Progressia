@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.audio.backend;
 
 import glm.vec._3.Vec3;
@@ -55,9 +55,8 @@ public class Listener {
 		if (isInWorld) {
 
 			if (wasInWorld) {
-				velocity.set(camera.getLastAnchorPosition()).sub(position).div(
-					(float) GraphicsInterface.getFrameLength()
-				);
+				velocity.set(camera.getLastAnchorPosition()).sub(position)
+						.div((float) GraphicsInterface.getFrameLength());
 			} else {
 				// If !wasInWorld, previous position is nonsence. Assume 0.
 				velocity.set(0);
@@ -72,9 +71,9 @@ public class Listener {
 		}
 
 		/*
-		 * Only apply if there is a chance that params changed.
-		 * This can only happen if we are in world now (isInWorld) or we just
-		 * left world (wasInWorld, then we need to reset).
+		 * Only apply if there is a chance that params changed. This can only
+		 * happen if we are in world now (isInWorld) or we just left world
+		 * (wasInWorld, then we need to reset).
 		 */
 		if (isInWorld || wasInWorld) {
 			applyParams();
@@ -91,17 +90,7 @@ public class Listener {
 	private void applyParams() {
 		alListener3f(AL_POSITION, position.x, position.y, position.z);
 		alListener3f(AL_VELOCITY, velocity.x, velocity.y, velocity.z);
-		alListenerfv(
-			AL_ORIENTATION,
-			new float[] {
-				oriAt.x,
-				oriAt.y,
-				oriAt.z,
-				oriUp.x,
-				oriUp.y,
-				oriUp.z
-			}
-		);
+		alListenerfv(AL_ORIENTATION, new float[] { oriAt.x, oriAt.y, oriAt.z, oriUp.x, oriUp.y, oriUp.z });
 	}
 
 }

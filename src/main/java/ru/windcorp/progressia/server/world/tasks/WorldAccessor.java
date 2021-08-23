@@ -21,17 +21,21 @@ package ru.windcorp.progressia.server.world.tasks;
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.state.StateChange;
+import ru.windcorp.progressia.common.state.StatefulObject;
 import ru.windcorp.progressia.common.util.MultiLOC;
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
-import ru.windcorp.progressia.common.world.block.BlockFace;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.generic.EntityGeneric;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
-import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.world.context.impl.ReportingServerContext;
 import ru.windcorp.progressia.server.world.ticking.TickerTask;
 
-public class WorldAccessor {
+public class WorldAccessor implements ReportingServerContext.ChangeListener {
 
 	private final MultiLOC cache;
 	{
@@ -54,43 +58,58 @@ public class WorldAccessor {
 		this.server = server;
 	}
 
-	public void setBlock(Vec3i blockInWorld, BlockData block) {
+	@Override
+	public void onBlockSet(Vec3i blockInWorld, BlockData block) {
 		SetBlock change = cache.grab(SetBlock.class);
 		change.getPacket().set(block, blockInWorld);
 		server.requestChange(change);
 	}
 
-	public void setBlock(Vec3i blockInWorld, String id) {
-		setBlock(blockInWorld, BlockDataRegistry.getInstance().get(id));
-	}
-
-	public void addTile(Vec3i blockInWorld, BlockFace face, TileData tile) {
+	@Override
+	public void onTileAdded(Vec3i blockInWorld, RelFace face, TileData tile) {
 		AddTile change = cache.grab(AddTile.class);
-		change.getPacket().set(tile, blockInWorld, face);
+		change.getPacket().set(tile, blockInWorld, face.resolve(AbsFace.POS_Z));
 		server.requestChange(change);
 	}
 
-	public void addTile(Vec3i blockInWorld, BlockFace face, String id) {
-		addTile(blockInWorld, face, TileDataRegistry.getInstance().get(id));
-	}
-
-	public void removeTile(Vec3i blockInWorld, BlockFace face, int tag) {
+	@Override
+	public void onTileRemoved(Vec3i blockInWorld, RelFace face, int tag) {
 		RemoveTile change = cache.grab(RemoveTile.class);
-		change.getPacket().set(blockInWorld, face, tag);
+		change.getPacket().set(blockInWorld, face.resolve(AbsFace.POS_Z), tag);
 		server.requestChange(change);
 	}
+	
+	@Override
+	public void onEntityAdded(EntityData entity) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onEntityRemoved(long entityId) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onTimeChanged(float change) {
+		// TODO Auto-generated method stub
+		System.err.println("WorldAccessor.onTimeChanged() NYI!");
+	}
 
-	public <T extends EntityData> void changeEntity(
-		T entity,
-		StateChange<T> stateChange
+	@Override
+	public <SE extends StatefulObject & EntityGeneric> void onEntityChanged(
+		SE entity,
+		StateChange<SE> stateChange
 	) {
 		ChangeEntity change = cache.grab(ChangeEntity.class);
-		change.set(entity, stateChange);
+		change.set((EntityData) entity, stateChange);
 		server.requestChange(change);
 	}
 
 	public void tickBlock(Vec3i blockInWorld) {
 		// TODO
+		System.err.println("WorldAccessor.tickBlock(Vec3i) NYI!");
 	}
 
 	/**
@@ -114,7 +133,7 @@ public class WorldAccessor {
 	// TODO rename to something meaningful
 	public void triggerUpdates(Vec3i blockInWorld, BlockFace face) {
 		TileTriggeredUpdate evaluation = cache.grab(TileTriggeredUpdate.class);
-		evaluation.init(blockInWorld, face);
+		evaluation.init(blockInWorld, face.resolve(AbsFace.POS_Z));
 		server.requestEvaluation(evaluation);
 	}
 

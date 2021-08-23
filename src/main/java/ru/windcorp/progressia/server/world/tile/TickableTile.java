@@ -15,15 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.tile;
 
+import ru.windcorp.progressia.server.world.context.ServerTileContext;
+import ru.windcorp.progressia.server.world.context.ServerTileContextRO;
 import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
 
 public interface TickableTile {
 
-	void tick(TileTickContext context);
+	void tick(ServerTileContext context);
 
-	TickingPolicy getTickingPolicy(TileTickContext context);
+	TickingPolicy getTickingPolicy(ServerTileContextRO context);
 
 }

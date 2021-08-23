@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.state;
 
 import java.io.DataInput;
@@ -38,25 +38,13 @@ public abstract class StatefulObjectLayout {
 
 	protected void checkObject(StatefulObject object) {
 		if (!object.getId().equals(getObjectId())) {
-			throw new IllegalArgumentException(
-				object.getId() + " is not " + getObjectId()
-			);
+			throw new IllegalArgumentException(object.getId() + " is not " + getObjectId());
 		}
 	}
 
-	public abstract void read(
-		StatefulObject object,
-		DataInput input,
-		IOContext context
-	)
-		throws IOException;
+	public abstract void read(StatefulObject object, DataInput input, IOContext context) throws IOException;
 
-	public abstract void write(
-		StatefulObject object,
-		DataOutput output,
-		IOContext context
-	)
-		throws IOException;
+	public abstract void write(StatefulObject object, DataOutput output, IOContext context) throws IOException;
 
 	public abstract void copy(StatefulObject from, StatefulObject to);
 

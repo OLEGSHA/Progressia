@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend.shaders.attributes;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -51,104 +51,29 @@ public class AttributeVertexArray extends Attribute {
 		}
 	}
 
-	public void set(
-		int size,
-		boolean normalized,
-		int stride,
-		ByteBuffer pointer
-	) {
-		glVertexAttribPointer(
-			handle,
-			size,
-			GL_BYTE,
-			normalized,
-			stride,
-			pointer
-		);
+	public void set(int size, boolean normalized, int stride, ByteBuffer pointer) {
+		glVertexAttribPointer(handle, size, GL_BYTE, normalized, stride, pointer);
 	}
 
-	public void set(
-		int size,
-		boolean normalized,
-		int stride,
-		FloatBuffer pointer
-	) {
-		glVertexAttribPointer(
-			handle,
-			size,
-			GL_FLOAT,
-			normalized,
-			stride,
-			pointer
-		);
+	public void set(int size, boolean normalized, int stride, FloatBuffer pointer) {
+		glVertexAttribPointer(handle, size, GL_FLOAT, normalized, stride, pointer);
 	}
 
-	public void set(
-		int size,
-		boolean normalized,
-		int stride,
-		IntBuffer pointer
-	) {
-		glVertexAttribPointer(
-			handle,
-			size,
-			GL_INT,
-			normalized,
-			stride,
-			pointer
-		);
+	public void set(int size, boolean normalized, int stride, IntBuffer pointer) {
+		glVertexAttribPointer(handle, size, GL_INT, normalized, stride, pointer);
 	}
 
-	public void set(
-		int size,
-		boolean normalized,
-		int stride,
-		ShortBuffer pointer
-	) {
-		glVertexAttribPointer(
-			handle,
-			size,
-			GL_SHORT,
-			normalized,
-			stride,
-			pointer
-		);
+	public void set(int size, boolean normalized, int stride, ShortBuffer pointer) {
+		glVertexAttribPointer(handle, size, GL_SHORT, normalized, stride, pointer);
 	}
 
-	public void set(
-		int size,
-		int type,
-		boolean normalized,
-		int stride,
-		long pointer
-	) {
-		glVertexAttribPointer(
-			handle,
-			size,
-			type,
-			normalized,
-			stride,
-			pointer
-		);
+	public void set(int size, int type, boolean normalized, int stride, long pointer) {
+		glVertexAttribPointer(handle, size, type, normalized, stride, pointer);
 	}
 
-	public void set(
-		int size,
-		int type,
-		boolean normalized,
-		int stride,
-		VertexBufferObject vbo,
-		long offset
-	) {
+	public void set(int size, int type, boolean normalized, int stride, VertexBufferObject vbo, long offset) {
 		glBindBuffer(GL_ARRAY_BUFFER, vbo.getHandle());
-		glVertexAttribPointer(
-			handle,
-			size,
-			type,
-			normalized,
-			stride,
-			offset
-		);
+		glVertexAttribPointer(handle, size, type, normalized, stride, offset);
 	}
 
 }

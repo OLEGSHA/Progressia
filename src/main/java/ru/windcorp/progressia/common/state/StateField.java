@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.state;
 
 import java.io.DataInput;
@@ -29,11 +29,7 @@ public abstract class StateField extends Namespaced {
 	private final boolean isLocal;
 	private final int index;
 
-	public StateField(
-		String id,
-		boolean isLocal,
-		int index
-	) {
+	public StateField(String id, boolean isLocal, int index) {
 		super(id);
 		this.isLocal = isLocal;
 		this.index = index;
@@ -47,19 +43,9 @@ public abstract class StateField extends Namespaced {
 		return index;
 	}
 
-	public abstract void read(
-		StatefulObject object,
-		DataInput input,
-		IOContext context
-	)
-		throws IOException;
+	public abstract void read(StatefulObject object, DataInput input, IOContext context) throws IOException;
 
-	public abstract void write(
-		StatefulObject object,
-		DataOutput output,
-		IOContext context
-	)
-		throws IOException;
+	public abstract void write(StatefulObject object, DataOutput output, IOContext context) throws IOException;
 
 	public abstract void copy(StatefulObject from, StatefulObject to);
 

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world;
 
 import java.util.function.Consumer;
@@ -28,7 +28,7 @@ public class ChunkDataListeners {
 	public static WorldDataListener createAdder(Supplier<ChunkDataListener> listenerSupplier) {
 		return new WorldDataListener() {
 			@Override
-			public void getChunkListeners(WorldData world, Vec3i chunk, Consumer<ChunkDataListener> chunkListenerSink) {
+			public void getChunkListeners(DefaultWorldData world, Vec3i chunk, Consumer<ChunkDataListener> chunkListenerSink) {
 				chunkListenerSink.accept(listenerSupplier.get());
 			}
 		};

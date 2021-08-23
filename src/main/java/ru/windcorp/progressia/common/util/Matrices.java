@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util;
 
 import glm.mat._3.Mat3;
@@ -37,8 +37,8 @@ import glm.mat._4.d.Mat4d;
  * }
  * </pre>
  * 
- * Provided objects may be reused after {@code release} has been invoked;
- * do not store them.
+ * Provided objects may be reused after {@code release} has been invoked; do not
+ * store them.
  * <p>
  * This class is thread- and recursion-safe.
  * 

@@ -15,17 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.tasks;
 
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.TickAndUpdateUtil;
-import ru.windcorp.progressia.server.world.WorldLogic;
 
 class BlockTriggeredUpdate extends CachedEvaluation {
 
@@ -39,13 +38,11 @@ class BlockTriggeredUpdate extends CachedEvaluation {
 	public void evaluate(Server server) {
 		Vec3i cursor = new Vec3i(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 
-		WorldLogic world = server.getWorld();
-
-		for (BlockFace face : BlockFace.getFaces()) {
-			TickAndUpdateUtil.updateTiles(world, cursor, face);
+		for (AbsFace face : AbsFace.getFaces()) {
+			TickAndUpdateUtil.updateTiles(server, cursor, face);
 			cursor.add(face.getVector());
-			TickAndUpdateUtil.updateBlock(world, cursor);
-			TickAndUpdateUtil.updateTiles(world, cursor, face.getCounter());
+			TickAndUpdateUtil.updateBlock(server, cursor);
+			TickAndUpdateUtil.updateTiles(server, cursor, face.getCounter());
 			cursor.sub(face.getVector());
 		}
 	}

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common;
 
 import java.lang.annotation.ElementType;
@@ -112,12 +112,9 @@ public class Units {
 
 	private static final TCharFloatMap PREFIXES_BY_CHAR;
 	static {
-		TCharFloatMap prefixes = new TCharFloatHashMap(
-			gnu.trove.impl.Constants.DEFAULT_CAPACITY,
-			gnu.trove.impl.Constants.DEFAULT_LOAD_FACTOR,
-			gnu.trove.impl.Constants.DEFAULT_CHAR_NO_ENTRY_VALUE,
-			Float.NaN
-		);
+		TCharFloatMap prefixes = new TCharFloatHashMap(gnu.trove.impl.Constants.DEFAULT_CAPACITY,
+				gnu.trove.impl.Constants.DEFAULT_LOAD_FACTOR, gnu.trove.impl.Constants.DEFAULT_CHAR_NO_ENTRY_VALUE,
+				Float.NaN);
 
 		prefixes.put('G', 1e+9f);
 		prefixes.put('M', 1e+6f);
@@ -133,13 +130,8 @@ public class Units {
 	private static final TObjectFloatMap<String> KNOWN_UNITS = createMap();
 
 	private static TObjectFloatMap<String> createMap() {
-		return TCollections.synchronizedMap(
-			new TObjectFloatHashMap<>(
-				gnu.trove.impl.Constants.DEFAULT_CAPACITY,
-				gnu.trove.impl.Constants.DEFAULT_LOAD_FACTOR,
-				Float.NaN
-			)
-		);
+		return TCollections.synchronizedMap(new TObjectFloatHashMap<>(gnu.trove.impl.Constants.DEFAULT_CAPACITY,
+				gnu.trove.impl.Constants.DEFAULT_LOAD_FACTOR, Float.NaN));
 	}
 
 	public static void registerUnits(Class<?> source) throws IllegalAccessException {
@@ -210,9 +202,9 @@ public class Units {
 	 * parenthesis are allowed at all. As such,
 	 * <ul>
 	 * <li>Multiple units under the division bar should be located after the
-	 * single {@code '/'} and separated by {@code '*'}:
-	 * <a href=https://en.wikipedia.org/wiki/Gas_constant>gas constant</a> ought
-	 * to have {@code "J/K*mol"} units.</li>
+	 * single {@code '/'} and separated by {@code '*'}: <a
+	 * href=https://en.wikipedia.org/wiki/Gas_constant>gas constant</a> ought to
+	 * have {@code "J/K*mol"} units.</li>
 	 * <li>Exponentiation of parenthesis should be expanded: (m/s)² =
 	 * {@code "m^2/s^2"}.</li>
 	 * <li>Exponents should also be used for expressing roots: √s =
@@ -221,8 +213,10 @@ public class Units {
 	 * discouraged.</li>
 	 * </ul>
 	 * 
-	 * @param unit unit declaration
-	 * @throws IllegalArgumentException if the declaration is invalid
+	 * @param unit
+	 *            unit declaration
+	 * @throws IllegalArgumentException
+	 *             if the declaration is invalid
 	 * @return the value of the unit
 	 * @see #get(String) get(String)
 	 * @see #registerUnit(float, String...)

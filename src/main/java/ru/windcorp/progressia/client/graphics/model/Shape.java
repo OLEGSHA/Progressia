@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.model;
 
 import java.nio.ByteBuffer;
@@ -30,10 +30,10 @@ import ru.windcorp.progressia.client.graphics.backend.VertexBufferObject;
 public class Shape implements Renderable {
 
 	private final ShapeRenderProgram program;
-	private final Face[] faces;
+	private final ShapePart[] parts;
 	private final Usage usage;
 
-	private FaceGroup[] groups;
+	private ShapePartGroup[] groups;
 
 	private ByteBuffer vertices;
 	private ShortBuffer indices;
@@ -45,33 +45,33 @@ public class Shape implements Renderable {
 	private VertexBufferObject verticesVbo;
 	private VertexBufferObject indicesVbo;
 
-	public Shape(Usage usage, ShapeRenderProgram program, Face... faces) {
+	public Shape(Usage usage, ShapeRenderProgram program, ShapePart... parts) {
 		this.program = program;
-		this.faces = faces;
+		this.parts = parts;
 		this.usage = usage;
 
-		configureFaces();
+		configureParts();
 		program.preprocess(this);
 
 		assembleBuffers();
 	}
 
-	private void configureFaces() {
-		for (Face face : faces) {
-			face.setShape(this);
+	private void configureParts() {
+		for (ShapePart part : parts) {
+			part.setShape(this);
 		}
 	}
 
 	private void assembleBuffers() {
 		// TODO optimize: only update faces that requested it
 
-		sortFaces();
+		sortParts();
 		resizeBuffers();
 
-		for (Face face : faces) {
-			assembleVertices(face);
-			assembleIndices(face);
-			face.resetUpdateFlags();
+		for (ShapePart part : parts) {
+			assembleVertices(part);
+			assembleIndices(part);
+			part.resetUpdateFlags();
 		}
 
 		this.vertices.flip();
@@ -85,110 +85,110 @@ public class Shape implements Renderable {
 
 	private void resizeBuffers() {
 		int verticesRequired = 0, indicesRequired = 0;
-		for (Face face : faces) {
-			verticesRequired += face.getVertices().remaining();
-			indicesRequired += face.getIndices().remaining();
+		for (ShapePart part : parts) {
+			verticesRequired += part.getVertices().remaining();
+			indicesRequired += part.getIndices().remaining();
 		}
 
-		if (this.vertices == null || vertices.capacity() < verticesRequired) {
+		if (vertices == null || vertices.capacity() < verticesRequired) {
 			this.vertices = BufferUtils.createByteBuffer(verticesRequired);
 		} else {
-			this.vertices.position(0).limit(verticesRequired);
+			vertices.position(0).limit(verticesRequired);
 		}
 
-		if (this.indices == null || this.indices.capacity() < indicesRequired) {
+		if (indices == null || indices.capacity() < indicesRequired) {
 			this.indices = BufferUtils.createShortBuffer(indicesRequired);
 		} else {
-			this.indices.position(0).limit(indicesRequired);
+			indices.position(0).limit(indicesRequired);
 		}
 	}
 
-	private void assembleVertices(Face face) {
-		face.locationOfVertices = this.vertices.position();
+	private void assembleVertices(ShapePart part) {
+		part.locationOfVertices = this.vertices.position();
 
-		insertVertices(face);
-		linkVerticesWith(face);
+		insertVertices(part);
+		linkVerticesWith(part);
 	}
 
-	private void insertVertices(Face face) {
-		ByteBuffer faceVertices = face.getVertices();
+	private void insertVertices(ShapePart part) {
+		ByteBuffer partVertices = part.getVertices();
 
-		faceVertices.mark();
-		this.vertices.put(faceVertices);
-		faceVertices.reset();
+		partVertices.mark();
+		this.vertices.put(partVertices);
+		partVertices.reset();
 	}
 
-	private void linkVerticesWith(Face face) {
+	private void linkVerticesWith(ShapePart part) {
 		int limit = vertices.limit();
 		int position = vertices.position();
 
-		vertices.limit(position).position(face.getLocationOfVertices());
-		face.vertices = vertices.slice();
+		vertices.limit(position).position(part.getLocationOfVertices());
+		part.vertices = vertices.slice();
 
 		vertices.position(position).limit(limit);
 	}
 
-	private void assembleIndices(Face face) {
-		short vertexOffset = (short) (face.getLocationOfVertices() / program.getBytesPerVertex());
+	private void assembleIndices(ShapePart part) {
+		short vertexOffset = (short) (part.getLocationOfVertices() / program.getBytesPerVertex());
 
-		face.locationOfIndices = indices.position();
+		part.locationOfIndices = indices.position();
 
-		ShortBuffer faceIndices = face.getIndices();
+		ShortBuffer partIndices = part.getIndices();
 
-		if (faceIndices == null) {
-			for (int i = 0; i < face.getVertexCount(); ++i) {
+		if (partIndices == null) {
+			for (int i = 0; i < part.getVertexCount(); ++i) {
 				this.indices.put((short) (vertexOffset + i));
 			}
 		} else {
-			for (int i = faceIndices.position(); i < faceIndices.limit(); ++i) {
-				short faceIndex = faceIndices.get(i);
-				faceIndex += vertexOffset;
-				this.indices.put(faceIndex);
+			for (int i = partIndices.position(); i < partIndices.limit(); ++i) {
+				short partIndex = partIndices.get(i);
+				partIndex += vertexOffset;
+				this.indices.put(partIndex);
 			}
 		}
 	}
 
-	private void sortFaces() {
-		Arrays.sort(faces);
+	private void sortParts() {
+		Arrays.sort(parts);
 	}
 
 	private void assembleGroups() {
-		int unique = countUniqueFaces();
-		this.groups = new FaceGroup[unique];
+		int unique = countUniqueParts();
+		this.groups = new ShapePartGroup[unique];
 
-		if (faces.length == 0)
+		if (parts.length == 0)
 			return;
 
-		int previousHandle = faces[0].getSortingIndex();
+		int previousHandle = parts[0].getSortingIndex();
 		int start = 0;
 		int groupIndex = 0;
 
-		for (int i = 1; i < faces.length; ++i) {
-			if (previousHandle != faces[i].getSortingIndex()) {
+		for (int i = 1; i < parts.length; ++i) {
+			if (previousHandle != parts[i].getSortingIndex()) {
 
-				groups[groupIndex] = new FaceGroup(faces, start, i);
+				groups[groupIndex] = new ShapePartGroup(parts, start, i);
 				start = i;
 				groupIndex++;
 
-				previousHandle = faces[i].getSortingIndex();
+				previousHandle = parts[i].getSortingIndex();
 			}
 		}
 
 		assert groupIndex == groups.length - 1;
-		groups[groupIndex] = new FaceGroup(faces, start, faces.length);
+		groups[groupIndex] = new ShapePartGroup(parts, start, parts.length);
 	}
 
-	private int countUniqueFaces() {
-		if (faces.length == 0)
+	private int countUniqueParts() {
+		if (parts.length == 0)
 			return 0;
 
 		int result = 1;
-		int previousHandle = faces[0].getSortingIndex();
+		int previousHandle = parts[0].getSortingIndex();
 
-		for (int i = 1; i < faces.length; ++i) {
-			if (previousHandle != faces[i].getSortingIndex()) {
+		for (int i = 1; i < parts.length; ++i) {
+			if (previousHandle != parts[i].getSortingIndex()) {
 				result++;
-				previousHandle = faces[i].getSortingIndex();
+				previousHandle = parts[i].getSortingIndex();
 			}
 		}
 
@@ -238,11 +238,11 @@ public class Shape implements Renderable {
 		return program;
 	}
 
-	public Face[] getFaces() {
-		return faces;
+	public ShapePart[] getParts() {
+		return parts;
 	}
 
-	public FaceGroup[] getGroups() {
+	public ShapePartGroup[] getGroups() {
 		return groups;
 	}
 

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.world;
 
 import java.util.ArrayList;
@@ -41,6 +41,8 @@ import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.collision.Collideable;
 import ru.windcorp.progressia.common.collision.colliders.Collider;
 import ru.windcorp.progressia.common.util.FloatMathUtil;
+import ru.windcorp.progressia.common.util.Vectors;
+import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.test.CollisionModelRenderer;
 import ru.windcorp.progressia.test.TestPlayerControls;
@@ -112,11 +114,11 @@ public class LayerWorld extends Layer {
 
 			tmp_testControls.applyPlayerControls();
 
-			for (EntityData data : this.client.getWorld().getData().getEntities()) {
+			this.client.getWorld().getData().getEntities().forEach(data -> {
 				tmp_applyFriction(data, tickLength);
 				tmp_applyGravity(data, tickLength);
 				tmp_renderCollisionModel(data);
-			}
+			});
 		} catch (Throwable e) {
 			e.printStackTrace();
 			System.err.println("OLEGSHA is to blame. Tell him he vry stupiDD!!");
@@ -134,12 +136,8 @@ public class LayerWorld extends Layer {
 		tmp_collideableList.clear();
 		tmp_collideableList.addAll(this.client.getWorld().getData().getEntities());
 
-		Collider.performCollisions(
-			tmp_collideableList,
-			this.client.getWorld().getData(),
-			tickLength,
-			tmp_colliderWorkspace
-		);
+		Collider.performCollisions(tmp_collideableList, this.client.getWorld().getData(), tickLength,
+				tmp_colliderWorkspace);
 	}
 
 	private static final Renderable SELECTION_BOX = tmp_createSelectionBox();
@@ -168,26 +166,14 @@ public class LayerWorld extends Layer {
 		for (float phi = 0; phi < 2 * FloatMathUtil.PI_F; phi += FloatMathUtil.PI_F / 2) {
 			Mat4 rot = new Mat4().identity().rotateZ(phi).scale(scale);
 
-			b.addPart(
-				new PppBuilder(p, (Texture) null).setOrigin(
-					new Vec3(-f - 0.5f, -f - 0.5f, -f - 0.5f)
-				).setSize(f, f, 2 * f + 1).setColorMultiplier(color).create(),
-				rot
-			);
+			b.addPart(new PppBuilder(p, (Texture) null).setOrigin(new Vec3(-f - 0.5f, -f - 0.5f, -f - 0.5f))
+					.setSize(f, f, 2 * f + 1).setColorMultiplier(color).create(), rot);
 
-			b.addPart(
-				new PppBuilder(p, (Texture) null).setOrigin(
-					new Vec3(-f - 0.5f, -0.5f, -f - 0.5f)
-				).setSize(f, 1, f).setColorMultiplier(color).create(),
-				rot
-			);
+			b.addPart(new PppBuilder(p, (Texture) null).setOrigin(new Vec3(-f - 0.5f, -0.5f, -f - 0.5f))
+					.setSize(f, 1, f).setColorMultiplier(color).create(), rot);
 
-			b.addPart(
-				new PppBuilder(p, (Texture) null).setOrigin(
-					new Vec3(-f - 0.5f, -0.5f, +0.5f)
-				).setSize(f, 1, f).setColorMultiplier(color).create(),
-				rot
-			);
+			b.addPart(new PppBuilder(p, (Texture) null).setOrigin(new Vec3(-f - 0.5f, -0.5f, +0.5f)).setSize(f, 1, f)
+					.setColorMultiplier(color).create(), rot);
 		}
 
 		return b.build();
@@ -199,16 +185,25 @@ public class LayerWorld extends Layer {
 		entity.getVelocity().mul((float) Math.exp(-FRICTION_COEFF / entity.getCollisionMass() * tickLength));
 	}
 
-	private static final float MC_g = Units.get("32  m/s^2");
-	private static final float IRL_g = Units.get("9.8 m/s^2");
-
 	private void tmp_applyGravity(EntityData entity, float tickLength) {
+		GravityModel gm = ClientState.getInstance().getWorld().getData().getGravityModel();
+		
+		Vec3 upVector = Vectors.grab3();
+		gm.getUp(entity.getPosition(), upVector);
+		entity.changeUpVector(upVector);
+		Vectors.release(upVector);
+		
 		if (ClientState.getInstance().getLocalPlayer().getEntity() == entity && tmp_testControls.isFlying()) {
 			return;
 		}
 
-		final float gravitationalAcceleration = tmp_testControls.useMinecraftGravity() ? MC_g : IRL_g;
-		entity.getVelocity().add(0, 0, -gravitationalAcceleration * tickLength);
+		Vec3 gravitationalAcceleration = Vectors.grab3();
+		gm.getGravity(entity.getPosition(), gravitationalAcceleration);
+		
+		gravitationalAcceleration.mul(tickLength);
+		entity.getVelocity().add(gravitationalAcceleration);
+		
+		Vectors.release(gravitationalAcceleration);
 	}
 
 	@Override

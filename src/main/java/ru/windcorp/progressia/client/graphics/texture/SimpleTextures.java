@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.texture;
 
 import java.io.IOException;
@@ -44,9 +44,7 @@ public class SimpleTextures {
 		try {
 			TextureDataEditor data = TextureLoader.loadPixels(resource, SETTINGS);
 
-			return new SimpleTexture(
-				new Sprite(new TexturePrimitive(data.getData()))
-			);
+			return new SimpleTexture(new Sprite(new TexturePrimitive(data.getData())));
 		} catch (IOException e) {
 			throw CrashReports.report(e, "Could not load texture %s", resource);
 		}

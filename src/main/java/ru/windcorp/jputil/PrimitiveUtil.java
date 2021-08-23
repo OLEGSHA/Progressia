@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil;
 
 import java.util.HashMap;
@@ -30,18 +30,8 @@ public class PrimitiveUtil {
 	private static final Map<Class<?>, Object> PRIMITIVE_TO_NULL = new HashMap<>();
 
 	static {
-		for (
-			Class<?> boxed : new Class<?>[] {
-				Boolean.class,
-				Byte.class,
-				Short.class,
-				Character.class,
-				Integer.class,
-				Long.class,
-				Float.class,
-				Double.class
-			}
-		) {
+		for (Class<?> boxed : new Class<?>[] { Boolean.class, Byte.class, Short.class, Character.class, Integer.class,
+				Long.class, Float.class, Double.class }) {
 			try {
 				PRIMITIVE_TO_BOXED.put((Class<?>) boxed.getField("TYPE").get(null), boxed);
 			} catch (Exception e) {

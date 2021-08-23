@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.chars.reader;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ import ru.windcorp.jputil.chars.Escaper;
  */
 
 // SonarLint: Constants should not be defined in interfaces (java:S1214)
-//   DONE is an essential part of the interface
+// DONE is an essential part of the interface
 @SuppressWarnings("squid:S1214")
 
 public interface CharReader {
@@ -179,8 +179,7 @@ public interface CharReader {
 
 	/**
 	 * Skips to the end of the current line. Both <code>"\n"</code>,
-	 * <code>"\r"</code>
-	 * and <code>"\r\n"</code> are considered line separators.
+	 * <code>"\r"</code> and <code>"\r\n"</code> are considered line separators.
 	 * 
 	 * @return the amount of characters in the skipped line
 	 */

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.texture;
 
 import java.awt.Graphics2D;
@@ -31,11 +31,7 @@ import ru.windcorp.progressia.common.util.BinUtil;
 
 public class TextureLoader {
 
-	public static TextureDataEditor loadPixels(
-		InputStream compressed,
-		TextureSettings settings
-	)
-		throws IOException {
+	public static TextureDataEditor loadPixels(InputStream compressed, TextureSettings settings) throws IOException {
 		BufferedImage readResult = ImageIO.read(compressed);
 
 		int width = readResult.getWidth();
@@ -44,10 +40,7 @@ public class TextureLoader {
 		int bufferWidth = BinUtil.roundToGreaterPowerOf2(width);
 		int bufferHeight = BinUtil.roundToGreaterPowerOf2(height);
 
-		WritableRaster raster = TextureUtil.createRaster(
-			bufferWidth,
-			bufferHeight
-		);
+		WritableRaster raster = TextureUtil.createRaster(bufferWidth, bufferHeight);
 
 		BufferedImage canvas = TextureUtil.createCanvas(raster);
 
@@ -56,49 +49,22 @@ public class TextureLoader {
 		try {
 			g.setColor(TextureUtil.CANVAS_BACKGROUND);
 			g.fillRect(0, 0, bufferWidth, bufferHeight);
-			g.drawImage(
-				readResult,
-				0,
-				0,
-				width,
-				height,
-				0,
-				height,
-				width,
-				0, // Flip the image
-				null
-			);
+			g.drawImage(readResult, 0, 0, width, height, 0, height, width, 0, // Flip
+																				// the
+																				// image
+					null);
 		} finally {
 			g.dispose();
 		}
 
-		TextureDataEditor result = new TextureDataEditor(
-			bufferWidth,
-			bufferHeight,
-			width,
-			height,
-			settings
-		);
+		TextureDataEditor result = new TextureDataEditor(bufferWidth, bufferHeight, width, height, settings);
 
-		result.draw(
-			TextureUtil.extractBytes(raster),
-			bufferWidth,
-			0,
-			0,
-			0,
-			0,
-			width,
-			height
-		);
+		result.draw(TextureUtil.extractBytes(raster), bufferWidth, 0, 0, 0, 0, width, height);
 
 		return result;
 	}
 
-	public static TextureDataEditor loadPixels(
-		Resource resource,
-		TextureSettings settings
-	)
-		throws IOException {
+	public static TextureDataEditor loadPixels(Resource resource, TextureSettings settings) throws IOException {
 		return loadPixels(resource.getInputStream(), settings);
 	}
 

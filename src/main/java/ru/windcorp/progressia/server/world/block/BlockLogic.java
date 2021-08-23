@@ -15,28 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.block;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.block.BlockFace;
-import ru.windcorp.progressia.common.world.generic.GenericBlock;
+import ru.windcorp.progressia.common.world.generic.BlockGeneric;
+import ru.windcorp.progressia.common.world.rels.RelFace;
+import ru.windcorp.progressia.server.world.context.ServerBlockContextRO;
 
-public class BlockLogic extends Namespaced implements GenericBlock {
+public class BlockLogic extends Namespaced implements BlockGeneric {
 
 	public BlockLogic(String id) {
 		super(id);
 	}
 
-	public boolean isSolid(BlockTickContext context, BlockFace face) {
+	public boolean isSolid(ServerBlockContextRO context, RelFace face) {
 		return isSolid(face);
 	}
 
-	public boolean isSolid(BlockFace face) {
+	public boolean isSolid(RelFace face) {
 		return true;
 	}
 
-	public boolean isTransparent(BlockTickContext context) {
+	public boolean isTransparent(ServerBlockContextRO context) {
 		return isTransparent();
 	}
 

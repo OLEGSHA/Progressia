@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.flat;
 
 import java.nio.FloatBuffer;
@@ -42,14 +42,8 @@ public class TransformedMask {
 	private Vec4 endXstartY = null;
 	private Vec4 endXendY = null;
 
-	public TransformedMask(
-		Vec2 origin,
-		Vec2 width,
-		Vec2 height,
-		Vec2 counterOrigin,
-		Vec2 counterWidth,
-		Vec2 counterHeight
-	) {
+	public TransformedMask(Vec2 origin, Vec2 width, Vec2 height, Vec2 counterOrigin, Vec2 counterWidth,
+			Vec2 counterHeight) {
 		set(origin, width, height, counterOrigin, counterWidth, counterHeight);
 	}
 
@@ -61,14 +55,8 @@ public class TransformedMask {
 		// Do nothing
 	}
 
-	public TransformedMask set(
-		Vec2 origin,
-		Vec2 width,
-		Vec2 height,
-		Vec2 counterOrigin,
-		Vec2 counterWidth,
-		Vec2 counterHeight
-	) {
+	public TransformedMask set(Vec2 origin, Vec2 width, Vec2 height, Vec2 counterOrigin, Vec2 counterWidth,
+			Vec2 counterHeight) {
 		this.origin.set(origin.x, origin.y);
 		this.width.set(width.x, width.y);
 		this.height.set(height.x, height.y);
@@ -112,35 +100,17 @@ public class TransformedMask {
 	}
 
 	private void setFields() {
-		origin.set(
-			startXstartY.x,
-			startXstartY.y
-		);
+		origin.set(startXstartY.x, startXstartY.y);
 
-		width.set(
-			endXstartY.x - startXstartY.x,
-			endXstartY.y - startXstartY.y
-		);
+		width.set(endXstartY.x - startXstartY.x, endXstartY.y - startXstartY.y);
 
-		height.set(
-			startXendY.x - startXstartY.x,
-			startXendY.y - startXstartY.y
-		);
+		height.set(startXendY.x - startXstartY.x, startXendY.y - startXstartY.y);
 
-		counterOrigin.set(
-			endXendY.x,
-			endXendY.y
-		);
+		counterOrigin.set(endXendY.x, endXendY.y);
 
-		counterWidth.set(
-			startXendY.x - endXendY.x,
-			startXendY.y - endXendY.y
-		);
+		counterWidth.set(startXendY.x - endXendY.x, startXendY.y - endXendY.y);
 
-		counterHeight.set(
-			endXstartY.x - endXendY.x,
-			endXstartY.y - endXendY.y
-		);
+		counterHeight.set(endXstartY.x - endXendY.x, endXstartY.y - endXendY.y);
 	}
 
 	public void writeToBuffer(FloatBuffer output) {

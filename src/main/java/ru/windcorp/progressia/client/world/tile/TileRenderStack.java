@@ -18,12 +18,15 @@
  
 package ru.windcorp.progressia.client.world.tile;
 
-import ru.windcorp.progressia.client.world.ChunkRender;
-import ru.windcorp.progressia.common.world.generic.GenericTileStack;
-import ru.windcorp.progressia.common.world.tile.TileDataStack;
+import java.util.AbstractList;
 
+import ru.windcorp.progressia.client.world.ChunkRender;
+import ru.windcorp.progressia.client.world.block.BlockRender;
+import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.generic.TileGenericStackRO;
 public abstract class TileRenderStack
-	extends GenericTileStack<TileRenderStack, TileRender, ChunkRender> {
+	extends AbstractList<TileRender>
+	implements TileGenericStackRO<BlockRender, TileRender, TileRenderStack, TileRenderReference, ChunkRender> {
 
 	public abstract TileDataStack getData();
 

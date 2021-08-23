@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util;
 
 import java.io.DataInput;
@@ -113,10 +113,7 @@ public class DataBuffer {
 		int length = buffer.size();
 
 		while (position < length) {
-			int currentLength = Math.min(
-				transferBuffer.length,
-				length - position
-			);
+			int currentLength = Math.min(transferBuffer.length, length - position);
 
 			buffer.toArray(transferBuffer, position, 0, currentLength);
 			sink.write(transferBuffer, 0, currentLength);

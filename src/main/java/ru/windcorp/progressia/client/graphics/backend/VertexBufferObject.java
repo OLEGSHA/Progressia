@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend;
 
 import static org.lwjgl.opengl.GL20.*;
@@ -28,8 +28,7 @@ import ru.windcorp.progressia.client.graphics.backend.OpenGLObjectTracker.OpenGL
 public class VertexBufferObject implements OpenGLDeletable {
 
 	public static enum BindTarget {
-		ARRAY(GL_ARRAY_BUFFER),
-		ELEMENT_ARRAY(GL_ELEMENT_ARRAY_BUFFER);
+		ARRAY(GL_ARRAY_BUFFER), ELEMENT_ARRAY(GL_ELEMENT_ARRAY_BUFFER);
 
 		private final int glCode;
 

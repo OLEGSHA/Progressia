@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.input;
 
 import glm.vec._2.i.Vec2i;
@@ -67,11 +67,7 @@ public class FrameResizeEvent extends InputEvent {
 
 		private final Vec2i previousSize;
 
-		public StaticFrameResizeEvent(
-			Vec2i newSize,
-			Vec2i previousSize,
-			double time
-		) {
+		public StaticFrameResizeEvent(Vec2i newSize, Vec2i previousSize, double time) {
 			super(newSize, time);
 			this.previousSize = previousSize;
 		}

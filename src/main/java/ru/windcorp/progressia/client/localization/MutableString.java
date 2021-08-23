@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.localization;
 
 import java.lang.ref.WeakReference;
@@ -34,7 +34,7 @@ public abstract class MutableString {
 	protected String data;
 
 	protected final Collection<WeakReference<Listener>> listeners = Collections
-		.synchronizedCollection(new LinkedList<>());
+			.synchronizedCollection(new LinkedList<>());
 
 	private Collection<Listener> myListeners = null;
 

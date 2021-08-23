@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.ticking;
 
 import ru.windcorp.progressia.server.Server;
@@ -32,14 +32,13 @@ public abstract class Change extends TickerTask {
 	 * Performs the changes on the provided server instance.
 	 * <p>
 	 * This method will be executed when the world is in an inconsistent state
-	 * and may not be queried,
-	 * only changed. Therefore, all necessary inspection must be performed
-	 * before this method is invoked,
-	 * typically by an {@link Evaluation}. Failure to abide by this contract may
-	 * lead to race conditions
-	 * and/or devil invasions.
+	 * and may not be queried, only changed. Therefore, all necessary inspection
+	 * must be performed before this method is invoked, typically by an
+	 * {@link Evaluation}. Failure to abide by this contract may lead to race
+	 * conditions and/or devil invasions.
 	 * 
-	 * @param server the {@link Server} instance to affect
+	 * @param server
+	 *            the {@link Server} instance to affect
 	 */
 	public abstract void affect(Server server);
 

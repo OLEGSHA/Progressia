@@ -21,10 +21,11 @@ package ru.windcorp.progressia.client.world;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 
 class ChunkUpdateListener implements ChunkDataListener {
@@ -36,14 +37,14 @@ class ChunkUpdateListener implements ChunkDataListener {
 	}
 
 	@Override
-	public void onChunkChanged(ChunkData chunk) {
+	public void onChunkChanged(DefaultChunkData chunk) {
 		world.getChunk(chunk).markForUpdate();
 	}
 	
 	@Override
-	public void onChunkLoaded(ChunkData chunk) {
+	public void onChunkLoaded(DefaultChunkData chunk) {
 		Vec3i cursor = new Vec3i();
-		for (BlockFace face : BlockFace.getFaces()) {
+		for (AbsFace face : AbsFace.getFaces()) {
 			cursor.set(chunk.getX(), chunk.getY(), chunk.getZ());
 			cursor.add(face.getVector());
 			world.markChunkForUpdate(cursor);
@@ -51,22 +52,22 @@ class ChunkUpdateListener implements ChunkDataListener {
 	}
 	
 	@Override
-	public void onChunkBlockChanged(ChunkData chunk, Vec3i blockInChunk, BlockData previous, BlockData current) {
+	public void onChunkBlockChanged(DefaultChunkData chunk, Vec3i blockInChunk, BlockData previous, BlockData current) {
 		onLocationChanged(chunk, blockInChunk);
 	}
 	
 	@Override
 	public void onChunkTilesChanged(
-		ChunkData chunk,
+		DefaultChunkData chunk,
 		Vec3i blockInChunk,
-		BlockFace face,
+		RelFace face,
 		TileData tile,
 		boolean wasAdded
 	) {
 		onLocationChanged(chunk, blockInChunk);
 	}
 
-	private void onLocationChanged(ChunkData chunk, Vec3i blockInChunk) {
+	private void onLocationChanged(DefaultChunkData chunk, Vec3i blockInChunk) {
 		Vec3i chunkPos = Vectors.grab3i().set(chunk.getX(), chunk.getY(), chunk.getZ());
 		
 		checkCoordinate(blockInChunk, chunkPos, VectorUtil.Axis.X);
@@ -82,7 +83,7 @@ class ChunkUpdateListener implements ChunkDataListener {
 		
 		if (block == 0) {
 			diff = -1;
-		} else if (block == ChunkData.BLOCKS_PER_CHUNK - 1) {
+		} else if (block == DefaultChunkData.BLOCKS_PER_CHUNK - 1) {
 			diff = +1;
 		} else {
 			return;

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.audio.backend;
 
 import org.lwjgl.BufferUtils;
@@ -39,12 +39,7 @@ public class AudioReader {
 
 		ShortBuffer rawAudio = decodeVorbis(resource, channelBuffer, rateBuffer);
 
-		return new SoundType(
-			id,
-			rawAudio,
-			format,
-			rateBuffer.get(0)
-		);
+		return new SoundType(id, rawAudio, format, rateBuffer.get(0));
 	}
 
 	public static SoundType readAsMono(Resource resource, String id) {
@@ -55,15 +50,7 @@ public class AudioReader {
 		return readAsSpecified(resource, id, AL_FORMAT_STEREO16);
 	}
 
-	private static ShortBuffer decodeVorbis(
-		Resource dataToDecode,
-		IntBuffer channelsBuffer,
-		IntBuffer rateBuffer
-	) {
-		return stb_vorbis_decode_memory(
-			dataToDecode.readAsBytes(),
-			channelsBuffer,
-			rateBuffer
-		);
+	private static ShortBuffer decodeVorbis(Resource dataToDecode, IntBuffer channelsBuffer, IntBuffer rateBuffer) {
+		return stb_vorbis_decode_memory(dataToDecode.readAsBytes(), channelsBuffer, rateBuffer);
 	}
 }

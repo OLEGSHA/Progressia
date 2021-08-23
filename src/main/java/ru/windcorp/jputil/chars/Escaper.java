@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.chars;
 
 import java.text.CharacterIterator;
@@ -103,14 +103,8 @@ public class Escaper {
 
 	}
 
-	public static final Escaper JAVA = new Escaper(
-		'\\',
-		'u',
-		"tbnrf'\"".toCharArray(),
-		"\t\b\n\r\f\'\"".toCharArray(),
-		true,
-		true
-	);
+	public static final Escaper JAVA = new Escaper('\\', 'u', "tbnrf'\"".toCharArray(), "\t\b\n\r\f\'\"".toCharArray(),
+			true, true);
 
 	private final char escapeChar;
 	private final char unicodeEscapeChar;
@@ -120,14 +114,8 @@ public class Escaper {
 	private final boolean preferUnicode;
 	private final boolean strict;
 
-	protected Escaper(
-		char escapeChar,
-		char unicodeEscapeChar,
-		char[] safes,
-		char[] unsafes,
-		boolean preferUnicode,
-		boolean strict
-	) {
+	protected Escaper(char escapeChar, char unicodeEscapeChar, char[] safes, char[] unsafes, boolean preferUnicode,
+			boolean strict) {
 		this.escapeChar = escapeChar;
 		this.unicodeEscapeChar = unicodeEscapeChar;
 		this.safes = safes;
@@ -152,8 +140,7 @@ public class Escaper {
 		for (char c : unsafes) {
 			if (c == escapeChar)
 				throw new IllegalArgumentException(
-					"Unsafe characters contain escape chatacter (escape character is escaped automatically)"
-				);
+						"Unsafe characters contain escape chatacter (escape character is escaped automatically)");
 			if (c == unicodeEscapeChar)
 				throw new IllegalArgumentException("Unsafe characters contain Unicode escape chatacter");
 		}
@@ -173,11 +160,7 @@ public class Escaper {
 			end = Integer.MAX_VALUE;
 		else
 			end = src.getPosition() + length;
-		while (
-			src.has() &&
-				src.getPosition() < end &&
-				(until == null || !until.test(src.current()))
-		)
+		while (src.has() && src.getPosition() < end && (until == null || !until.test(src.current())))
 			escape(src.consume(), output);
 	}
 
@@ -225,11 +208,7 @@ public class Escaper {
 
 		int result = 0;
 
-		while (
-			src.has() &&
-				src.getPosition() < end &&
-				(until == null || !until.test(src.current()))
-		) {
+		while (src.has() && src.getPosition() < end && (until == null || !until.test(src.current()))) {
 			result += getEscapedLength(src.consume());
 		}
 
@@ -257,11 +236,7 @@ public class Escaper {
 			end = Integer.MAX_VALUE;
 		else
 			end = src.getPosition() + length;
-		while (
-			src.has() &&
-				src.getPosition() < end &&
-				(until == null || !until.test(src.current()))
-		) {
+		while (src.has() && src.getPosition() < end && (until == null || !until.test(src.current()))) {
 			output.accept(unescapeOneSequence(src));
 		}
 	}
@@ -282,10 +257,8 @@ public class Escaper {
 
 				if (src.current() == unicodeEscapeChar) {
 					src.next();
-					return (char) (hexValue(src.consume()) << (4 * 3) |
-						hexValue(src.consume()) << (4 * 2) |
-						hexValue(src.consume()) << (4 * 1) |
-						hexValue(src.consume()) << (4 * 0));
+					return (char) (hexValue(src.consume()) << (4 * 3) | hexValue(src.consume()) << (4 * 2)
+							| hexValue(src.consume()) << (4 * 1) | hexValue(src.consume()) << (4 * 0));
 				}
 
 				int index = ArrayUtil.firstIndexOf(safes, src.current());
@@ -315,11 +288,7 @@ public class Escaper {
 
 		int result = 0;
 
-		while (
-			src.has() &&
-				src.getPosition() < end &&
-				(until == null || !until.test(src.current()))
-		) {
+		while (src.has() && src.getPosition() < end && (until == null || !until.test(src.current()))) {
 			skipOneSequence(src);
 			result++;
 		}
@@ -328,11 +297,7 @@ public class Escaper {
 	}
 
 	public void skipOneSequence(CharReader src) {
-		if (
-			src.current() == escapeChar
-				&&
-				src.next() == unicodeEscapeChar
-		) {
+		if (src.current() == escapeChar && src.next() == unicodeEscapeChar) {
 			src.advance(4);
 		}
 		src.next();

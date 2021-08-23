@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.audio;
 
 import org.lwjgl.openal.*;
@@ -43,10 +43,7 @@ public class AudioManager {
 	private static Speaker musicSpeaker;
 
 	public static void initAL() {
-		String defaultDeviceName = alcGetString(
-			0,
-			ALC_DEFAULT_DEVICE_SPECIFIER
-		);
+		String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
 
 		device = alcOpenDevice(defaultDeviceName);
 
@@ -75,10 +72,7 @@ public class AudioManager {
 				lastSoundIndex = 0;
 			}
 			speaker = soundSpeakers.get(lastSoundIndex);
-		} while (
-			speaker.getState()
-				.equals(Speaker.State.PLAYING_LOOP)
-		);
+		} while (speaker.getState().equals(Speaker.State.PLAYING_LOOP));
 		return speaker;
 	}
 

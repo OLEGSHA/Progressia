@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.tile;
 
 import java.io.DataInput;
@@ -25,8 +25,9 @@ import java.io.IOException;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
+import ru.windcorp.progressia.common.world.TileDataStack;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class PacketRemoveTile extends PacketAffectTile {
 
@@ -39,7 +40,7 @@ public class PacketRemoveTile extends PacketAffectTile {
 	}
 
 	@Override
-	public void set(Vec3i blockInWorld, BlockFace face, int tag) {
+	public void set(Vec3i blockInWorld, AbsFace face, int tag) {
 		super.set(blockInWorld, face, tag);
 	}
 
@@ -54,21 +55,14 @@ public class PacketRemoveTile extends PacketAffectTile {
 	}
 
 	@Override
-	public void apply(WorldData world) {
+	public void apply(DefaultWorldData world) {
 		TileDataStack stack = world.getTiles(getBlockInWorld(), getFace());
 
 		int index = stack.getIndexByTag(getTag());
 
 		if (index < 0) {
-			throw CrashReports.report(
-				null,
-				"Could not find tile with tag %d at (%d; %d; %d; %s)",
-				getTag(),
-				getBlockInWorld().x,
-				getBlockInWorld().y,
-				getBlockInWorld().z,
-				getFace()
-			);
+			throw CrashReports.report(null, "Could not find tile with tag %d at (%d; %d; %d; %s)", getTag(),
+					getBlockInWorld().x, getBlockInWorld().y, getBlockInWorld().z, getFace());
 		}
 
 		stack.remove(index);

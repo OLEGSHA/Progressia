@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.input;
 
 import org.lwjgl.glfw.GLFW;
@@ -27,13 +27,7 @@ public class KeyEvent extends InputEvent {
 	protected int action;
 	protected int mods;
 
-	protected KeyEvent(
-		int key,
-		int scancode,
-		int action,
-		int mods,
-		double time
-	) {
+	protected KeyEvent(int key, int scancode, int action, int mods, double time) {
 		super(time);
 		this.key = key;
 		this.scancode = scancode;

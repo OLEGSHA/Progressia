@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.entity;
 
 import java.io.DataInput;
@@ -26,7 +26,7 @@ import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.DataBuffer;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.DecodingException;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 
 public class PacketChangeEntity extends PacketAffectEntity {
 
@@ -68,7 +68,7 @@ public class PacketChangeEntity extends PacketAffectEntity {
 	}
 
 	@Override
-	public void apply(WorldData world) {
+	public void apply(DefaultWorldData world) {
 		EntityData entity = world.getEntity(getEntityId());
 
 		if (entity == null) {

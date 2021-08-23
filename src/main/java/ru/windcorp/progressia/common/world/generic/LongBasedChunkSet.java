@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world.generic;
 
 import java.util.Iterator;
@@ -45,7 +45,7 @@ public class LongBasedChunkSet implements ChunkSet {
 		addAll(copyFrom);
 	}
 
-	public LongBasedChunkSet(TLongSet impl, GenericWorld<?, ?, ?, ?, ?> copyFrom) {
+	public LongBasedChunkSet(TLongSet impl, WorldGenericRO<?, ?, ?, ?, ?, ?> copyFrom) {
 		this(impl);
 		addAllChunks(copyFrom.getChunks());
 	}

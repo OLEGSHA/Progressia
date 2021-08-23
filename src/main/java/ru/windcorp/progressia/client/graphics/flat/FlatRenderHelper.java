@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.flat;
 
 import java.nio.FloatBuffer;
@@ -37,9 +37,8 @@ public abstract class FlatRenderHelper extends ShapeRenderHelper {
 		float width = GraphicsInterface.getFrameWidth();
 		float height = GraphicsInterface.getFrameHeight();
 
-		return finalTransform.identity().translate(-1, -1, 0)
-			.scale(2 / width, 2 / height, 1 / MAX_DEPTH)
-			.mul(getTransform());
+		return finalTransform.identity().translate(-1, -1, 0).scale(2 / width, 2 / height, 1 / MAX_DEPTH)
+				.mul(getTransform());
 	}
 
 }

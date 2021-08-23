@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.texture;
 
 import java.util.Objects;
@@ -38,14 +38,8 @@ public class Sprite {
 	}
 
 	public Sprite(TexturePrimitive primitive) {
-		this(
-			primitive,
-			ORIGIN,
-			new Vec2(
-				primitive.getWidth() / (float) primitive.getBufferWidth(),
-				primitive.getHeight() / (float) primitive.getBufferHeight()
-			)
-		);
+		this(primitive, ORIGIN, new Vec2(primitive.getWidth() / (float) primitive.getBufferWidth(),
+				primitive.getHeight() / (float) primitive.getBufferHeight()));
 	}
 
 	public TexturePrimitive getPrimitive() {

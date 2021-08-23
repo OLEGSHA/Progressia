@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world;
 
 import java.io.DataInput;
@@ -53,9 +53,9 @@ public class PacketRevokeChunk extends PacketAffectChunk {
 	}
 
 	@Override
-	public void apply(WorldData world) {
+	public void apply(DefaultWorldData world) {
 		synchronized (world) {
-			ChunkData chunk = world.getChunk(position);
+			DefaultChunkData chunk = world.getChunk(position);
 			if (chunk != null) {
 				world.removeChunk(chunk);
 			}

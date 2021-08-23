@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend;
 
 import glm.vec._2.i.Vec2i;
@@ -61,7 +61,7 @@ public class GraphicsBackend {
 	static void setOpenGLInitialized(boolean isOpenGLInitialized) {
 		GraphicsBackend.isOpenGLInitialized = isOpenGLInitialized;
 	}
-	
+
 	public static void initialize() {
 		startRenderThread();
 	}
@@ -159,27 +159,14 @@ public class GraphicsBackend {
 
 	public static void setFullscreen() {
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		glfwSetWindowMonitor(
-			getWindowHandle(),
-			glfwGetPrimaryMonitor(),
-			0,
-			0,
-			vidmode.width(),
-			vidmode.height(),
-			0);
+		glfwSetWindowMonitor(getWindowHandle(), glfwGetPrimaryMonitor(), 0, 0, vidmode.width(), vidmode.height(), 0);
 		isFullscreen = true;
 	}
 
 	public static void setWindowed() {
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		glfwSetWindowMonitor(
-			getWindowHandle(),
-			0,
-			(vidmode.width() - getFrameWidth()) / 2,
-			(vidmode.height() - getFrameHeight()) / 2,
-			getFrameWidth(),
-			getFrameHeight(),
-			0);
+		glfwSetWindowMonitor(getWindowHandle(), 0, (vidmode.width() - getFrameWidth()) / 2,
+				(vidmode.height() - getFrameHeight()) / 2, getFrameWidth(), getFrameHeight(), 0);
 		isFullscreen = false;
 	}
 

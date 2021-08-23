@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -66,7 +66,7 @@ class LWJGLInitializer {
 		GraphicsBackend.setWindowHandle(handle);
 
 		glfwMakeContextCurrent(handle);
-		glfwSwapInterval(0);	// TODO: remove after config system is added
+		glfwSwapInterval(0); // TODO: remove after config system is added
 	}
 
 	private static void positionWindow() {
@@ -92,16 +92,10 @@ class LWJGLInitializer {
 	private static void setupWindowCallbacks() {
 		long handle = GraphicsBackend.getWindowHandle();
 
-		glfwSetFramebufferSizeCallback(
-			handle,
-			GraphicsBackend::onFrameResized
-		);
+		glfwSetFramebufferSizeCallback(handle, GraphicsBackend::onFrameResized);
 
 		glfwSetKeyCallback(handle, InputHandler::handleKeyInput);
-		glfwSetMouseButtonCallback(
-			handle,
-			InputHandler::handleMouseButtonInput
-		);
+		glfwSetMouseButtonCallback(handle, InputHandler::handleMouseButtonInput);
 
 		glfwSetCursorPosCallback(handle, InputHandler::handleMouseMoveInput);
 

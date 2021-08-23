@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.gui.layout;
 
 import static java.lang.Math.max;
@@ -56,13 +56,8 @@ public class LayoutAlign implements Layout {
 			size.x = min(size.x, cWidth);
 			size.y = min(size.y, cHeight);
 
-			child.setBounds(
-				c.getX() +
-					(int) ((cWidth - size.x) * alignX) + margin,
-				c.getY() +
-					(int) ((cHeight - size.y) * alignY) + margin,
-				size
-			);
+			child.setBounds(c.getX() + (int) ((cWidth - size.x) * alignX) + margin,
+					c.getY() + (int) ((cHeight - size.y) * alignY) + margin, size);
 
 		});
 	}
@@ -71,12 +66,10 @@ public class LayoutAlign implements Layout {
 	public Vec2i calculatePreferredSize(Component c) {
 		Vec2i result = new Vec2i(0, 0);
 
-		c.getChildren().stream()
-			.map(child -> child.getPreferredSize())
-			.forEach(size -> {
-				result.x = max(size.x, result.x);
-				result.y = max(size.y, result.y);
-			});
+		c.getChildren().stream().map(child -> child.getPreferredSize()).forEach(size -> {
+			result.x = max(size.x, result.x);
+			result.y = max(size.y, result.y);
+		});
 
 		result.x += 2 * margin;
 		result.y += 2 * margin;

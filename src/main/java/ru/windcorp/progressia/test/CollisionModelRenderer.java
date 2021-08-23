@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import glm.mat._4.Mat4;
@@ -33,9 +33,9 @@ import ru.windcorp.progressia.common.collision.CompoundCollisionModel;
 public class CollisionModelRenderer {
 
 	private static final Shape CUBE = new Shapes.PppBuilder(WorldRenderProgram.getDefault(), (Texture) null)
-		.setColorMultiplier(1.0f, 0.7f, 0.2f).create();
+			.setColorMultiplier(1.0f, 0.7f, 0.2f).create();
 	private static final Shape CUBE_GRAY = new Shapes.PppBuilder(WorldRenderProgram.getDefault(), (Texture) null)
-		.setColorMultiplier(0.5f, 0.5f, 0.5f).create();
+			.setColorMultiplier(0.5f, 0.5f, 0.5f).create();
 
 	public static void renderCollisionModel(CollisionModel model, ShapeRenderHelper helper) {
 		if (model instanceof AABBoid) {
@@ -60,10 +60,7 @@ public class CollisionModelRenderer {
 		helper.popTransform();
 	}
 
-	private static void renderCompound(
-		CompoundCollisionModel model,
-		ShapeRenderHelper helper
-	) {
+	private static void renderCompound(CompoundCollisionModel model, ShapeRenderHelper helper) {
 		for (CollisionModel part : model.getModels()) {
 			renderCollisionModel(part, helper);
 		}

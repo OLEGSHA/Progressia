@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client;
 
 import ru.windcorp.progressia.client.comms.DefaultClientCommsListener;
@@ -24,7 +24,7 @@ import ru.windcorp.progressia.client.graphics.world.Camera;
 import ru.windcorp.progressia.client.graphics.world.EntityAnchor;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.world.WorldRender;
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class Client {
@@ -36,7 +36,7 @@ public class Client {
 
 	private final ServerCommsChannel comms;
 
-	public Client(WorldData world, ServerCommsChannel comms) {
+	public Client(DefaultWorldData world, ServerCommsChannel comms) {
 		this.world = new WorldRender(world, this);
 		this.comms = comms;
 
@@ -69,11 +69,7 @@ public class Client {
 			return;
 		}
 
-		getCamera().setAnchor(
-			new EntityAnchor(
-				getWorld().getEntityRenderable(entity)
-			)
-		);
+		getCamera().setAnchor(new EntityAnchor(getWorld().getEntityRenderable(entity)));
 	}
 
 }

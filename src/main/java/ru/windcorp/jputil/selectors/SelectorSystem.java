@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.selectors;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class SelectorSystem<T> {
 	private final Collection<Selector<T>> selectors = Collections.synchronizedCollection(new ArrayList<Selector<T>>());
 
 	private final Collection<SelectorOperator> operators = Collections
-		.synchronizedCollection(new ArrayList<SelectorOperator>());
+			.synchronizedCollection(new ArrayList<SelectorOperator>());
 
 	private String stackPrefix = null;
 

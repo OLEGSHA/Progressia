@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.ticking;
 
 import java.util.ArrayList;
@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,19 +34,24 @@ import com.google.common.collect.ImmutableList;
 
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.ChunkDataListener;
 import ru.windcorp.progressia.common.world.ChunkDataListeners;
 import ru.windcorp.progressia.server.Server;
 
 /**
  * Central control point for serverside ticking. This class provides an
- * interface to
- * interact with Tickers.
+ * interface to interact with Tickers.
  * 
  * @author javapony
  */
 public class TickerCoordinator {
+	
+	public enum TickPhase {
+		SYNCHRONOUS,
+		EVALUATION,
+		CHANGE
+	}
 
 	static final int INITIAL_QUEUE_SIZE = 1024;
 
@@ -66,8 +71,7 @@ public class TickerCoordinator {
 
 	/**
 	 * All tasks that must be {@linkplain TickerTask#dispose() disposed of} at
-	 * the end of the current
-	 * tick. This list must be empty when not in
+	 * the end of the current tick. This list must be empty when not in
 	 * {@link #runPassStage(Collection, String)}.
 	 */
 	private final Collection<TickerTask> toDispose = new ArrayList<>(INITIAL_QUEUE_SIZE);
@@ -77,7 +81,7 @@ public class TickerCoordinator {
 
 	private final AtomicInteger workingTickers = new AtomicInteger();
 
-	private final AtomicBoolean canChange = new AtomicBoolean(true);
+	private final AtomicReference<TickPhase> phase = new AtomicReference<>(TickPhase.SYNCHRONOUS);
 
 	private boolean isTickStartSet = false;
 	private long tickStart = -1;
@@ -96,17 +100,14 @@ public class TickerCoordinator {
 		}
 
 		this.tickers = ImmutableList.copyOf(tickerCollection);
-		this.threads = Collections2.transform(this.tickers, Ticker::getThread); // Immutable
-																				// because
-																				// it
-																				// is
-																				// a
-																				// view
+		
+		// Immutable because it is a view
+		this.threads = Collections2.transform(this.tickers, Ticker::getThread);
 
 		server.getWorld().getData().addListener(ChunkDataListeners.createAdder(new ChunkDataListener() {
 			@Override
-			public void onChunkChanged(ChunkData chunk) {
-				if (!canChange.get()) {
+			public void onChunkChanged(DefaultChunkData chunk) {
+				if (phase.get() == TickPhase.EVALUATION) {
 					throw CrashReports.report(null, "A change has been detected during evaluation phase");
 				}
 			}
@@ -152,12 +153,18 @@ public class TickerCoordinator {
 	public double getTPS() {
 		return 1 / tickLength;
 	}
-	
+
 	public long getUptimeTicks() {
 		return ticks;
 	}
+	
+	public TickPhase getPhase() {
+		return phase.get();
+	}
 
 	private void onTickStart() {
+		phase.set(TickPhase.EVALUATION);
+		
 		long now = System.currentTimeMillis();
 
 		if (isTickStartSet) {
@@ -168,9 +175,10 @@ public class TickerCoordinator {
 
 		tickStart = System.currentTimeMillis();
 	}
-	
+
 	private void onTickEnd() {
 		ticks++;
+		phase.set(TickPhase.SYNCHRONOUS);
 	}
 
 	/*
@@ -191,7 +199,7 @@ public class TickerCoordinator {
 				logger.debug("Pass complete");
 				passes++;
 			}
-			
+
 			onTickEnd();
 
 			logger.debug("Tick complete; run {} passes", passes);
@@ -212,17 +220,14 @@ public class TickerCoordinator {
 	}
 
 	private synchronized void runOnePass() throws InterruptedException {
-		canChange.set(false);
+		phase.set(TickPhase.EVALUATION);
 		runPassStage(pendingEvaluations, "EVALUATION");
-		canChange.set(true);
+		phase.set(TickPhase.CHANGE);
 		runPassStage(pendingChanges, "CHANGE");
 	}
 
-	private synchronized void runPassStage(
-		Collection<? extends TickerTask> tasks,
-		String stageName
-	)
-		throws InterruptedException {
+	private synchronized void runPassStage(Collection<? extends TickerTask> tasks, String stageName)
+			throws InterruptedException {
 		if (!toDispose.isEmpty())
 			throw new IllegalStateException("toDispose is not empty: " + toDispose);
 
@@ -238,11 +243,8 @@ public class TickerCoordinator {
 		toDispose.clear();
 	}
 
-	private synchronized void startPassStage(
-		Collection<? extends TickerTask> tasks,
-		Collection<TickerTask> toDispose,
-		String stageName
-	) {
+	private synchronized void startPassStage(Collection<? extends TickerTask> tasks, Collection<TickerTask> toDispose,
+			String stageName) {
 		if (tasks.isEmpty()) {
 			logger.debug("Skipping stage {}: tasks is empty", stageName);
 			return;
@@ -269,11 +271,8 @@ public class TickerCoordinator {
 		logger.debug("Stage started");
 	}
 
-	private Collection<TickerTask> selectTasks(
-		Ticker ticker,
-		Collection<? extends TickerTask> tasks,
-		Collection<TickerTask> output
-	) {
+	private Collection<TickerTask> selectTasks(Ticker ticker, Collection<? extends TickerTask> tasks,
+			Collection<TickerTask> output) {
 		// TODO implement properly
 
 		for (TickerTask task : tasks) {
@@ -319,12 +318,8 @@ public class TickerCoordinator {
 			logger.debug("javahorse kill urself");
 		}
 
-		throw CrashReports.crash(
-			t,
-			"Something has gone horribly wrong in server ticker code "
-				+ "(thread %s) and it is (probably) not related to mods or devils.",
-			thread
-		);
+		throw CrashReports.crash(t, "Something has gone horribly wrong in server ticker code "
+				+ "(thread %s) and it is (probably) not related to mods or devils.", thread);
 	}
 
 }

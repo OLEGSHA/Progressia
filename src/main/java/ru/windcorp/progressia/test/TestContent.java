@@ -27,10 +27,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-
 import org.lwjgl.glfw.GLFW;
 
-import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.audio.Sound;
@@ -47,25 +45,31 @@ import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
+import ru.windcorp.progressia.common.world.GravityModelRegistry;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
 import ru.windcorp.progressia.common.world.io.ChunkIO;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.tile.*;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.comms.controls.*;
 import ru.windcorp.progressia.server.world.block.*;
 import ru.windcorp.progressia.server.world.entity.*;
+import ru.windcorp.progressia.server.world.generation.planet.PlanetGravityModel;
 import ru.windcorp.progressia.server.world.tile.*;
+import ru.windcorp.progressia.test.Rocks.RockType;
+import ru.windcorp.progressia.test.gen.TestGravityModel;
 
 public class TestContent {
 
 	public static final String PLAYER_LOGIN = "Sasha";
 	public static final long PLAYER_ENTITY_ID = 0x42;
 	public static final long STATIE_ENTITY_ID = 0xDEADBEEF;
-	public static final Vec3 SPAWN = new Vec3(8, 8, 880);
 
 	public static final List<BlockData> PLACEABLE_BLOCKS = new ArrayList<>();
 	public static final List<TileData> PLACEABLE_TILES = new ArrayList<>();
+	
+	public static final Rocks ROCKS = new Rocks();
 
 	public static void registerContent() {
 		registerWorldContent();
@@ -100,13 +104,7 @@ public class TestContent {
 		register(new BlockRenderOpaqueCube("Test:Stone", getBlockTexture("Stone")));
 		register(new BlockLogic("Test:Stone"));
 
-		for (String type : new String[] { "Monolith", "Cracked", "Gravel" }) {
-			String id = "Test:Granite" + type;
-
-			register(new BlockData(id));
-			register(new BlockRenderOpaqueCube(id, getBlockTexture("Granite" + type)));
-			register(new BlockLogic(id));
-		}
+		registerRocks();
 
 		register(new BlockData("Test:Brick"));
 		register(new BlockRenderOpaqueCube("Test:Brick", getBlockTexture("Brick")));
@@ -134,13 +132,13 @@ public class TestContent {
 				"Test:Log",
 				getBlockTexture("LogTop"),
 				getBlockTexture("LogTop"),
-				getBlockTexture("LogSide"),
-				getBlockTexture("LogSide"),
-				getBlockTexture("LogSide"),
 				getBlockTexture("LogSide")
 			)
 		);
 		register(new BlockLogic("Test:Log"));
+		register(new BlockData("Test:TemporaryLeaves"));
+		register(new BlockRenderTransparentCube("Test:TemporaryLeaves", getBlockTexture("TemporaryLeaves")));
+		register(new TestBlockLogicGlass("Test:TemporaryLeaves")); // Sic, using Glass logic for leaves because Test
 
 		register(new BlockData("Test:WoodenPlank"));
 		register(new BlockRenderOpaqueCube("Test:WoodenPlank", getBlockTexture("WoodenPlank")));
@@ -152,11 +150,24 @@ public class TestContent {
 
 	}
 
+	private static void registerRocks() {
+		
+		ROCKS.create(RockType.IGNEOUS, "BlackGranite");
+		ROCKS.create(RockType.IGNEOUS, "RedGranite");
+		ROCKS.create(RockType.IGNEOUS, "Gabbro");
+		ROCKS.create(RockType.METAMORPHIC, "Marble");
+		ROCKS.create(RockType.METAMORPHIC, "Eclogite");
+		ROCKS.create(RockType.SEDIMENTARY, "Limestone");
+		ROCKS.create(RockType.SEDIMENTARY, "Dolomite");
+		
+		ROCKS.registerAllRocks();
+	}
+
 	private static void registerTiles() {
 		Set<String> placeableBlacklist = new HashSet<>();
 
 		register(new TileData("Test:Grass"));
-		register(new TileRenderGrass("Test:Grass", getTileTexture("GrassTop"), getTileTexture("GrassSide")));
+		register(new TestTileRenderGrass("Test:Grass", getTileTexture("GrassTop"), getTileTexture("GrassSide")));
 		register(new TestTileLogicGrass("Test:Grass"));
 
 		register(new TileData("Test:Stones"));
@@ -245,6 +256,10 @@ public class TestContent {
 		register("Test:Statie", TestEntityDataStatie::new);
 		register(new TestEntityRenderStatie("Test:Statie"));
 		register(new TestEntityLogicStatie("Test:Statie"));
+		
+		register("Test:FallingBlock", TestEntityDataFallingBlock::new);
+		register(new TestEntityLogicFallingBlock("Test:FallingBlock"));
+		register(new TestEntityRenderFallingBlock("Test:FallingBlock"));
 	}
 
 	private static void regsiterControls() {
@@ -381,7 +396,7 @@ public class TestContent {
 		ru.windcorp.progressia.server.comms.Client client
 	) {
 		Vec3i blockInWorld = ((ControlBreakBlockData) packet.getControl()).getBlockInWorld();
-		server.getWorldAccessor().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
+		server.createAbsoluteContext().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
 	}
 
 	private static void onBlockPlaceTrigger(ControlData control) {
@@ -401,7 +416,7 @@ public class TestContent {
 		Vec3i blockInWorld = controlData.getBlockInWorld();
 		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null)
 			return;
-		server.getWorldAccessor().setBlock(blockInWorld, block);
+		server.createAbsoluteContext().setBlock(blockInWorld, block);
 	}
 
 	private static void onTilePlaceTrigger(ControlData control) {
@@ -420,18 +435,20 @@ public class TestContent {
 		ControlPlaceTileData controlData = ((ControlPlaceTileData) packet.getControl());
 		TileData tile = controlData.getTile();
 		Vec3i blockInWorld = controlData.getBlockInWorld();
-		BlockFace face = controlData.getFace();
+		AbsFace face = controlData.getFace();
 
 		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null)
 			return;
 		if (server.getWorld().getData().getTiles(blockInWorld, face).isFull())
 			return;
-		server.getWorldAccessor().addTile(blockInWorld, face, tile);
+		server.createAbsoluteContext().addTile(blockInWorld, face.relativize(AbsFace.POS_Z), tile);
 	}
 
 	private static void registerMisc() {
 		ChunkIO.registerCodec(new TestChunkCodec());
 		ChunkRenderOptimizerRegistry.getInstance().register("Core:SurfaceOptimizer", ChunkRenderOptimizerSurface::new);
+		GravityModelRegistry.getInstance().register("Test:TheGravityModel", TestGravityModel::new);
+		GravityModelRegistry.getInstance().register("Test:PlanetGravityModel", PlanetGravityModel::new);
 	}
 
 }

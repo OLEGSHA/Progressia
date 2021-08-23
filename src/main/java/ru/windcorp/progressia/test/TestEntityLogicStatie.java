@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.server.world.TickContext;
+import ru.windcorp.progressia.server.world.context.ServerWorldContext;
 import ru.windcorp.progressia.server.world.entity.EntityLogic;
 
 public class TestEntityLogicStatie extends EntityLogic {
@@ -29,13 +29,13 @@ public class TestEntityLogicStatie extends EntityLogic {
 	}
 
 	@Override
-	public void tick(EntityData entity, TickContext context) {
+	public void tick(EntityData entity, ServerWorldContext context) {
 		super.tick(entity, context);
 
 		TestEntityDataStatie statie = (TestEntityDataStatie) entity;
 
 		int size = (int) (18 + 6 * Math.sin(entity.getAge()));
-		context.getServer().getWorldAccessor().changeEntity(statie, e -> e.setSizeNow(size));
+		context.changeEntity(statie, e -> e.setSizeNow(size));
 	}
 
 }

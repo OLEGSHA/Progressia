@@ -20,8 +20,11 @@ package ru.windcorp.progressia.test;
 
 import glm.Glm;
 import glm.mat._3.Mat3;
-import glm.vec._2.Vec2;
+import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
+
+import java.util.function.Function;
+
 import org.lwjgl.glfw.GLFW;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.GUI;
@@ -36,7 +39,9 @@ import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.common.Units;
-import ru.windcorp.progressia.common.util.FloatMathUtil;
+import ru.windcorp.progressia.common.util.Matrices;
+import ru.windcorp.progressia.common.util.VectorUtil;
+import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.tile.TileData;
@@ -56,6 +61,8 @@ public class TestPlayerControls {
 
 	// Horizontal and vertical max control speed when flying
 	private static final float FLYING_SPEED = Units.get("6 m/s");
+	
+	private static final Function<Double, Double> SPRINTING_FLYING_SPEED = (f) -> {return Math.pow(f,.75)+2*FLYING_SPEED;};
 
 	// (0; 1], 1 is instant change, 0 is no control authority
 	private static final float FLYING_CONTROL_AUTHORITY = Units.get("2 1/s");
@@ -82,8 +89,6 @@ public class TestPlayerControls {
 	private double lastSpacePress = Double.NEGATIVE_INFINITY;
 	private double lastSprintPress = Double.NEGATIVE_INFINITY;
 
-	private boolean useMinecraftGravity = false;
-
 	private int selectedBlock = 0;
 	private int selectedTile = 0;
 	private boolean isBlockSelected = true;
@@ -101,24 +106,25 @@ public class TestPlayerControls {
 		final float speed, authority;
 
 		if (isFlying) {
-			speed = FLYING_SPEED;
+			double timeSinceLastSpacePress = GraphicsInterface.getTime() - lastSprintPress;
+			speed = isSprinting ? SPRINTING_FLYING_SPEED.apply(timeSinceLastSpacePress).floatValue() : FLYING_SPEED;
 			authority = FLYING_CONTROL_AUTHORITY;
 		} else {
 			speed = isSprinting ? SPRINTING_SPEED : WALKING_SPEED;
 			authority = WALKING_CONTROL_AUTHORITY;
 		}
 
-		Mat3 angMat = new Mat3().identity().rotateZ(player.getYaw());
-		Vec3 desiredVelocity = new Vec3(movementForward, -movementRight, 0);
-
-		if (movementForward != 0 && movementRight != 0)
+		Mat3 movementTransform = getMovementTransform(player, null);
+		Vec3 desiredVelocity = new Vec3(movementForward, movementRight, 0);
+		if (movementForward != 0 && movementRight != 0) {
 			desiredVelocity.normalize();
-		angMat.mul_(desiredVelocity); // bug in jglm, .mul() and mul_() are
-										// swapped
+		}
 		desiredVelocity.z = movementUp;
+		movementTransform.mul_(desiredVelocity); // bug in jglm, .mul() and .mul_() are
+										         // swapped
 		desiredVelocity.mul(speed);
 
-		Vec3 change = new Vec3()
+		Vec3 newVelocity = new Vec3()
 			.set(desiredVelocity)
 			.sub(player.getVelocity())
 			.mul((float) Math.exp(-authority * GraphicsInterface.getFrameLength()))
@@ -126,10 +132,12 @@ public class TestPlayerControls {
 			.add(desiredVelocity);
 
 		if (!isFlying) {
-			change.z = player.getVelocity().z;
+			Vec3 up = player.getUpVector();
+			Vec3 wantedVertical = VectorUtil.projectOnVector(player.getVelocity(), up, null);
+			VectorUtil.projectOnSurface(newVelocity, up).add(wantedVertical);
 		}
 
-		player.getVelocity().set(change);
+		player.getVelocity().set(newVelocity);
 
 		// THIS IS TERRIBLE TEST
 		EntityData serverEntity = ServerState.getInstance().getWorld().getData()
@@ -138,6 +146,22 @@ public class TestPlayerControls {
 			serverEntity.setPosition(player.getPosition());
 		}
 
+	}
+
+	private Mat3 getMovementTransform(EntityData player, Mat3 mat) {
+		if (mat == null) {
+			mat = new Mat3();
+		}
+		
+		Vec3 f = player.getForwardVector(null);
+		Vec3 u = player.getUpVector();
+		Vec3 s = u.cross_(f);
+		
+		return mat.set(
+			+f.x, +f.y, +f.z,
+			-s.x, -s.y, -s.z,
+			+u.x, +u.y, +u.z
+		);
 	}
 
 	public void handleInput(Input input) {
@@ -213,12 +237,6 @@ public class TestPlayerControls {
 			handleCameraMode();
 			break;
 
-		case GLFW.GLFW_KEY_G:
-			if (!event.isPress())
-				return false;
-			handleGravitySwitch();
-			break;
-
 		case GLFW.GLFW_KEY_L:
 			if (!event.isPress())
 				return false;
@@ -244,10 +262,11 @@ public class TestPlayerControls {
 		double timeSinceLastSpacePress = GraphicsInterface.getTime() - lastSpacePress;
 
 		if (isPressed && timeSinceLastSpacePress < MODE_SWITCH_MAX_DELAY) {
-			isSprinting = false;
+			//isSprinting = false;
 			isFlying = !isFlying;
 			updateGUI();
 			movementUp = +1;
+			timeSinceLastSpacePress = MODE_SWITCH_MAX_DELAY;
 		} else {
 			if (isFlying) {
 				movementUp += +1 * multiplier;
@@ -262,10 +281,12 @@ public class TestPlayerControls {
 	}
 
 	private void handleSprint(KeyEvent event) {
+		
+		//LogManager.getLogger().info("hi");
 
 		double timeSinceLastSpacePress = GraphicsInterface.getTime() - lastSprintPress;
 
-		if (event.isPress() && timeSinceLastSpacePress < MODE_SPRINT_SWITCH_MAX_DELAY && !isFlying) {
+		if (event.isPress() && timeSinceLastSpacePress < MODE_SPRINT_SWITCH_MAX_DELAY) {
 			isSprinting = !isSprinting;
 			updateGUI();
 		}
@@ -283,7 +304,13 @@ public class TestPlayerControls {
 			return;
 		}
 
-		getEntity().getVelocity().add(0, 0, JUMP_VELOCITY * (useMinecraftGravity ? 2 : 1));
+		Vec3 up = getEntity().getUpVector();
+		
+		getEntity().getVelocity().add(
+			up.x * JUMP_VELOCITY,
+			up.y * JUMP_VELOCITY,
+			up.z * JUMP_VELOCITY
+		);
 	}
 
 	private void handleShift(int multiplier) {
@@ -323,11 +350,6 @@ public class TestPlayerControls {
 		}
 	}
 
-	private void handleGravitySwitch() {
-		useMinecraftGravity = !useMinecraftGravity;
-		updateGUI();
-	}
-
 	private void handleLanguageSwitch() {
 		Localizer localizer = Localizer.getInstance();
 		if (localizer.getLanguage().equals("ru-RU")) {
@@ -344,29 +366,36 @@ public class TestPlayerControls {
 			return;
 		}
 
-		final float yawScale = -0.002f;
-		final float pitchScale = yawScale;
+		final double yawScale = -0.002f;
+		final double pitchScale = -yawScale;
+		final double pitchExtremum = Math.PI/2 * 0.95f;
+		
+		double yawChange = event.getChangeX() * yawScale;
+		double pitchChange = event.getChangeY() * pitchScale;
 
 		EntityData player = getEntity();
+		
+		double startPitch = player.getPitch();
+		double endPitch = startPitch + pitchChange;
+		endPitch = Glm.clamp(endPitch, -pitchExtremum, +pitchExtremum);
+		pitchChange = endPitch - startPitch;
+		
+		Mat4 mat = Matrices.grab4();
+		Vec3 lookingAt = Vectors.grab3();		
+		Vec3 rightVector = Vectors.grab3();
 
-		normalizeAngles(
-			player.getDirection().add(
-				(float) (event.getChangeX() * yawScale),
-				(float) (event.getChangeY() * pitchScale)
-			)
-		);
-	}
-
-	private void normalizeAngles(Vec2 dir) {
-		// Normalize yaw
-		dir.x = FloatMathUtil.normalizeAngle(dir.x);
-
-		// Clamp pitch
-		dir.y = Glm.clamp(
-			dir.y,
-			-FloatMathUtil.PI_F / 2,
-			+FloatMathUtil.PI_F / 2
-		);
+		rightVector.set(player.getLookingAt()).cross(player.getUpVector()).normalize();
+		
+		mat.identity()
+			.rotate((float) yawChange, player.getUpVector())
+			.rotate((float) pitchChange, rightVector);
+		
+		VectorUtil.applyMat4(player.getLookingAt(), mat, lookingAt);
+		player.setLookingAt(lookingAt);
+		
+		Vectors.release(rightVector);
+		Vectors.release(lookingAt);
+		Matrices.release(mat);
 	}
 
 	private void onWheelScroll(WheelScrollEvent event) {
@@ -428,10 +457,6 @@ public class TestPlayerControls {
 
 	public boolean isSprinting() {
 		return isSprinting;
-	}
-
-	public boolean useMinecraftGravity() {
-		return useMinecraftGravity;
 	}
 
 	public BlockData getSelectedBlock() {

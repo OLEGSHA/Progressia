@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world;
 
 import java.io.DataInput;
@@ -41,7 +41,7 @@ public class PacketSendChunk extends PacketAffectChunk {
 		super(id);
 	}
 
-	public void set(ChunkData chunk) {
+	public void set(DefaultChunkData chunk) {
 		this.position.set(chunk.getX(), chunk.getY(), chunk.getZ());
 
 		try {
@@ -67,7 +67,7 @@ public class PacketSendChunk extends PacketAffectChunk {
 	}
 
 	@Override
-	public void apply(WorldData world) {
+	public void apply(DefaultWorldData world) {
 		try {
 			world.addChunk(ChunkIO.load(world, position, data.getReader(), IOContext.COMMS));
 		} catch (DecodingException | IOException e) {

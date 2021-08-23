@@ -25,16 +25,17 @@ import glm.vec._3.i.Vec3i;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
-import ru.windcorp.progressia.client.graphics.model.Face;
-import ru.windcorp.progressia.client.graphics.model.Faces;
+import ru.windcorp.progressia.client.graphics.model.ShapePart;
+import ru.windcorp.progressia.client.graphics.model.ShapeParts;
 import ru.windcorp.progressia.client.graphics.model.Shape;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSurface.TileOptimizedSurface;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public abstract class TileRenderSurface extends TileRender implements TileOptimizedSurface {
 
@@ -49,41 +50,41 @@ public abstract class TileRenderSurface extends TileRender implements TileOptimi
 		this(id, null);
 	}
 
-	public Texture getTexture(BlockFace blockFace) {
+	public Texture getTexture(RelFace blockFace) {
 		return texture;
 	}
 	
-	public Vec4 getColorMultiplier(BlockFace blockFace) {
+	public Vec4 getColorMultiplier(RelFace blockFace) {
 		return Colors.WHITE;
 	}
 	
 	@Override
-	public final void getFaces(
-		ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace,
+	public final void getShapeParts(
+		DefaultChunkData chunk, Vec3i relBlockInChunk, RelFace blockFace,
 		boolean inner,
-		Consumer<Face> output,
+		Consumer<ShapePart> output,
 		Vec3 offset
 	) {
-		output.accept(createFace(chunk, blockInChunk, blockFace, inner, offset));
+		output.accept(createFace(chunk, relBlockInChunk, blockFace, inner, offset));
 	}
 	
-	private Face createFace(
-		ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace,
+	private ShapePart createFace(
+		DefaultChunkData chunk, Vec3i blockInChunk, RelFace blockFace,
 		boolean inner,
 		Vec3 offset
 	) {
-		return Faces.createBlockFace(
+		return ShapeParts.createBlockFace(
 			WorldRenderProgram.getDefault(),
 			getTexture(blockFace),
 			getColorMultiplier(blockFace),
 			offset,
-			blockFace,
+			blockFace.resolve(AbsFace.POS_Z),
 			inner
 		);
 	}
 
 	@Override
-	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk, BlockFace blockFace) {
+	public Renderable createRenderable(DefaultChunkData chunk, Vec3i blockInChunk, RelFace blockFace) {
 		return new Shape(
 			Usage.STATIC,
 			WorldRenderProgram.getDefault(),

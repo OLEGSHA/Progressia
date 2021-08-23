@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.collision;
 
 import glm.vec._3.Vec3;
 
 /**
- * An implementation of an
- * <a href=
+ * An implementation of an <a href=
  * "https://en.wikipedia.org/wiki/Minimum_bounding_box#Axis-aligned_minimum_bounding_box">Axis-Aligned
  * Bounding Box</a>.
  * 
@@ -36,17 +35,7 @@ public class AABB implements AABBoid {
 		private final Vec3 widthSelector = new Vec3();
 		private final Vec3 heightSelector = new Vec3();
 
-		public AABBWallImpl(
-			float ox,
-			float oy,
-			float oz,
-			float wx,
-			float wy,
-			float wz,
-			float hx,
-			float hy,
-			float hz
-		) {
+		public AABBWallImpl(float ox, float oy, float oz, float wx, float wy, float wz, float hx, float hy, float hz) {
 			this.originOffset.set(ox, oy, oz);
 			this.widthSelector.set(wx, wy, wz);
 			this.heightSelector.set(hx, hy, hz);
@@ -71,13 +60,12 @@ public class AABB implements AABBoid {
 
 	public static final AABB UNIT_CUBE = new AABB(0, 0, 0, 1, 1, 1);
 
-	private final Wall[] walls = new Wall[] {
-		new AABBWallImpl(-0.5f, -0.5f, +0.5f, +1, 0, 0, 0, +1, 0), // Top
-		new AABBWallImpl(-0.5f, -0.5f, -0.5f, 0, +1, 0, +1, 0, 0), // Bottom
-		new AABBWallImpl(+0.5f, -0.5f, -0.5f, 0, +1, 0, 0, 0, +1), // North
-		new AABBWallImpl(-0.5f, +0.5f, -0.5f, 0, -1, 0, 0, 0, +1), // South
-		new AABBWallImpl(+0.5f, +0.5f, -0.5f, -1, 0, 0, 0, 0, +1), // West
-		new AABBWallImpl(-0.5f, -0.5f, -0.5f, +1, 0, 0, 0, 0, +1) // East
+	private final Wall[] walls = new Wall[] { new AABBWallImpl(-0.5f, -0.5f, +0.5f, +1, 0, 0, 0, +1, 0), // Top
+			new AABBWallImpl(-0.5f, -0.5f, -0.5f, 0, +1, 0, +1, 0, 0), // Bottom
+			new AABBWallImpl(+0.5f, -0.5f, -0.5f, 0, +1, 0, 0, 0, +1), // North
+			new AABBWallImpl(-0.5f, +0.5f, -0.5f, 0, -1, 0, 0, 0, +1), // South
+			new AABBWallImpl(+0.5f, +0.5f, -0.5f, -1, 0, 0, 0, 0, +1), // West
+			new AABBWallImpl(-0.5f, -0.5f, -0.5f, +1, 0, 0, 0, 0, +1) // East
 	};
 
 	private final Vec3 origin = new Vec3();
@@ -87,14 +75,7 @@ public class AABB implements AABBoid {
 		this(origin.x, origin.y, origin.z, size.x, size.y, size.z);
 	}
 
-	public AABB(
-		float ox,
-		float oy,
-		float oz,
-		float xSize,
-		float ySize,
-		float zSize
-	) {
+	public AABB(float ox, float oy, float oz, float xSize, float ySize, float zSize) {
 		this.origin.set(ox, oy, oz);
 		this.size.set(xSize, ySize, zSize);
 	}

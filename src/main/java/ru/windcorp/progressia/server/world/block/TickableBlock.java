@@ -15,15 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.block;
 
+import ru.windcorp.progressia.server.world.context.ServerBlockContext;
+import ru.windcorp.progressia.server.world.context.ServerBlockContextRO;
 import ru.windcorp.progressia.server.world.ticking.TickingPolicy;
 
 public interface TickableBlock {
 
-	void tick(BlockTickContext context);
+	void tick(ServerBlockContext context);
 
-	TickingPolicy getTickingPolicy(BlockTickContext context);
+	TickingPolicy getTickingPolicy(ServerBlockContextRO context);
 
 }

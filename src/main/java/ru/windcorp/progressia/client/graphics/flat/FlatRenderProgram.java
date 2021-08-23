@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.flat;
 
 import java.nio.FloatBuffer;
@@ -33,10 +33,8 @@ public class FlatRenderProgram extends ShapeRenderProgram {
 	private static FlatRenderProgram def = null;
 
 	public static void init() {
-		def = new FlatRenderProgram(
-			new String[] { "FlatDefault.vertex.glsl" },
-			new String[] { "FlatDefault.fragment.glsl" }
-		);
+		def = new FlatRenderProgram(new String[] { "FlatDefault.vertex.glsl" },
+				new String[] { "FlatDefault.fragment.glsl" });
 	}
 
 	public static FlatRenderProgram getDefault() {
@@ -48,20 +46,13 @@ public class FlatRenderProgram extends ShapeRenderProgram {
 	private static final String FLAT_VERTEX_SHADER_RESOURCE = "Flat.vertex.glsl";
 	private static final String FLAT_FRAGMENT_SHADER_RESOURCE = "Flat.fragment.glsl";
 
-	private static final String MASK_COUNT_UNIFORM_NAME = "maskCount",
-		MASKS_UNIFORM_NAME = "masks";
+	private static final String MASK_COUNT_UNIFORM_NAME = "maskCount", MASKS_UNIFORM_NAME = "masks";
 
 	private final Uniform1Int maskCountUniform;
 	private final Uniform2Float masksUniform;
 
-	public FlatRenderProgram(
-		String[] vertexShaderResources,
-		String[] fragmentShaderResources
-	) {
-		super(
-			attachVertexShader(vertexShaderResources),
-			attachFragmentShader(fragmentShaderResources)
-		);
+	public FlatRenderProgram(String[] vertexShaderResources, String[] fragmentShaderResources) {
+		super(attachVertexShader(vertexShaderResources), attachFragmentShader(fragmentShaderResources));
 
 		this.maskCountUniform = getUniform(MASK_COUNT_UNIFORM_NAME).as1Int();
 		this.masksUniform = getUniform(MASKS_UNIFORM_NAME).as2Float();

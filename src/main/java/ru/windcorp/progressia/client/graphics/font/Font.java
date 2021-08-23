@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.font;
 
 import java.util.function.Supplier;
@@ -68,17 +68,11 @@ public class Font {
 		return color;
 	}
 
-	public Renderable assemble(
-		CharSequence chars,
-		float maxWidth
-	) {
+	public Renderable assemble(CharSequence chars, float maxWidth) {
 		return typeface.assembleStatic(chars, style, align, maxWidth, color);
 	}
 
-	public Renderable assembleDynamic(
-		Supplier<CharSequence> supplier,
-		float maxWidth
-	) {
+	public Renderable assembleDynamic(Supplier<CharSequence> supplier, float maxWidth) {
 		return typeface.assembleDynamic(supplier, style, align, maxWidth, color);
 	}
 
@@ -102,7 +96,8 @@ public class Font {
 	 * Creates a new {@link Font} with the specified {@code style} exactly. This
 	 * object's style is ignored.
 	 * 
-	 * @param style the new style
+	 * @param style
+	 *            the new style
 	 * @return the new font
 	 */
 	public Font withStyle(int style) {

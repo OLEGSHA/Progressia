@@ -35,6 +35,7 @@ import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.client.localization.MutableString;
 import ru.windcorp.progressia.client.localization.MutableStringLocalized;
+import ru.windcorp.progressia.client.world.WorldRender;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.dynstr.DynamicStrings;
 import ru.windcorp.progressia.server.Server;
@@ -86,17 +87,6 @@ public class LayerTestGUI extends GUILayer {
 
 		group.addChild(
 			new Label(
-				"GravityModeDisplay",
-				font,
-				tmp_dynFormat(
-					"LayerTestGUI.GravityModeDisplay",
-					() -> tpc.useMinecraftGravity() ? "Minecraft" : "Realistic"
-				)
-			)
-		);
-
-		group.addChild(
-			new Label(
 				"LanguageDisplay",
 				font,
 				tmp_dynFormat("LayerTestGUI.LanguageDisplay", Localizer.getInstance()::getLanguage)
@@ -139,14 +129,37 @@ public class LayerTestGUI extends GUILayer {
 				128
 			)
 		);
-
+		
 		group.addChild(
 			new DynamicLabel(
-				"ChunkUpdatesDisplay",
+				"ChunkStatsDisplay",
 				font,
 				DynamicStrings.builder()
-					.addDyn(new MutableStringLocalized("LayerTestGUI.ChunkUpdatesDisplay"))
-					.addDyn(ClientState.getInstance().getWorld()::getPendingChunkUpdates)
+					.addDyn(new MutableStringLocalized("LayerTestGUI.ChunkStatsDisplay"))
+					.addDyn(() -> {
+						if (ClientState.getInstance() == null) {
+							return -1;
+						} else {
+							WorldRender world = ClientState.getInstance().getWorld();
+							return world.getChunks().size() - world.getPendingChunkUpdates();
+						}
+					}, 4)
+					.add('/')
+					.addDyn(() -> {
+						if (ClientState.getInstance() == null) {
+							return -1;
+						} else {
+							return ClientState.getInstance().getWorld().getPendingChunkUpdates();
+						}
+					}, 4)
+					.add('/')
+					.addDyn(() -> {
+						if (ServerState.getInstance() == null) {
+							return -1;
+						} else {
+							return ServerState.getInstance().getWorld().getChunks().size();
+						}
+					}, 4)
 					.buildSupplier(),
 				128
 			)

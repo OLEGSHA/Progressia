@@ -15,24 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.state;
 
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-public class OptimizedStatefulObjectLayout
-	extends AbstractStatefulObjectLayout {
+public class OptimizedStatefulObjectLayout extends AbstractStatefulObjectLayout {
 
 	private final List<StateField> fields;
 	private final PrimitiveCounters sizes;
 
-	public OptimizedStatefulObjectLayout(
-		String objectId,
-		List<StateField> fields,
-		PrimitiveCounters counters
-	) {
+	public OptimizedStatefulObjectLayout(String objectId, List<StateField> fields, PrimitiveCounters counters) {
 		super(objectId);
 		this.fields = ImmutableList.copyOf(fields);
 		this.sizes = new PrimitiveCounters(counters);

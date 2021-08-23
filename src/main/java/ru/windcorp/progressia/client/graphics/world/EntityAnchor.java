@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.world;
 
 import java.util.Collection;
@@ -39,44 +39,45 @@ public class EntityAnchor implements Anchor {
 		this.model = model;
 
 		this.modes = ImmutableList.of(
-			// From viewpoint / first person
-			Mode.of(v -> v.set(0), m -> {
-			}),
+				// From viewpoint / first person
+				Mode.of(v -> v.set(0), m -> {
+				}),
 
-			// Third person, looking forward
-			Mode.of(
-				v -> v.set(-3.5f, +0.5f, 0),
-				m -> {
-				}
-			),
+				// Third person, looking forward
+				Mode.of(v -> v.set(-3.5f, +0.5f, 0), m -> {
+				}),
 
-			// Third person, looking back
-			Mode.of(
-				v -> v.set(-3.5f, 0, 0),
-				m -> m.rotateZ((float) Math.PI)
-			)
-		);
+				// Third person, looking back
+				Mode.of(v -> v.set(-3.5f, 0, 0), m -> m.rotateZ((float) Math.PI)));
 	}
 
 	@Override
-	public void getCameraPosition(Vec3 output) {
+	public Vec3 getCameraPosition(Vec3 output) {
+		if (output == null) output = new Vec3();
 		model.getViewPoint(output);
-		output.add(entity.getPosition());
+		output.add(model.getPosition());
+		return output;
 	}
 
 	@Override
-	public void getCameraVelocity(Vec3 output) {
+	public Vec3 getCameraVelocity(Vec3 output) {
+		if (output == null) output = new Vec3();
 		output.set(entity.getVelocity());
+		return output;
 	}
 
 	@Override
-	public float getCameraYaw() {
-		return entity.getYaw();
+	public Vec3 getLookingAt(Vec3 output) {
+		if (output == null) output = new Vec3();
+		model.getLookingAt(output);
+		return output;
 	}
-
+	
 	@Override
-	public float getCameraPitch() {
-		return entity.getPitch();
+	public Vec3 getUpVector(Vec3 output) {
+		if (output == null) output = new Vec3();
+		model.getUpVector(output);
+		return output;
 	}
 
 	@Override

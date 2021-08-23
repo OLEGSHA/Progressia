@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util;
 
 import glm.vec._2.i.Vec2i;
@@ -33,13 +33,10 @@ public class CoordinatePacker {
 		BITS_3_INTS_INTO_LONG = 64 / 3;
 
 		/*
-		 * What happens below:
-		 * 1. 1 << BITS_3_INTS_INTO_LONG:
-		 * 0000 ... 00100 ... 0000
-		 * \_________/ - BITS_3_INTS_INTO_LONG zeros
-		 * 2. (1 << BITS_3_INTS_INTO_LONG) - 1:
-		 * 0000 ... 00011 ... 1111
-		 * \_________/ - BITS_3_INTS_INTO_LONG ones - WIN
+		 * What happens below: 1. 1 << BITS_3_INTS_INTO_LONG: 0000 ... 00100 ...
+		 * 0000 \_________/ - BITS_3_INTS_INTO_LONG zeros 2. (1 <<
+		 * BITS_3_INTS_INTO_LONG) - 1: 0000 ... 00011 ... 1111 \_________/ -
+		 * BITS_3_INTS_INTO_LONG ones - WIN
 		 */
 
 		MASK_3_INTS_INTO_LONG = (1l << BITS_3_INTS_INTO_LONG) - 1;
@@ -49,9 +46,9 @@ public class CoordinatePacker {
 	}
 
 	public static long pack3IntsIntoLong(int a, int b, int c) {
-		return ((a & MASK_3_INTS_INTO_LONG) << (2 * BITS_3_INTS_INTO_LONG)) |
-			((b & MASK_3_INTS_INTO_LONG) << (1 * BITS_3_INTS_INTO_LONG)) |
-			((c & MASK_3_INTS_INTO_LONG) << (0 * BITS_3_INTS_INTO_LONG));
+		return ((a & MASK_3_INTS_INTO_LONG) << (2 * BITS_3_INTS_INTO_LONG))
+				| ((b & MASK_3_INTS_INTO_LONG) << (1 * BITS_3_INTS_INTO_LONG))
+				| ((c & MASK_3_INTS_INTO_LONG) << (0 * BITS_3_INTS_INTO_LONG));
 	}
 
 	public static long pack3IntsIntoLong(Vec3i v) {
@@ -63,8 +60,7 @@ public class CoordinatePacker {
 			throw new IllegalArgumentException("Invalid index " + index);
 		}
 
-		int result = (int) ((packed >>> ((2 - index) * BITS_3_INTS_INTO_LONG))
-			& MASK_3_INTS_INTO_LONG);
+		int result = (int) ((packed >>> ((2 - index) * BITS_3_INTS_INTO_LONG)) & MASK_3_INTS_INTO_LONG);
 
 		final long signMask = ((MASK_3_INTS_INTO_LONG + 1) >> 1);
 
@@ -79,18 +75,14 @@ public class CoordinatePacker {
 		if (output == null)
 			output = new Vec3i();
 
-		output.set(
-			unpack3IntsFromLong(packed, 0),
-			unpack3IntsFromLong(packed, 1),
-			unpack3IntsFromLong(packed, 2)
-		);
+		output.set(unpack3IntsFromLong(packed, 0), unpack3IntsFromLong(packed, 1), unpack3IntsFromLong(packed, 2));
 
 		return output;
 	}
 
 	public static long pack2IntsIntoLong(int a, int b) {
-		return ((a & MASK_2_INTS_INTO_LONG) << (1 * BITS_2_INTS_INTO_LONG)) |
-			((b & MASK_2_INTS_INTO_LONG) << (0 * BITS_2_INTS_INTO_LONG));
+		return ((a & MASK_2_INTS_INTO_LONG) << (1 * BITS_2_INTS_INTO_LONG))
+				| ((b & MASK_2_INTS_INTO_LONG) << (0 * BITS_2_INTS_INTO_LONG));
 	}
 
 	public static long pack2IntsIntoLong(Vec2i v) {
@@ -102,8 +94,7 @@ public class CoordinatePacker {
 			throw new IllegalArgumentException("Invalid index " + index);
 		}
 
-		int result = (int) ((packed >>> ((1 - index) * BITS_2_INTS_INTO_LONG))
-			& MASK_2_INTS_INTO_LONG);
+		int result = (int) ((packed >>> ((1 - index) * BITS_2_INTS_INTO_LONG)) & MASK_2_INTS_INTO_LONG);
 
 		return result;
 	}
@@ -112,10 +103,7 @@ public class CoordinatePacker {
 		if (output == null)
 			output = new Vec2i();
 
-		output.set(
-			unpack2IntsFromLong(packed, 0),
-			unpack2IntsFromLong(packed, 1)
-		);
+		output.set(unpack2IntsFromLong(packed, 0), unpack2IntsFromLong(packed, 1));
 
 		return output;
 	}

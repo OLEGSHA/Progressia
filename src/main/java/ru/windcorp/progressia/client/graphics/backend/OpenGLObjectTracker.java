@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend;
 
 import java.lang.ref.PhantomReference;
@@ -34,19 +34,13 @@ public class OpenGLObjectTracker {
 	private static final ReferenceQueue<OpenGLDeletable> DELETE_QUEUE = new ReferenceQueue<>();
 
 	public synchronized static void register(OpenGLDeletable object, IntConsumer glDeleter) {
-		GLPhantomReference<OpenGLDeletable> glRef = new GLPhantomReference<>(
-			object,
-			DELETE_QUEUE,
-			object.getHandle(),
-			glDeleter
-		);
+		GLPhantomReference<OpenGLDeletable> glRef = new GLPhantomReference<>(object, DELETE_QUEUE, object.getHandle(),
+				glDeleter);
 		TO_DELETE.add(glRef);
 	}
 
 	public static void deleteAllObjects() {
-		for (
-			GLPhantomReference<OpenGLDeletable> glRef : TO_DELETE
-		) {
+		for (GLPhantomReference<OpenGLDeletable> glRef : TO_DELETE) {
 			glRef.clear();
 		}
 	}
@@ -75,20 +69,16 @@ public class OpenGLObjectTracker {
 		 * It is possible to create a phantom reference with a {@code null}
 		 * queue, but such a reference is completely useless: Its {@code get}
 		 * method will always return {@code null} and, since it does not have a
-		 * queue,
-		 * it will never be enqueued.
+		 * queue, it will never be enqueued.
 		 *
-		 * @param referent the object the new phantom reference will refer to
-		 * @param q        the queue with which the reference is to be
-		 *                 registered,
-		 *                 or {@code null} if registration is not required
+		 * @param referent
+		 *            the object the new phantom reference will refer to
+		 * @param q
+		 *            the queue with which the reference is to be registered, or
+		 *            {@code null} if registration is not required
 		 */
-		public GLPhantomReference(
-			T referent,
-			ReferenceQueue<? super T> q,
-			int referentGLhandle,
-			IntConsumer GLDeleter
-		) {
+		public GLPhantomReference(T referent, ReferenceQueue<? super T> q, int referentGLhandle,
+				IntConsumer GLDeleter) {
 			super(referent, q);
 			this.referentGLhandle = referentGLhandle;
 			this.GLDeleter = GLDeleter;

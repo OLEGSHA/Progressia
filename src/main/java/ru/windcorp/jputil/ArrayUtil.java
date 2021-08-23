@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil;
 
 import java.lang.reflect.Array;
@@ -611,8 +611,7 @@ public class ArrayUtil {
 		int end = offset + length;
 		if (end > arrayLength || offset < 0)
 			throw new IllegalArgumentException(
-				"Array contains [0; " + arrayLength + "), requested [" + offset + "; " + end + ")"
-			);
+					"Array contains [0; " + arrayLength + "), requested [" + offset + "; " + end + ")");
 
 		return length;
 	}
@@ -628,8 +627,7 @@ public class ArrayUtil {
 
 		if (end > arrayLength || start < 0)
 			throw new IllegalArgumentException(
-				"Array contains [0; " + arrayLength + "), requested [" + start + "; " + end + ")"
-			);
+					"Array contains [0; " + arrayLength + "), requested [" + start + "; " + end + ")");
 
 		return end;
 	}

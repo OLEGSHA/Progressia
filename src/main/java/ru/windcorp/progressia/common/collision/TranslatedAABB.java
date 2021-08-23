@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.collision;
 
 import glm.vec._3.Vec3;
 import ru.windcorp.progressia.common.util.Vectors;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class TranslatedAABB implements AABBoid {
 
@@ -51,7 +51,7 @@ public class TranslatedAABB implements AABBoid {
 	private AABBoid parent;
 	private final Vec3 translation = new Vec3();
 
-	private final TranslatedAABBWall[] walls = new TranslatedAABBWall[BlockFace.BLOCK_FACE_COUNT];
+	private final TranslatedAABBWall[] walls = new TranslatedAABBWall[AbsFace.BLOCK_FACE_COUNT];
 
 	{
 		for (int id = 0; id < walls.length; ++id) {

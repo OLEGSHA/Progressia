@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.texture;
 
 import java.io.IOException;
@@ -87,11 +87,8 @@ public class Atlases {
 
 			editor.draw(data, nextX, nextY);
 
-			Sprite result = new Sprite(
-				getPrimitive(),
-				toPrimitiveCoords(nextX, nextY),
-				toPrimitiveCoords(width, height)
-			);
+			Sprite result = new Sprite(getPrimitive(), toPrimitiveCoords(nextX, nextY),
+					toPrimitiveCoords(width, height));
 
 			nextX += width;
 

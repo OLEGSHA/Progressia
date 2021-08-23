@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
 
-import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
+import ru.windcorp.progressia.test.gen.TestGenerationConfig;
 
 public class ServerState {
 
@@ -33,7 +34,7 @@ public class ServerState {
 	}
 
 	public static void startServer() {
-		Server server = new Server(new WorldData());
+		Server server = new Server(new DefaultWorldData(), TestGenerationConfig.createGenerator());
 		setInstance(server);
 		server.start();
 	}

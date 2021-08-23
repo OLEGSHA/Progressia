@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 
 public class TestBlockLogicAir extends BlockLogic {
@@ -28,7 +28,7 @@ public class TestBlockLogicAir extends BlockLogic {
 	}
 
 	@Override
-	public boolean isSolid(BlockFace face) {
+	public boolean isSolid(RelFace face) {
 		return false;
 	}
 

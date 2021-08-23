@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world;
 
 import ru.windcorp.progressia.common.comms.packets.Packet;
@@ -26,6 +26,6 @@ public abstract class PacketAffectWorld extends Packet {
 		super(id);
 	}
 
-	public abstract void apply(WorldData world);
+	public abstract void apply(DefaultWorldData world);
 
 }

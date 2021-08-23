@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.model;
 
 import glm.mat._4.Mat4;
@@ -28,15 +28,10 @@ public class ShapeRenderHelper {
 	protected static final int TRANSFORM_STACK_SIZE = 64;
 	protected static final int COLOR_MULTIPLIER_STACK_SIZE = TRANSFORM_STACK_SIZE;
 
-	protected final StashingStack<Mat4> transformStack = new StashingStack<>(
-		TRANSFORM_STACK_SIZE,
-		Mat4::new
-	);
+	protected final StashingStack<Mat4> transformStack = new StashingStack<>(TRANSFORM_STACK_SIZE, Mat4::new);
 
-	protected final StashingStack<Vec4> colorMultiplierStack = new StashingStack<>(
-		COLOR_MULTIPLIER_STACK_SIZE,
-		Vec4::new
-	);
+	protected final StashingStack<Vec4> colorMultiplierStack = new StashingStack<>(COLOR_MULTIPLIER_STACK_SIZE,
+			Vec4::new);
 
 	{
 		transformStack.push().identity();

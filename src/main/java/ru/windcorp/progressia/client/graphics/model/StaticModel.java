@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.model;
 
 import java.util.ArrayList;
@@ -30,10 +30,7 @@ public class StaticModel extends Model {
 
 	private final Mat4[] transforms;
 
-	public StaticModel(
-		Renderable[] parts,
-		Mat4[] transforms
-	) {
+	public StaticModel(Renderable[] parts, Mat4[] transforms) {
 		super(parts);
 		this.transforms = transforms;
 	}
@@ -55,19 +52,14 @@ public class StaticModel extends Model {
 		protected Builder() {
 		}
 
-		public Builder addPart(
-			Renderable part,
-			Mat4 transform
-		) {
+		public Builder addPart(Renderable part, Mat4 transform) {
 			parts.add(Objects.requireNonNull(part, "part"));
 			transforms.add(Objects.requireNonNull(transform, "transform"));
 
 			return this;
 		}
 
-		public Builder addPart(
-			Renderable part
-		) {
+		public Builder addPart(Renderable part) {
 			return addPart(part, IDENTITY);
 		}
 
@@ -78,7 +70,7 @@ public class StaticModel extends Model {
 		private Mat4[] getTransforms() {
 			return transforms.toArray(new Mat4[transforms.size()]);
 		}
-		
+
 		public StaticModel build() {
 			return new StaticModel(getParts(), getTransforms());
 		}

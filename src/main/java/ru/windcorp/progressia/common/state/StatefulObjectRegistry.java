@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.state;
 
 import java.util.Collections;
@@ -78,9 +78,7 @@ public class StatefulObjectRegistry<T extends StatefulObject> {
 		StatefulObjectLayout layout = layouts.get(id);
 
 		if (layout == null) {
-			throw new IllegalArgumentException(
-				"ID " + id + " has not been registered"
-			);
+			throw new IllegalArgumentException("ID " + id + " has not been registered");
 		}
 
 		return layout;
@@ -88,9 +86,7 @@ public class StatefulObjectRegistry<T extends StatefulObject> {
 
 	protected void register(Type<T> type) {
 		if (!type.getRegistrationFlag().compareAndSet(false, true)) {
-			throw new IllegalStateException(
-				"ID " + type.getId() + " is already registered"
-			);
+			throw new IllegalStateException("ID " + type.getId() + " is already registered");
 		}
 
 		InspectingStatefulObjectLayout inspector = new InspectingStatefulObjectLayout(type.getId());

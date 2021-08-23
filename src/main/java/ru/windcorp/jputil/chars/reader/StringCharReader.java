@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.jputil.chars.reader;
 
 import java.util.Objects;
@@ -38,8 +38,7 @@ public class StringCharReader extends AbstractCharReader {
 		int end = offset + length;
 		if (end > str.length() || offset < 0)
 			throw new IllegalArgumentException(
-				"String contains [0; " + str.length() + "), requested [" + offset + "; " + end + ")"
-			);
+					"String contains [0; " + str.length() + "), requested [" + offset + "; " + end + ")");
 
 		this.offset = offset;
 		this.length = length;

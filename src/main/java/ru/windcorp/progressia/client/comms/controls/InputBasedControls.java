@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.comms.controls;
 
 import ru.windcorp.progressia.client.Client;
@@ -32,8 +32,7 @@ public class InputBasedControls {
 		this.client = client;
 
 		this.controls = ControlTriggerRegistry.getInstance().values().stream()
-			.filter(ControlTriggerInputBased.class::isInstance)
-			.toArray(ControlTriggerInputBased[]::new);
+				.filter(ControlTriggerInputBased.class::isInstance).toArray(ControlTriggerInputBased[]::new);
 	}
 
 	public void handleInput(Input input) {

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend.shaders;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -57,10 +57,7 @@ public class Shader implements OpenGLDeletable {
 			if (resource.contains("fsh"))
 				return FRAGMENT;
 
-			throw new IllegalArgumentException(
-				"Cannot deduce shader type from resource name \"" +
-					resource + "\""
-			);
+			throw new IllegalArgumentException("Cannot deduce shader type from resource name \"" + resource + "\"");
 		}
 	}
 
@@ -90,10 +87,7 @@ public class Shader implements OpenGLDeletable {
 	}
 
 	public Shader(String resource) {
-		this(
-			ShaderType.guessByResourceName(resource),
-			getShaderResource(resource).readAsString()
-		);
+		this(ShaderType.guessByResourceName(resource), getShaderResource(resource).readAsString());
 	}
 
 	@Override

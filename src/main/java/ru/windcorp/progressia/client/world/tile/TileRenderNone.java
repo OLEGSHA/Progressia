@@ -20,20 +20,20 @@ package ru.windcorp.progressia.client.world.tile;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.graphics.model.EmptyModel;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
-import ru.windcorp.progressia.common.world.ChunkData;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
+import ru.windcorp.progressia.common.world.rels.RelFace;
 
 public class TileRenderNone extends TileRender {
 
 	public TileRenderNone(String id) {
 		super(id);
 	}
-	
+
 	@Override
-	public Renderable createRenderable(ChunkData chunk, Vec3i blockInChunk, BlockFace face) {
+	public Renderable createRenderable(DefaultChunkData chunk, Vec3i blockInChunk, RelFace face) {
 		return EmptyModel.getInstance();
 	}
-	
+
 	@Override
 	public boolean needsOwnRenderable() {
 		return false;

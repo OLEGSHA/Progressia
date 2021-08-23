@@ -20,7 +20,7 @@ package ru.windcorp.progressia.common.resource;
 import java.io.InputStream;
 
 public interface ResourceReader {
-	
+
 	InputStream read(String name);
 
 }

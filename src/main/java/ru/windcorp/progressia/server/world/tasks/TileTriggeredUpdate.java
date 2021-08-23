@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.tasks;
 
 import java.util.function.Consumer;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.TickAndUpdateUtil;
-import ru.windcorp.progressia.server.world.WorldLogic;
 
 class TileTriggeredUpdate extends CachedEvaluation {
 
 	private final Vec3i blockInWorld = new Vec3i();
-	private BlockFace face = null;
+	private AbsFace face = null;
 
 	public TileTriggeredUpdate(Consumer<? super CachedEvaluation> disposer) {
 		super(disposer);
@@ -40,20 +39,18 @@ class TileTriggeredUpdate extends CachedEvaluation {
 	public void evaluate(Server server) {
 		Vec3i cursor = new Vec3i(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 
-		WorldLogic world = server.getWorld();
-
-		TickAndUpdateUtil.updateTiles(world, cursor, face); // Update facemates
-															// (also self)
-		TickAndUpdateUtil.updateBlock(world, cursor); // Update block on one
-														// side
+		// Update facemates (also self)
+		TickAndUpdateUtil.updateTiles(server, cursor, face);
+		// Update block on one side
+		TickAndUpdateUtil.updateBlock(server, cursor);
 		cursor.add(face.getVector());
-		TickAndUpdateUtil.updateBlock(world, cursor); // Update block on the
-														// other side
-		TickAndUpdateUtil.updateTiles(world, cursor, face.getCounter()); // Update
-																			// complement
+		// Update block on the other side
+		TickAndUpdateUtil.updateBlock(server, cursor);
+		// Update complement
+		TickAndUpdateUtil.updateTiles(server, cursor, face.getCounter());
 	}
 
-	public void init(Vec3i blockInWorld, BlockFace face) {
+	public void init(Vec3i blockInWorld, AbsFace face) {
 		this.blockInWorld.set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 		this.face = face;
 	}

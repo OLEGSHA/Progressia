@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.collision;
 
 import glm.vec._3.Vec3;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public interface AABBoid extends CollisionModel {
 
@@ -27,7 +27,7 @@ public interface AABBoid extends CollisionModel {
 
 	void getSize(Vec3 output);
 
-	default Wall getWall(BlockFace face) {
+	default Wall getWall(AbsFace face) {
 		return getWall(face.getId());
 	}
 

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.world.entity;
 
 import java.io.IOException;
@@ -37,14 +37,9 @@ public class EntityRenderRegistry extends NamespacedInstanceRegistry<EntityRende
 
 	public static TexturePrimitive getEntityTexture(String name) {
 		try {
-			return new TexturePrimitive(
-				TextureLoader.loadPixels(
-					ResourceManager.getTextureResource(
-						"entities/" + name
-					),
-					new TextureSettings(false)
-				).getData()
-			);
+			return new TexturePrimitive(TextureLoader
+					.loadPixels(ResourceManager.getTextureResource("entities/" + name), new TextureSettings(false))
+					.getData());
 		} catch (IOException e) {
 			throw CrashReports.report(e, "Could not load entity texture %s", name);
 		}

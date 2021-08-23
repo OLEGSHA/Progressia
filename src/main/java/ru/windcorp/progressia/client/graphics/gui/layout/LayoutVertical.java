@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.gui.layout;
 
 import static java.lang.Math.max;
@@ -43,8 +43,7 @@ public class LayoutVertical implements Layout {
 
 	@Override
 	public void layout(Component c) {
-		int x = c.getX() + margin,
-			y = c.getY() + c.getHeight();
+		int x = c.getX() + margin, y = c.getY() + c.getHeight();
 
 		synchronized (c.getChildren()) {
 			for (Component child : c.getChildren()) {

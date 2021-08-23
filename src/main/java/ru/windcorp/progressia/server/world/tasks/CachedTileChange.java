@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.tasks;
 
 import java.util.Objects;
@@ -58,9 +58,8 @@ public class CachedTileChange<P extends PacketAffectTile> extends CachedChunkCha
 		if (my.getTag() == -1 || other.getTag() == -1)
 			return false;
 
-		return Glm.equals(my.getBlockInWorld(), other.getBlockInWorld())
-			&& (my.getFace() == other.getFace())
-			&& (my.getTag() == other.getTag());
+		return Glm.equals(my.getBlockInWorld(), other.getBlockInWorld()) && (my.getFace() == other.getFace())
+				&& (my.getTag() == other.getTag());
 	}
 
 	@Override
@@ -69,7 +68,7 @@ public class CachedTileChange<P extends PacketAffectTile> extends CachedChunkCha
 		Vec3i biw = packet.getBlockInWorld();
 
 		return getClass().getSimpleName() + " (" + biw.x + "; " + biw.y + "; " + biw.z + "; " + packet.getFace()
-			+ "; tag: " + packet.getTag() + ")";
+				+ "; tag: " + packet.getTag() + ")";
 	}
 
 }

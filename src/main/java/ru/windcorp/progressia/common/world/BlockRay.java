@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.world;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.VectorUtil.Axis;
-import ru.windcorp.progressia.common.world.block.BlockFace;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 import static java.lang.Math.*;
 
@@ -34,13 +34,21 @@ public class BlockRay {
 	private float distance;
 
 	private final Vec3i block = new Vec3i();
-	private BlockFace currentFace = null;
+	private AbsFace currentFace = null;
 
 	private boolean isValid = false;
 
 	public void start(Vec3 position, Vec3 direction) {
-		if (!direction.any()) {
+		if (direction.x == 0 && direction.y == 0 && direction.z == 0) {
 			throw new IllegalArgumentException("Direction is a zero vector");
+		}
+		
+		if (Float.isNaN(direction.x) || Float.isNaN(direction.y) || Float.isNaN(direction.z)) {
+			throw new IllegalArgumentException("Direction contains NaN: " + direction);
+		}
+		
+		if (Float.isNaN(position.x) || Float.isNaN(position.y) || Float.isNaN(position.z)) {
+			throw new IllegalArgumentException("Position contains NaN: " + position);
 		}
 
 		isValid = true;
@@ -75,16 +83,14 @@ public class BlockRay {
 			tMin = tz;
 			axis = Axis.Z;
 		}
+		
+		assert tMin > 0 : "tMin is not positive (" + tMin + ")";
 
 		// block.(axis) += signum(direction.(axis))
 		VectorUtil.set(block, axis, VectorUtil.get(block, axis) + (int) signum(VectorUtil.get(direction, axis)));
 
 		// position += direction * tMin
-		VectorUtil.linearCombination(position, 1, direction, tMin, position); // position
-																				// +=
-																				// direction
-																				// *
-																				// tMin
+		VectorUtil.linearCombination(position, 1, direction, tMin, position);
 		distance += tMin;
 
 		// position.(axis) = round(position.(axis))
@@ -110,18 +116,18 @@ public class BlockRay {
 		return (edge - c) / dir;
 	}
 
-	private BlockFace computeCurrentFace(Axis axis, int sign) {
+	private AbsFace computeCurrentFace(Axis axis, int sign) {
 		if (sign == 0)
 			throw new IllegalStateException("sign is zero");
 
 		switch (axis) {
 		case X:
-			return sign > 0 ? BlockFace.SOUTH : BlockFace.NORTH;
+			return sign > 0 ? AbsFace.NEG_X : AbsFace.POS_X;
 		case Y:
-			return sign > 0 ? BlockFace.EAST : BlockFace.WEST;
+			return sign > 0 ? AbsFace.NEG_Y : AbsFace.POS_Y;
 		default:
 		case Z:
-			return sign > 0 ? BlockFace.BOTTOM : BlockFace.TOP;
+			return sign > 0 ? AbsFace.NEG_Z : AbsFace.POS_Z;
 		}
 	}
 
@@ -137,7 +143,7 @@ public class BlockRay {
 		return output;
 	}
 
-	public BlockFace getCurrentFace() {
+	public AbsFace getCurrentFace() {
 		return currentFace;
 	}
 
@@ -159,7 +165,8 @@ public class BlockRay {
 	/**
 	 * Returns a smallest integer <i>a</i> such that <i>a</i> > <i>c</i>.
 	 * 
-	 * @param c the number to compute strict ceiling of
+	 * @param c
+	 *            the number to compute strict ceiling of
 	 * @return the strict ceiling of <i>c</i>
 	 */
 	private static float strictCeil(float c) {
@@ -169,7 +176,8 @@ public class BlockRay {
 	/**
 	 * Returns a largest integer <i>a</i> such that <i>a</i> < <i>c</i>.
 	 * 
-	 * @param c the number to compute strict ceiling of
+	 * @param c
+	 *            the number to compute strict ceiling of
 	 * @return the strict ceiling of <i>c</i>
 	 */
 	private static float strictFloor(float c) {

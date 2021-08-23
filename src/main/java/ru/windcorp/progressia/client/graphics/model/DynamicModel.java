@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.model;
 
 import java.util.ArrayList;
@@ -33,22 +33,14 @@ public abstract class DynamicModel extends Model {
 	private final Mat4[] transforms;
 	private final boolean[] dynamics;
 
-	public DynamicModel(
-		Renderable[] parts,
-		Mat4[] transforms,
-		boolean[] dynamic
-	) {
+	public DynamicModel(Renderable[] parts, Mat4[] transforms, boolean[] dynamic) {
 		super(parts);
 		this.transforms = transforms;
 		this.dynamics = dynamic;
 	}
 
 	public DynamicModel(Builder builder) {
-		this(
-			builder.getParts(),
-			builder.getTransforms(),
-			builder.getDynamics()
-		);
+		this(builder.getParts(), builder.getTransforms(), builder.getDynamics());
 	}
 
 	@Override
@@ -78,11 +70,7 @@ public abstract class DynamicModel extends Model {
 		protected Builder() {
 		}
 
-		private Builder addPart(
-			Renderable part,
-			Mat4 transform,
-			boolean isDynamic
-		) {
+		private Builder addPart(Renderable part, Mat4 transform, boolean isDynamic) {
 			parts.add(Objects.requireNonNull(part, "part"));
 			transforms.add(Objects.requireNonNull(transform, "transform"));
 			dynamics.add(isDynamic);
@@ -90,22 +78,15 @@ public abstract class DynamicModel extends Model {
 			return this;
 		}
 
-		public Builder addStaticPart(
-			Renderable part,
-			Mat4 transform
-		) {
+		public Builder addStaticPart(Renderable part, Mat4 transform) {
 			return addPart(part, new Mat4(transform), false);
 		}
 
-		public Builder addDynamicPart(
-			Renderable part
-		) {
+		public Builder addDynamicPart(Renderable part) {
 			return addPart(part, new Mat4(), true);
 		}
 
-		public Builder addStaticPart(
-			Renderable part
-		) {
+		public Builder addStaticPart(Renderable part) {
 			return addStaticPart(part, IDENTITY);
 		}
 

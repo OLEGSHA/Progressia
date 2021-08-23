@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.util.dynstr;
 
 import java.util.function.Supplier;
@@ -45,8 +45,8 @@ public final class DynamicString implements CharSequence {
 	}
 
 	/**
-	 * Causes the contents of this string to be reevaluated.
-	 * This is not currently thread-safe, take caution.
+	 * Causes the contents of this string to be reevaluated. This is not
+	 * currently thread-safe, take caution.
 	 */
 	public void update() {
 		chars.clear();

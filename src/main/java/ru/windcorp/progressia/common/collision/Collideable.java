@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.collision;
 
 import glm.vec._3.Vec3;
@@ -26,10 +26,11 @@ public interface Collideable {
 	CollisionModel getCollisionModel();
 
 	/**
-	 * Invoked by {@link Collider} when two entities are about to collide.
-	 * The world is at the moment of collision.
+	 * Invoked by {@link Collider} when two entities are about to collide. The
+	 * world is at the moment of collision.
 	 * 
-	 * @param other the colliding object
+	 * @param other
+	 *            the colliding object
 	 * @return {@code true} iff the collision should not be handled normally
 	 *         (e.g. this object has disappeared)
 	 */
@@ -37,8 +38,8 @@ public interface Collideable {
 
 	/**
 	 * Returns the mass of this {@link Collideable} that should be used to
-	 * calculate collisions.
-	 * Collision mass must be a positive number. Positive infinity is allowed.
+	 * calculate collisions. Collision mass must be a positive number. Positive
+	 * infinity is allowed.
 	 * 
 	 * @return this object's collision mass
 	 */

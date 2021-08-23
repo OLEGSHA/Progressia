@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.comms.controls;
 
 import java.util.function.Consumer;
@@ -29,11 +29,7 @@ public class ControlTriggerLocalLambda extends ControlTriggerInputBased {
 	private final Predicate<InputEvent> predicate;
 	private final Consumer<InputEvent> action;
 
-	public ControlTriggerLocalLambda(
-		String id,
-		Predicate<InputEvent> predicate,
-		Consumer<InputEvent> action
-	) {
+	public ControlTriggerLocalLambda(String id, Predicate<InputEvent> predicate, Consumer<InputEvent> action) {
 		super(id);
 
 		this.predicate = predicate;

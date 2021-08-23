@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.input;
 
 import glm.vec._2.Vec2;
@@ -87,22 +87,14 @@ public class CursorMoveEvent extends CursorEvent {
 
 	@Override
 	public CursorMoveEvent snapshot() {
-		return new StaticMouseMoveEvent(
-			getPreviousPosition(),
-			getNewPosition(),
-			getTime()
-		);
+		return new StaticMouseMoveEvent(getPreviousPosition(), getNewPosition(), getTime());
 	}
 
 	private class StaticMouseMoveEvent extends CursorMoveEvent {
 
 		private final Vec2d previousPosition = new Vec2d();
 
-		public StaticMouseMoveEvent(
-			Vec2d previousPosition,
-			Vec2d newPosition,
-			double time
-		) {
+		public StaticMouseMoveEvent(Vec2d previousPosition, Vec2d newPosition, double time) {
 			super(newPosition, time);
 			this.previousPosition.set(previousPosition.x, previousPosition.y);
 		}

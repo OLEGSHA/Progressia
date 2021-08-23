@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.backend.shaders;
 
 import ru.windcorp.progressia.common.resource.Resource;
@@ -32,12 +32,7 @@ public class CombinedShader extends Shader {
 		for (int i = 1; i < resources.length; ++i) {
 			if (ShaderType.guessByResourceName(resources[i]) != first) {
 				throw new IllegalArgumentException(
-					"Deduced shader types of "
-						+ resources[0]
-						+ " and "
-						+ resources[i]
-						+ " differ"
-				);
+						"Deduced shader types of " + resources[0] + " and " + resources[i] + " differ");
 			}
 		}
 
@@ -71,19 +66,8 @@ public class CombinedShader extends Shader {
 			if (contents.codePointAt(versionIndex) == '#') {
 				final String versionAnnotation = "#version ";
 
-				if (
-					contents.regionMatches(
-						versionIndex,
-						versionAnnotation,
-						0,
-						versionAnnotation.length()
-					)
-				) {
-					contents = contents.substring(
-						versionIndex
-							+ versionAnnotation.length()
-							+ "120".length()
-					);
+				if (contents.regionMatches(versionIndex, versionAnnotation, 0, versionAnnotation.length())) {
+					contents = contents.substring(versionIndex + versionAnnotation.length() + "120".length());
 				}
 
 			}

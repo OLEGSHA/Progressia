@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.localization;
 
 import java.lang.ref.WeakReference;
@@ -35,7 +35,7 @@ public class Localizer {
 	private final Map<String, String> langList;
 
 	private final Collection<WeakReference<LocaleListener>> listeners = Collections
-		.synchronizedCollection(new LinkedList<>());
+			.synchronizedCollection(new LinkedList<>());
 
 	// lang list must be in the same folder as .lang files
 	public Localizer(String langFolder) {

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world.generation;
 
 import java.io.DataInputStream;
@@ -23,16 +23,31 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 
-import ru.windcorp.progressia.common.world.ChunkData;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
+import ru.windcorp.progressia.common.world.GravityModel;
+import ru.windcorp.progressia.common.world.GravityModelRegistry;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
+import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.world.DefaultWorldLogic;
 
 public abstract class AbstractWorldGenerator<H> extends WorldGenerator {
 
 	private final Class<H> hintClass;
+	
+	private final GravityModel gravityModel;
+	
+	private final Server server;
 
-	public AbstractWorldGenerator(String id, Class<H> hintClass) {
+	public AbstractWorldGenerator(String id, Server server, Class<H> hintClass, String gravityModelId) {
 		super(id);
 		this.hintClass = Objects.requireNonNull(hintClass, "hintClass");
+		this.gravityModel = GravityModelRegistry.getInstance().create(Objects.requireNonNull(gravityModelId, "gravityModelId"));
+		this.server = server;
+		
+		if (this.gravityModel == null) {
+			throw new IllegalArgumentException("Gravity model with ID \"" + gravityModelId + "\" not found");
+		}
 	}
 
 	@Override
@@ -56,12 +71,32 @@ public abstract class AbstractWorldGenerator<H> extends WorldGenerator {
 
 	protected abstract boolean checkIsChunkReady(H hint);
 
-	protected H getHint(ChunkData chunk) {
+	protected H getHint(DefaultChunkData chunk) {
 		return hintClass.cast(chunk.getGenerationHint());
 	}
 
-	protected void setHint(ChunkData chunk, H hint) {
+	protected void setHint(DefaultChunkData chunk, H hint) {
 		chunk.setGenerationHint(hint);
+	}
+	
+	@Override
+	public GravityModel getGravityModel() {
+		return gravityModel;
+	}
+	
+	@Override
+	public Server getServer() {
+		return server;
+	}
+	
+	@Override
+	public DefaultWorldLogic getWorldLogic() {
+		return server.getWorld();
+	}
+	
+	@Override
+	public DefaultWorldData getWorldData() {
+		return server.getWorld().getData();
 	}
 
 }

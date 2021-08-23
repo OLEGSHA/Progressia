@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.common.state;
 
 import java.io.DataInput;
@@ -24,11 +24,7 @@ import java.io.IOException;
 
 public class IntStateField extends StateField {
 
-	public IntStateField(
-		String id,
-		boolean isLocal,
-		int index
-	) {
+	public IntStateField(String id, boolean isLocal, int index) {
 		super(id, isLocal, index);
 	}
 
@@ -45,22 +41,12 @@ public class IntStateField extends StateField {
 	}
 
 	@Override
-	public void read(
-		StatefulObject object,
-		DataInput input,
-		IOContext context
-	)
-		throws IOException {
+	public void read(StatefulObject object, DataInput input, IOContext context) throws IOException {
 		object.getStorage().setInt(getIndex(), input.readInt());
 	}
 
 	@Override
-	public void write(
-		StatefulObject object,
-		DataOutput output,
-		IOContext context
-	)
-		throws IOException {
+	public void write(StatefulObject object, DataOutput output, IOContext context) throws IOException {
 		output.writeInt(object.getStorage().getInt(getIndex()));
 	}
 
