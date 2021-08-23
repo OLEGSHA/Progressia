@@ -27,6 +27,7 @@ import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
 import ru.windcorp.progressia.server.events.PlayerJoinedEvent;
+import ru.windcorp.progressia.server.events.PlayerLeftEvent;
 import ru.windcorp.progressia.test.TestContent;
 
 public class PlayerManager {
@@ -46,6 +47,11 @@ public class PlayerManager {
 	public void addPlayer(Player player) {
 		this.players.add(player);
 		getServer().postEvent(new PlayerJoinedEvent.Immutable(getServer(), player));
+	}
+	
+	public void removePlayer(Player player) {
+		this.players.remove(player);
+		getServer().postEvent(new PlayerLeftEvent.Immutable(getServer(), player));
 	}
 
 	public EntityData conjurePlayerEntity(String login) {

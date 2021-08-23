@@ -26,6 +26,7 @@
     	<Logger name="Ticker Coordinator" level="DEBUG" />
     	<Logger name="Ticker 0" level="DEBUG" />
     	-->
+    	<!-- <Logger name="TestWorldDiskIO" level="DEBUG" /> -->
     	
         <Root level="info">
             <AppenderRef ref="FileLog"  />

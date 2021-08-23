@@ -92,6 +92,9 @@ public class ClientManager {
 	public void disconnectClient(Client client) {
 		client.disconnect();
 		clientsById.remove(client.getId());
+		if (client instanceof ClientPlayer) {
+			getServer().getPlayerManager().removePlayer(((ClientPlayer) client).getPlayer());
+		}
 	}
 	
 	public void processPackets() {
