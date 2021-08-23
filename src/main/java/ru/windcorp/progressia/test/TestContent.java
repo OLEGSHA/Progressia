@@ -55,6 +55,9 @@ import ru.windcorp.progressia.common.world.tile.*;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.comms.controls.*;
 import ru.windcorp.progressia.server.world.block.*;
+import ru.windcorp.progressia.server.world.context.ServerBlockContext;
+import ru.windcorp.progressia.server.world.context.ServerTileContext;
+import ru.windcorp.progressia.server.world.context.ServerTileStackContext;
 import ru.windcorp.progressia.server.world.entity.*;
 import ru.windcorp.progressia.server.world.generation.planet.PlanetGravityModel;
 import ru.windcorp.progressia.server.world.tile.*;
@@ -486,11 +489,22 @@ public class TestContent {
 		Vec3i blockInWorld = controlData.getBlockInWorld();
 		AbsFace face = controlData.getFace();
 
-		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null)
+		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null) {
 			return;
-		if (server.getWorld().getData().getTiles(blockInWorld, face).isFull())
+		}
+		if (server.getWorld().getData().getTiles(blockInWorld, face).isFull()) {
 			return;
-		server.createAbsoluteContext().addTile(blockInWorld, face.relativize(AbsFace.POS_Z), tile);
+		}
+		
+		ServerBlockContext context = server.createContext(blockInWorld);
+		ServerTileStackContext tsContext = context.push(context.toContext(face));
+		ServerTileContext tileContext = tsContext.push(tsContext.getTileCount());
+		
+		TileLogic logic = TileLogicRegistry.getInstance().get(tile.getId());
+		if (!logic.canOccupyFace(tileContext)) {
+			return;
+		}
+		tileContext.addTile(tile);
 	}
 
 	private static void registerMisc() {

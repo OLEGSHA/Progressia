@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import ru.windcorp.progressia.common.comms.packets.Packet;
 
@@ -53,6 +54,8 @@ public abstract class CommsChannel {
 	private State state = State.CONNECTING;
 
 	private final Collection<CommsListener> listeners = Collections.synchronizedCollection(new ArrayList<>());
+	
+	private final List<Packet> pendingPackets = Collections.synchronizedList(new ArrayList<>());
 
 	protected abstract void doSendPacket(Packet packet) throws IOException;
 
@@ -101,7 +104,18 @@ public abstract class CommsChannel {
 	public abstract void disconnect();
 
 	protected void onPacketReceived(Packet packet) {
+		pendingPackets.add(packet);
+	}
+
+	protected void forwardPacketToListeners(Packet packet) {
 		listeners.forEach(l -> l.onPacketReceived(packet));
+	}
+	
+	public void processPackets() {
+		synchronized (pendingPackets) {
+			pendingPackets.forEach(this::forwardPacketToListeners);
+			pendingPackets.clear();
+		}
 	}
 
 	public void addListener(CommsListener listener) {

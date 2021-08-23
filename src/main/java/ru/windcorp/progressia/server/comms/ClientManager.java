@@ -26,6 +26,7 @@ import glm.vec._3.i.Vec3i;
 import gnu.trove.TCollections;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import ru.windcorp.progressia.common.comms.CommsChannel;
 import ru.windcorp.progressia.common.comms.CommsChannel.State;
 import ru.windcorp.progressia.common.comms.packets.Packet;
 import ru.windcorp.progressia.common.world.PacketSetGravityModel;
@@ -91,6 +92,10 @@ public class ClientManager {
 	public void disconnectClient(Client client) {
 		client.disconnect();
 		clientsById.remove(client.getId());
+	}
+	
+	public void processPackets() {
+		getClients().forEach(CommsChannel::processPackets);
 	}
 
 	/**

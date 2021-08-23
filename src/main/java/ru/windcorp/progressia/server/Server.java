@@ -91,6 +91,7 @@ public class Server {
 		this.playerManager = new PlayerManager(this);
 		this.loadManager = new LoadManager(this);
 
+		schedule(getClientManager()::processPackets);
 		schedule(new ChunkRequestDaemon(loadManager.getChunkManager())::tick);
 		schedule(new EntityRequestDaemon(loadManager.getEntityManager())::tick);
 

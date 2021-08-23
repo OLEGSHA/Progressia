@@ -76,6 +76,8 @@ public class LayerWorld extends Layer {
 
 	@Override
 	protected void doRender() {
+		client.getComms().processPackets();
+		
 		Camera camera = client.getCamera();
 		if (camera.hasAnchor()) {
 			renderWorld();
