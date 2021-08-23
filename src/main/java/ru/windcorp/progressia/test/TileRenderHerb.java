@@ -55,7 +55,7 @@ public class TileRenderHerb extends TileRenderCross {
 	private final int maxCount;
 
 	public TileRenderHerb(String id, Texture texture, int maxCount) {
-		super(id, texture, true);
+		super(id, texture, false);
 		this.maxCount = maxCount;
 	}
 	
