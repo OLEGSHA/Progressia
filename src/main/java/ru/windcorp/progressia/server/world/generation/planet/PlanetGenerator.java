@@ -21,7 +21,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
-
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.util.FloatRangeMap;
@@ -58,6 +57,8 @@ public class PlanetGenerator extends AbstractWorldGenerator<Boolean> {
 
 		this.terrainGenerator = new PlanetTerrainGenerator(this, heightMap, layers);
 		this.featureGenerator = new PlanetFeatureGenerator(this, features);
+		
+		
 	}
 
 	/**

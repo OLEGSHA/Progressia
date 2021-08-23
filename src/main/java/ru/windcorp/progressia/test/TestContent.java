@@ -256,6 +256,10 @@ public class TestContent {
 		register("Test:Statie", TestEntityDataStatie::new);
 		register(new TestEntityRenderStatie("Test:Statie"));
 		register(new TestEntityLogicStatie("Test:Statie"));
+		
+		register("Test:FallingBlock", TestEntityDataFallingBlock::new);
+		register(new TestEntityLogicFallingBlock("Test:FallingBlock"));
+		register(new TestEntityRenderFallingBlock("Test:FallingBlock"));
 	}
 
 	private static void regsiterControls() {

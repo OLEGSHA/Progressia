@@ -1,5 +1,7 @@
 package ru.windcorp.progressia.test;
 
+import org.apache.logging.log4j.LogManager;
+
 import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
@@ -17,13 +19,18 @@ public class TestEntityDataFallingBlock extends EntityData {
 	private boolean hasDeleted = false;
 
 	public TestEntityDataFallingBlock() {
-		this("Test:FallingBlock", new BlockData("Test:Sand"));
+		this("Test:FallingBlock", new BlockData("Test:LogTop"));
+	}
+	
+	public TestEntityDataFallingBlock(BlockData data) {
+		this("Test:FallingBlock", data);
 	}
 
 	protected TestEntityDataFallingBlock(String id, BlockData blockInput) {
 		super(id);
 		setCollisionModel(new AABB(0, 0, 0, 1, 1, 1));
 		block = blockInput;
+		LogManager.getLogger().info(blockInput.getId());
 	}
 
 	public void setDestroyed() {

@@ -22,6 +22,9 @@ import glm.Glm;
 import glm.mat._3.Mat3;
 import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
+
+import java.util.function.Function;
+
 import org.lwjgl.glfw.GLFW;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.GUI;
@@ -58,6 +61,8 @@ public class TestPlayerControls {
 
 	// Horizontal and vertical max control speed when flying
 	private static final float FLYING_SPEED = Units.get("6 m/s");
+	
+	private static final Function<Double, Double> SPRINTING_FLYING_SPEED = (f) -> {return Math.pow(f,.75)+2*FLYING_SPEED;};
 
 	// (0; 1], 1 is instant change, 0 is no control authority
 	private static final float FLYING_CONTROL_AUTHORITY = Units.get("2 1/s");
@@ -101,7 +106,8 @@ public class TestPlayerControls {
 		final float speed, authority;
 
 		if (isFlying) {
-			speed = FLYING_SPEED;
+			double timeSinceLastSpacePress = GraphicsInterface.getTime() - lastSprintPress;
+			speed = isSprinting ? SPRINTING_FLYING_SPEED.apply(timeSinceLastSpacePress).floatValue() : FLYING_SPEED;
 			authority = FLYING_CONTROL_AUTHORITY;
 		} else {
 			speed = isSprinting ? SPRINTING_SPEED : WALKING_SPEED;
@@ -256,10 +262,11 @@ public class TestPlayerControls {
 		double timeSinceLastSpacePress = GraphicsInterface.getTime() - lastSpacePress;
 
 		if (isPressed && timeSinceLastSpacePress < MODE_SWITCH_MAX_DELAY) {
-			isSprinting = false;
+			//isSprinting = false;
 			isFlying = !isFlying;
 			updateGUI();
 			movementUp = +1;
+			timeSinceLastSpacePress = MODE_SWITCH_MAX_DELAY;
 		} else {
 			if (isFlying) {
 				movementUp += +1 * multiplier;
@@ -274,10 +281,12 @@ public class TestPlayerControls {
 	}
 
 	private void handleSprint(KeyEvent event) {
+		
+		//LogManager.getLogger().info("hi");
 
 		double timeSinceLastSpacePress = GraphicsInterface.getTime() - lastSprintPress;
 
-		if (event.isPress() && timeSinceLastSpacePress < MODE_SPRINT_SWITCH_MAX_DELAY && !isFlying) {
+		if (event.isPress() && timeSinceLastSpacePress < MODE_SPRINT_SWITCH_MAX_DELAY) {
 			isSprinting = !isSprinting;
 			updateGUI();
 		}
