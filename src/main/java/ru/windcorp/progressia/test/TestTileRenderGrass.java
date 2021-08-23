@@ -26,15 +26,18 @@ public class TestTileRenderGrass extends TileRenderSurface {
 
 	private final Texture topTexture;
 	private final Texture sideTexture;
+	private final boolean isOpaque;
 
 	public TestTileRenderGrass(
 		String id,
 		Texture top,
-		Texture side
+		Texture side,
+		boolean isOpaque
 	) {
 		super(id);
 		this.topTexture = top;
 		this.sideTexture = side;
+		this.isOpaque = isOpaque;
 	}
 
 	@Override
@@ -44,7 +47,7 @@ public class TestTileRenderGrass extends TileRenderSurface {
 
 	@Override
 	public boolean isOpaque(RelFace face) {
-		return face == RelFace.UP;
+		return isOpaque && face == RelFace.UP;
 	}
 
 }

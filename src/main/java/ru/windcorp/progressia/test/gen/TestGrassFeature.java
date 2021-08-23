@@ -25,6 +25,8 @@ import com.google.common.collect.ImmutableSet;
 
 import ru.windcorp.progressia.common.util.ArrayFloatRangeMap;
 import ru.windcorp.progressia.common.util.FloatRangeMap;
+import ru.windcorp.progressia.common.world.block.BlockData;
+import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
@@ -45,14 +47,22 @@ public class TestGrassFeature extends SurfaceTopLayerFeature {
 
 	private final SurfaceFloatField grassiness;
 	private final double scatterDensity = 1.0 / (3 * 3);
+	
+	private final BlockData chernozem = BlockDataRegistry.getInstance().get("Test:Chernozem");
 
-	private final TileData grass = TileDataRegistry.getInstance().get("Test:Grass");
-
-	private final FloatRangeMap<TileData> grasses = new ArrayFloatRangeMap<>();
+	private final FloatRangeMap<TileData> flatGrasses = new ArrayFloatRangeMap<>();
 	{
-		grasses.put(0.6f, 1, TileDataRegistry.getInstance().get("Test:TallGrass"));
-		grasses.put(0.4f, 0.6f, TileDataRegistry.getInstance().get("Test:MediumGrass"));
-		grasses.put(0.1f, 0.4f, TileDataRegistry.getInstance().get("Test:LowGrass"));
+		flatGrasses.put(0.4f, Float.POSITIVE_INFINITY, TileDataRegistry.getInstance().get("Test:GrassOpaque"));
+		flatGrasses.put(0.2f, 0.4f, TileDataRegistry.getInstance().get("Test:GrassPatches"));
+		flatGrasses.put(0.1f, 0.2f, TileDataRegistry.getInstance().get("Test:GrassWeb"));
+		flatGrasses.put(0.05f, 0.1f, TileDataRegistry.getInstance().get("Test:GrassThreads"));
+	}
+
+	private final FloatRangeMap<TileData> herbGrasses = new ArrayFloatRangeMap<>();
+	{
+		herbGrasses.put(0.6f, 1, TileDataRegistry.getInstance().get("Test:TallGrass"));
+		herbGrasses.put(0.4f, 0.6f, TileDataRegistry.getInstance().get("Test:MediumGrass"));
+		herbGrasses.put(0.1f, 0.4f, TileDataRegistry.getInstance().get("Test:LowGrass"));
 	}
 
 	private final List<TileData> scatter = ImmutableList.of(
@@ -81,11 +91,7 @@ public class TestGrassFeature extends SurfaceTopLayerFeature {
 		}
 		context.pop();
 
-		double grassiness = this.grassiness.get(context);
-		if (grassiness > 0.1) {
-			growGrass(context, grassiness);
-		}
-
+		growGrass(context, this.grassiness.get(context));
 		placeScatter(context);
 	}
 
@@ -97,21 +103,28 @@ public class TestGrassFeature extends SurfaceTopLayerFeature {
 	}
 
 	private void growGrass(SurfaceBlockContext context, double grassiness) {
-		for (RelFace face : RelFace.getFaces()) {
-			if (face == RelFace.DOWN)
-				continue;
+		TileData flatGrass = flatGrasses.get((float) grassiness);
+		if (flatGrass != null) {
+			for (RelFace face : RelFace.getFaces()) {
+				if (face == RelFace.DOWN)
+					continue;
 
-			if (context.pushRelative(face).logic().getBlock().isTransparent()) {
-				context.pop();
-				context.addTile(face, grass);
-			} else {
-				context.pop();
+				if (context.pushRelative(face).logic().getBlock().isTransparent()) {
+					context.pop();
+					context.addTile(face, flatGrass);
+				} else {
+					context.pop();
+				}
+
 			}
-
+			
+			if (grassiness > 0.8 && context.getBlock().getId().equals("Test:Dirt")) {
+				context.setBlock(chernozem);
+			}
 		}
 
 		if (context.getRandom().nextDouble() < grassiness) {
-			TileData herbGrass = grasses.get((float) grassiness);
+			TileData herbGrass = herbGrasses.get((float) grassiness);
 			if (herbGrass != null) {
 				context.addTile(RelFace.UP, herbGrass);
 			}

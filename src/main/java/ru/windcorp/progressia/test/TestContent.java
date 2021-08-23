@@ -100,6 +100,10 @@ public class TestContent {
 		register(new BlockData("Test:Dirt"));
 		register(new BlockRenderOpaqueCube("Test:Dirt", getBlockTexture("Dirt")));
 		register(new BlockLogic("Test:Dirt"));
+		
+		register(new BlockData("Test:Chernozem"));
+		register(new BlockRenderOpaqueCube("Test:Chernozem", getBlockTexture("Chernozem")));
+		register(new BlockLogic("Test:Chernozem"));
 
 		register(new BlockData("Test:Stone"));
 		register(new BlockRenderOpaqueCube("Test:Stone", getBlockTexture("Stone")));
@@ -167,9 +171,19 @@ public class TestContent {
 	private static void registerTiles() {
 		Set<String> placeableBlacklist = new HashSet<>();
 
-		register(new TileData("Test:Grass"));
-		register(new TestTileRenderGrass("Test:Grass", getTileTexture("GrassTop"), getTileTexture("GrassSide")));
-		register(new TestTileLogicGrass("Test:Grass"));
+		for (String variant : new String[] {
+			"Opaque",
+			"Patches",
+			"Web",
+			"Threads"
+		}) {
+			String fullName = "Grass" + variant;
+			String id = "Test:" + fullName;
+			
+			register(new TileData(id));
+			register(new TestTileRenderGrass(id, getTileTexture(fullName + "Top"), getTileTexture(fullName + "Side"), variant.equals("Opaque")));
+			register(new TestTileLogicGrass(id));
+		}
 
 		register(new TileData("Test:Stones"));
 		register(new TileRenderTransparentSurface("Test:Stones", getTileTexture("Stones")));

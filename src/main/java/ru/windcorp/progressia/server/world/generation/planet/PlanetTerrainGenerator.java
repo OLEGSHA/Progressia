@@ -48,12 +48,11 @@ class PlanetTerrainGenerator {
 		this.parent = generator;
 
 		int seaLevel = (int) parent.getPlanet().getRadius();
-		SurfaceFloatField adjustedHeightMap = (f, n, w) -> heightMap.get(f, n, w) + generator.getPlanet().getRadius();
 
 		this.surfaceGenerators = AbsFace.mapToFaces(
 			face -> new SurfaceTerrainGenerator(
 				new Surface(face, seaLevel),
-				adjustedHeightMap,
+				heightMap,
 				layers
 			)
 		);

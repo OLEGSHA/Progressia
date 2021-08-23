@@ -116,7 +116,7 @@ public class TestGenerationConfig {
 			"Test:Grass",
 			f -> multiply(
 				tweak(octaves(FIELDS.primitive(), 2, 2), 40, 0.5, 1.2),
-				squash(tweak(FIELDS.get("Test:Forest", f), 1, -0.7, 1), 10),
+				squash(tweak(FIELDS.get("Test:Forest", f), 1, -1, 1), 10),
 				anti(squash(FIELDS.get("Test:Cliff", f), 10))
 			)
 		);

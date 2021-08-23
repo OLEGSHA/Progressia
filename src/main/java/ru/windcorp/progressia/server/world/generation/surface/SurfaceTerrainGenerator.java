@@ -47,6 +47,7 @@ public class SurfaceTerrainGenerator {
 		
 		Vec3 offset = new Vec3(chunk.getMinX(), chunk.getMinY(), chunk.getMinZ());
 		AxisRotations.relativize(offset, chunk.getUp(), offset);
+		offset.z -= surface.getSeaLevel();
 		
 		SurfaceWorldContext context = surface.createContext(server, chunk, 0);
 		
