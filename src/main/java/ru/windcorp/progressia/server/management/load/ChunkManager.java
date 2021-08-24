@@ -17,10 +17,14 @@
  */
 package ru.windcorp.progressia.server.management.load;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.PacketRevokeChunk;
 import ru.windcorp.progressia.common.world.PacketSendChunk;
+import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.Server;
@@ -140,6 +144,11 @@ public class ChunkManager {
 			return false;
 		}
 
+		// TODO allow entities to be saved first
+		Set<EntityData> entitiesToRemove = new HashSet<>();
+		world.forEachEntityInChunk(chunkPos, entitiesToRemove::add);
+		entitiesToRemove.forEach(world::removeEntity);
+		
 		world.removeChunk(chunk);
 		TestWorldDiskIO.saveChunk(chunk, getServer());
 

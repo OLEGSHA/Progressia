@@ -259,6 +259,18 @@ public class Shapes {
 		public PppBuilder setSize(float size) {
 			return this.setSize(size, size, size);
 		}
+		
+		public PppBuilder centerAt(float x, float y, float z) {
+			origin.set(x, y, z);
+			
+			origin.mul(2);
+			origin.sub(width);
+			origin.sub(height);
+			origin.sub(depth);
+			origin.div(2);
+			
+			return this;
+		}
 
 		public PppBuilder flip() {
 			this.flip = true;

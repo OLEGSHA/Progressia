@@ -46,6 +46,9 @@ public class WorldAccessor implements ReportingServerContext.ChangeListener {
 			.addClass(SetBlock.class, () -> new SetBlock(disposer))
 			.addClass(AddTile.class, () -> new AddTile(disposer))
 			.addClass(RemoveTile.class, () -> new RemoveTile(disposer))
+			
+			.addClass(AddEntity.class, () -> new AddEntity(disposer))
+			.addClass(RemoveEntity.class, () -> new RemoveEntity(disposer))
 			.addClass(ChangeEntity.class, () -> new ChangeEntity(disposer))
 
 			.addClass(BlockTriggeredUpdate.class, () -> new BlockTriggeredUpdate(disposer))
@@ -81,14 +84,16 @@ public class WorldAccessor implements ReportingServerContext.ChangeListener {
 	
 	@Override
 	public void onEntityAdded(EntityData entity) {
-		// TODO Auto-generated method stub
-		
+		AddEntity change = cache.grab(AddEntity.class);
+		change.set(entity);
+		server.requestChange(change);
 	}
 	
 	@Override
 	public void onEntityRemoved(long entityId) {
-		// TODO Auto-generated method stub
-		
+		RemoveEntity change = cache.grab(RemoveEntity.class);
+		change.set(entityId);
+		server.requestChange(change);
 	}
 	
 	@Override

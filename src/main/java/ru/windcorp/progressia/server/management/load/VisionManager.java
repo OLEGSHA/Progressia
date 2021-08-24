@@ -25,6 +25,9 @@ import java.util.function.Consumer;
 import com.google.common.eventbus.Subscribe;
 
 import glm.vec._3.i.Vec3i;
+import gnu.trove.TCollections;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import ru.windcorp.progressia.common.world.generic.ChunkSet;
 import ru.windcorp.progressia.common.world.generic.ChunkSets;
 import ru.windcorp.progressia.server.Player;
@@ -83,6 +86,28 @@ public class VisionManager {
 		}
 
 		return vision.getVisibleChunks();
+	}
+	
+	public boolean isEntityVisible(long entityId, Player player) {
+		PlayerVision vision = getVision(player, false);
+
+		if (vision == null) {
+			return false;
+		}
+
+		return vision.isEntityVisible(entityId);
+	}
+	
+	private static final TLongSet EMPTY_TLONGSET = TCollections.unmodifiableSet(new TLongHashSet(0));
+
+	public TLongSet getVisibleEntities(Player player) {
+		PlayerVision vision = getVision(player, false);
+
+		if (vision == null) {
+			return EMPTY_TLONGSET;
+		}
+
+		return vision.getVisibleEntities();
 	}
 	
 	/**

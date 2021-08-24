@@ -15,12 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server.world;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import glm.Glm;
 import glm.vec._3.i.Vec3i;
@@ -50,7 +51,7 @@ public class DefaultWorldLogic implements WorldLogic {
 	public DefaultWorldLogic(DefaultWorldData data, Server server, WorldGenerator generator, WorldAccessor accessor) {
 		this.data = data;
 		this.server = server;
-		
+
 		this.generator = generator;
 		data.setGravityModel(getGenerator().getGravityModel());
 
@@ -83,10 +84,31 @@ public class DefaultWorldLogic implements WorldLogic {
 	public Collection<EntityData> getEntities() {
 		return getData().getEntities();
 	}
-	
+
 	@Override
 	public EntityData getEntity(long entityId) {
 		return getData().getEntity(entityId);
+	}
+
+	@Override
+	public void spawnEntity(EntityData entity) {
+		Objects.requireNonNull(entity, "entity");
+		if (entity.getEntityId() != EntityData.NULL_ENTITY_ID) {
+			throw new IllegalArgumentException(
+				"Entity ID of entity " + entity
+					+ " is not unassigned; use WorldData.addEntity to add entity with assigned entity ID"
+			);
+		}
+		
+		long entityId;
+		
+		// TODO this should be synchronized on the entity set
+		do {
+			entityId = server.getAdHocRandom().nextLong();
+		} while (entityId == EntityData.NULL_ENTITY_ID || getEntity(entityId) != null);
+		
+		entity.setEntityId(entityId);
+		getData().addEntity(entity);
 	}
 
 	public Evaluation getTickEntitiesTask() {
@@ -108,36 +130,54 @@ public class DefaultWorldLogic implements WorldLogic {
 
 	public DefaultChunkData generate(Vec3i chunkPos) {
 		DefaultChunkData chunk = getGenerator().generate(chunkPos);
-		
+
 		if (!Glm.equals(chunkPos, chunk.getPosition())) {
-			throw CrashReports.report(null, "Generator %s has generated a chunk at (%d; %d; %d) when requested to generate a chunk at (%d; %d; %d)",
+			throw CrashReports.report(
+				null,
+				"Generator %s has generated a chunk at (%d; %d; %d) when requested to generate a chunk at (%d; %d; %d)",
 				getGenerator(),
-				chunk.getX(), chunk.getY(), chunk.getZ(),
-				chunkPos.x,   chunkPos.y,   chunkPos.z
+				chunk.getX(),
+				chunk.getY(),
+				chunk.getZ(),
+				chunkPos.x,
+				chunkPos.y,
+				chunkPos.z
 			);
 		}
-		
+
 		if (getData().getChunk(chunk.getPosition()) != chunk) {
 			if (isChunkLoaded(chunkPos)) {
-				throw CrashReports.report(null, "Generator %s has returned a chunk different to the chunk that is located at (%d; %d; %d)",
+				throw CrashReports.report(
+					null,
+					"Generator %s has returned a chunk different to the chunk that is located at (%d; %d; %d)",
 					getGenerator(),
-					chunkPos.x, chunkPos.y, chunkPos.z
+					chunkPos.x,
+					chunkPos.y,
+					chunkPos.z
 				);
 			} else {
-				throw CrashReports.report(null, "Generator %s has returned a chunk that is not loaded when requested to generate a chunk at (%d; %d; %d)",
+				throw CrashReports.report(
+					null,
+					"Generator %s has returned a chunk that is not loaded when requested to generate a chunk at (%d; %d; %d)",
 					getGenerator(),
-					chunkPos.x, chunkPos.y, chunkPos.z
+					chunkPos.x,
+					chunkPos.y,
+					chunkPos.z
 				);
 			}
 		}
-		
+
 		if (!getChunk(chunk).isReady()) {
-			throw CrashReports.report(null, "Generator %s has returned a chunk that is not ready when requested to generate a chunk at (%d; %d; %d)",
+			throw CrashReports.report(
+				null,
+				"Generator %s has returned a chunk that is not ready when requested to generate a chunk at (%d; %d; %d)",
 				getGenerator(),
-				chunkPos.x, chunkPos.y, chunkPos.z
+				chunkPos.x,
+				chunkPos.y,
+				chunkPos.z
 			);
 		}
-		
+
 		return chunk;
 	}
 

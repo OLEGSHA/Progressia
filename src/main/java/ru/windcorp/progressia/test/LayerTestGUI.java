@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import glm.vec._3.Vec3;
@@ -129,7 +129,7 @@ public class LayerTestGUI extends GUILayer {
 				128
 			)
 		);
-		
+
 		group.addChild(
 			new DynamicLabel(
 				"ChunkStatsDisplay",
@@ -266,12 +266,21 @@ public class LayerTestGUI extends GUILayer {
 
 	}
 
+	private static final String[] CLOCK_CHARS = "\u2591\u2598\u259d\u2580\u2596\u258c\u259e\u259b\u2597\u259a\u2590\u259c\u2584\u2599\u259f\u2588"
+		.chars().mapToObj(c -> ((char) c) + "").toArray(String[]::new);
+
+	private static String getTPSClockChar() {
+		return CLOCK_CHARS[(int) (ServerState.getInstance().getUptimeTicks() % CLOCK_CHARS.length)];
+	}
+
 	private static final Averager FPS_RECORD = new Averager();
 	private static final Averager TPS_RECORD = new Averager();
 
 	private static final Supplier<CharSequence> TPS_STRING = DynamicStrings.builder()
 		.addDyn(new MutableStringLocalized("LayerTestGUI.TPSDisplay"))
 		.addDyn(() -> TPS_RECORD.update(ServerState.getInstance().getTPS()), 5, 1)
+		.add(' ')
+		.addDyn(LayerTestGUI::getTPSClockChar)
 		.buildSupplier();
 
 	private static final Supplier<CharSequence> POS_STRING = DynamicStrings.builder()

@@ -19,6 +19,9 @@
 package ru.windcorp.progressia.server.comms;
 
 import glm.vec._3.i.Vec3i;
+import gnu.trove.TCollections;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import ru.windcorp.progressia.common.world.generic.ChunkSet;
 import ru.windcorp.progressia.common.world.generic.ChunkSets;
 import ru.windcorp.progressia.server.Player;
@@ -53,8 +56,19 @@ public abstract class ClientPlayer extends ClientChat {
 		return player.getServer().getLoadManager().getVisionManager().getVisibleChunks(player);
 	}
 
-	public boolean isChunkVisible(long entityId) {
-		return true;
+	public boolean isEntityVisible(long entityId) {
+		if (player == null)
+			return false;
+		return player.getServer().getLoadManager().getVisionManager().isEntityVisible(entityId, player);
+	}
+
+	private static final TLongSet EMPTY_TLONGSET = TCollections.unmodifiableSet(new TLongHashSet(0));
+
+	public TLongSet getVisibleEntities(Player player) {
+		if (player == null) {
+			return EMPTY_TLONGSET;
+		}
+		return player.getServer().getLoadManager().getVisionManager().getVisibleEntities(player);
 	}
 
 }

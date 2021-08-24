@@ -131,6 +131,10 @@ public class TestContent {
 		register(new BlockRenderTransparentCube("Test:TemporaryLeaves", getBlockTexture("TemporaryLeaves")));
 		// Sic, using Glass logic for leaves because  Test
 		register(new TestBlockLogicGlass("Test:TemporaryLeaves")); 
+		
+		register(new BlockData("Test:StatieSpawner"));
+		register(new BlockRenderOpaqueCube("Test:StatieSpawner", getBlockTexture("StatieSpawner")));
+		register(new TestBlockLogicStatieSpawner("Test:StatieSpawner"));
 
 		BlockDataRegistry.getInstance().values().forEach(PLACEABLE_BLOCKS::add);
 		PLACEABLE_BLOCKS.removeIf(b -> placeableBlacklist.contains(b.getId()));

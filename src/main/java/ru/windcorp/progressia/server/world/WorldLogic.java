@@ -21,9 +21,12 @@ import java.util.Collection;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.WorldData;
+import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.rels.BlockFace;
 
 public interface WorldLogic extends WorldLogicRO {
+	
+	void spawnEntity(EntityData entity);
 
 	/*
 	 * Override return types

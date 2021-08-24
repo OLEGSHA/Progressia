@@ -145,7 +145,7 @@ public class ClientManager {
 				return;
 			if (!(c instanceof ClientPlayer))
 				return;
-			if (!((ClientPlayer) c).isChunkVisible(entityId))
+			if (!((ClientPlayer) c).isEntityVisible(entityId))
 				return;
 			c.sendPacket(packet);
 		});
