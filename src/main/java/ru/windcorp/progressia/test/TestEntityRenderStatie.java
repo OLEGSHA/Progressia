@@ -80,6 +80,7 @@ public class TestEntityRenderStatie extends EntityRender {
 					renderer.popTransform();
 				}
 
+				renderer.popTransform();
 			}
 		};
 	}
