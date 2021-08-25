@@ -28,6 +28,20 @@ public abstract class AbstractStatefulObjectLayout
 	public AbstractStatefulObjectLayout(String objectId) {
 		super(objectId);
 	}
+	
+	@Override
+	public StateStorage createStorage() {
+		StateStorage storage = instantiateStorage();
+		
+		int fieldCount = getFieldCount();
+		for (int i = 0; i < fieldCount; ++i) {
+			getField(i).setDefault(storage);
+		}
+		
+		return storage;
+	}
+	
+	protected abstract StateStorage instantiateStorage();
 
 	protected abstract int getFieldCount();
 

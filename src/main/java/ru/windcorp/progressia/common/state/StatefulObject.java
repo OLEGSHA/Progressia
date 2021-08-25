@@ -52,7 +52,7 @@ import ru.windcorp.progressia.common.util.namespaces.Namespaced;
  * type.</li>
  * </ul>
  */
-public abstract class StatefulObject extends Namespaced {
+public abstract class StatefulObject extends Namespaced implements Encodable {
 
 	private final StatefulObjectLayout layout;
 
@@ -133,6 +133,7 @@ public abstract class StatefulObject extends Namespaced {
 	 * @throws IOException if the state is encoded poorly or an error occurs
 	 *                     in {@code input}
 	 */
+	@Override
 	public void read(DataInput input, IOContext context) throws IOException {
 		getLayout().read(this, input, context);
 	}
@@ -145,6 +146,7 @@ public abstract class StatefulObject extends Namespaced {
 	 * @param context the context
 	 * @throws IOException if an error occurs in {@code output}
 	 */
+	@Override
 	public void write(DataOutput output, IOContext context) throws IOException {
 		getLayout().write(this, output, context);
 	}
@@ -166,7 +168,8 @@ public abstract class StatefulObject extends Namespaced {
 	 * 
 	 * @param destination the object to copy this object into.
 	 */
-	public StatefulObject copy(StatefulObject destination) {
+	@Override
+	public void copy(Encodable destination) {
 		Objects.requireNonNull(destination, "destination");
 
 		if (destination == this) {
@@ -182,8 +185,7 @@ public abstract class StatefulObject extends Namespaced {
 			);
 		}
 
-		getLayout().copy(this, destination);
-		return destination;
+		getLayout().copy(this, (StatefulObject) destination);
 	}
 
 	/**

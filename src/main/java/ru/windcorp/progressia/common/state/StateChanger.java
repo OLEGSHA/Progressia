@@ -21,5 +21,6 @@ package ru.windcorp.progressia.common.state;
 public interface StateChanger {
 
 	void setInt(IntStateField field, int value);
+	<T> void setObject(ObjectStateField<T> field, T value);
 
 }

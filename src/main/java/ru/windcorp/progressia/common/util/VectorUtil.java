@@ -199,6 +199,63 @@ public class VectorUtil {
 		return rotateOnly(inOut, mat, inOut);
 	}
 	
+	public static Mat4 lookAt(Mat4 applyTo, Vec3 target, Vec3 up, Mat4 output) {
+		if (output == null) {
+			output = new Mat4();
+		}
+		
+		Mat4 lookAtTransform = Matrices.grab4();
+		
+		// Adapted from Glm.lookAt - we use Z as up
+		
+		// f(normalize(target))
+        float fX = target.x;
+        float fY = target.y;
+        float fZ = target.z;
+        float inverseSqrt = 1f / (float) Math.sqrt(fX * fX + fY * fY + fZ * fZ);
+        fX *= inverseSqrt;
+        fY *= inverseSqrt;
+        fZ *= inverseSqrt;
+        // s(normalize(cross(up, f)))
+        float sX = up.y * fZ - up.z * fY;
+        float sY = up.z * fX - up.x * fZ;
+        float sZ = up.x * fY - up.y * fX;
+        inverseSqrt = 1.0f / (float) Math.sqrt(sX * sX + sY * sY + sZ * sZ);
+        sX *= inverseSqrt;
+        sY *= inverseSqrt;
+        sZ *= inverseSqrt;
+        // u(cross(f, s))
+        float uX = fY * sZ - fZ * sY;
+        float uY = fZ * sX - fX * sZ;
+        float uZ = fX * sY - fY * sX;
+        
+        lookAtTransform.m00 = fX;
+        lookAtTransform.m01 = fY;
+        lookAtTransform.m02 = fZ;
+        lookAtTransform.m03 = 0f;
+        lookAtTransform.m10 = sX;
+        lookAtTransform.m11 = sY;
+        lookAtTransform.m12 = sZ;
+        lookAtTransform.m13 = 0f;
+        lookAtTransform.m20 = uX;
+        lookAtTransform.m21 = uY;
+        lookAtTransform.m22 = uZ;
+        lookAtTransform.m23 = 0f;
+        lookAtTransform.m30 = 0;
+        lookAtTransform.m31 = 0;
+        lookAtTransform.m32 = 0;
+        lookAtTransform.m33 = 1f;
+		
+		applyTo.mul(lookAtTransform, output);
+		Matrices.release(lookAtTransform);
+		
+		return output;
+	}
+	
+	public static Mat4 lookAt(Vec3 center, Vec3 up, Mat4 inOut) {
+		return lookAt(inOut, center, up, inOut);
+	}
+	
 	public static Vec3 rotate(Vec3 in, Vec3 axis, float angle, Vec3 out) {
 		if (out == null) {
 			out = new Vec3();
@@ -268,6 +325,20 @@ public class VectorUtil {
 	
 	public static Vec3 projectOnVector(Vec3 inOut, Vec3 vector) {
 		return projectOnVector(inOut, vector);
+	}
+	
+	public static float distanceSq(Vec3 a, Vec3 b) {
+		float x = a.x - b.x;
+		float y = a.y - b.y;
+		float z = a.z - b.z;
+		return x * x + y * y + z * z;
+	}
+	
+	public static float distance(Vec3 a, Vec3 b) {
+		float x = a.x - b.x;
+		float y = a.y - b.y;
+		float z = a.z - b.z;
+		return (float) Math.sqrt(x * x + y * y + z * z);
 	}
 
 	public static Vec3 linearCombination(

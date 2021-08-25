@@ -19,8 +19,11 @@ package ru.windcorp.progressia.common.world.generic.context;
 
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
+import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.context.Context;
 import ru.windcorp.progressia.common.world.generic.*;
 import ru.windcorp.progressia.common.world.rels.RelFace;
@@ -142,15 +145,51 @@ public interface WorldGenericContextRO<
 	E getEntity(long entityId);
 
 	/*
+	 * Convenience methods
+	 */
+
+	default void forEachEntity(Consumer<E> action) {
+		getEntities().forEach(action);
+	}
+
+	default E findClosestEntity(Vec3 location, Predicate<E> filter, float maxDistance) {
+		if (maxDistance <= 0) {
+			return null;
+		}
+
+		E result = getEntities().stream().filter(filter).min((a, b) -> {
+			float aDistance = VectorUtil.distanceSq(location, a.getPosition());
+			float bDistance = VectorUtil.distanceSq(location, b.getPosition());
+			return Float.compare(aDistance, bDistance);
+		}).orElse(null);
+
+		if (result == null) {
+			return null;
+		}
+		if (Float.isInfinite(maxDistance)) {
+			return result;
+		}
+		if (VectorUtil.distanceSq(location, result.getPosition()) > maxDistance * maxDistance) {
+			return null;
+		}
+
+		return result;
+	}
+	
+	default E findClosestEntity(Vec3 location, float maxDistance) {
+		return findClosestEntity(location, e -> true, maxDistance);
+	}
+
+	/*
 	 * Subcontexting
 	 */
-	
+
 	@Override
 	BlockGenericContextRO<B, T, E> push(Vec3i location);
-	
+
 	@Override
 	TileStackGenericContextRO<B, T, E> push(Vec3i location, RelFace face);
-	
+
 	@Override
 	TileGenericContextRO<B, T, E> push(Vec3i location, RelFace face, int layer);
 

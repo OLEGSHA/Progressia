@@ -19,11 +19,14 @@
 package ru.windcorp.progressia.common.state;
 
 import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 public class HashMapStateStorage extends StateStorage {
 
 	private final TIntIntMap ints = new TIntIntHashMap();
+	private final TIntObjectMap<Object> objects = new TIntObjectHashMap<>();
 
 	@Override
 	public int getInt(int index) {
@@ -33,6 +36,16 @@ public class HashMapStateStorage extends StateStorage {
 	@Override
 	public void setInt(int index, int value) {
 		ints.put(index, value);
+	}
+	
+	@Override
+	public Object getObject(int index) {
+		return objects.get(index);
+	}
+	
+	@Override
+	public void setObject(int index, Object object) {
+		objects.put(index, object);
 	}
 
 }

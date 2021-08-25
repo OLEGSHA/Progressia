@@ -20,6 +20,9 @@ package ru.windcorp.progressia.common.state;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
+
+import ru.windcorp.progressia.common.state.codec.ObjectCodec;
 
 public class InspectingStatefulObjectLayout
 	extends AbstractStatefulObjectLayout {
@@ -33,7 +36,7 @@ public class InspectingStatefulObjectLayout
 	}
 
 	@Override
-	public StateStorage createStorage() {
+	public StateStorage instantiateStorage() {
 		return new HashMapStateStorage();
 	}
 
@@ -81,6 +84,31 @@ public class InspectingStatefulObjectLayout
 			}
 
 		}
+		
+		private class Obj<T> implements StateFieldBuilder.Obj<T> {
+
+			private final ObjectCodec<T> codec;
+			private final Supplier<T> defaultValue;
+
+			public Obj(ObjectCodec<T> codec, Supplier<T> defaultValue) {
+				this.codec = codec;
+				this.defaultValue = defaultValue;
+			}
+
+			@Override
+			public ObjectStateField<T> build() {
+				return registerField(
+					new ObjectStateField<T>(
+						id,
+						isLocal,
+						fieldIndexCounters.getObjectsThenIncrement(),
+						codec,
+						defaultValue
+					)
+				);
+			}
+
+		}
 
 		private final String id;
 
@@ -93,6 +121,11 @@ public class InspectingStatefulObjectLayout
 		@Override
 		public Int ofInt() {
 			return new Int();
+		}
+		
+		@Override
+		public <T> Obj<T> of(ObjectCodec<T> codec, Supplier<T> defaultValue) {
+			return new Obj<T>(codec, defaultValue);
 		}
 
 		@Override

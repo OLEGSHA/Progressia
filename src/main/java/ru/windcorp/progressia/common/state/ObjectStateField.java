@@ -21,27 +21,43 @@ package ru.windcorp.progressia.common.state;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.function.Supplier;
 
-public class IntStateField extends StateField {
+import ru.windcorp.progressia.common.state.codec.ObjectCodec;
 
-	public IntStateField(
+public class ObjectStateField<T> extends StateField {
+	
+	private final ObjectCodec<T> codec;
+	private final Supplier<T> defaultValue;
+
+	public ObjectStateField(
 		String id,
 		boolean isLocal,
-		int index
+		int index,
+		ObjectCodec<T> codec,
+		Supplier<T> defaultValue
 	) {
 		super(id, isLocal, index);
+		
+		this.codec = codec;
+		this.defaultValue = defaultValue;
+	}
+	
+	public ObjectCodec<T> getCodec() {
+		return codec;
 	}
 
-	public int get(StatefulObject object) {
-		return object.getStorage().getInt(getIndex());
+	@SuppressWarnings("unchecked")
+	public T get(StatefulObject object) {
+		return (T) object.getStorage().getObject(getIndex());
 	}
 
-	public void setNow(StatefulObject object, int value) {
-		object.getStorage().setInt(getIndex(), value);
+	public void setNow(StatefulObject object, T value) {
+		object.getStorage().setObject(getIndex(), value);
 	}
 
-	public void set(StateChanger changer, int value) {
-		changer.setInt(this, value);
+	public void set(StateChanger changer, T value) {
+		changer.setObject(this, value);
 	}
 
 	@Override
@@ -51,7 +67,10 @@ public class IntStateField extends StateField {
 		IOContext context
 	)
 		throws IOException {
-		object.getStorage().setInt(getIndex(), input.readInt());
+		
+		T previous = get(object);
+		T result = codec.read(previous, input, context);
+		object.getStorage().setObject(getIndex(), result);
 	}
 
 	@Override
@@ -61,7 +80,8 @@ public class IntStateField extends StateField {
 		IOContext context
 	)
 		throws IOException {
-		output.writeInt(object.getStorage().getInt(getIndex()));
+		
+		codec.write(object.getStorage().getObject(getIndex()), output, context);
 	}
 
 	@Override
@@ -71,17 +91,17 @@ public class IntStateField extends StateField {
 
 	@Override
 	public int computeHashCode(StatefulObject object) {
-		return get(object);
+		return codec.computeHashCode(get(object));
 	}
 
 	@Override
 	public boolean areEqual(StatefulObject a, StatefulObject b) {
-		return get(a) == get(b);
+		return codec.areEqual(get(a), get(b));
 	}
 	
 	@Override
 	public void setDefault(StateStorage storage) {
-		storage.setInt(getIndex(), 0);
+		storage.setObject(getIndex(), defaultValue.get());
 	}
 
 }

@@ -15,36 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.common.state;
+package ru.windcorp.progressia.common.state.codec;
 
-class PrimitiveCounters {
+import java.io.DataInput;
+import java.io.IOException;
 
-	private int ints = 0;
-	private int objects = 0;
+import ru.windcorp.progressia.common.state.IOContext;
 
-	public PrimitiveCounters() {
-	}
+public abstract class ImmutableObjectCodec<T> extends ObjectCodec<T> {
 
-	public PrimitiveCounters(PrimitiveCounters copyFrom) {
-		this.ints = copyFrom.ints;
-		this.objects = copyFrom.objects;
-	}
-
-	public int getInts() {
-		return ints;
-	}
-
-	public int getIntsThenIncrement() {
-		return this.ints++;
+	public ImmutableObjectCodec(Class<T> clazz) {
+		super(clazz);
 	}
 	
-	public int getObjects() {
-		return objects;
+	@Override
+	public final T copy(T object, T previous) {
+		return object;
+	}
+	
+	@Override
+	protected final T doRead(T previous, DataInput input, IOContext context) throws IOException {
+		return doRead(input, context);
 	}
 
-	public int getObjectsThenIncrement() {
-		return this.objects++;
-	}
+	protected abstract T doRead(DataInput input, IOContext context) throws IOException;
 
 }

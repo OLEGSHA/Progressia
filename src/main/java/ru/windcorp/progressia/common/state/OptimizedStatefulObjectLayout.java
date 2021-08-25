@@ -19,8 +19,11 @@
 package ru.windcorp.progressia.common.state;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.google.common.collect.ImmutableList;
+
+import ru.windcorp.progressia.common.state.codec.ObjectCodec;
 
 public class OptimizedStatefulObjectLayout
 	extends AbstractStatefulObjectLayout {
@@ -49,7 +52,7 @@ public class OptimizedStatefulObjectLayout
 	}
 
 	@Override
-	public StateStorage createStorage() {
+	public StateStorage instantiateStorage() {
 		return new OptimizedStateStorage(sizes);
 	}
 
@@ -68,6 +71,17 @@ public class OptimizedStatefulObjectLayout
 				@Override
 				public IntStateField build() {
 					return (IntStateField) result;
+				}
+			};
+		}
+		
+		@Override
+		public <T> Obj<T> of(ObjectCodec<T> codec, Supplier<T> defaultValue) {
+			return new Obj<T>() {
+				@SuppressWarnings("unchecked")
+				@Override
+				public ObjectStateField<T> build() {
+					return (ObjectStateField<T>) result;
 				}
 			};
 		}

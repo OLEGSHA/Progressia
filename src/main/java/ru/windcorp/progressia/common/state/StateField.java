@@ -66,5 +66,7 @@ public abstract class StateField extends Namespaced {
 	public abstract int computeHashCode(StatefulObject object);
 
 	public abstract boolean areEqual(StatefulObject a, StatefulObject b);
+	
+	public abstract void setDefault(StateStorage storage);
 
 }

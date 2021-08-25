@@ -15,36 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.common.state;
+package ru.windcorp.progressia.common.state.codec;
 
-class PrimitiveCounters {
+public abstract class ReusableObjectCodec<T> extends ObjectCodec<T> {
 
-	private int ints = 0;
-	private int objects = 0;
-
-	public PrimitiveCounters() {
-	}
-
-	public PrimitiveCounters(PrimitiveCounters copyFrom) {
-		this.ints = copyFrom.ints;
-		this.objects = copyFrom.objects;
-	}
-
-	public int getInts() {
-		return ints;
-	}
-
-	public int getIntsThenIncrement() {
-		return this.ints++;
+	public ReusableObjectCodec(Class<T> clazz) {
+		super(clazz);
 	}
 	
-	public int getObjects() {
-		return objects;
+	@Override
+	public final T copy(T object, T previous) {
+		if (object == null) {
+			return null;
+		}
+		
+		T result = doCopy(object, previous);
+		
+		assert result != null : "copy() returned null";
+		assert areEqual(object, result) : "copy() does not equal original: " + result + " != " + object;
+		
+		return result;
 	}
 
-	public int getObjectsThenIncrement() {
-		return this.objects++;
-	}
+	protected abstract T doCopy(T object, T previous);
 
 }
