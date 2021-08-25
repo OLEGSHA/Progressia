@@ -29,7 +29,7 @@ public class HashableVec3i {
 			return false;
 		}
 		HashableVec3i compareeCast = (HashableVec3i) comparee;
-		return compareeCast.value == value;
+		return compareeCast.value.x == value.x && compareeCast.value.y == value.y && compareeCast.value.z == value.z ;
 	}
 	
 }
