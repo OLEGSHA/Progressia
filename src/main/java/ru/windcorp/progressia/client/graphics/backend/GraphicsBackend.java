@@ -47,7 +47,7 @@ public class GraphicsBackend {
 	private static boolean allowDisablingCursor;
 	static {
 		String key = GraphicsBackend.class.getName() + ".allowDisablingCursor";
-		allowDisablingCursor = Boolean.parseBoolean(System.getProperty(key, "false"));
+		allowDisablingCursor = Boolean.parseBoolean(System.getProperty(key, "true"));
 	}
 	private static boolean forceCursorToCenter = false;
 
