@@ -77,6 +77,12 @@ public class GUI {
 			layer.onRemoved();
 		});
 	}
+	
+	public static void updateLayer(Layer layer) {
+		modify(layers -> {
+			// Do nothing
+		});
+	}
 
 	private static void modify(LayerStackModification mod) {
 		MODIFICATION_QUEUE.add(mod);

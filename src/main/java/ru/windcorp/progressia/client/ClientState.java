@@ -26,6 +26,7 @@ import ru.windcorp.progressia.server.ServerState;
 import ru.windcorp.progressia.test.LayerAbout;
 import ru.windcorp.progressia.test.LayerTestUI;
 import ru.windcorp.progressia.test.TestContent;
+import ru.windcorp.progressia.test.inv.TestInventoryGUIManager;
 
 public class ClientState {
 
@@ -55,6 +56,7 @@ public class ClientState {
 
 		GUI.addBottomLayer(new LayerWorld(client));
 		GUI.addTopLayer(new LayerTestUI());
+		TestInventoryGUIManager.setup();
 		GUI.addTopLayer(new LayerAbout());
 
 	}

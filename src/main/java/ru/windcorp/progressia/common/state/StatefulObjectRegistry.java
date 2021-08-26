@@ -42,6 +42,16 @@ public class StatefulObjectRegistry<T extends StatefulObject> {
 		 */
 		T build();
 	}
+	
+	@FunctionalInterface
+	public static interface IdFactory<T> {
+		/**
+		 * Initializes a new, independent instance of the stateful object.
+		 * 
+		 * @return the created object
+		 */
+		T build(String id);
+	}
 
 	protected static class Type<T> extends Namespaced {
 
@@ -109,6 +119,10 @@ public class StatefulObjectRegistry<T extends StatefulObject> {
 
 	public void register(String id, Factory<T> factory) {
 		registry.register(new Type<>(id, factory));
+	}
+	
+	public void register(String id, IdFactory<T> factory) {
+		register(id, () -> factory.build(id));
 	}
 
 }

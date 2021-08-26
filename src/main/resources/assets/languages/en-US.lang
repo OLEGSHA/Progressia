@@ -22,3 +22,4 @@ LayerTestGUI.IsFullscreen = Fullscreen:     %5s (F11)
 LayerTestGUI.IsVSync = VSync:          %5s (F12)
 
 LayerButtonTest.Title = Button Test
+LayerInventory.Title = Player

@@ -33,7 +33,7 @@ public class DynamicLabel extends Component {
 		super(name);
 		this.font = font;
 		this.contents = contents;
-		setPreferredSize(width, font.getHeight("", Float.POSITIVE_INFINITY) * 2);
+		setPreferredSize(width, font.getHeight("", Float.POSITIVE_INFINITY));
 	}
 
 	public Font getFont() {
@@ -46,7 +46,7 @@ public class DynamicLabel extends Component {
 
 	@Override
 	protected void assembleSelf(RenderTarget target) {
-		target.pushTransform(new Mat4().identity().translate(getX(), getY(), -1000).scale(2));
+		target.pushTransform(new Mat4().identity().translate(getX(), getY(), -1000));
 		target.addCustomRenderer(font.assembleDynamic(getContentSupplier(), Float.POSITIVE_INFINITY));
 		target.popTransform();
 	}

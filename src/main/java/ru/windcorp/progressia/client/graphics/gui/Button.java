@@ -25,10 +25,13 @@ import ru.windcorp.progressia.client.graphics.Colors;
 
 public class Button extends BasicButton {
 
+	public static final int MARGIN = 2;
+	public static final int BORDER = 2;
+
 	public Button(String name, String label, Font labelFont) {
 		super(name, label, labelFont);
 	}
-	
+
 	public Button(String name, String label) {
 		this(name, label, new Font());
 	}
@@ -36,7 +39,7 @@ public class Button extends BasicButton {
 	@Override
 	protected void assembleSelf(RenderTarget target) {
 		// Border
-		
+
 		Vec4 borderColor;
 		if (isPressed() || isHovered() || isFocused()) {
 			borderColor = Colors.BLUE;
@@ -44,9 +47,9 @@ public class Button extends BasicButton {
 			borderColor = Colors.LIGHT_GRAY;
 		}
 		target.fill(getX(), getY(), getWidth(), getHeight(), borderColor);
-		
+
 		// Inside area
-		
+
 		if (isPressed()) {
 			// Do nothing
 		} else {
@@ -56,22 +59,30 @@ public class Button extends BasicButton {
 			} else {
 				backgroundColor = Colors.WHITE;
 			}
-			target.fill(getX() + 2, getY() + 2, getWidth() - 4, getHeight() - 4, backgroundColor);
+			target.fill(
+				getX() + MARGIN,
+				getY() + MARGIN,
+				getWidth() - 2 * MARGIN,
+				getHeight() - 2 * MARGIN,
+				backgroundColor
+			);
 		}
-		
+
 		// Change label font color
-		
-		if (isPressed()) {
-			getLabel().setFont(getLabel().getFont().withColor(Colors.WHITE));
-		} else {
-			getLabel().setFont(getLabel().getFont().withColor(Colors.BLACK));
+
+		if (hasLabel()) {
+			if (isPressed()) {
+				getLabel().setFont(getLabel().getFont().withColor(Colors.WHITE));
+			} else {
+				getLabel().setFont(getLabel().getFont().withColor(Colors.BLACK));
+			}
 		}
 	}
-	
+
 	@Override
 	protected void postAssembleSelf(RenderTarget target) {
 		// Apply disable tint
-		
+
 		if (!isEnabled()) {
 			target.fill(getX(), getY(), getWidth(), getHeight(), Colors.toVector(0x88FFFFFF));
 		}

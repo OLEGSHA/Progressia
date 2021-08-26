@@ -65,6 +65,8 @@ public class Units {
 
 	// Volume
 	public static final float CUBIC_CENTIMETERS = CENTIMETERS * CENTIMETERS * CENTIMETERS;
+	@RegisteredUnit("L")
+	public static final float LITERS = (10 * CENTIMETERS) * (10 * CENTIMETERS) * (10 * CENTIMETERS);
 	public static final float CUBIC_METERS = METERS * METERS * METERS;
 	public static final float CUBIC_MILLIMETERS = MILLIMETERS * MILLIMETERS * MILLIMETERS;
 	public static final float CUBIC_KILOMETERS = KILOMETERS * KILOMETERS * KILOMETERS;

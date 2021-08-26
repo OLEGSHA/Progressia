@@ -70,7 +70,7 @@ public class Label extends Component {
 
 	public void update() {
 		currentText = contents.get();
-		currentSize = font.getSize(currentText, maxWidth, null).mul(2);
+		currentSize = font.getSize(currentText, maxWidth, null);
 		requestReassembly();
 	}
 
@@ -99,12 +99,8 @@ public class Label extends Component {
 	protected void assembleSelf(RenderTarget target) {
 		float startX = getX() + font.getAlign() * (getWidth() - currentSize.x);
 
-		target.pushTransform(
-			new Mat4().identity().translate(startX, getY(), 0).scale(2)
-		);
-
+		target.pushTransform(new Mat4().identity().translate(startX, getY(), 0));
 		target.addCustomRenderer(font.assemble(currentText, maxWidth));
-
 		target.popTransform();
 	}
 

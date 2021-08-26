@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.test;
 
 import glm.Glm;
@@ -41,6 +41,7 @@ import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 import ru.windcorp.progressia.common.world.tile.TileData;
 import ru.windcorp.progressia.server.ServerState;
 
@@ -114,8 +115,9 @@ public class TestPlayerControls {
 			desiredVelocity.normalize();
 		}
 		desiredVelocity.z = movementUp;
-		movementTransform.mul_(desiredVelocity); // bug in jglm, .mul() and .mul_() are
-										         // swapped
+		movementTransform.mul_(desiredVelocity); // bug in jglm, .mul() and
+													// .mul_() are
+													// swapped
 		desiredVelocity.mul(speed);
 
 		Vec3 newVelocity = new Vec3()
@@ -134,8 +136,8 @@ public class TestPlayerControls {
 		player.getVelocity().set(newVelocity);
 
 		// THIS IS TERRIBLE TEST
-		EntityData serverEntity = ServerState.getInstance().getWorld().getData()
-			.getEntity(TestContent.PLAYER_ENTITY_ID);
+		EntityData serverEntity = ServerState.getInstance().getWorld().getEntities().stream()
+			.filter(EntityDataPlayer.class::isInstance).findAny().orElse(null);
 		if (serverEntity != null) {
 			serverEntity.setPosition(player.getPosition());
 		}
@@ -146,15 +148,21 @@ public class TestPlayerControls {
 		if (mat == null) {
 			mat = new Mat3();
 		}
-		
+
 		Vec3 f = player.getForwardVector(null);
 		Vec3 u = player.getUpVector();
 		Vec3 s = u.cross_(f);
-		
+
 		return mat.set(
-			+f.x, +f.y, +f.z,
-			-s.x, -s.y, -s.z,
-			+u.x, +u.y, +u.z
+			+f.x,
+			+f.y,
+			+f.z,
+			-s.x,
+			-s.y,
+			-s.z,
+			+u.x,
+			+u.y,
+			+u.z
 		);
 	}
 
@@ -201,7 +209,7 @@ public class TestPlayerControls {
 		case GLFW.GLFW_KEY_ESCAPE:
 			if (!event.isPress())
 				return false;
-			
+
 			handleEscape();
 			break;
 
@@ -296,7 +304,7 @@ public class TestPlayerControls {
 		}
 
 		Vec3 up = getEntity().getUpVector();
-		
+
 		getEntity().getVelocity().add(
 			up.x * JUMP_VELOCITY,
 			up.y * JUMP_VELOCITY,
@@ -359,31 +367,31 @@ public class TestPlayerControls {
 
 		final double yawScale = -0.002f;
 		final double pitchScale = -yawScale;
-		final double pitchExtremum = Math.PI/2 * 0.95f;
-		
+		final double pitchExtremum = Math.PI / 2 * 0.95f;
+
 		double yawChange = event.getChangeX() * yawScale;
 		double pitchChange = event.getChangeY() * pitchScale;
 
 		EntityData player = getEntity();
-		
+
 		double startPitch = player.getPitch();
 		double endPitch = startPitch + pitchChange;
 		endPitch = Glm.clamp(endPitch, -pitchExtremum, +pitchExtremum);
 		pitchChange = endPitch - startPitch;
-		
+
 		Mat4 mat = Matrices.grab4();
-		Vec3 lookingAt = Vectors.grab3();		
+		Vec3 lookingAt = Vectors.grab3();
 		Vec3 rightVector = Vectors.grab3();
 
 		rightVector.set(player.getLookingAt()).cross(player.getUpVector()).normalize();
-		
+
 		mat.identity()
 			.rotate((float) yawChange, player.getUpVector())
 			.rotate((float) pitchChange, rightVector);
-		
+
 		VectorUtil.applyMat4(player.getLookingAt(), mat, lookingAt);
 		player.setLookingAt(lookingAt);
-		
+
 		Vectors.release(rightVector);
 		Vectors.release(lookingAt);
 		Matrices.release(mat);

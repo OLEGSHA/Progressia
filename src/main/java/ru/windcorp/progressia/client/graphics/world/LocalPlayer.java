@@ -15,20 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics.world;
+
+import org.apache.logging.log4j.LogManager;
 
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.world.WorldRender;
 import ru.windcorp.progressia.client.world.entity.EntityRenderable;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 
 public class LocalPlayer {
 
 	private final Client client;
 
 	private long entityId = EntityData.NULL_ENTITY_ID;
-	private EntityData lastKnownEntity = null;
+	private EntityDataPlayer lastKnownEntity = null;
 
 	private final Selection selection = new Selection();
 
@@ -59,19 +62,31 @@ public class LocalPlayer {
 		return getEntity() != null;
 	}
 
-	public EntityData getEntity() {
+	public EntityDataPlayer getEntity() {
 		if (!hasEntityId()) {
 			return null;
 		}
 
 		EntityData entity = getClient().getWorld().getData().getEntity(getEntityId());
+		EntityDataPlayer playerEntity;
 
-		if (entity != lastKnownEntity) {
-			getClient().onLocalPlayerEntityChanged(entity, lastKnownEntity);
-			this.lastKnownEntity = entity;
+		if (entity == null || entity instanceof EntityDataPlayer) {
+			playerEntity = (EntityDataPlayer) entity;
+		} else {
+			LogManager.getLogger().warn(
+				"Entity ID of local player is {}, but the entity is not an EntityDataPlayer: {}",
+				EntityData.formatEntityId(getEntityId()),
+				entity
+			);
+			playerEntity = null;
 		}
 
-		return entity;
+		if (playerEntity != lastKnownEntity) {
+			getClient().onLocalPlayerEntityChanged(playerEntity, lastKnownEntity);
+			this.lastKnownEntity = playerEntity;
+		}
+
+		return playerEntity;
 	}
 
 	public Selection getSelection() {

@@ -15,34 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.test;
+package ru.windcorp.progressia.common.world.generic;
 
-import ru.windcorp.progressia.common.collision.AABB;
-import ru.windcorp.progressia.common.state.IntStateField;
-import ru.windcorp.progressia.common.world.entity.EntityData;
+public interface ItemGeneric {
 
-public class TestEntityDataStatie extends EntityData {
-
-	private final IntStateField size = field("Test:Size").setShared().ofInt().build();
-
-	protected TestEntityDataStatie(String id) {
-		super(id);
-		setCollisionModel(new AABB(0, 0, 0, 1, 1, 1));
-		setSizeNow(16);
-	}
-
-	public int getSize() {
-		return size.get(this);
-	}
-
-	public void setSizeNow(int size) {
-		this.size.setNow(this, size);
-	}
-
-	@Override
-	public float getCollisionMass() {
-		return 50f;
-	}
+	String getId();
 
 }

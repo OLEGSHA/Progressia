@@ -45,10 +45,15 @@ public abstract class BasicButton extends Component {
 
 	public BasicButton(String name, String label, Font labelFont) {
 		super(name);
-		this.label = new Label(name + ".Label", labelFont, label);
 
 		setLayout(new LayoutAlign(10));
-		addChild(this.label);
+		
+		if (label == null) {
+			this.label = null;
+		} else {
+			this.label = new Label(name + ".Label", labelFont, label);
+			addChild(this.label);
+		}
 
 		setFocusable(true);
 		reassembleAt(ARTrigger.HOVER, ARTrigger.FOCUS, ARTrigger.ENABLE);
@@ -146,6 +151,10 @@ public abstract class BasicButton extends Component {
 
 	public Label getLabel() {
 		return label;
+	}
+	
+	public boolean hasLabel() {
+		return label != null;
 	}
 	
 }

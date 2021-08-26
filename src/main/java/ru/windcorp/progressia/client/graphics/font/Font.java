@@ -32,20 +32,23 @@ public class Font {
 	private final int style;
 	private final float align;
 	private final Vec4 color;
+	
+	private final int scale;
 
-	public Font(Typeface typeface, int style, float align, Vec4 color) {
+	public Font(Typeface typeface, int style, float align, Vec4 color, int scale) {
 		this.typeface = typeface;
 		this.style = style;
 		this.align = align;
 		this.color = color;
+		this.scale = scale;
 	}
 
-	public Font(Typeface typeface, int style, float align, int color) {
-		this(typeface, style, align, Colors.toVector(color));
+	public Font(Typeface typeface, int style, float align, int color, int scale) {
+		this(typeface, style, align, Colors.toVector(color), scale);
 	}
 
 	public Font(Typeface typeface) {
-		this(typeface, Typeface.Style.PLAIN, Typeface.ALIGN_LEFT, Colors.WHITE);
+		this(typeface, Typeface.Style.PLAIN, Typeface.ALIGN_LEFT, Colors.WHITE, 2);
 	}
 
 	public Font() {
@@ -67,31 +70,63 @@ public class Font {
 	public Vec4 getColor() {
 		return color;
 	}
-
-	public Renderable assemble(
-		CharSequence chars,
-		float maxWidth
-	) {
-		return typeface.assembleStatic(chars, style, align, maxWidth, color);
+	
+	public int getScale() {
+		return scale;
+	}
+	
+	private Renderable applyScale(Renderable unscaled) {
+		if (scale == 1) {
+			return unscaled;
+		}
+		
+		return renderer -> {
+			renderer.pushTransform().scale(scale);
+			unscaled.render(renderer);
+			renderer.popTransform();
+		};
 	}
 
-	public Renderable assembleDynamic(
-		Supplier<CharSequence> supplier,
-		float maxWidth
-	) {
-		return typeface.assembleDynamic(supplier, style, align, maxWidth, color);
+	public Renderable assemble(CharSequence chars, float maxWidth) {
+		return applyScale(typeface.assembleStatic(chars, style, align, maxWidth, color));
+	}
+
+	public Renderable assembleDynamic(Supplier<CharSequence> supplier, float maxWidth) {
+		return applyScale(typeface.assembleDynamic(supplier, style, align, maxWidth, color));
+	}
+	
+	public Renderable assemble(CharSequence chars) {
+		return assemble(chars, Float.POSITIVE_INFINITY);
+	}
+
+	public Renderable assembleDynamic(Supplier<CharSequence> supplier) {
+		return assembleDynamic(supplier, Float.POSITIVE_INFINITY);
 	}
 
 	public int getWidth(CharSequence chars, float maxWidth) {
-		return typeface.getWidth(chars, style, align, maxWidth);
+		return scale * typeface.getWidth(chars, style, align, maxWidth);
 	}
 
 	public int getHeight(CharSequence chars, float maxWidth) {
-		return typeface.getHeight(chars, style, align, maxWidth);
+		return scale * typeface.getHeight(chars, style, align, maxWidth);
 	}
 
 	public Vec2i getSize(CharSequence chars, float maxWidth, Vec2i result) {
-		return typeface.getSize(chars, style, align, maxWidth, result);
+		result = typeface.getSize(chars, style, align, maxWidth, result);
+		result.mul(scale);
+		return result;
+	}
+	
+	public int getWidth(CharSequence chars) {
+		return getWidth(chars, Float.POSITIVE_INFINITY);
+	}
+
+	public int getHeight(CharSequence chars) {
+		return getHeight(chars, Float.POSITIVE_INFINITY);
+	}
+
+	public Vec2i getSize(CharSequence chars, Vec2i result) {
+		return getSize(chars, Float.POSITIVE_INFINITY, result);
 	}
 
 	public boolean supports(char c) {
@@ -106,7 +141,7 @@ public class Font {
 	 * @return the new font
 	 */
 	public Font withStyle(int style) {
-		return new Font(getTypeface(), style, getAlign(), getColor());
+		return new Font(getTypeface(), style, getAlign(), getColor(), getScale());
 	}
 
 	public Font deriveBold() {
@@ -158,15 +193,19 @@ public class Font {
 	}
 
 	public Font withAlign(float align) {
-		return new Font(getTypeface(), getStyle(), align, getColor());
+		return new Font(getTypeface(), getStyle(), align, getColor(), getScale());
 	}
 
 	public Font withColor(Vec4 color) {
-		return new Font(getTypeface(), getStyle(), getAlign(), color);
+		return new Font(getTypeface(), getStyle(), getAlign(), color, getScale());
 	}
 
 	public Font withColor(int color) {
-		return new Font(getTypeface(), getStyle(), getAlign(), color);
+		return new Font(getTypeface(), getStyle(), getAlign(), color, getScale());
+	}
+	
+	public Font withScale(int scale) {
+		return new Font(getTypeface(), getStyle(), getAlign(), getColor(), scale);
 	}
 
 }

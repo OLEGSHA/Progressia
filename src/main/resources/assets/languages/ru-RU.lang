@@ -22,3 +22,4 @@ LayerTestGUI.IsFullscreen = Полный экран:   %5s (F11)
 LayerTestGUI.IsVSync = Верт. синхр.:   %5s (F12)
 
 LayerButtonTest.Title = Тест Кнопок
+LayerInventory.Title = Игрок

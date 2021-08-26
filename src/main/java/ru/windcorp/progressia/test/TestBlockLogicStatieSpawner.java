@@ -21,6 +21,7 @@ import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
 import ru.windcorp.progressia.server.world.context.ServerBlockContext;
@@ -36,7 +37,7 @@ public class TestBlockLogicStatieSpawner extends BlockLogic implements TickableB
 	@Override
 	public void tick(ServerBlockContext context) {
 		Vec3i loc = context.toAbsolute(context.getLocation(), null);
-		EntityData entity = new TestEntityDataStatie();
+		EntityData entity = EntityDataRegistry.getInstance().create("Test:Statie");
 		entity.setPosition(new Vec3(loc.x, loc.y, loc.z));
 		
 		context.addEntity(entity);

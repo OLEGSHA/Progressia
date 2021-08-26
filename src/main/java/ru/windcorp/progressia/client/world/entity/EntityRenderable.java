@@ -19,44 +19,17 @@
 package ru.windcorp.progressia.client.world.entity;
 
 import glm.vec._3.Vec3;
-import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
-import ru.windcorp.progressia.client.graphics.model.Renderable;
-import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
+import ru.windcorp.progressia.client.world.UpdatingRenderable;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.generic.EntityGeneric;
 
-public abstract class EntityRenderable implements Renderable, EntityGeneric {
+public abstract class EntityRenderable extends UpdatingRenderable implements EntityGeneric {
 
 	private final EntityData data;
-	
-	private long stateComputedForFrame = -1;
 
 	public EntityRenderable(EntityData data) {
 		this.data = data;
 	}
-
-	/**
-	 * Updates the state of this model. This method is invoked exactly once per
-	 * renderable per frame before this entity is queried for the first time.
-	 */
-	protected void update() {
-		// Do nothing
-	}
-	
-	private void updateIfNecessary() {
-		if (stateComputedForFrame != GraphicsInterface.getFramesRendered()) {
-			update();
-			stateComputedForFrame = GraphicsInterface.getFramesRendered();
-		}
-	}
-	
-	@Override
-	public final void render(ShapeRenderHelper renderer) {
-		updateIfNecessary();
-		doRender(renderer);
-	}
-	
-	protected abstract void doRender(ShapeRenderHelper renderer);
 
 	public EntityData getData() {
 		return data;

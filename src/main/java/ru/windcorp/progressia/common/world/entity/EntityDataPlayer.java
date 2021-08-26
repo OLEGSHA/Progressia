@@ -15,34 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.test;
+package ru.windcorp.progressia.common.world.entity;
 
+import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.collision.AABB;
-import ru.windcorp.progressia.common.state.IntStateField;
-import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.state.ObjectStateField;
+import ru.windcorp.progressia.common.world.item.DefaultItemContainer;
+import ru.windcorp.progressia.common.world.item.ItemContainer;
 
-public class TestEntityDataStatie extends EntityData {
+public class EntityDataPlayer extends EntityData {
+	
+	private final ObjectStateField<DefaultItemContainer> inventory = field("Core:Inventory").setShared().def(
+		() -> new DefaultItemContainer("Core:PlayerInventory", Units.get(15, "kg"), Units.get(50, "L"))
+	).build();
 
-	private final IntStateField size = field("Test:Size").setShared().ofInt().build();
-
-	protected TestEntityDataStatie(String id) {
+	public EntityDataPlayer(String id) {
 		super(id);
-		setCollisionModel(new AABB(0, 0, 0, 1, 1, 1));
-		setSizeNow(16);
+		
+		setCollisionModel(new AABB(0, 0, 1.8f / 2, 0.8f, 0.8f, 1.8f));
 	}
-
-	public int getSize() {
-		return size.get(this);
-	}
-
-	public void setSizeNow(int size) {
-		this.size.setNow(this, size);
-	}
-
-	@Override
-	public float getCollisionMass() {
-		return 50f;
+	
+	public ItemContainer getInventory() {
+		return inventory.get(this);
 	}
 
 }

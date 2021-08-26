@@ -15,34 +15,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.test;
+package ru.windcorp.progressia.common.world.item;
 
-import ru.windcorp.progressia.common.collision.AABB;
-import ru.windcorp.progressia.common.state.IntStateField;
-import ru.windcorp.progressia.common.world.entity.EntityData;
+import java.util.ArrayList;
 
-public class TestEntityDataStatie extends EntityData {
+public class DefaultItemContainer extends ItemContainer {
+	
+	private final float massLimit;
+	private final float volumeLimit;
 
-	private final IntStateField size = field("Test:Size").setShared().ofInt().build();
-
-	protected TestEntityDataStatie(String id) {
-		super(id);
-		setCollisionModel(new AABB(0, 0, 0, 1, 1, 1));
-		setSizeNow(16);
-	}
-
-	public int getSize() {
-		return size.get(this);
-	}
-
-	public void setSizeNow(int size) {
-		this.size.setNow(this, size);
+	public DefaultItemContainer(String id, float massLimit, float volumeLimit) {
+		super(id, new ArrayList<>());
+		this.massLimit = massLimit;
+		this.volumeLimit = volumeLimit;
 	}
 
 	@Override
-	public float getCollisionMass() {
-		return 50f;
+	public void addSlots(int amount) {
+		synchronized (getSlots()) {
+			((ArrayList<ItemSlot>) list).ensureCapacity(list.size() + amount);
+			for (int i = 0; i < amount; ++i) {
+				list.add(new ItemSlot());
+			}
+		}
+	}
+	
+	@Override
+	public float getMassLimit() {
+		return massLimit;
+	}
+	
+	@Override
+	public float getVolumeLimit() {
+		return volumeLimit;
 	}
 
 }

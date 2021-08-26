@@ -20,6 +20,7 @@ package ru.windcorp.progressia.test;
 
 import static ru.windcorp.progressia.client.world.block.BlockRenderRegistry.getBlockTexture;
 import static ru.windcorp.progressia.client.world.tile.TileRenderRegistry.getTileTexture;
+import static ru.windcorp.progressia.client.world.item.ItemRenderRegistry.getItemTexture;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +28,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.i.Vec3i;
@@ -42,15 +42,21 @@ import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerRegistry;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSimple;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSurface;
 import ru.windcorp.progressia.client.world.entity.*;
+import ru.windcorp.progressia.client.world.item.ItemRender;
+import ru.windcorp.progressia.client.world.item.ItemRenderRegistry;
+import ru.windcorp.progressia.client.world.item.ItemRenderSimple;
 import ru.windcorp.progressia.client.world.tile.*;
-import ru.windcorp.progressia.common.collision.AABB;
+import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.comms.controls.*;
-import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
+import ru.windcorp.progressia.common.state.StatefulObjectRegistry.IdFactory;
 import ru.windcorp.progressia.common.world.GravityModelRegistry;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
 import ru.windcorp.progressia.common.world.io.ChunkIO;
+import ru.windcorp.progressia.common.world.item.ItemData;
+import ru.windcorp.progressia.common.world.item.ItemDataRegistry;
+import ru.windcorp.progressia.common.world.item.ItemDataSimple;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.tile.*;
 import ru.windcorp.progressia.server.Server;
@@ -64,12 +70,11 @@ import ru.windcorp.progressia.server.world.generation.planet.PlanetGravityModel;
 import ru.windcorp.progressia.server.world.tile.*;
 import ru.windcorp.progressia.test.Rocks.RockType;
 import ru.windcorp.progressia.test.gen.TestGravityModel;
+import ru.windcorp.progressia.test.inv.TestInventoryGUIManager;
 
 public class TestContent {
 
 	public static final String PLAYER_LOGIN = "Sasha";
-	public static final long PLAYER_ENTITY_ID = 0x42;
-	public static final long STATIE_ENTITY_ID = 0xDEADBEEF;
 
 	public static final List<BlockData> PLACEABLE_BLOCKS = new ArrayList<>();
 	public static final List<TileData> PLACEABLE_TILES = new ArrayList<>();
@@ -85,6 +90,7 @@ public class TestContent {
 	private static void registerWorldContent() {
 		registerBlocks();
 		registerTiles();
+		registerItems();
 		registerEntities();
 	}
 
@@ -235,6 +241,10 @@ public class TestContent {
 		PLACEABLE_TILES.removeIf(b -> placeableBlacklist.contains(b.getId()));
 		PLACEABLE_TILES.sort(Comparator.comparing(TileData::getId));
 	}
+	
+	private static void registerItems() {
+		registerSimplestItem("MoonTypeIceCream", Units.get("200 g"), Units.get("1 L"));
+	}
 
 	private static void registerSimplestBlock(String name) {
 		String id = "Test:" + name;
@@ -263,14 +273,19 @@ public class TestContent {
 		register(new TileRenderHerb(id, getTileTexture(name), maxCount));
 		register(new HangingTileLogic(id));
 	}
+	
+	private static void registerSimplestItem(String name, float mass, float volume) {
+		String id = "Test:" + name;
+		registerItem(id, s -> new ItemDataSimple(s, mass, volume));
+		register(new ItemRenderSimple(id, getItemTexture(name)));
+	}
 
 	private static void registerEntities() {
-		float scale = 1.8f / 8;
-		registerEntityData("Test:Player", e -> e.setCollisionModel(new AABB(0, 0, 4 * scale, 0.8f, 0.8f, 1.8f)));
-		register(new TestEntityRenderHuman("Test:Player"));
-		register(new EntityLogic("Test:Player"));
+		registerEntity("Core:Player", EntityDataPlayer::new);
+		register(new TestEntityRenderHuman("Core:Player"));
+		register(new EntityLogic("Core:Player"));
 
-		register("Test:Statie", TestEntityDataStatie::new);
+		registerEntity("Test:Statie", TestEntityDataStatie::new);
 		register(new TestEntityRenderStatie("Test:Statie"));
 		register(new TestEntityLogicStatie("Test:Statie"));
 	}
@@ -325,6 +340,15 @@ public class TestContent {
 				KeyMatcher.of(GLFW.GLFW_KEY_M).matcher()
 			)
 		);
+		
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:OpenInventory",
+				KeyEvent.class,
+				TestInventoryGUIManager::openGUI,
+				KeyMatcher.of(GLFW.GLFW_KEY_E).matcher()
+			)
+		);
 	}
 
 	private static void register(BlockData x) {
@@ -334,26 +358,16 @@ public class TestContent {
 	private static void register(TileData x) {
 		TileDataRegistry.getInstance().register(x);
 	}
-
-	private static void register(
+	
+	private static void registerItem(String id, IdFactory<ItemData> factory) {
+		ItemDataRegistry.getInstance().register(id, factory);
+	}
+	
+	private static void registerEntity(
 		String id,
-		Factory<EntityData> factory
+		IdFactory<EntityData> factory
 	) {
 		EntityDataRegistry.getInstance().register(id, factory);
-	}
-
-	private static void registerEntityData(
-		String id,
-		Consumer<EntityData> transform
-	) {
-		EntityDataRegistry.getInstance().register(id, new Factory<EntityData>() {
-			@Override
-			public EntityData build() {
-				EntityData entity = new EntityData(id);
-				transform.accept(entity);
-				return entity;
-			}
-		});
 	}
 
 	private static void register(BlockRender x) {
@@ -362,6 +376,10 @@ public class TestContent {
 
 	private static void register(TileRender x) {
 		TileRenderRegistry.getInstance().register(x);
+	}
+	
+	private static void register(ItemRender x) {
+		ItemRenderRegistry.getInstance().register(x);
 	}
 
 	private static void register(EntityRender x) {
