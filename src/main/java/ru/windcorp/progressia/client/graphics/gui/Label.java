@@ -85,7 +85,6 @@ public class Label extends Component {
 	
 	public void setFont(Font font) {
 		this.font = font;
-		requestReassembly();
 	}
 
 	public String getCurrentText() {

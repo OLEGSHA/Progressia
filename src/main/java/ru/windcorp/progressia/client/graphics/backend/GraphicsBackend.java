@@ -19,6 +19,7 @@
 package ru.windcorp.progressia.client.graphics.backend;
 
 import glm.vec._2.i.Vec2i;
+
 import org.lwjgl.glfw.GLFWVidMode;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -42,6 +43,13 @@ public class GraphicsBackend {
 	private static boolean vSyncEnabled = false;
 	private static boolean isGLFWInitialized = false;
 	private static boolean isOpenGLInitialized = false;
+	
+	private static boolean allowDisablingCursor;
+	static {
+		String key = GraphicsBackend.class.getName() + ".allowDisablingCursor";
+		allowDisablingCursor = Boolean.parseBoolean(System.getProperty(key, "false"));
+	}
+	private static boolean forceCursorToCenter = false;
 
 	private GraphicsBackend() {
 	}
@@ -113,6 +121,10 @@ public class GraphicsBackend {
 		} else {
 			frameLength = now - frameStart;
 			frameStart = now;
+		}
+		
+		if (forceCursorToCenter) {
+			glfwSetCursorPos(windowHandle, FRAME_SIZE.x / 2.0, FRAME_SIZE.y / 2.0);
 		}
 	}
 
@@ -194,10 +206,18 @@ public class GraphicsBackend {
 	}
 	
 	public static boolean isMouseCaptured() {
+		if (!allowDisablingCursor) {
+			return forceCursorToCenter;
+		}
 		return glfwGetInputMode(windowHandle, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
 	}
 	
 	public static void setMouseCaptured(boolean capture) {
+		if (!allowDisablingCursor) {
+			forceCursorToCenter = capture;
+			return;
+		}
+		
 		int mode = capture ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL;
 		glfwSetInputMode(windowHandle, GLFW_CURSOR, mode);
 		

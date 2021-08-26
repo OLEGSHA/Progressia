@@ -807,7 +807,7 @@ public class Component extends Named {
 		for (ARTrigger trigger : triggers) {
 			if (!autoReassemblyTriggerObjects.containsKey(trigger)) {
 				Object triggerObject = createTriggerObject(trigger);
-				addListener(trigger);
+				addListener(triggerObject);
 				autoReassemblyTriggerObjects.put(trigger, triggerObject);
 			}
 		}
