@@ -20,71 +20,72 @@ package ru.windcorp.progressia.test.inv;
 import org.lwjgl.glfw.GLFW;
 
 import ru.windcorp.progressia.client.graphics.GUI;
-import ru.windcorp.progressia.client.graphics.gui.menu.MenuLayer;
+import ru.windcorp.progressia.client.graphics.gui.GUILayer;
+import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
-import ru.windcorp.progressia.common.world.item.ItemContainer;
+import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
+import ru.windcorp.progressia.common.world.item.ItemContainerMixed;
 
-public class TestInventoryGUILayer extends MenuLayer {
-	
-	ItemContainer container;
-	private InventoryComponent display = null;
+public class TestInventoryGUILayer extends GUILayer {
+
+	private ItemContainerMixed container;
+
+	private InventoryScreen display = null;
 
 	public TestInventoryGUILayer() {
-		super("Inventory");
+		super("Inventory", new LayoutFill(0));
 		setCursorPolicy(CursorPolicy.INDIFFERENT);
-		
-		addTitle(); // pppffffttt
 	}
-	
-	public void setContainer(ItemContainer container) {
+
+	public void setContainer(ItemContainerMixed container, EntityDataPlayer player) {
 		this.container = container;
-		
-		getContent().removeChild(display);
+
+		getRoot().removeChild(display);
 		display = null;
-		
+
 		if (container != null) {
-			display = new InventoryComponent(this);
-			getContent().addChild(display);
+			display = new InventoryScreen("Screen", new InventoryComponent(container), player);
+
+			getRoot().addChild(display);
 			invalidate();
-			
+
 			setCursorPolicy(CursorPolicy.REQUIRE);
 		} else {
 			setCursorPolicy(CursorPolicy.INDIFFERENT);
 		}
-		
+
 		GUI.updateLayer(this);
 	}
 
-	@Override
-	protected Runnable getCloseAction() {
-		return () -> setContainer(null);
-	}
-	
 	@Override
 	protected void doRender() {
 		if (container != null) {
 			super.doRender();
 		}
 	}
-	
+
 	@Override
 	protected void handleInput(Input input) {
 		if (container != null) {
 			if (!input.isConsumed()) {
 				InputEvent event = input.getEvent();
-				
+
 				if (event instanceof KeyEvent) {
 					KeyEvent keyEvent = (KeyEvent) event;
-					if (keyEvent.isPress() && keyEvent.getKey() == GLFW.GLFW_KEY_E) {
-						getCloseAction().run();
+					if (
+						keyEvent.isPress()
+							&& (keyEvent.getKey() == GLFW.GLFW_KEY_E || keyEvent.getKey() == GLFW.GLFW_KEY_ESCAPE)
+					) {
+						setContainer(null, null);
 						input.consume();
 					}
 				}
 			}
-			
+
 			super.handleInput(input);
+			input.consume();
 		}
 	}
 

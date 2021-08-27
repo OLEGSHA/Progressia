@@ -20,7 +20,7 @@ package ru.windcorp.progressia.test.inv;
 import glm.mat._4.Mat4;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
-import ru.windcorp.progressia.client.graphics.gui.Button;
+import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.world.item.ItemRenderRegistry;
@@ -28,10 +28,10 @@ import ru.windcorp.progressia.client.world.item.ItemRenderable;
 import ru.windcorp.progressia.common.world.item.ItemData;
 import ru.windcorp.progressia.common.world.item.ItemSlot;
 
-public class SlotComponent extends Button {
+public class SlotComponent extends Component {
 
-	private static final float TEXTURE_SIZE = 24;
-	private static final float SCALE = 2;
+	static final float TEXTURE_SIZE = 24;
+	static final float SCALE = 2;
 
 	private final ItemSlot slot;
 	private ItemRenderable itemRenderer = null;
@@ -40,16 +40,16 @@ public class SlotComponent extends Button {
 	private String sizeDisplayString = "";
 
 	public SlotComponent(String name, ItemSlot slot) {
-		super(name, null, null);
+		super(name);
 		this.slot = slot;
 
-		int side = (int) (TEXTURE_SIZE * SCALE) + 2 * BORDER;
+		int side = (int) (TEXTURE_SIZE * SCALE);
 		setPreferredSize(side, side);
 
 		Font sizeFont = new Font().deriveOutlined().withScale(1);
-		addChild(new DynamicLabel(name + ".Size", sizeFont, () -> sizeDisplayString, side - 2 * MARGIN));
+		addChild(new DynamicLabel(name + ".Size", sizeFont, () -> sizeDisplayString, side));
 
-		setLayout(new LayoutAlign(0, 0, MARGIN));
+		setLayout(new LayoutAlign(0, 0, 0));
 	}
 
 	public ItemSlot getSlot() {
@@ -87,7 +87,7 @@ public class SlotComponent extends Button {
 
 	private void assembleItem(RenderTarget target) {
 		if (itemRenderer != null) {
-			target.pushTransform(new Mat4().translate(getX() + BORDER, getY() + BORDER, 0).scale(SCALE));
+			target.pushTransform(new Mat4().translate(getX(), getY(), 0).scale(SCALE));
 			target.addCustomRenderer(itemRenderer);
 			target.popTransform();
 		}

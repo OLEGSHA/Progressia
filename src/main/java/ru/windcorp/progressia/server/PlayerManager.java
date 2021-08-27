@@ -68,9 +68,14 @@ public class PlayerManager {
 		
 		ItemData stack = ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream");
 		stack.setSizeNow(5);
-		player.getInventory().getSlots().get(3).setContents(stack);
+		player.getInventory().getSlot(3).setContents(stack);
 		
-		player.getInventory().getSlots().get(6).setContents(ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream"));
+		player.getInventory().getSlot(6).setContents(ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream"));
+		
+		player.getLeftHand().getSlot(0).setContents(ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream"));
+		stack = ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream");
+		stack.setSizeNow(64);
+		player.getRightHand().getSlot(0).setContents(stack);
 
 		player.setPosition(getServer().getWorld().getGenerator().suggestSpawnLocation());
 		player.setUpVector(new Vec3(0, 0, 1));

@@ -15,22 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
 package ru.windcorp.progressia.client.graphics.gui;
 
-public class Group extends Component {
+import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 
-	public Group(String name, Layout layout) {
-		super(name);
-		setLayout(layout);
-	}
+public class Components {
 	
-	public Group(String name, Layout layout, Component... children) {
-		this(name, layout);
-		
-		for (Component child : children) {
-			addChild(child);
-		}
+	public static Component center(Component c) {
+		return new Group(c.getName() + ".Centerer", new LayoutAlign(), c);
+	}
+
+	private Components() {
 	}
 
 }

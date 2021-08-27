@@ -20,23 +20,39 @@ package ru.windcorp.progressia.common.world.entity;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.state.ObjectStateField;
-import ru.windcorp.progressia.common.world.item.DefaultItemContainer;
-import ru.windcorp.progressia.common.world.item.ItemContainer;
+import ru.windcorp.progressia.common.world.item.ItemContainerMixedSimple;
+import ru.windcorp.progressia.common.world.item.ItemContainerHand;
+import ru.windcorp.progressia.common.world.item.ItemContainerMixed;
 
 public class EntityDataPlayer extends EntityData {
 	
-	private final ObjectStateField<DefaultItemContainer> inventory = field("Core:Inventory").setShared().def(
-		() -> new DefaultItemContainer("Core:PlayerInventory", Units.get(15, "kg"), Units.get(50, "L"))
+	private final ObjectStateField<ItemContainerMixedSimple> inventory = field("Core:Inventory").setShared().def(
+		() -> new ItemContainerMixedSimple("Core:PlayerInventory", Units.get(15, "kg"), Units.get(50, "L"))
+	).build();
+	
+	private final ObjectStateField<ItemContainerHand> leftHand = field("Core:LeftHand").setShared().def(
+		() -> new ItemContainerHand("Core:PlayerLeftHand", Units.get(10, "kg"), Units.get(5, "L"))
+	).build();
+	
+	private final ObjectStateField<ItemContainerHand> rightHand = field("Core:RightHand").setShared().def(
+		() -> new ItemContainerHand("Core:PlayerRightHand", Units.get(10, "kg"), Units.get(5, "L"))
 	).build();
 
 	public EntityDataPlayer(String id) {
 		super(id);
-		
 		setCollisionModel(new AABB(0, 0, 1.8f / 2, 0.8f, 0.8f, 1.8f));
 	}
 	
-	public ItemContainer getInventory() {
+	public ItemContainerMixed getInventory() {
 		return inventory.get(this);
+	}
+	
+	public ItemContainerHand getLeftHand() {
+		return leftHand.get(this);
+	}
+	
+	public ItemContainerHand getRightHand() {
+		return rightHand.get(this);
 	}
 
 }

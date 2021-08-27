@@ -52,7 +52,7 @@ public class TestInventoryGUIManager {
 			return;
 		}
 		
-		layer.setContainer(entity.getInventory());
+		layer.setContainer(entity.getInventory(), entity);
 		
 	}
 

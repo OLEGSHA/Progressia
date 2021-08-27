@@ -17,52 +17,42 @@
  */
 package ru.windcorp.progressia.common.world.item;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.util.function.Consumer;
 
 import ru.windcorp.progressia.common.state.Encodable;
-import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
 
 /**
- * A collection of {@link ItemSlot}s representing a single storage unit. The set
- * of slots is dynamic: new slots may be added and existing slots may be removed
- * at will. A container may impose limits on the maximum total mass and volume
- * of its contents, although this is not enforced on data structure level.
+ * A collection of {@link ItemSlot}s representing a single storage unit. A
+ * container may impose limits on the maximum total mass and volume of its
+ * contents, although this is not enforced on data structure level.
+ * <p>
+ * At any moment container has a definite amount of slots, each identified by a
+ * unique index. If a container has <i>n</i> slots, its slots are numbered 0
+ * through <i>n</i> - 1.
  */
 public abstract class ItemContainer extends Namespaced implements Encodable {
 
-	private final List<ItemSlot> synchronizedListView;
-	protected final List<ItemSlot> list;
-
-	public ItemContainer(String id, List<ItemSlot> list) {
+	public ItemContainer(String id) {
 		super(id);
-		this.list = list;
-		this.synchronizedListView = Collections.synchronizedList(list);
 	}
 
 	/**
-	 * Retrieves the modifiable {@link List} of all slots. Edits commissioned
-	 * through the returned object update the state of the container.
-	 * <p>
-	 * It should be assumed that the returned list is
-	 * {@linkplain Collections#synchronizedList(List) synchronized}.
+	 * Retrieves the slot with the given index.
 	 * 
-	 * @return a list view of this container
+	 * @param index the index of the slot to retrieve
+	 * @return the slot or {@code null} if the slot does not exist
 	 */
-	public final List<ItemSlot> getSlots() {
-		return this.synchronizedListView;
-	}
+	public abstract ItemSlot getSlot(int index);
 
 	/**
-	 * Appends additional empty slots to the end of this container.
+	 * Returns the current slot count of this container.
 	 * 
-	 * @param amount the amount of slots to add
+	 * @return the number of slots in this container
 	 */
-	public abstract void addSlots(int amount);
+	public abstract int getSlotCount();
+	
+	public abstract void forEach(Consumer<ItemSlot> action);
 
 	/**
 	 * Computes and returns the mass limit that the container imposes.
@@ -81,85 +71,5 @@ public abstract class ItemContainer extends Namespaced implements Encodable {
 	 *         boundary is set
 	 */
 	public abstract float getVolumeLimit();
-
-	@Override
-	public synchronized void read(DataInput input, IOContext context) throws IOException {
-		List<ItemSlot> slots = getSlots();
-		synchronized (slots) {
-
-			int needSlots = input.readInt();
-			int hasSlots = slots.size();
-
-			int costOfResetting = needSlots;
-			int costOfEditing = Math.abs(needSlots - hasSlots);
-
-			if (costOfResetting < costOfEditing) {
-				slots.clear();
-				addSlots(needSlots);
-			} else {
-				while (slots.size() > needSlots) {
-					getSlots().remove(slots.size() - 1);
-				}
-
-				if (slots.size() < needSlots) {
-					addSlots(needSlots - slots.size());
-				}
-			}
-
-			for (int i = 0; i < needSlots; ++i) {
-				slots.get(i).read(input, context);
-			}
-
-		}
-	}
-
-	@Override
-	public synchronized void write(DataOutput output, IOContext context) throws IOException {
-		List<ItemSlot> slots = getSlots();
-		synchronized (slots) {
-
-			output.writeInt(slots.size());
-			for (int i = 0; i < slots.size(); ++i) {
-				slots.get(i).write(output, context);
-			}
-
-		}
-	}
-
-	@Override
-	public void copy(Encodable destination) {
-		ItemContainer container = (ItemContainer) destination;
-		List<ItemSlot> mySlots = this.getSlots();
-		List<ItemSlot> containerSlots = container.getSlots();
-
-		synchronized (mySlots) {
-			synchronized (containerSlots) {
-
-				int needSlots = mySlots.size();
-				int hasSlots = containerSlots.size();
-
-				int costOfResetting = needSlots;
-				int costOfEditing = Math.abs(needSlots - hasSlots);
-
-				if (costOfResetting < costOfEditing) {
-					containerSlots.clear();
-					container.addSlots(needSlots);
-				} else {
-					while (containerSlots.size() > needSlots) {
-						getSlots().remove(containerSlots.size() - 1);
-					}
-
-					if (containerSlots.size() < needSlots) {
-						addSlots(needSlots - containerSlots.size());
-					}
-				}
-
-				for (int i = 0; i < needSlots; ++i) {
-					mySlots.get(i).copy(containerSlots.get(i));
-				}
-
-			}
-		}
-	}
 
 }

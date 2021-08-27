@@ -26,7 +26,7 @@ import ru.windcorp.progressia.common.state.IOContext;
 
 /**
  * An entity optionally containing an {@link ItemData}. Item slots are typically
- * found in {@link ItemContainer}s.
+ * found in {@link ItemContainerMixed}s.
  */
 public class ItemSlot implements Encodable {
 

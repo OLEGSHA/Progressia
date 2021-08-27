@@ -32,7 +32,9 @@ import com.google.common.eventbus.Subscribe;
 
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.backend.InputTracker;
+import ru.windcorp.progressia.client.graphics.flat.AssembledFlatRenderHelper;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
+import ru.windcorp.progressia.client.graphics.flat.RenderTarget.Clip;
 import ru.windcorp.progressia.client.graphics.gui.event.ChildAddedEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.ChildRemovedEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.EnableEvent;
@@ -44,6 +46,7 @@ import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.input.bus.InputBus;
 import ru.windcorp.progressia.client.graphics.input.bus.InputListener;
+import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.common.util.Named;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
@@ -843,6 +846,20 @@ public class Component extends Named {
 			}
 		}
 
+	}
+	
+	public Renderable assembleToRenderable() {
+		
+		RenderTarget target = new RenderTarget();
+		assemble(target);
+		Clip[] clips = target.assemble();
+		
+		return renderer -> {
+			for (Clip clip : clips) {
+				clip.render((AssembledFlatRenderHelper) renderer);
+			}
+		};
+		
 	}
 
 	// /**

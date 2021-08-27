@@ -27,31 +27,25 @@ import ru.windcorp.progressia.common.world.item.ItemSlot;
 
 public class InventoryComponent extends Component {
 
-	private final TestInventoryGUILayer layer;
 	private final Group slots = new Group("Inventory.Slots", new LayoutGrid(15));
 
-	public InventoryComponent(TestInventoryGUILayer layer) {
+	public InventoryComponent(ItemContainer container) {
 		super("Inventory");
-		this.layer = layer;
 
 		setLayout(new LayoutBorderHorizontal(15));
 		addChild(slots.setLayoutHint(LayoutBorderHorizontal.CENTER));
 
-		getContainer().getSlots().forEach(this::addSlot);
+		container.forEach(this::addSlot);
 	}
 
 	private void addSlot(ItemSlot slot) {
 		final int maxX = 6;
 		int i = slots.getChildren().size();
-		
-		SlotComponent component = new SlotComponent("Inventory.Slot" + i, slot);
-		
+
+		DecoratedSlotComponent component = new DecoratedSlotComponent("Inventory.Slot" + i, slot);
+
 		Vec2i pos = new Vec2i(i % maxX, i / maxX);
 		slots.addChild(component.setLayoutHint(pos));
-	}
-
-	private ItemContainer getContainer() {
-		return layer.container;
 	}
 
 }

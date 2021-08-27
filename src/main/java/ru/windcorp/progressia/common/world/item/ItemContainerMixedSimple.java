@@ -18,25 +18,32 @@
 package ru.windcorp.progressia.common.world.item;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class DefaultItemContainer extends ItemContainer {
+public class ItemContainerMixedSimple extends ItemContainerMixed {
+	
+	private final List<ItemSlot> list;
 	
 	private final float massLimit;
 	private final float volumeLimit;
 
-	public DefaultItemContainer(String id, float massLimit, float volumeLimit) {
-		super(id, new ArrayList<>());
+	public ItemContainerMixedSimple(String id, float massLimit, float volumeLimit) {
+		super(id);
+		this.list = new ArrayList<>();
 		this.massLimit = massLimit;
 		this.volumeLimit = volumeLimit;
 	}
+	
+	@Override
+	protected List<ItemSlot> getSlots() {
+		return list;
+	}
 
 	@Override
-	public void addSlots(int amount) {
-		synchronized (getSlots()) {
-			((ArrayList<ItemSlot>) list).ensureCapacity(list.size() + amount);
-			for (int i = 0; i < amount; ++i) {
-				list.add(new ItemSlot());
-			}
+	public synchronized void addSlots(int amount) {
+		((ArrayList<ItemSlot>) list).ensureCapacity(list.size() + amount);
+		for (int i = 0; i < amount; ++i) {
+			list.add(new ItemSlot());
 		}
 	}
 	

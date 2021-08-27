@@ -15,22 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.client.graphics.gui;
+package ru.windcorp.progressia.test.inv;
 
-public class Group extends Component {
+import glm.vec._2.i.Vec2i;
+import ru.windcorp.progressia.client.graphics.gui.Button;
+import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
+import ru.windcorp.progressia.common.world.item.ItemSlot;
 
-	public Group(String name, Layout layout) {
-		super(name);
-		setLayout(layout);
-	}
+public class DecoratedSlotComponent extends Button {
 	
-	public Group(String name, Layout layout, Component... children) {
-		this(name, layout);
+	private final SlotComponent slotComponent;
+
+	public DecoratedSlotComponent(String name, ItemSlot slot) {
+		super(name, null, null);
+		this.slotComponent = new SlotComponent(name, slot);
 		
-		for (Component child : children) {
-			addChild(child);
-		}
+		Vec2i size = slotComponent.getPreferredSize().add(2 * BORDER);
+		setPreferredSize(size);
+		
+		addChild(new SlotComponent(name, slot));
+		setLayout(new LayoutFill(MARGIN));
+	}
+
+	public ItemSlot getSlot() {
+		return slotComponent.getSlot();
 	}
 
 }
