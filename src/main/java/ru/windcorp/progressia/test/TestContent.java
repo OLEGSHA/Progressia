@@ -135,6 +135,10 @@ public class TestContent {
 		register(new BlockData("Test:StatieSpawner"));
 		register(new BlockRenderOpaqueCube("Test:StatieSpawner", getBlockTexture("StatieSpawner")));
 		register(new TestBlockLogicStatieSpawner("Test:StatieSpawner"));
+		
+		register(new BlockData("Test:Tux"));
+		register(new TestBlockRenderTux("Test:Tux"));
+		register(new BlockLogic("Test:Tux"));
 
 		BlockDataRegistry.getInstance().values().forEach(PLACEABLE_BLOCKS::add);
 		PLACEABLE_BLOCKS.removeIf(b -> placeableBlacklist.contains(b.getId()));

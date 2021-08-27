@@ -86,6 +86,11 @@ class PlanetTerrainGenerator {
 	}
 
 	private void generateBorderTerrain(Server server, DefaultChunkData chunk) {
+		if (chunk.getPosition().x == 0 && chunk.getPosition().y == 0 && chunk.getPosition().z == 0) {
+			generateCore(server, chunk);
+			return;
+		}
+		
 		BlockData stone = BlockDataRegistry.getInstance().get("Test:Stone");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 
@@ -107,6 +112,18 @@ class PlanetTerrainGenerator {
 			chunk.setBlock(bic, biw.x <= radius ? stone : air, false);
 
 		});
+	}
+
+	private void generateCore(Server server, DefaultChunkData chunk) {
+		BlockData tux = BlockDataRegistry.getInstance().get("Test:Tux");
+		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
+		
+		
+		GenericChunks.forEachBiC(bic -> {
+			chunk.setBlock(bic, air, false);
+		});
+		
+		chunk.setBlock(new Vec3i(7, 7, 0), tux, false);
 	}
 
 }

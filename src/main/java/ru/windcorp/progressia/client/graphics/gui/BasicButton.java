@@ -120,6 +120,7 @@ public abstract class BasicButton extends Component {
 	public void setPressed(boolean isPressed) {
 		if (this.isPressed != isPressed) {
 			this.isPressed = isPressed;
+			requestReassembly();
 			
 			if (isPressed) {
 				takeFocus();

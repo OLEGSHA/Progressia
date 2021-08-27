@@ -95,7 +95,7 @@ public class ClientManager {
 	}
 	
 	public void processPackets() {
-		getClients().forEach(CommsChannel::processPackets);
+		clients.forEach(CommsChannel::processPackets);
 	}
 
 	/**

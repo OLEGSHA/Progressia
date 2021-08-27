@@ -20,10 +20,12 @@ package ru.windcorp.progressia.client.graphics.model;
 
 import java.util.Map;
 
+import glm.mat._4.Mat4;
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
+import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class Shapes {
@@ -269,6 +271,22 @@ public class Shapes {
 			origin.sub(depth);
 			origin.div(2);
 			
+			return this;
+		}
+		
+		public PppBuilder apply(Mat4 transform) {
+			VectorUtil.applyMat4(origin, transform);
+			VectorUtil.rotateOnly(width, transform);
+			VectorUtil.rotateOnly(height, transform);
+			VectorUtil.rotateOnly(depth, transform);
+			return this;
+		}
+		
+		public PppBuilder scale(float factor) {
+			origin.mul(factor);
+			width.mul(factor);
+			height.mul(factor);
+			depth.mul(factor);
 			return this;
 		}
 
