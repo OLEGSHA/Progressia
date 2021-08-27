@@ -20,7 +20,8 @@ package ru.windcorp.progressia.server.management.load;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.world.generic.ChunkMap;
@@ -43,6 +44,8 @@ public class ChunkRequestDaemon {
 	private final ChunkSet toLoad = ChunkSets.newHashSet();
 	private final ChunkSet toGenerate = ChunkSets.newHashSet();
 	private final ChunkSet toRequestUnload = ChunkSets.newHashSet();
+	
+	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 	
 	private final Collection<Vec3i> buffer = new ArrayList<>();
 	
@@ -113,16 +116,16 @@ public class ChunkRequestDaemon {
 	}
 
 	private void processLoadQueues() {
-		toRequestUnload.forEach(this::scheduleUnload);
+		toRequestUnload.forEach((pos) -> executor.submit(() -> scheduleUnload(pos)));
 		toRequestUnload.clear();
 		
-		toLoad.forEach(getChunkManager()::loadOrGenerateChunk);
+		toLoad.forEach((pos) -> executor.submit(() -> getChunkManager().loadOrGenerateChunk(pos)));
 		toLoad.clear();
 		
-		toGenerate.forEach(getChunkManager()::loadOrGenerateChunk);
+		toGenerate.forEach((pos) -> executor.submit(() -> getChunkManager().loadOrGenerateChunk(pos)));
 		toGenerate.clear();
 		
-		unloadScheduledChunks();
+		executor.submit(() -> unloadScheduledChunks());
 	}
 	
 	private void scheduleUnload(Vec3i chunkPos) {

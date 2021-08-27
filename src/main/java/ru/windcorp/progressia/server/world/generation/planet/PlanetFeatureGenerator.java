@@ -56,6 +56,9 @@ public class PlanetFeatureGenerator {
 			generateBorderFeatures(server, chunk);
 		}
 		
+		chunk.computeEmpty();
+		chunk.computeOpaque();
+		
 		chunk.setGenerationHint(true);
 	}
 
