@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ru.windcorp.progressia.test;
+package ru.windcorp.progressia.test.region;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -52,12 +52,13 @@ import ru.windcorp.progressia.common.world.DecodingException;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.common.world.io.ChunkIO;
 import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.world.io.WorldContainer;
 
-public class TestWorldDiskIO {
+public class TestWorldDiskIO implements WorldContainer {
 	
 	private static final boolean resetCorrupted = true;
 	
-	public static class RandomFileMapped {
+	public class RandomFileMapped {
 		public RandomAccessFile file;
 		public HashMap<HashableVec3i, Integer> offsets;
 		public HashMap<HashableVec3i, Integer> lengths;
@@ -121,11 +122,11 @@ public class TestWorldDiskIO {
 		}
 	}
 
-	private static Path SAVE_DIR = Paths.get("tmp_world");
+	private Path SAVE_DIR = Paths.get("tmp_world");
 	private static final String formatFile = "world.format";
 	private static final Logger LOG = LogManager.getLogger("TestWorldDiskIO");
 	
-	private static HashMap<HashableVec3i, RandomFileMapped> inOutMap;
+	private HashMap<HashableVec3i, RandomFileMapped> inOutMap;
 	private static final boolean ENABLE = false;
 
 	private static int maxSize = 1048576;
@@ -134,11 +135,11 @@ public class TestWorldDiskIO {
 	private static final int bestFormat = 65536;
 
 	// private Map<Vec3i,Vec3i> regions = new HashMap<Vec3i,Vec3i>();
-	private static Vec3i regionSize;
-	private static int chunksPerRegion;
+	private Vec3i regionSize;
+	private int chunksPerRegion;
 
-	private static int currentFormat = -1;
-	private static String extension = ".null";
+	private int currentFormat = -1;
+	private String extension = ".null";
 
 	private static int natFromInt(int loc) {
 		if (loc < 0)
@@ -155,7 +156,7 @@ public class TestWorldDiskIO {
 	 * }
 	 */
 
-	private static Vec3i getRegion(Vec3i chunkLoc) {
+	private Vec3i getRegion(Vec3i chunkLoc) {
 		int x = chunkLoc.x;
 		if (x<0)
 		{
@@ -197,15 +198,11 @@ public class TestWorldDiskIO {
 		return ((a % m) + m) % m;
 	}
 
-	private static Vec3i getRegionLoc(Vec3i chunkLoc) {
+	private Vec3i getRegionLoc(Vec3i chunkLoc) {
 		return new Vec3i(mod(chunkLoc.x, regionSize.x), mod(chunkLoc.y, regionSize.y), mod(chunkLoc.z, regionSize.z));
 	}
 
-	public static void initRegions() {
-		initRegions(null);
-	}
-
-	public static void initRegions(Path worldPath) {
+	public TestWorldDiskIO(Path worldPath) {
 		if (worldPath != null) {
 			SAVE_DIR = worldPath;
 		}
@@ -224,7 +221,7 @@ public class TestWorldDiskIO {
 		return sectorsUsed;
 	}*/
 
-	private static void setRegionSize(int format) {
+	private void setRegionSize(int format) {
 		inOutMap = new HashMap<HashableVec3i, RandomFileMapped>();
 		switch (format) {
 		case 65536:
@@ -243,7 +240,7 @@ public class TestWorldDiskIO {
 		}
 	}
 
-	public static boolean confirmHeaderHealth(RandomAccessFile input, HashMap<HashableVec3i, Integer> offsets, HashMap<HashableVec3i, Integer> length) throws IOException
+	public boolean confirmHeaderHealth(RandomAccessFile input, HashMap<HashableVec3i, Integer> offsets, HashMap<HashableVec3i, Integer> length) throws IOException
 	{
 		Set<Integer> used = new HashSet<Integer>();
 		input.seek(0);
@@ -282,7 +279,8 @@ public class TestWorldDiskIO {
 		return true;
 	}
 
-	public static void saveChunk(DefaultChunkData chunk, Server server) {
+	@Override
+	public void save(DefaultChunkData chunk, DefaultWorldData world, Server server) {
 		if (!ENABLE)
 			return;
 
@@ -472,7 +470,7 @@ public class TestWorldDiskIO {
 		}
 	}
 
-	private static RandomFileMapped makeNew(Path path, Object hashObj) {
+	private RandomFileMapped makeNew(Path path, Object hashObj) {
 		try
 		{
 		RandomAccessFile raf = new RandomAccessFile(path.toFile(), "rw");
@@ -490,12 +488,13 @@ public class TestWorldDiskIO {
 		return null;
 	}
 
-	private static void writeGenerationHint(DefaultChunkData chunk, DataOutputStream output, Server server)
+	private void writeGenerationHint(DefaultChunkData chunk, DataOutputStream output, Server server)
 		throws IOException {
 		server.getWorld().getGenerator().writeGenerationHint(output, chunk.getGenerationHint());
 	}
 
-	public static DefaultChunkData tryToLoad(Vec3i chunkPos, DefaultWorldData world, Server server) {
+	@Override
+	public DefaultChunkData load(Vec3i chunkPos, DefaultWorldData world, Server server) {
 		if (!ENABLE)
 			return null;
 
@@ -650,7 +649,7 @@ public class TestWorldDiskIO {
 		return null;
 	}
 
-	private static DefaultChunkData loadRegion(Path path, Vec3i chunkPos, DefaultWorldData world, Server server)
+	private DefaultChunkData loadRegion(Path path, Vec3i chunkPos, DefaultWorldData world, Server server)
 		throws IOException,
 		DecodingException {
 		int offset = 0;
@@ -724,7 +723,7 @@ public class TestWorldDiskIO {
 		return null;
 	}
 	
-	private static DefaultChunkData loadRegionX(Path path, Vec3i chunkPos, DefaultWorldData world, Server server)
+	private DefaultChunkData loadRegionX(Path path, Vec3i chunkPos, DefaultWorldData world, Server server)
 		throws IOException,
 		DecodingException {
 		int offset = 0;
@@ -808,6 +807,17 @@ public class TestWorldDiskIO {
 		throws IOException,
 		DecodingException {
 		chunk.setGenerationHint(server.getWorld().getGenerator().readGenerationHint(input));
+	}
+
+	@Override
+	public Path getPath() {
+		return SAVE_DIR;
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -32,6 +32,7 @@ import ru.windcorp.progressia.common.world.WorldDataListener;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.generation.WorldGenerator;
+import ru.windcorp.progressia.server.world.io.WorldContainer;
 import ru.windcorp.progressia.server.world.tasks.TickEntitiesTask;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
@@ -42,17 +43,20 @@ public class DefaultWorldLogic implements WorldLogic {
 	private final Server server;
 
 	private final WorldGenerator generator;
+	private final WorldContainer container;
 
 	private final Map<DefaultChunkData, DefaultChunkLogic> chunks = new HashMap<>();
 
 	private final Evaluation tickEntitiesTask = new TickEntitiesTask();
 
-	public DefaultWorldLogic(DefaultWorldData data, Server server, WorldGenerator generator, WorldAccessor accessor) {
+	public DefaultWorldLogic(DefaultWorldData data, Server server, WorldGenerator generator, WorldContainer container, WorldAccessor accessor) {
 		this.data = data;
 		this.server = server;
 		
 		this.generator = generator;
 		data.setGravityModel(getGenerator().getGravityModel());
+		
+		this.container = container;
 
 		data.addListener(new WorldDataListener() {
 			@Override
@@ -104,6 +108,10 @@ public class DefaultWorldLogic implements WorldLogic {
 
 	public WorldGenerator getGenerator() {
 		return generator;
+	}
+	
+	public WorldContainer getContainer() {
+		return container;
 	}
 
 	public DefaultChunkData generate(Vec3i chunkPos) {
