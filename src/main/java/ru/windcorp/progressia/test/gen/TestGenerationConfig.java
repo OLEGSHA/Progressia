@@ -49,9 +49,18 @@ public class TestGenerationConfig {
 	private static final float CURVATURE = Units.get("100 m");
 	private static final float INNER_RADIUS = Units.get("200 m");
 
-	private static final Fields FIELDS = new Fields(SEED);
+	private final Fields fields = new Fields(SEED);
+	private final Function<Server, WorldGenerator> generator;
+	
+	public TestGenerationConfig() {
+		this.generator = createGenerator();
+	}
+	
+	public Function<Server, WorldGenerator> getGenerator() {
+		return generator;
+	}
 
-	public static Function<Server, WorldGenerator> createGenerator() {
+	private Function<Server, WorldGenerator> createGenerator() {
 
 		Planet planet = new Planet(
 			((int) PLANET_RADIUS) / Coordinates.CHUNK_SIZE,
@@ -60,7 +69,7 @@ public class TestGenerationConfig {
 			INNER_RADIUS
 		);
 
-		TestHeightMap heightMap = new TestHeightMap(planet, planet.getRadius() / 4, FIELDS);
+		TestHeightMap heightMap = new TestHeightMap(planet, planet.getRadius() / 4, fields);
 
 		FloatRangeMap<TerrainLayer> layers = new ArrayFloatRangeMap<>();
 		registerTerrainLayers(layers);
@@ -72,11 +81,11 @@ public class TestGenerationConfig {
 
 	}
 
-	private static void registerTerrainLayers(FloatRangeMap<TerrainLayer> layers) {
+	private void registerTerrainLayers(FloatRangeMap<TerrainLayer> layers) {
 		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 
-		SurfaceFloatField cliffs = FIELDS.get("Test:Cliff");
+		SurfaceFloatField cliffs = fields.get("Test:Cliff");
 
 		WorleyProceduralNoise.Builder<TerrainLayer> builder = WorleyProceduralNoise.builder();
 		TestContent.ROCKS.getRocks().forEach(rock -> {
@@ -88,9 +97,9 @@ public class TestGenerationConfig {
 				}
 			}, 1);
 		});
-		SurfaceFloatField rockDepthOffsets = FIELDS.register(
+		SurfaceFloatField rockDepthOffsets = fields.register(
 			"Test:RockDepthOffsets",
-			() -> tweak(FIELDS.primitive(), 40, 5)
+			() -> tweak(fields.primitive(), 40, 5)
 		);
 		RockLayer rockLayer = new RockLayer(builder.build(SEED), rockDepthOffsets);
 
@@ -105,28 +114,28 @@ public class TestGenerationConfig {
 		layers.put(4, Float.POSITIVE_INFINITY, rockLayer);
 	}
 
-	private static void registerFeatures(List<SurfaceFeature> features) {
+	private void registerFeatures(List<SurfaceFeature> features) {
 
-		SurfaceFloatField forestiness = FIELDS.register(
+		SurfaceFloatField forestiness = fields.register(
 			"Test:Forest",
-			() -> squash(scale(FIELDS.primitive(), 200), 5)
+			() -> squash(scale(fields.primitive(), 200), 5)
 		);
 		
-		SurfaceFloatField grassiness = FIELDS.register(
+		SurfaceFloatField grassiness = fields.register(
 			"Test:Grass",
 			f -> multiply(
-				tweak(octaves(FIELDS.primitive(), 2, 2), 40, 0.5, 1.2),
-				squash(tweak(FIELDS.get("Test:Forest", f), 1, -1, 1), 10),
-				anti(squash(FIELDS.get("Test:Cliff", f), 10))
+				tweak(octaves(fields.primitive(), 2, 2), 40, 0.5, 1.2),
+				squash(tweak(fields.get("Test:Forest", f), 1, -1, 1), 10),
+				anti(squash(fields.get("Test:Cliff", f), 10))
 			)
 		);
 
-		Function<String, SurfaceFloatField> floweriness = flowerName -> FIELDS.register(
+		Function<String, SurfaceFloatField> floweriness = flowerName -> fields.register(
 			"Test:Flower" + flowerName,
 			f -> multiply(
-				selectPositive(squash(scale(octaves(FIELDS.primitive(), 2, 3), 100), 2), 1, 0.5),
-				tweak(FIELDS.get("Test:Forest", f), 1, -1, 1.1),
-				anti(squash(FIELDS.get("Test:Cliff", f), 10))
+				selectPositive(squash(scale(octaves(fields.primitive(), 2, 3), 100), 2), 1, 0.5),
+				tweak(fields.get("Test:Forest", f), 1, -1, 1.1),
+				anti(squash(fields.get("Test:Cliff", f), 10))
 			)
 		);
 

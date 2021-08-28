@@ -34,7 +34,7 @@ import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.TileDataStack;
 import ru.windcorp.progressia.common.world.generic.GenericChunks;
 import ru.windcorp.progressia.common.world.TileDataReference;
-import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.ServerState;
 import ru.windcorp.progressia.server.world.block.BlockLogic;
 import ru.windcorp.progressia.server.world.block.BlockLogicRegistry;
 import ru.windcorp.progressia.server.world.block.TickableBlock;
@@ -226,7 +226,7 @@ public class DefaultChunkLogic implements ChunkLogic {
 	}
 
 	private void tmp_generateTickLists() {
-		ServerWorldContextRO context = Server.getCurrentServer().createContext(getUp());
+		ServerWorldContextRO context = ServerState.getInstance().createContext(getUp());
 		
 		GenericChunks.forEachBiC(blockInChunk -> {
 			

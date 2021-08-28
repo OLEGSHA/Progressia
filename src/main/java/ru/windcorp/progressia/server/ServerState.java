@@ -34,7 +34,7 @@ public class ServerState {
 	}
 
 	public static void startServer() {
-		Server server = new Server(new DefaultWorldData(), TestGenerationConfig.createGenerator());
+		Server server = new Server(new DefaultWorldData(), new TestGenerationConfig().getGenerator());
 		setInstance(server);
 		server.start();
 	}

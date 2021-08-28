@@ -25,8 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+
 import glm.vec._3.i.Vec3i;
 
 import ru.windcorp.progressia.common.world.block.BlockData;
@@ -49,7 +50,7 @@ public class DefaultChunkData implements ChunkData {
 	public boolean isEmpty = false;
 	public boolean isOpaque = false;
 	
-	public static HashSet<BlockData> transparent;
+	public static Set<BlockData> transparent = Collections.emptySet();
 
 	private final Vec3i position = new Vec3i();
 	private final DefaultWorldData world;
@@ -204,44 +205,35 @@ public class DefaultChunkData implements ChunkData {
 	public void setGenerationHint(Object generationHint) {
 		this.generationHint = generationHint;
 	}
-	
-	public void computeOpaque()
-	{
-		for (int xyz=0;xyz<BLOCKS_PER_CHUNK*BLOCKS_PER_CHUNK*BLOCKS_PER_CHUNK;xyz++)
-		{
-			if (transparent.contains( blocks[xyz]))
-			{
+
+	public void computeOpaque() {
+		for (int xyz = 0; xyz < BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK; xyz++) {
+			if (transparent.contains(blocks[xyz])) {
 				isOpaque = false;
 				return;
 			}
 		}
 		isOpaque = true;
 	}
-	
-	public boolean isOpaque()
-	{
+
+	public boolean isOpaque() {
 		return isOpaque;
 	}
-	
-	public void computeEmpty()
-	{
+
+	public void computeEmpty() {
 		BlockData air = new BlockData("Test:Air");
-		for (int xyz=0;xyz<BLOCKS_PER_CHUNK*BLOCKS_PER_CHUNK*BLOCKS_PER_CHUNK;xyz++)
-		{
-			if (blocks[xyz] != air)
-			{
+		for (int xyz = 0; xyz < BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK * BLOCKS_PER_CHUNK; xyz++) {
+			if (blocks[xyz] != air) {
 				isEmpty = false;
 				return;
 			}
 		}
 		isEmpty = true;
 	}
-	
-	public boolean isEmpty()
-	{
+
+	public boolean isEmpty() {
 		return isEmpty;
 	}
-
 
 	/**
 	 * Implementation of {@link TileDataStack} used internally by

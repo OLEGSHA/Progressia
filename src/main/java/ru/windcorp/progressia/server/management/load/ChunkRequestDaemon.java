@@ -20,8 +20,9 @@ package ru.windcorp.progressia.server.management.load;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.world.generic.ChunkMap;
@@ -31,40 +32,39 @@ import ru.windcorp.progressia.common.world.generic.ChunkSets;
 import ru.windcorp.progressia.server.Server;
 
 /**
- * Chunk request daemon gathers chunk requests from players (via {@link VisionManager}) and loads or unloads chunks appropriately.
+ * Chunk request daemon gathers chunk requests from players (via
+ * {@link VisionManager}) and loads or unloads chunks appropriately.
  */
 public class ChunkRequestDaemon {
-	
+
 	private static final float CHUNK_UNLOAD_DELAY = Units.get(5, "s");
-	
+
 	private final ChunkManager chunkManager;
-	
+
 	private final ChunkSet loaded;
 	private final ChunkSet requested = ChunkSets.newHashSet();
 	private final ChunkSet toLoad = ChunkSets.newHashSet();
 	private final ChunkSet toGenerate = ChunkSets.newHashSet();
 	private final ChunkSet toRequestUnload = ChunkSets.newHashSet();
-	
-	private final ExecutorService executor = Executors.newSingleThreadExecutor();
-	
+
 	private final Collection<Vec3i> buffer = new ArrayList<>();
-	
+
 	private static class ChunkUnloadRequest {
 		private final Vec3i chunkPos;
 		private final long unloadAt;
-		
+
 		public ChunkUnloadRequest(Vec3i chunkPos, long unloadAt) {
 			this.chunkPos = chunkPos;
 			this.unloadAt = unloadAt;
 		}
-		
+
 		/**
 		 * @return the chunk position
 		 */
 		public Vec3i getChunkPos() {
 			return chunkPos;
 		}
-		
+
 		/**
 		 * @return the moment when the chunks becomes eligible for unloading
 		 */
@@ -72,19 +72,42 @@ public class ChunkRequestDaemon {
 			return unloadAt;
 		}
 	}
-	
+
 	private final ChunkMap<ChunkUnloadRequest> unloadSchedule = ChunkMaps.newHashMap();
+
+	private Thread thread = null;
+	private final AtomicBoolean shouldRun = new AtomicBoolean(false);
 
 	public ChunkRequestDaemon(ChunkManager chunkManager) {
 		this.chunkManager = chunkManager;
 		this.loaded = getServer().getWorld().getData().getLoadedChunks();
 	}
-	
-	public void tick() {
+
+	public synchronized void start() {
+		if (this.thread != null) {
+			throw new IllegalStateException("Already running");
+		}
+
+		this.thread = new Thread(this::runOffthread, getClass().getSimpleName());
+		this.shouldRun.set(true);
+		this.thread.start();
+	}
+
+	public synchronized void stop() {
+		this.shouldRun.set(false);
+
+		synchronized (this) {
+			notify();
+		}
+	}
+
+	public synchronized void tick() {
 		synchronized (getServer().getWorld().getData()) {
 			synchronized (getServer().getPlayerManager().getMutex()) {
 				loadAndUnloadChunks();
 				sendAndRevokeChunks();
+
+				notify();
 			}
 		}
 	}
@@ -116,18 +139,13 @@ public class ChunkRequestDaemon {
 	}
 
 	private void processLoadQueues() {
-		toRequestUnload.forEach((pos) -> executor.submit(() -> scheduleUnload(pos)));
-		toRequestUnload.clear();
-		
-		toLoad.forEach((pos) -> executor.submit(() -> getChunkManager().loadOrGenerateChunk(pos)));
-		toLoad.clear();
-		
-		toGenerate.forEach((pos) -> executor.submit(() -> getChunkManager().loadOrGenerateChunk(pos)));
+		toGenerate.forEach(getChunkManager()::loadOrGenerateChunk);
 		toGenerate.clear();
-		
-		executor.submit(() -> unloadScheduledChunks());
+
+		toRequestUnload.forEach(this::scheduleUnload);
+		toRequestUnload.clear();
 	}
-	
+
 	private void scheduleUnload(Vec3i chunkPos) {
 		if (unloadSchedule.containsKey(chunkPos)) {
 			// Unload already requested, skip
@@ -136,27 +154,8 @@ public class ChunkRequestDaemon {
 
 		long unloadAt = System.currentTimeMillis() + (long) (getUnloadDelay() * 1000);
 		Vec3i chunkPosCopy = new Vec3i(chunkPos);
-		
-		unloadSchedule.put(chunkPosCopy, new ChunkUnloadRequest(chunkPosCopy, unloadAt));
-	}
-	
-	private void unloadScheduledChunks() {
-		long now = System.currentTimeMillis();
-		
-		for (Iterator<ChunkUnloadRequest> it = unloadSchedule.values().iterator(); it.hasNext();) {
-			ChunkUnloadRequest request = it.next();
-			
-			if (request.getUnloadAt() < now) {
 
-				it.remove();
-				
-				if (requested.contains(request.getChunkPos())) {
-					continue; // do not unload chunks that became requested
-				}
-				
-				getChunkManager().unloadChunk(request.getChunkPos());
-			}
-		}
+		unloadSchedule.put(chunkPosCopy, new ChunkUnloadRequest(chunkPosCopy, unloadAt));
 	}
 
 	private void sendAndRevokeChunks() {
@@ -172,35 +171,113 @@ public class ChunkRequestDaemon {
 				toGenerate.add(chunk);
 				return;
 			}
-			
+
 			if (vision.isChunkVisible(chunk.getPosition())) {
 				return;
 			}
-			
+
 			buffer.add(chunk.getPosition());
 		});
-		
-		if (buffer.isEmpty()) return;
+
+		if (buffer.isEmpty())
+			return;
 		for (Vec3i chunkPos : buffer) {
 			getChunkManager().sendChunk(vision.getPlayer(), chunkPos);
 		}
-		
+
 		buffer.clear();
 	}
-	
+
 	private void revokeChunks(PlayerVision vision) {
 		vision.getVisibleChunks().forEach(chunkPos -> {
 			if (getChunkManager().isChunkLoaded(chunkPos) && vision.getRequestedChunks().contains(chunkPos))
 				return;
 			buffer.add(new Vec3i(chunkPos));
 		});
-		
-		if (buffer.isEmpty()) return;
+
+		if (buffer.isEmpty())
+			return;
 		for (Vec3i chunkPos : buffer) {
 			getChunkManager().revokeChunk(vision.getPlayer(), chunkPos);
 		}
-		
+
 		buffer.clear();
+	}
+
+	/*
+	 * Off-thread activity
+	 */
+
+	private void runOffthread() {
+		while (true) {
+
+			processLoadQueue();
+			processUnloadQueue();
+
+			synchronized (this) {
+				try {
+					// We're not afraid of spurious wakeups
+					wait();
+				} catch (InterruptedException e) {
+					// Pretend nothing happened
+				}
+
+				if (!shouldRun.get()) {
+					return;
+				}
+			}
+
+		}
+	}
+
+	private void processQueueOffthread(ChunkSet queue, Consumer<Vec3i> action) {
+		while (true) {
+			synchronized (this) {
+				Iterator<Vec3i> iterator = toLoad.iterator();
+				if (!iterator.hasNext()) {
+					return;
+				}
+				Vec3i position = iterator.next();
+				iterator.remove();
+
+				action.accept(position);
+			}
+		}
+	}
+
+	private void processLoadQueue() {
+		processQueueOffthread(toLoad, getChunkManager()::loadOrGenerateChunk);
+	}
+
+	private void processUnloadQueue() {
+		long now = System.currentTimeMillis();
+
+		Collection<Vec3i> toUnload = null;
+
+		synchronized (this) {
+			for (Iterator<ChunkUnloadRequest> it = unloadSchedule.values().iterator(); it.hasNext();) {
+				ChunkUnloadRequest request = it.next();
+
+				if (request.getUnloadAt() < now) {
+					it.remove();
+
+					if (requested.contains(request.getChunkPos())) {
+						continue; // do not unload chunks that became requested
+					}
+
+					if (toUnload == null) {
+						toUnload = new ArrayList<>();
+					}
+					toUnload.add(request.getChunkPos());
+				}
+			}
+		}
+
+		if (toUnload == null) {
+			return;
+		}
+
+		toUnload.forEach(getChunkManager()::unloadChunk);
 	}
 
 	/**
@@ -209,14 +286,14 @@ public class ChunkRequestDaemon {
 	public float getUnloadDelay() {
 		return CHUNK_UNLOAD_DELAY;
 	}
-	
+
 	/**
 	 * @return the manager
 	 */
 	public ChunkManager getChunkManager() {
 		return chunkManager;
 	}
-	
+
 	public Server getServer() {
 		return getChunkManager().getServer();
 	}
