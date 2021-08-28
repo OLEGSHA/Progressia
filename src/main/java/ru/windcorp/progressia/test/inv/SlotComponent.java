@@ -25,6 +25,7 @@ import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.world.item.ItemRenderRegistry;
 import ru.windcorp.progressia.client.world.item.ItemRenderable;
+import ru.windcorp.progressia.common.world.item.ItemContainer;
 import ru.windcorp.progressia.common.world.item.ItemData;
 import ru.windcorp.progressia.common.world.item.ItemSlot;
 
@@ -33,15 +34,18 @@ public class SlotComponent extends Component {
 	static final float TEXTURE_SIZE = 24;
 	static final float SCALE = 2;
 
-	private final ItemSlot slot;
+	private final ItemContainer container;
+	private final int index;
+	
 	private ItemRenderable itemRenderer = null;
 
 	private int sizeDisplayInt = 0;
 	private String sizeDisplayString = "";
 
-	public SlotComponent(String name, ItemSlot slot) {
+	public SlotComponent(String name, ItemContainer container, int index) {
 		super(name);
-		this.slot = slot;
+		this.container = container;
+		this.index = index;
 
 		int side = (int) (TEXTURE_SIZE * SCALE);
 		setPreferredSize(side, side);
@@ -53,7 +57,7 @@ public class SlotComponent extends Component {
 	}
 
 	public ItemSlot getSlot() {
-		return slot;
+		return container.getSlot(index);
 	}
 
 	@Override
@@ -66,7 +70,7 @@ public class SlotComponent extends Component {
 	}
 
 	private void updateItemRenderer() {
-		ItemData contents = slot.getContents();
+		ItemData contents = getSlot().getContents();
 
 		if (contents == null) {
 			itemRenderer = null;

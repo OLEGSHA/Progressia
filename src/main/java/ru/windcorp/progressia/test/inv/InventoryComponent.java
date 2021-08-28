@@ -17,35 +17,16 @@
  */
 package ru.windcorp.progressia.test.inv;
 
-import glm.vec._2.i.Vec2i;
+import java.util.Collection;
+
 import ru.windcorp.progressia.client.graphics.gui.Component;
-import ru.windcorp.progressia.client.graphics.gui.Group;
-import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderHorizontal;
-import ru.windcorp.progressia.client.graphics.gui.layout.LayoutGrid;
-import ru.windcorp.progressia.common.world.item.ItemContainer;
-import ru.windcorp.progressia.common.world.item.ItemSlot;
 
-public class InventoryComponent extends Component {
+public abstract class InventoryComponent extends Component {
 
-	private final Group slots = new Group("Inventory.Slots", new LayoutGrid(15));
-
-	public InventoryComponent(ItemContainer container) {
-		super("Inventory");
-
-		setLayout(new LayoutBorderHorizontal(15));
-		addChild(slots.setLayoutHint(LayoutBorderHorizontal.CENTER));
-
-		container.forEach(this::addSlot);
+	public InventoryComponent(String name) {
+		super(name);
 	}
 
-	private void addSlot(ItemSlot slot) {
-		final int maxX = 6;
-		int i = slots.getChildren().size();
-
-		DecoratedSlotComponent component = new DecoratedSlotComponent("Inventory.Slot" + i, slot);
-
-		Vec2i pos = new Vec2i(i % maxX, i / maxX);
-		slots.addChild(component.setLayoutHint(pos));
-	}
+	public abstract Collection<DecoratedSlotComponent> getSlots();
 
 }

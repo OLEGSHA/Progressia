@@ -20,20 +20,21 @@ package ru.windcorp.progressia.test.inv;
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.gui.Button;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
+import ru.windcorp.progressia.common.world.item.ItemContainer;
 import ru.windcorp.progressia.common.world.item.ItemSlot;
 
 public class DecoratedSlotComponent extends Button {
 	
 	private final SlotComponent slotComponent;
 
-	public DecoratedSlotComponent(String name, ItemSlot slot) {
+	public DecoratedSlotComponent(String name, ItemContainer container, int index) {
 		super(name, null, null);
-		this.slotComponent = new SlotComponent(name, slot);
+		this.slotComponent = new SlotComponent(name, container, index);
 		
 		Vec2i size = slotComponent.getPreferredSize().add(2 * BORDER);
 		setPreferredSize(size);
 		
-		addChild(new SlotComponent(name, slot));
+		addChild(this.slotComponent);
 		setLayout(new LayoutFill(MARGIN));
 	}
 

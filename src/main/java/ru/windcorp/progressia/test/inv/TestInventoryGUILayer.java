@@ -46,7 +46,7 @@ public class TestInventoryGUILayer extends GUILayer {
 		display = null;
 
 		if (container != null) {
-			display = new InventoryScreen("Screen", new InventoryComponent(container), player);
+			display = new InventoryScreen("Screen", new SimpleInventoryComponent(container), player);
 
 			getRoot().addChild(display);
 			invalidate();
