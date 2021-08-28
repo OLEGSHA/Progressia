@@ -19,7 +19,6 @@
 package ru.windcorp.progressia.server.world;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +43,7 @@ public class DefaultWorldLogic implements WorldLogic {
 
 	private final WorldGenerator generator;
 
-	private final Map<DefaultChunkData, DefaultChunkLogic> chunks = Collections.synchronizedMap(new HashMap<>());
+	private final Map<DefaultChunkData, DefaultChunkLogic> chunks = new HashMap<>();
 
 	private final Evaluation tickEntitiesTask = new TickEntitiesTask();
 

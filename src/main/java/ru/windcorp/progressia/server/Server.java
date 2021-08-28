@@ -71,9 +71,6 @@ public class Server {
 	private final ClientManager clientManager;
 	private final PlayerManager playerManager;
 	private final LoadManager loadManager;
-	
-	private final ChunkRequestDaemon chunkRequestDaemon;
-	private final EntityRequestDaemon entityRequestDaemon;
 
 	private final TaskQueue taskQueue = new TaskQueue(this::isServerThread);
 
@@ -93,13 +90,10 @@ public class Server {
 		this.clientManager = new ClientManager(this);
 		this.playerManager = new PlayerManager(this);
 		this.loadManager = new LoadManager(this);
-		
-		this.chunkRequestDaemon = new ChunkRequestDaemon(loadManager.getChunkManager());
-		this.entityRequestDaemon = new EntityRequestDaemon(loadManager.getEntityManager()); 
 
 		schedule(getClientManager()::processPackets);
-		schedule(this.chunkRequestDaemon::tick);
-		schedule(this.entityRequestDaemon::tick);
+		schedule(new ChunkRequestDaemon(loadManager.getChunkManager())::tick);
+		schedule(new EntityRequestDaemon(loadManager.getEntityManager())::tick);
 
 		// Must run after request daemons so it only schedules chunks that
 		// hadn't unloaded
@@ -335,7 +329,6 @@ public class Server {
 	 * operation or fails to start.
 	 */
 	public void start() {
-		this.chunkRequestDaemon.start();
 		this.serverThread.start();
 	}
 
@@ -356,7 +349,6 @@ public class Server {
 	public void shutdown(String message) {
 		LogManager.getLogger().warn("Server.shutdown() is not yet implemented");
 		serverThread.stop();
-		chunkRequestDaemon.stop();
 	}
 
 	private void scheduleWorldTicks(Server server) {
