@@ -39,8 +39,8 @@ public class SlotComponent extends Component {
 	
 	private ItemRenderable itemRenderer = null;
 
-	private int sizeDisplayInt = 0;
-	private String sizeDisplayString = "";
+	private int amountDisplayInt = 0;
+	private String amountDisplayString = "";
 
 	public SlotComponent(String name, ItemContainer container, int index) {
 		super(name);
@@ -51,7 +51,7 @@ public class SlotComponent extends Component {
 		setPreferredSize(side, side);
 
 		Font sizeFont = new Font().deriveOutlined().withScale(1);
-		addChild(new DynamicLabel(name + ".Size", sizeFont, () -> sizeDisplayString, side));
+		addChild(new DynamicLabel(name + ".Size", sizeFont, () -> amountDisplayString, side));
 
 		setLayout(new LayoutAlign(0, 0, 0));
 	}
@@ -74,17 +74,17 @@ public class SlotComponent extends Component {
 
 		if (contents == null) {
 			itemRenderer = null;
-			sizeDisplayInt = 0;
-			sizeDisplayString = "";
+			amountDisplayInt = 0;
+			amountDisplayString = "";
 		} else {
 			if (itemRenderer == null || itemRenderer.getData() != contents) {
 				itemRenderer = ItemRenderRegistry.getInstance().get(contents.getId()).createRenderable(contents);
 			}
 
-			int newSize = contents.getSize();
-			if (newSize != sizeDisplayInt) {
-				sizeDisplayInt = newSize;
-				sizeDisplayString = newSize == 1 ? "" : Integer.toString(newSize);
+			int newAmount = getSlot().getAmount();
+			if (newAmount != amountDisplayInt) {
+				amountDisplayInt = newAmount;
+				amountDisplayString = newAmount == 1 ? "" : Integer.toString(newAmount);
 			}
 		}
 	}

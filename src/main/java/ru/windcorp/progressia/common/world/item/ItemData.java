@@ -17,87 +17,32 @@
  */
 package ru.windcorp.progressia.common.world.item;
 
-import ru.windcorp.progressia.common.state.IntStateField;
 import ru.windcorp.progressia.common.state.StatefulObject;
 import ru.windcorp.progressia.common.world.generic.ItemGeneric;
 
 /**
- * A collection of identical items identified by their ID, properties and
- * amount, able to reside in a slot. Also known as an item stack.
- * <p>
- * An empty stack does not have an {@code ItemData} representation; stack size
- * is at least 1.
+ * An item identified by its ID and properties, able to reside in a slot.
  */
 public abstract class ItemData extends StatefulObject implements ItemGeneric {
 
-	private final IntStateField size = field("Core:Size").setShared().ofInt().build();
-
 	public ItemData(String id) {
 		super(ItemDataRegistry.getInstance(), id);
-		size.setNow(this, 1);
 	}
 
 	/**
-	 * Returns the amount of individual items represented by this item stack.
+	 * Computes and returns the mass of a single unit (single item) of this
+	 * item.
 	 * 
-	 * @return the size of this stack
+	 * @return the mass of this item
 	 */
-	public final int getSize() {
-		return size.get(this);
-	}
-
-	/**
-	 * Sets the amount of items represented by this item stack.
-	 * 
-	 * @param size the new size of this stack, strictly positive
-	 */
-	public final void setSizeNow(int size) {
-		if (size <= 0) {
-			throw new IllegalArgumentException("size cannot be negative, given size " + size);
-		}
-		this.size.setNow(this, size);
-	}
-
-	/**
-	 * Computes and returns the total mass of this item stack. It is defined as
-	 * the item's unit mass (see {@link #getUnitMass()}) multiplied by the
-	 * amount of items in the stack.
-	 * 
-	 * @return the mass of this stack
-	 * @see #getUnitMass()
-	 */
-	public final float getMass() {
-		return getUnitMass() * getSize();
-	}
-
-	/**
-	 * Computes and returns the mass of a single unit (single item) of this item
-	 * stack.
-	 * 
-	 * @return the mass of a single item in this stack
-	 * @see #getMass()
-	 */
-	public abstract float getUnitMass();
-
-	/**
-	 * Computes and returns the total volume of this item stack. It is defined
-	 * as the item's unit volume (see {@link #getUnitVolume()}) multiplied by
-	 * the amount of items in the stack.
-	 * 
-	 * @return the mass of this stack
-	 * @see #getUnitVolume()
-	 */
-	public final float getVolume() {
-		return getUnitVolume() * getSize();
-	}
+	public abstract float getMass();
 
 	/**
 	 * Computes and returns the volume of a single unit (single item) of this
 	 * item stack.
 	 * 
-	 * @return the volume of a single item in this stack
-	 * @see #getVolume()
+	 * @return the volume of this item
 	 */
-	public abstract float getUnitVolume();
+	public abstract float getVolume();
 
 }

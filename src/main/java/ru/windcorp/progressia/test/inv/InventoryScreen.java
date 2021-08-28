@@ -148,10 +148,13 @@ public class InventoryScreen extends Component {
 			ItemSlot from = ((DecoratedSlotComponent) button).getSlot();
 
 			ItemData fromData = from.getContents();
+			int fromAmount = from.getAmount();
+			
 			ItemData toData = to.getContents();
+			int toAmount = to.getAmount();
 
-			from.setContents(toData);
-			to.setContents(fromData);
+			from.setContents(toData, toAmount);
+			to.setContents(fromData, fromAmount);
 
 			requestReassembly();
 

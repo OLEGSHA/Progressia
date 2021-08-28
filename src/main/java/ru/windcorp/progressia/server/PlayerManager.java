@@ -27,7 +27,6 @@ import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
-import ru.windcorp.progressia.common.world.item.ItemData;
 import ru.windcorp.progressia.common.world.item.ItemDataRegistry;
 import ru.windcorp.progressia.server.events.PlayerJoinedEvent;
 import ru.windcorp.progressia.test.TestContent;
@@ -66,16 +65,8 @@ public class PlayerManager {
 		
 		player.getInventory().addSlots(10);
 		
-		ItemData stack = ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream");
-		stack.setSizeNow(5);
-		player.getInventory().getSlot(3).setContents(stack);
-		
-		player.getInventory().getSlot(6).setContents(ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream"));
-		
-		player.getLeftHand().getSlot(0).setContents(ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream"));
-		stack = ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream");
-		stack.setSizeNow(64);
-		player.getRightHand().getSlot(0).setContents(stack);
+		player.getInventory().getSlot(3).setContents(ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream"), 5);
+		player.getInventory().getSlot(6).setContents(ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream"), 1);
 
 		player.setPosition(getServer().getWorld().getGenerator().suggestSpawnLocation());
 		player.setUpVector(new Vec3(0, 0, 1));

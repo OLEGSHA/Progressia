@@ -19,23 +19,23 @@ package ru.windcorp.progressia.common.world.item;
 
 public class ItemDataSimple extends ItemData {
 
-	private final float unitMass;
-	private final float unitVolume;
+	private final float mass;
+	private final float volume;
 	
-	public ItemDataSimple(String id, float unitMass, float unitVolume) {
+	public ItemDataSimple(String id, float mass, float volume) {
 		super(id);
-		this.unitMass = unitMass;
-		this.unitVolume = unitVolume;
+		this.mass = mass;
+		this.volume = volume;
 	}
 	
 	@Override
-	public float getUnitMass() {
-		return unitMass;
+	public float getMass() {
+		return mass;
 	}
 	
 	@Override
-	public float getUnitVolume() {
-		return unitVolume;
+	public float getVolume() {
+		return volume;
 	}
 
 }
