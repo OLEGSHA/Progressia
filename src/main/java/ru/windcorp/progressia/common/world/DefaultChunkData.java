@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Objects;
+
 import glm.vec._3.i.Vec3i;
 
 import ru.windcorp.progressia.common.world.block.BlockData;
@@ -45,11 +45,6 @@ public class DefaultChunkData implements ChunkData {
 
 	public static final int BLOCKS_PER_CHUNK = Coordinates.CHUNK_SIZE;
 	public static final int CHUNK_RADIUS = BLOCKS_PER_CHUNK / 2;
-	
-	public boolean isEmpty = false;
-	public boolean isOpaque = false;
-	
-	public static HashSet<BlockData> transparent;
 
 	private final Vec3i position = new Vec3i();
 	private final DefaultWorldData world;
@@ -204,44 +199,6 @@ public class DefaultChunkData implements ChunkData {
 	public void setGenerationHint(Object generationHint) {
 		this.generationHint = generationHint;
 	}
-	
-	public void computeOpaque()
-	{
-		for (int xyz=0;xyz<BLOCKS_PER_CHUNK*BLOCKS_PER_CHUNK*BLOCKS_PER_CHUNK;xyz++)
-		{
-			if (transparent.contains( blocks[xyz]))
-			{
-				isOpaque = false;
-				return;
-			}
-		}
-		isOpaque = true;
-	}
-	
-	public boolean isOpaque()
-	{
-		return isOpaque;
-	}
-	
-	public void computeEmpty()
-	{
-		BlockData air = new BlockData("Test:Air");
-		for (int xyz=0;xyz<BLOCKS_PER_CHUNK*BLOCKS_PER_CHUNK*BLOCKS_PER_CHUNK;xyz++)
-		{
-			if (blocks[xyz] != air)
-			{
-				isEmpty = false;
-				return;
-			}
-		}
-		isEmpty = true;
-	}
-	
-	public boolean isEmpty()
-	{
-		return isEmpty;
-	}
-
 
 	/**
 	 * Implementation of {@link TileDataStack} used internally by

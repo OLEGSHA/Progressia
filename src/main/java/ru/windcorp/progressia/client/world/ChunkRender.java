@@ -102,9 +102,7 @@ public class ChunkRender
 	}
 
 	public synchronized void render(ShapeRenderHelper renderer) {
-		if (!data.isEmpty) {
-			model.render(renderer);
-		}
+		model.render(renderer);
 	}
 
 	public synchronized void update() {
