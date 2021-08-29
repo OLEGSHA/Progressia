@@ -50,8 +50,10 @@ public class Region {
 	// 1 MiB
 	private static final int MAX_CHUNK_SIZE = 1024 * 1024;
 	private static final int SECTOR_SIZE = MAX_CHUNK_SIZE / 256;
+	
+	private static final int DEFINITION_SIZE = Integer.BYTES + 1;
 
-	private static final int HEADER_SIZE = Integer.BYTES * REGION_DIAMETER * REGION_DIAMETER * REGION_DIAMETER;
+	private static final int HEADER_SIZE = DEFINITION_SIZE * REGION_DIAMETER * REGION_DIAMETER * REGION_DIAMETER;
 
 	private final RandomAccessFile file;
 
@@ -151,7 +153,7 @@ public class Region {
 
 	public void save(DefaultChunkData chunk, Server server) throws IOException {
 		Vec3i pos = TestWorldDiskIO.getInRegionCoords(chunk.getPosition());
-		int definitionOffset = Integer.BYTES * (pos.z + REGION_DIAMETER * (pos.y + REGION_DIAMETER * pos.x));
+		int definitionOffset = DEFINITION_SIZE * (pos.z + REGION_DIAMETER * (pos.y + REGION_DIAMETER * pos.x));
 
 		if (!hasOffset(pos)) {
 			allocateChunk(definitionOffset, pos);
@@ -182,7 +184,7 @@ public class Region {
 		file.seek(HEADER_SIZE + SECTOR_SIZE * dataOffset);
 		file.write(buffer);
 
-		file.seek(definitionOffset + Integer.BYTES - 1);
+		file.seek(definitionOffset + Integer.BYTES);
 
 		int sectors = buffer.length / SECTOR_SIZE + 1;
 		file.write(sectors);

@@ -55,7 +55,7 @@ public class TestWorldDiskIO implements WorldContainer {
 		return Coordinates.convertGlobalToInCell(BITS_IN_CHUNK_COORDS, chunkCoords, null);
 	}
 
-	static final Logger LOG = LogManager.getLogger();
+	static final Logger LOG = LogManager.getLogger("TestWorldDiskIO");
 
 	private final Path path;
 	private final ChunkMap<Region> regions = ChunkMaps.newHashMap();
@@ -74,6 +74,7 @@ public class TestWorldDiskIO implements WorldContainer {
 
 			Region region = getRegion(chunkPos, false);
 			if (region == null) {
+				debug("Could not load chunk {} {} {}: region did not load", chunkPos);
 				return null;
 			}
 
@@ -81,12 +82,7 @@ public class TestWorldDiskIO implements WorldContainer {
 			return result;
 
 		} catch (IOException | DecodingException e) {
-			LOG.warn(
-				"Failed to load chunk {} {} {}",
-				chunkPos.x,
-				chunkPos.y,
-				chunkPos.z
-			);
+			warn("Failed to load chunk {} {} {}", chunkPos);
 			e.printStackTrace();
 			return null;
 		}
@@ -99,22 +95,11 @@ public class TestWorldDiskIO implements WorldContainer {
 		}
 
 		try {
-			LOG.debug(
-				"Saving {} {} {}",
-				chunk.getPosition().x,
-				chunk.getPosition().y,
-				chunk.getPosition().z
-			);
-
+			debug("Saving chunk {} {} {}", chunk.getPosition());
 			Region region = getRegion(chunk.getPosition(), true);
 			region.save(chunk, server);
 		} catch (IOException e) {
-			LOG.warn(
-				"Failed to save chunk {} {} {}",
-				chunk.getPosition().x,
-				chunk.getPosition().y,
-				chunk.getPosition().z
-			);
+			warn("Failed to save chunk {} {} {}", chunk.getPosition());
 			e.printStackTrace();
 		}
 	}
@@ -128,21 +113,17 @@ public class TestWorldDiskIO implements WorldContainer {
 
 		Region region = regions.get(regionCoords);
 		if (region == null) {
+			debug("Region {} {} {} is not loaded, loading", regionCoords);
 
-			Path path = getPath().resolve(
-				String.format(
-					FILE_NAME_FORMAT,
-					regionCoords.x,
-					regionCoords.y,
-					regionCoords.z
-				)
-			);
+			Path path = getRegionPath(regionCoords);
 
-			if (!Files.exists(path) && !createIfMissing) {
+			if (!createIfMissing && !Files.exists(path)) {
+				debug("Region {} {} {} does not exist on disk, aborting load", regionCoords);
 				return null;
 			}
 
 			region = openRegion(path, regionCoords);
+			debug("Region {} {} {} loaded", regionCoords);
 		}
 
 		return region;
@@ -170,6 +151,17 @@ public class TestWorldDiskIO implements WorldContainer {
 	public Path getPath() {
 		return path;
 	}
+	
+	private Path getRegionPath(Vec3i regionPos) {
+		return getPath().resolve(
+			String.format(
+				FILE_NAME_FORMAT,
+				regionPos.x,
+				regionPos.y,
+				regionPos.z
+			)
+		);
+	}
 
 	@Override
 	public void close() {
@@ -180,6 +172,16 @@ public class TestWorldDiskIO implements WorldContainer {
 		} catch (IOException e) {
 			CrashReports.report(e, "Could not close region files");
 		}
+	}
+	
+	private static void debug(String message, Vec3i vector) {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug(message, vector.x, vector.y, vector.z);
+		}
+	}
+	
+	private static void warn(String message, Vec3i vector) {
+		LOG.warn(message, vector.x, vector.y, vector.z);
 	}
 
 }

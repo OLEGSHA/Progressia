@@ -26,7 +26,10 @@
     	<Logger name="Ticker Coordinator" level="DEBUG" />
     	<Logger name="Ticker 0" level="DEBUG" />
     	-->
-    	<!-- <Logger name="TestWorldDiskIO" level="DEBUG" /> -->
+    	
+    	<!--  Uncomment to enable Region file logger debugging
+    	<Logger name="TestWorldDiskIO" level="DEBUG" />
+    	-->
     	
         <Root level="info">
             <AppenderRef ref="FileLog"  />
