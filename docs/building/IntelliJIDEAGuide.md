@@ -42,3 +42,16 @@ Run configurations are used by Intellij IDEA to specify how a project must be ru
 9. Click 'Apply' to save changes.
 
 Step 8 is required to specify that the game must run in some directory other than the project root, which is the default in Intellij IDEA.
+
+### Applying formatting templates
+
+Windcorp's Progressia repository is formatted with a style defined for Eclipse IDE (sic) in
+`templates_and_presets/eclipse_ide`.
+Please apply these templates to the project to automatically format the source in a similar fashion.
+
+1. In project context menu, click 'File->Properties'. (`Ctrl+Alt+S`)
+2. In 'Editor' > 'Code Style' > 'Java', press gear icon, then click 'Import Scheme' > 'Eclipse code style'
+3. In Scheme select 'Project'
+4. Open the file `templates_and_presets/eclipse_ide/FormatterProfile.xml` in 'Select Path'.
+5. Inside 'Import Scheme' widow click 'Current Scheme' check box after press OK
+
