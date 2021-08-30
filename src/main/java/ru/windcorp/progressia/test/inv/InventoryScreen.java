@@ -22,65 +22,46 @@ import java.util.function.Supplier;
 
 import org.lwjgl.glfw.GLFW;
 
-import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.Colors;
+import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.backend.InputTracker;
-import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.gui.BasicButton;
 import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.Components;
-import ru.windcorp.progressia.client.graphics.gui.Group;
-import ru.windcorp.progressia.client.graphics.gui.Layout;
 import ru.windcorp.progressia.client.graphics.gui.Panel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
+import ru.windcorp.progressia.client.graphics.input.WheelScrollEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.InputListener;
-import ru.windcorp.progressia.client.graphics.model.Renderable;
+import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 import ru.windcorp.progressia.common.world.item.ItemContainer;
 import ru.windcorp.progressia.common.world.item.ItemSlot;
 import ru.windcorp.progressia.common.world.item.Items;
 
 public class InventoryScreen extends Component {
+	
+	private static final double MIN_PICK_ALL_DELAY = Units.get("0.5 s");
 
-	public static class CursorFollower extends Component {
-
-		public CursorFollower(Component child) {
-			super("CursorFollower");
-			addChild(child);
-			setLayout(null);
-
-			Vec2i size = child.getPreferredSize();
-			child.setBounds(-size.x / 2, -size.y / 2, size);
-			layoutSelf();
-		}
-
-		@Override
-		protected void assembleChildren(RenderTarget target) {
-			Renderable renderable = getChildren().get(0).assembleToRenderable();
-
-			target.addCustomRenderer(renderer -> {
-				renderer.pushTransform().translate(
-					(float) InputTracker.getCursorX(),
-					(float) InputTracker.getCursorY(),
-					0
-				);
-
-				renderable.render(renderer);
-
-				renderer.popTransform();
-
-			});
-		}
-
+	public static boolean isLeftHandSelected() {
+		return InputTracker.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL)
+			|| InputTracker.isKeyPressed(GLFW.GLFW_KEY_RIGHT_CONTROL);
 	}
 
 	private final ItemContainer leftHand;
 	private final ItemContainer rightHand;
+	private final InventoryComponent mainInventory;
+	
+	private double lastLeftClick = Double.NEGATIVE_INFINITY;
+	private ItemSlot lastLeftClickSlot = null;
 
 	public InventoryScreen(String name, InventoryComponent mainInventory, EntityDataPlayer player) {
 		super(name);
+
+		this.mainInventory = mainInventory;
+		this.leftHand = player.getLeftHand();
+		this.rightHand = player.getRightHand();
 
 		setLayout(new LayoutFill(0));
 
@@ -90,47 +71,14 @@ public class InventoryScreen extends Component {
 		mainInventoryPanel.addChild(mainInventory);
 		addChild(Components.center(mainInventoryPanel));
 
-		this.leftHand = player.getLeftHand();
-		this.rightHand = player.getRightHand();
-		addChild(new CursorFollower(createHands(name, leftHand, rightHand)));
-
-		addListeners(mainInventory);
-	}
-
-	private Component createHands(String name, ItemContainer leftHand, ItemContainer rightHand) {
-
 		SlotComponent leftComponent = new SlotComponent(name + ".HandLeft", leftHand, 0);
 		SlotComponent rightComponent = new SlotComponent(name + ".HandRight", rightHand, 0);
+		
+		addChild(new HandSlots(name + ".Hands", leftComponent, rightComponent));
 
-		final int gap = 15;
-		final int offset = 60;
-
-		Component hands = new Group(name + ".Hands", null, leftComponent, rightComponent);
-		hands.setLayout(new Layout() {
-
-			@Override
-			public void layout(Component c) {
-				Vec2i leftSize = leftComponent.getPreferredSize();
-				Vec2i rightSize = rightComponent.getPreferredSize();
-
-				leftComponent.setBounds(c.getX(), c.getY(), leftSize);
-				rightComponent.setBounds(c.getX() + leftSize.x + gap, c.getY() + offset, rightSize);
-			}
-
-			@Override
-			public Vec2i calculatePreferredSize(Component c) {
-				Vec2i leftSize = leftComponent.getPreferredSize();
-				Vec2i rightSize = rightComponent.getPreferredSize();
-
-				return new Vec2i(
-					leftSize.x + gap + rightSize.x,
-					Math.max(leftSize.y + offset, rightSize.y + offset)
-				);
-			}
-
-		});
-
-		return hands;
+		addListeners(mainInventory);
+		
+		mainInventory.focusNext();
 	}
 
 	private void addListeners(InventoryComponent mainInventory) {
@@ -138,18 +86,14 @@ public class InventoryScreen extends Component {
 		ItemSlot left = leftHand.getSlot(0);
 		ItemSlot right = rightHand.getSlot(0);
 		
-		Supplier<ItemSlot> handSlot = () -> {
-			boolean hasCtrl = InputTracker.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL)
-				|| InputTracker.isKeyPressed(GLFW.GLFW_KEY_RIGHT_CONTROL);
-			
-			return hasCtrl ? left : right;
-		};
+		Supplier<ItemSlot> handSlot = () -> isLeftHandSelected() ? left : right;
 		
 		Consumer<BasicButton> pickAll = createPickAllAction(handSlot);
 
 		for (DecoratedSlotComponent component : mainInventory.getSlots()) {
 			component.addAction(pickAll);
 			component.addListener(KeyEvent.class, createRMBAction(component.getSlot(), handSlot));
+			component.addListener(WheelScrollEvent.class, createWheelAction(component.getSlot(), handSlot));
 		}
 	}
 
@@ -158,16 +102,52 @@ public class InventoryScreen extends Component {
 			
 			ItemSlot handSlot = handSlotChooser.get();
 			ItemSlot invSlot = ((DecoratedSlotComponent) button).getSlot();
-
-			if (Items.pour(handSlot, invSlot) == 0) {
-				if (!Items.swap(handSlot, invSlot)) {
-					return;
-				}
+			
+			boolean success = false;
+			
+			double now = GraphicsInterface.getTime();
+			if (lastLeftClickSlot == invSlot && now - lastLeftClick < MIN_PICK_ALL_DELAY) {
+				
+				lastLeftClickSlot = null;
+				lastLeftClick = Double.NEGATIVE_INFINITY;
+				
+				pickAll(handSlot);
+				
+				success = true;
+				
+			} else {
+				lastLeftClick = now;
+				lastLeftClickSlot = invSlot;
+			}
+			
+			if (!success && !leftHand.getSlot(0).isEmpty() && rightHand.getSlot(0).isEmpty()) {
+				success = Items.pour(leftHand.getSlot(0), invSlot) != 0;
+			}
+			
+			if (!success) {
+				success = Items.pour(handSlot, invSlot) != 0;
+			}
+			
+			if (!success) {
+				success = Items.swap(handSlot, invSlot);
 			}
 
-			requestReassembly();
+			if (success) {
+				requestReassembly();
+			}
 
 		};
+	}
+
+	private void pickAll(ItemSlot handSlot) {
+		for (DecoratedSlotComponent component : mainInventory.getSlots()) {
+			
+			Items.pour(component.getSlot(), handSlot);
+			if (handSlot.isEmpty()) {
+				break;
+			}
+			
+		}
 	}
 
 	private InputListener<KeyEvent> createRMBAction(ItemSlot invSlot, Supplier<ItemSlot> handSlotChooser) {
@@ -198,6 +178,28 @@ public class InventoryScreen extends Component {
 			}
 			
 			return false;
+			
+		};
+	}
+	
+
+	private InputListener<WheelScrollEvent> createWheelAction(ItemSlot invSlot, Supplier<ItemSlot> handSlotChooser) {
+		return input -> {
+			
+			if (!input.hasVerticalMovement()) {
+				return false;
+			}
+			
+			ItemSlot handSlot = handSlotChooser.get();
+			
+			ItemSlot from = input.isDown() ? handSlot : invSlot;
+			ItemSlot into = input.isDown() ? invSlot : handSlot;
+			
+			if (Items.pour(from, into, 1) != 0) {
+				requestReassembly();
+			}
+			
+			return true;
 			
 		};
 	}
