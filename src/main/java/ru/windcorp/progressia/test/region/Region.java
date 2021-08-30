@@ -49,9 +49,10 @@ public class Region {
 
 	// 1 MiB
 	private static final int MAX_CHUNK_SIZE = 1024 * 1024;
-	private static final int SECTOR_SIZE = MAX_CHUNK_SIZE / 256;
+	private static final int SECTORS_BYTES = Short.BYTES;
+	private static final int SECTOR_SIZE = MAX_CHUNK_SIZE >> (SECTORS_BYTES*8);
 	
-	private static final int DEFINITION_SIZE = Integer.BYTES + 1;
+	private static final int DEFINITION_SIZE = Integer.BYTES + Short.BYTES;
 
 	private static final int HEADER_SIZE = DEFINITION_SIZE * REGION_DIAMETER * REGION_DIAMETER * REGION_DIAMETER;
 
@@ -129,7 +130,7 @@ public class Region {
 		for (int i = 0; i < chunksPerRegion; i++) {
 			int offset = file.readInt();
 
-			int sectorLength = file.read();
+			int sectorLength = file.readShort();
 			if (sectorLength == 0) {
 				continue;
 			}
@@ -186,8 +187,8 @@ public class Region {
 
 		file.seek(definitionOffset + Integer.BYTES);
 
-		int sectors = buffer.length / SECTOR_SIZE + 1;
-		file.write(sectors);
+		int sectors = (int) buffer.length / SECTOR_SIZE + 1;
+		file.writeShort(sectors);
 
 		putLength(pos, sectors);
 	}
