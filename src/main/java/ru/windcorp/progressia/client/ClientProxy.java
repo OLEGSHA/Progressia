@@ -30,7 +30,6 @@ import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.common.resource.ResourceManager;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.server.ServerState;
 import ru.windcorp.progressia.test.TestContent;
 import ru.windcorp.progressia.test.TestMusicPlayer;
 
@@ -62,10 +61,4 @@ public class ClientProxy implements Proxy {
 
 		TestMusicPlayer.start();
 	}
-
-	public void setupServer() {
-		ServerState.startServer();
-		ClientState.connectToLocalServer();
-	}
-
 }

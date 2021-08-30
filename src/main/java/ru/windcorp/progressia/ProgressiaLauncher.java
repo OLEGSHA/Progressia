@@ -39,10 +39,6 @@ public class ProgressiaLauncher {
 		GUI.addTopLayer(new LayerTitle("Title"));
 	}
 
-	public static void play() {
-		proxy.setupServer();
-	}
-
 	private static void setupCrashReports() {
 		// Context providers
 		CrashReports.registerProvider(new OSContextProvider());

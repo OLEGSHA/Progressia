@@ -17,6 +17,7 @@
  */
 package ru.windcorp.progressia.test.region;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 import ru.windcorp.progressia.server.world.io.WorldContainer;
@@ -29,7 +30,7 @@ public class RegionFormat extends WorldContainerFormat {
 	}
 
 	@Override
-	public WorldContainer create(Path directory) {
+	public WorldContainer create(Path directory) throws IOException {
 		return new TestWorldDiskIO(directory);
 	}
 

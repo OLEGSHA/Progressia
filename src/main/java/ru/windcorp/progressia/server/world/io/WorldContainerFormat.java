@@ -17,6 +17,7 @@
  */
 package ru.windcorp.progressia.server.world.io;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
@@ -27,6 +28,6 @@ public abstract class WorldContainerFormat extends Namespaced {
 		super(id);
 	}
 
-	public abstract WorldContainer create(Path directory);
+	public abstract WorldContainer create(Path directory) throws IOException;
 	
 }

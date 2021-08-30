@@ -17,21 +17,27 @@
  */
 package ru.windcorp.progressia.server.world.io;
 
-import java.nio.file.Path;
-
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
+import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.comms.ClientPlayer;
+
+import java.nio.file.Path;
 
 public interface WorldContainer {
-	
+
 	Path getPath();
-	
+
 	DefaultChunkData load(Vec3i position, DefaultWorldData world, Server server);
-	
+
 	void save(DefaultChunkData chunk, DefaultWorldData world, Server server);
-	
+
+	Player loadPlayer(String login, ClientPlayer clientPlayer, Server server);
+
+	void savePlayer(Player player, Server server);
+
 	void close();
 
 }

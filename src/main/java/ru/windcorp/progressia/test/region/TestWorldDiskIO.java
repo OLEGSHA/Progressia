@@ -18,31 +18,37 @@
 
 package ru.windcorp.progressia.test.region;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import glm.vec._3.i.Vec3i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
 import ru.windcorp.progressia.common.world.DecodingException;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
+import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
 import ru.windcorp.progressia.common.world.generic.ChunkMap;
 import ru.windcorp.progressia.common.world.generic.ChunkMaps;
+import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.comms.ClientPlayer;
 import ru.windcorp.progressia.server.world.io.WorldContainer;
+import ru.windcorp.progressia.test.TestContent;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class TestWorldDiskIO implements WorldContainer {
 
 	private static final boolean ENABLE = true;
 
-	private static final String FILE_NAME_FORMAT = "region_%d_%d_%d.progressia_region";
+	private static final String REGION_FOLDER_NAME = "regions";
+	private static final String PLAYERS_FOLDER_NAME = "players";
+	private static final String REGION_NAME_FORMAT = REGION_FOLDER_NAME + "/" + "region_%d_%d_%d.progressia_region";
+	private static final String PLAYER_NAME_FORMAT = PLAYERS_FOLDER_NAME + "/" + "%s.progressia_player";
 
 	private static final int BITS_IN_CHUNK_COORDS = 4;
 	public static final int REGION_DIAMETER = 1 << BITS_IN_CHUNK_COORDS;
@@ -60,8 +66,12 @@ public class TestWorldDiskIO implements WorldContainer {
 	private final Path path;
 	private final ChunkMap<Region> regions = ChunkMaps.newHashMap();
 
-	public TestWorldDiskIO(Path path) {
+	public TestWorldDiskIO(Path path) throws IOException {
 		this.path = path;
+
+		Files.createDirectories(getPath());
+		Files.createDirectories(getPath().resolve(REGION_FOLDER_NAME));
+		Files.createDirectories(getPath().resolve(PLAYERS_FOLDER_NAME));
 	}
 
 	@Override
@@ -104,10 +114,52 @@ public class TestWorldDiskIO implements WorldContainer {
 		}
 	}
 
-	private Region getRegion(Vec3i position, boolean createIfMissing) throws IOException {
-		if (regions.isEmpty()) {
-			Files.createDirectories(getPath());
+	@Override
+	public Player loadPlayer(String login, ClientPlayer clientPlayer, Server server) {
+
+		Path path = getPlayerPath(login);
+		if (!Files.exists(path)) {
+			LOG.debug("Could not load player {} because file {} does not exist", login, path);
+			return null;
 		}
+
+		EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
+		try (
+			DataInputStream dataInputStream = new DataInputStream(
+				new BufferedInputStream(
+					Files.newInputStream(
+						getPlayerPath(login)
+					)
+				)
+			)
+		) {
+			player.read(dataInputStream, IOContext.SAVE);
+			player.setEntityId(TestContent.PLAYER_ENTITY_ID);
+			return new Player(player, server, clientPlayer);
+		} catch (IOException ioException) {
+			throw CrashReports.report(ioException, "Could not load player data: " + login);
+		}
+	}
+
+	@Override
+	public void savePlayer(Player player, Server server) {
+		Path path = getPlayerPath(player.getLogin());
+		try (
+			DataOutputStream dataOutputStream = new DataOutputStream(
+				new BufferedOutputStream(
+					Files.newOutputStream(path)
+				)
+			)
+		) {
+			player.getEntity().
+
+				write(dataOutputStream, IOContext.SAVE);
+		} catch (IOException ioException) {
+			throw CrashReports.report(ioException, "Could not save player %s data in file ", player.getLogin(), path);
+		}
+	}
+
+	private Region getRegion(Vec3i position, boolean createIfMissing) throws IOException {
 
 		Vec3i regionCoords = getRegionCoords(position);
 
@@ -151,14 +203,23 @@ public class TestWorldDiskIO implements WorldContainer {
 	public Path getPath() {
 		return path;
 	}
-	
+
 	private Path getRegionPath(Vec3i regionPos) {
 		return getPath().resolve(
 			String.format(
-				FILE_NAME_FORMAT,
+				REGION_NAME_FORMAT,
 				regionPos.x,
 				regionPos.y,
 				regionPos.z
+			)
+		);
+	}
+
+	private Path getPlayerPath(String login) {
+		return getPath().resolve(
+			String.format(
+				PLAYER_NAME_FORMAT,
+				login
 			)
 		);
 	}
@@ -170,16 +231,16 @@ public class TestWorldDiskIO implements WorldContainer {
 				region.close();
 			}
 		} catch (IOException e) {
-			CrashReports.report(e, "Could not close region files");
+			throw CrashReports.report(e, "Could not close region files");
 		}
 	}
-	
+
 	private static void debug(String message, Vec3i vector) {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(message, vector.x, vector.y, vector.z);
 		}
 	}
-	
+
 	private static void warn(String message, Vec3i vector) {
 		LOG.warn(message, vector.x, vector.y, vector.z);
 	}

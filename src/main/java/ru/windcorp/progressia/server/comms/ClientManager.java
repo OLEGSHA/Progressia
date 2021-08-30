@@ -80,12 +80,11 @@ public class ClientManager {
 		setGravityModelPacket.set(getServer().getWorld().getData().getGravityModel());
 		client.sendPacket(setGravityModelPacket);
 
-		EntityData entity = getServer().getPlayerManager().conjurePlayerEntity(login);
-		Player player = new Player(entity, getServer(), client);
+		Player player = getServer().getPlayerManager().conjurePlayer(client, login);
 		getServer().getPlayerManager().addPlayer(player);
 
 		PacketSetLocalPlayer packet = new PacketSetLocalPlayer();
-		packet.set(entity.getEntityId());
+		packet.set(player.getEntity().getEntityId());
 		client.sendPacket(packet);
 	}
 
