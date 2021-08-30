@@ -106,7 +106,7 @@ public class TestContent {
 		register(new BlockRenderNone("Test:Air"));
 		register(new TestBlockLogicAir("Test:Air"));
 		placeableBlacklist.add("Test:Air");
-
+		
 		registerSimplestBlock("Dirt");
 		registerSimplestBlock("Chernozem");
 		registerSimplestBlock("Stone");
@@ -244,6 +244,7 @@ public class TestContent {
 	
 	private static void registerItems() {
 		registerSimplestItem("MoonTypeIceCream", Units.get("200 g"), Units.get("1 L"));
+		registerSimplestItem("Stick", Units.get("260 g"), Units.get("0.5 L"));
 	}
 
 	private static void registerSimplestBlock(String name) {

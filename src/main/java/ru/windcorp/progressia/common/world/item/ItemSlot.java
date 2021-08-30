@@ -94,6 +94,21 @@ public class ItemSlot implements Encodable {
 		return amount == 0;
 	}
 	
+	public synchronized boolean canInsert(ItemData contents, int amount) {
+		
+		// Ignore amount
+		
+		if (this.contents == null) {
+			return true;
+		}
+		
+		return this.contents.equals(contents);
+	}
+	
+	public synchronized boolean canRemove(int amount) {
+		return this.amount >= amount;
+	}
+	
 	private synchronized void checkState() {
 		if ((contents == null) != (amount == 0)) {
 			if (contents == null) {

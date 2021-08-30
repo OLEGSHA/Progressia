@@ -18,6 +18,7 @@
 package ru.windcorp.progressia.test.inv;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -33,11 +34,13 @@ import ru.windcorp.progressia.client.graphics.gui.Layout;
 import ru.windcorp.progressia.client.graphics.gui.Panel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
+import ru.windcorp.progressia.client.graphics.input.KeyEvent;
+import ru.windcorp.progressia.client.graphics.input.bus.InputListener;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 import ru.windcorp.progressia.common.world.item.ItemContainer;
-import ru.windcorp.progressia.common.world.item.ItemData;
 import ru.windcorp.progressia.common.world.item.ItemSlot;
+import ru.windcorp.progressia.common.world.item.Items;
 
 public class InventoryScreen extends Component {
 
@@ -131,33 +134,71 @@ public class InventoryScreen extends Component {
 	}
 
 	private void addListeners(InventoryComponent mainInventory) {
-		Consumer<BasicButton> pickIntoLeft = createPickAction(leftHand.getSlot(0), rightHand.getSlot(0));
-
-		for (DecoratedSlotComponent component : mainInventory.getSlots()) {
-			component.addAction(pickIntoLeft);
-		}
-	}
-
-	private Consumer<BasicButton> createPickAction(ItemSlot toWithoutCtrl, ItemSlot toWithCtrl) {
-		return button -> {
-
+		
+		ItemSlot left = leftHand.getSlot(0);
+		ItemSlot right = rightHand.getSlot(0);
+		
+		Supplier<ItemSlot> handSlot = () -> {
 			boolean hasCtrl = InputTracker.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL)
 				|| InputTracker.isKeyPressed(GLFW.GLFW_KEY_RIGHT_CONTROL);
 			
-			ItemSlot to = hasCtrl ? toWithCtrl : toWithoutCtrl;
-			ItemSlot from = ((DecoratedSlotComponent) button).getSlot();
+			return hasCtrl ? left : right;
+		};
+		
+		Consumer<BasicButton> pickAll = createPickAllAction(handSlot);
 
-			ItemData fromData = from.getContents();
-			int fromAmount = from.getAmount();
+		for (DecoratedSlotComponent component : mainInventory.getSlots()) {
+			component.addAction(pickAll);
+			component.addListener(KeyEvent.class, createRMBAction(component.getSlot(), handSlot));
+		}
+	}
+
+	private Consumer<BasicButton> createPickAllAction(Supplier<ItemSlot> handSlotChooser) {
+		return button -> {
 			
-			ItemData toData = to.getContents();
-			int toAmount = to.getAmount();
+			ItemSlot handSlot = handSlotChooser.get();
+			ItemSlot invSlot = ((DecoratedSlotComponent) button).getSlot();
 
-			from.setContents(toData, toAmount);
-			to.setContents(fromData, fromAmount);
+			if (Items.pour(handSlot, invSlot) == 0) {
+				if (!Items.swap(handSlot, invSlot)) {
+					return;
+				}
+			}
 
 			requestReassembly();
 
+		};
+	}
+
+	private InputListener<KeyEvent> createRMBAction(ItemSlot invSlot, Supplier<ItemSlot> handSlotChooser) {
+		return input -> {
+			
+			if (input.isPress() && input.isRightMouseButton()) {
+				ItemSlot handSlot = handSlotChooser.get();
+
+				boolean success = false;
+				
+				if (handSlot.isEmpty()) {
+					success = Items.pour(invSlot, handSlot, invSlot.getAmount() / 2) != 0;
+				}
+				
+				if (!success) {
+					success = Items.pour(handSlot, invSlot, 1) != 0;
+				}
+				
+				if (!success) {
+					success = Items.swap(handSlot, invSlot);
+				}
+
+				if (success) {
+					requestReassembly();
+				}
+				
+				return true;
+			}
+			
+			return false;
+			
 		};
 	}
 
