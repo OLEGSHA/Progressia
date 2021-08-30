@@ -50,7 +50,23 @@ public abstract class ItemContainerMixed extends ItemContainer {
 	 * 
 	 * @param amount the amount of slots to add
 	 */
-	public abstract void addSlots(int amount);
+	public synchronized void addSlots(int amount) {
+		List<ItemSlot> slots = getSlots();
+		
+		for (int i = 0; i < amount; ++i) {
+			ItemSlot slot = createSlot(slots.size());
+			slots.add(slot);
+			slot.setContainer(this);
+		}
+	}
+	
+	/**
+	 * Instantiates a new slot object that will be appended to the container. 
+	 * 
+	 * @param index the index that the new slot will receive
+	 * @return the new slot
+	 */
+	protected abstract ItemSlot createSlot(int index);
 	
 	@Override
 	public ItemSlot getSlot(int index) {

@@ -245,6 +245,7 @@ public class TestContent {
 	private static void registerItems() {
 		registerSimplestItem("MoonTypeIceCream", Units.get("200 g"), Units.get("1 L"));
 		registerSimplestItem("Stick", Units.get("260 g"), Units.get("0.5 L"));
+		registerSimplestItem("RedGraniteCobblestone", Units.get("4 kg"), Units.get("1500 cm^3"));
 	}
 
 	private static void registerSimplestBlock(String name) {

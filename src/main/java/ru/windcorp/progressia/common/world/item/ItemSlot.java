@@ -32,6 +32,22 @@ public class ItemSlot implements Encodable {
 
 	private ItemData contents;
 	private int amount;
+	
+	private ItemContainer container;
+	
+	/**
+	 * @return the container
+	 */
+	public ItemContainer getContainer() {
+		return container;
+	}
+	
+	/**
+	 * @param container the container to set
+	 */
+	void setContainer(ItemContainer container) {
+		this.container = container;
+	}
 
 	/**
 	 * Retrieves the contents of this slot.
@@ -95,14 +111,19 @@ public class ItemSlot implements Encodable {
 	}
 	
 	public synchronized boolean canInsert(ItemData contents, int amount) {
-		
-		// Ignore amount
-		
-		if (this.contents == null) {
-			return true;
+		if (contents == null) {
+			return false;
 		}
 		
-		return this.contents.equals(contents);
+		if (container.getMass() + contents.getMass() * amount > container.getMassLimit()) {
+			return false;
+		}
+		
+		if (container.getVolume() + contents.getVolume() * amount > container.getVolumeLimit()) {
+			return false;
+		}
+		
+		return this.contents == null || this.contents.equals(contents);
 	}
 	
 	public synchronized boolean canRemove(int amount) {

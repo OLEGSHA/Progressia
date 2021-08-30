@@ -65,8 +65,9 @@ public class PlayerManager {
 		
 		player.getInventory().addSlots(10);
 		
-		player.getInventory().getSlot(3).setContents(ItemDataRegistry.getInstance().create("Test:Stick"), 5);
+		player.getInventory().getSlot(3).setContents(ItemDataRegistry.getInstance().create("Test:Stick"), 7);
 		player.getInventory().getSlot(5).setContents(ItemDataRegistry.getInstance().create("Test:Stick"), 4);
+		player.getInventory().getSlot(9).setContents(ItemDataRegistry.getInstance().create("Test:RedGraniteCobblestone"), 1);
 		player.getInventory().getSlot(6).setContents(ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream"), 1);
 
 		player.setPosition(getServer().getWorld().getGenerator().suggestSpawnLocation());

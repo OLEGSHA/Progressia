@@ -40,11 +40,8 @@ public class ItemContainerMixedSimple extends ItemContainerMixed {
 	}
 
 	@Override
-	public synchronized void addSlots(int amount) {
-		((ArrayList<ItemSlot>) list).ensureCapacity(list.size() + amount);
-		for (int i = 0; i < amount; ++i) {
-			list.add(new ItemSlot());
-		}
+	public ItemSlot createSlot(int index) {
+		return new ItemSlot();
 	}
 	
 	@Override

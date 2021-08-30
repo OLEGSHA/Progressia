@@ -131,6 +131,10 @@ public class InventoryScreen extends Component {
 			if (!success) {
 				success = Items.swap(handSlot, invSlot);
 			}
+			
+			if (!success && handSlot.isEmpty()) {
+				success = Items.pour(invSlot, handSlot) != 0;
+			}
 
 			if (success) {
 				requestReassembly();

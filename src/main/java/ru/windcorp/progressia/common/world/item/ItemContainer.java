@@ -71,5 +71,33 @@ public abstract class ItemContainer extends Namespaced implements Encodable {
 	 *         boundary is set
 	 */
 	public abstract float getVolumeLimit();
+	
+	public synchronized float getMass() {
+		float sum = 0;
+		for (int i = 0; i < getSlotCount(); ++i) {
+			ItemSlot slot = getSlot(i);
+			
+			if (slot.isEmpty()) {
+				continue;
+			}
+			
+			sum += slot.getContents().getMass() * slot.getAmount();
+		}
+		return sum;
+	}
+	
+	public synchronized float getVolume() {
+		float sum = 0;
+		for (int i = 0; i < getSlotCount(); ++i) {
+			ItemSlot slot = getSlot(i);
+			
+			if (slot.isEmpty()) {
+				continue;
+			}
+			
+			sum += slot.getContents().getVolume() * slot.getAmount();
+		}
+		return sum;
+	}
 
 }

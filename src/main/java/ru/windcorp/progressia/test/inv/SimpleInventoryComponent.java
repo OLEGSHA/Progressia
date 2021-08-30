@@ -21,8 +21,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import glm.vec._2.i.Vec2i;
+import ru.windcorp.progressia.client.graphics.Colors;
+import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderHorizontal;
+import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderVertical;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutGrid;
 import ru.windcorp.progressia.common.world.item.ItemContainer;
 
@@ -35,7 +38,31 @@ public class SimpleInventoryComponent extends InventoryComponent {
 		super("Inventory");
 
 		setLayout(new LayoutBorderHorizontal(15));
-		addChild(slots.setLayoutHint(LayoutBorderHorizontal.CENTER));
+
+		Bar massBar = new Bar(
+			"MassBar",
+			true,
+			Colors.toVector(0xFF44AAAA),
+			container::getMass,
+			container::getMassLimit
+		);
+		Bar volumeBar = new Bar(
+			"VolumeBar",
+			false,
+			Colors.toVector(0xFFAA4444),
+			container::getVolume,
+			container::getVolumeLimit
+		);
+
+		Component slotsAndVolumeBar = new Group(
+			"SlotsAndVolumeBar",
+			new LayoutBorderVertical(15),
+			slots.setLayoutHint(LayoutBorderVertical.CENTER),
+			volumeBar.setLayoutHint(LayoutBorderVertical.UP)
+		);
+
+		addChild(slotsAndVolumeBar.setLayoutHint(LayoutBorderHorizontal.CENTER));
+		addChild(massBar.setLayoutHint(LayoutBorderHorizontal.LEFT));
 
 		for (int i = 0; i < container.getSlotCount(); ++i) {
 			addSlot(container, i);

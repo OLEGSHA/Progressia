@@ -55,6 +55,25 @@ public class Colors {
 			output = new Vec4();
 		return color.mul(multiplier, multiplier, multiplier, 1, output);
 	}
+	
+	public static Vec4 mix(Vec4 zero, Vec4 one, float t, Vec4 output) {
+		if (output == null) {
+			output = new Vec4();
+		}
+		
+		if (t <= 0) {
+			return output.set(zero);
+		} else if (t >= 1) {
+			return output.set(one);
+		}
+		
+		return output.set(
+			zero.x * (1 - t) + one.x * t,
+			zero.y * (1 - t) + one.y * t,
+			zero.z * (1 - t) + one.z * t,
+			zero.w * (1 - t) + one.w * t
+		);
+	}
 
 	public static Vec4 toVector(int argb, Vec4 output) {
 		output.w = ((argb & 0xFF000000) >>> 24) / (float) 0xFF; // Alpha

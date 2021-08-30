@@ -36,6 +36,8 @@ public class ItemContainerHand extends ItemContainer {
 		super(id);
 		this.massLimit = massLimit;
 		this.volumeLimit = volumeLimit;
+		
+		slot.setContainer(this);
 	}
 
 	@Override
