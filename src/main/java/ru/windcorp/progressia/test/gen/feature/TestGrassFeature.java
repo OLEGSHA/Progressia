@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen;
+package ru.windcorp.progressia.test.gen.feature;
 
 import java.util.List;
 import java.util.Set;
@@ -104,7 +104,17 @@ public class TestGrassFeature extends SurfaceTopLayerFeature {
 	}
 
 	private void growGrass(SurfaceBlockContext context, double grassiness) {
-		TileData flatGrass = flatGrasses.get((float) grassiness);
+		
+		double flatGrassiness = grassiness;
+		BlockData soil = context.getBlock();
+		if (soil.getId().endsWith("Sand")) {
+			flatGrassiness = flatGrassiness / 2 - 0.2;
+			if (flatGrassiness < 0) {
+				flatGrassiness = 0;
+			}
+		}
+		
+		TileData flatGrass = flatGrasses.get((float) flatGrassiness);
 		if (flatGrass != null) {
 			for (RelFace face : RelFace.getFaces()) {
 				if (face == RelFace.DOWN)

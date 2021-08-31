@@ -24,21 +24,18 @@ import java.util.List;
 import java.util.function.Function;
 
 import ru.windcorp.progressia.common.Units;
-import ru.windcorp.progressia.common.util.ArrayFloatRangeMap;
-import ru.windcorp.progressia.common.util.FloatRangeMap;
 import ru.windcorp.progressia.common.util.noise.discrete.WorleyProceduralNoise;
 import ru.windcorp.progressia.common.world.Coordinates;
-import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.generation.WorldGenerator;
 import ru.windcorp.progressia.server.world.generation.planet.Planet;
 import ru.windcorp.progressia.server.world.generation.planet.PlanetGenerator;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceFeature;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceFloatField;
-import ru.windcorp.progressia.server.world.generation.surface.TerrainLayer;
-import ru.windcorp.progressia.test.Rocks.RockVariant;
+import ru.windcorp.progressia.test.Rocks.Rock;
 import ru.windcorp.progressia.test.TestContent;
+import ru.windcorp.progressia.test.gen.feature.*;
+import ru.windcorp.progressia.test.gen.terrain.*;
 
 public class TestGenerationConfig {
 
@@ -62,47 +59,45 @@ public class TestGenerationConfig {
 
 		TestHeightMap heightMap = new TestHeightMap(planet, planet.getRadius() / 4, FIELDS);
 
-		FloatRangeMap<TerrainLayer> layers = new ArrayFloatRangeMap<>();
-		registerTerrainLayers(layers);
+		LayeredTerrain terrain = new LayeredTerrain();
+		registerTerrainLayers(terrain);
 
 		List<SurfaceFeature> features = new ArrayList<>();
 		registerFeatures(features);
 
-		return server -> new PlanetGenerator("Test:PlanetGenerator", server, planet, heightMap, layers, features);
+		return server -> new PlanetGenerator("Test:PlanetGenerator", server, planet, heightMap, terrain, features);
 
 	}
 
-	private static void registerTerrainLayers(FloatRangeMap<TerrainLayer> layers) {
-		BlockData dirt = BlockDataRegistry.getInstance().get("Test:Dirt");
-		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
-
+	private static void registerTerrainLayers(LayeredTerrain terrain) {
 		SurfaceFloatField cliffs = FIELDS.get("Test:Cliff");
+		SurfaceFloatField beaches = FIELDS.register(
+			"Test:Beach",
+			f -> multiply(
+				anti(FIELDS.get("Test:Cliff", f))
+			)
+		);
+		RockStrata rockStrata = createStrata();
 
-		WorleyProceduralNoise.Builder<TerrainLayer> builder = WorleyProceduralNoise.builder();
-		TestContent.ROCKS.getRocks().forEach(rock -> {
-			builder.add((c, d) -> {
-				if (c.getRandom().nextInt(3) == 0) {
-					return rock.getBlock(RockVariant.CRACKED);
-				} else {
-					return rock.getBlock(RockVariant.MONOLITH);
-				}
-			}, 1);
-		});
+		terrain.addLayer(new AirLayer("Test:Air"));
+		terrain.addLayer(new MantleLayer("Test:Mantle"));
+		terrain.addLayer(new CrustLayer("Test:Crust", rockStrata));
+		terrain.addLayer(new WaterLayer("Test:Water"));
+		terrain.addLayer(new SoilLayer("Test:Soil"));
+		terrain.addLayer(new CliffLayer("Test:Cliffs", cliffs, rockStrata));
+		terrain.addLayer(new BeachLayer("Test:Beaches", beaches, rockStrata));
+	}
+	
+	private static RockStrata createStrata() {
+		WorleyProceduralNoise.Builder<Rock> builder = WorleyProceduralNoise.builder();
+		TestContent.ROCKS.getRocks().forEach(rock -> builder.add(rock, 1));
+		
 		SurfaceFloatField rockDepthOffsets = FIELDS.register(
 			"Test:RockDepthOffsets",
 			() -> tweak(FIELDS.primitive(), 40, 5)
 		);
-		RockLayer rockLayer = new RockLayer(builder.build(SEED), rockDepthOffsets);
-
-		layers.put(Float.NEGATIVE_INFINITY, 0, (c, d) -> air);
-		layers.put(0, 4, (c, d) -> {
-			if (cliffs.get(c.getSurface().getUp(), c.getLocation().x, c.getLocation().y) > 0) {
-				return rockLayer.get(c, d);
-			} else {
-				return dirt;
-			}
-		});
-		layers.put(4, Float.POSITIVE_INFINITY, rockLayer);
+		
+		return new RockStrata(builder.build(SEED), rockDepthOffsets);
 	}
 
 	private static void registerFeatures(List<SurfaceFeature> features) {

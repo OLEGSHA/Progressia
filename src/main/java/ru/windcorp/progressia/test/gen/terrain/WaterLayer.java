@@ -15,14 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.server.world.generation.surface;
+package ru.windcorp.progressia.test.gen.terrain;
 
 import ru.windcorp.progressia.common.world.block.BlockData;
+import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceBlockContext;
 
-@FunctionalInterface
-public interface TerrainLayer {
-
-	BlockData get(SurfaceBlockContext context, float depth);
+public class WaterLayer extends TerrainLayer {
 	
+	private final BlockData water = BlockDataRegistry.getInstance().get("Test:Water");
+
+	public WaterLayer(String id) {
+		super(id);
+	}
+
+	@Override
+	public BlockData generate(SurfaceBlockContext context, float depth, float intensity) {
+		return water;
+	}
+
+	@Override
+	public float getIntensity(SurfaceBlockContext context, float depth) {
+		if (depth <= 0 && context.getLocation().z <= 0) {
+			return 2;
+		}
+		return 0;
+	}
+
 }

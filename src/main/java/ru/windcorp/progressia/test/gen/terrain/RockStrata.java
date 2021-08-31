@@ -15,43 +15,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen;
+package ru.windcorp.progressia.test.gen.terrain;
 
 import ru.windcorp.progressia.common.util.noise.discrete.DiscreteNoise;
-import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceFloatField;
-import ru.windcorp.progressia.server.world.generation.surface.TerrainLayer;
 import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceBlockContext;
+import ru.windcorp.progressia.test.Rocks.Rock;
 
-public class RockLayer implements TerrainLayer {
-
-	private final DiscreteNoise<TerrainLayer> strata;
+public class RockStrata {
+	
+	private final DiscreteNoise<Rock> distribution;
 	private final SurfaceFloatField depthOffsets;
 	
-	private final double horizontalScale = 200;
-	private final double verticalScale = 10;
-	private final double depthInfluense = 0.1;
+	private final double horizontalScale = 800;
+	private final double verticalScale = 20;
+	private final double depthInfluence = 0.1;
 
-	public RockLayer(DiscreteNoise<TerrainLayer> strata, SurfaceFloatField depthOffsets) {
-		this.strata = strata;
+	public RockStrata(DiscreteNoise<Rock> distribution, SurfaceFloatField depthOffsets) {
+		this.distribution = distribution;
 		this.depthOffsets = depthOffsets;
 	}
-
-	@Override
-	public BlockData get(SurfaceBlockContext context, float depth) {
-		
+	
+	public Rock get(SurfaceBlockContext context, float depth) {
 		double z = context.getLocation().z;
-		z -= depth * depthInfluense;
+		z -= depth * depthInfluence;
 		z += depthOffsets.get(context);
 		z /= verticalScale;
 		
-		return strata
-			.get(
+		return distribution.get(
 				context.getLocation().x / horizontalScale,
 				context.getLocation().y / horizontalScale,
 				z
-			)
-			.get(context, depth);
+		);
 	}
 
 }

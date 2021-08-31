@@ -15,35 +15,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.gen;
+package ru.windcorp.progressia.test.gen.terrain;
 
-import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.world.block.BlockData;
-import ru.windcorp.progressia.common.world.block.BlockDataRegistry;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceFloatField;
 import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceBlockContext;
+import ru.windcorp.progressia.test.Rocks.RockVariant;
 
-public class TestBushFeature extends MultiblockVegetationFeature {
+public class BeachLayer extends TerrainLayer {
 
-	private final BlockData trunk = BlockDataRegistry.getInstance().get("Test:Log");
-	private final BlockData leaves = BlockDataRegistry.getInstance().get("Test:TemporaryLeaves");
+	private final SurfaceFloatField beachSelector;
+	private final RockStrata strata;
 
-	public TestBushFeature(String id, SurfaceFloatField selector) {
-		super(id, selector, 7 * 7);
+	public BeachLayer(String id, SurfaceFloatField beachSelector, RockStrata strata) {
+		super(id);
+		this.beachSelector = beachSelector;
+		this.strata = strata;
 	}
 
 	@Override
-	protected void grow(SurfaceBlockContext context, double selectorValue) {
-		double size = selectorValue * randomDouble(context, 0.8, 1.2);
+	public BlockData generate(SurfaceBlockContext context, float depth, float intensity) {
+		return strata.get(context, depth).getBlock(RockVariant.SAND);
+	}
 
-		Vec3i center = context.getLocation().add_(0, 0, 1);
-
-		context.setBlock(center, trunk);
-		context.setBlock(center.add_(0, 0, 1), leaves);
-
-		iterateBlob(center, stretch(size, 1.3, 2.5), stretch(size, 0.6, 1.5), 0.7, 2, p -> {
-			setLeaves(context, p, leaves);
-		});
+	@Override
+	public float getIntensity(SurfaceBlockContext context, float depth) {
+		if (depth < 0 || depth > 3) {
+			return 0;
+		}
+		
+		float altitude = context.getLocation().z;
+		if (altitude < -5| altitude > 1) {
+			return 0;
+		}
+		
+		return 3 * beachSelector.get(context);
 	}
 
 }

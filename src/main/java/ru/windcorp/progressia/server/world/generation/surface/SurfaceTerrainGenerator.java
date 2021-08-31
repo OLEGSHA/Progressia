@@ -19,7 +19,6 @@ package ru.windcorp.progressia.server.world.generation.surface;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.FloatRangeMap;
 import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.block.BlockData;
@@ -33,12 +32,12 @@ public class SurfaceTerrainGenerator {
 	private final Surface surface;
 
 	private final SurfaceFloatField heightMap;
-	private final FloatRangeMap<TerrainLayer> layers;
+	private final TerrainSupplier terrain;
 
-	public SurfaceTerrainGenerator(Surface surface, SurfaceFloatField heightMap, FloatRangeMap<TerrainLayer> layers) {
+	public SurfaceTerrainGenerator(Surface surface, SurfaceFloatField heightMap, TerrainSupplier terrain) {
 		this.surface = surface;
 		this.heightMap = heightMap;
-		this.layers = layers;
+		this.terrain = terrain;
 	}
 
 	public void generateTerrain(Server server, DefaultChunkData chunk) {
@@ -74,7 +73,7 @@ public class SurfaceTerrainGenerator {
 			location.set(north, west, altitude);
 			SurfaceBlockContext blockContext = context.push(location);
 			
-			BlockData block = layers.get(depth).get(blockContext, depth);
+			BlockData block = terrain.get(blockContext, depth);
 			
 			blockContext.pop();
 

@@ -104,6 +104,8 @@ public class TestContent {
 		registerSimplestBlock("Dirt");
 		registerSimplestBlock("Chernozem");
 		registerSimplestBlock("Stone");
+		registerSimplestBlock("Mantle");
+		registerSimplestBlock("Water");
 		registerSimplestBlock("Brick");
 		registerSimplestBlock("BrickWhite");
 		registerSimplestBlock("Sand");
