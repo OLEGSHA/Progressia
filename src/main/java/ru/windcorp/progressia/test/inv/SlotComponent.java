@@ -18,11 +18,19 @@
 package ru.windcorp.progressia.test.inv;
 
 import glm.mat._4.Mat4;
+import glm.vec._3.Vec3;
+import ru.windcorp.progressia.client.graphics.Colors;
+import ru.windcorp.progressia.client.graphics.backend.Usage;
+import ru.windcorp.progressia.client.graphics.flat.FlatRenderProgram;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
+import ru.windcorp.progressia.client.graphics.model.Renderable;
+import ru.windcorp.progressia.client.graphics.model.Shape;
+import ru.windcorp.progressia.client.graphics.model.ShapeParts;
+import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.world.item.ItemRenderRegistry;
 import ru.windcorp.progressia.client.world.item.ItemRenderable;
 import ru.windcorp.progressia.common.world.item.ItemContainer;
@@ -32,26 +40,28 @@ import ru.windcorp.progressia.common.world.item.ItemSlot;
 public class SlotComponent extends Component {
 
 	static final float TEXTURE_SIZE = 24;
-	static final float SCALE = 2;
 
 	private final ItemContainer container;
 	private final int index;
-	
+
+	private float scale = 2;
+
 	private ItemRenderable itemRenderer = null;
 
 	private int amountDisplayInt = 0;
 	private String amountDisplayString = "";
+
+	private Renderable background = null;
 
 	public SlotComponent(String name, ItemContainer container, int index) {
 		super(name);
 		this.container = container;
 		this.index = index;
 
-		int side = (int) (TEXTURE_SIZE * SCALE);
-		setPreferredSize(side, side);
+		setScale(2);
 
 		Font sizeFont = new Font().deriveOutlined().withScale(1);
-		addChild(new DynamicLabel(name + ".Size", sizeFont, () -> amountDisplayString, side));
+		addChild(new DynamicLabel(getName() + ".Size", sizeFont, () -> amountDisplayString, getPreferredSize().x));
 
 		setLayout(new LayoutAlign(0, 0, 0));
 	}
@@ -60,12 +70,36 @@ public class SlotComponent extends Component {
 		return container.getSlot(index);
 	}
 
+	public SlotComponent setScale(float scale) {
+		this.scale = scale;
+
+		int side = (int) (TEXTURE_SIZE * scale);
+		setPreferredSize(side, side);
+		invalidate();
+
+		return this;
+	}
+
+	public SlotComponent setBackground(Texture texture) {
+		background = new Shape(
+			Usage.STATIC,
+			FlatRenderProgram.getDefault(),
+			ShapeParts.createRectangle(
+				FlatRenderProgram.getDefault(),
+				texture,
+				Colors.WHITE,
+				new Vec3(0, 0, 0),
+				new Vec3(24, 0, 0),
+				new Vec3(0, 24, 0),
+				false
+			)
+		);
+		return this;
+	}
+
 	@Override
 	protected void assembleSelf(RenderTarget target) {
 		super.assembleSelf(target);
-
-		updateItemRenderer();
-
 		assembleItem(target);
 	}
 
@@ -90,11 +124,19 @@ public class SlotComponent extends Component {
 	}
 
 	private void assembleItem(RenderTarget target) {
-		if (itemRenderer != null) {
-			target.pushTransform(new Mat4().translate(getX(), getY(), 0).scale(SCALE));
-			target.addCustomRenderer(itemRenderer);
-			target.popTransform();
-		}
+		target.pushTransform(new Mat4().translate(getX(), getY(), 0).scale(scale));
+		target.addCustomRenderer(renderer -> {
+
+			updateItemRenderer();
+
+			if (itemRenderer != null) {
+				itemRenderer.render(renderer);
+			} else if (background != null) {
+				background.render(renderer);
+			}
+
+		});
+		target.popTransform();
 	}
 
 }

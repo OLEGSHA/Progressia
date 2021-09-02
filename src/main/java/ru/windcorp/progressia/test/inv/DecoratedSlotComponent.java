@@ -28,8 +28,12 @@ public class DecoratedSlotComponent extends Button {
 	private final SlotComponent slotComponent;
 
 	public DecoratedSlotComponent(String name, ItemContainer container, int index) {
+		this(name, new SlotComponent(name, container, index));
+	}
+	
+	public DecoratedSlotComponent(String name, SlotComponent component) {
 		super(name, null, null);
-		this.slotComponent = new SlotComponent(name, container, index);
+		this.slotComponent = component;
 		
 		Vec2i size = slotComponent.getPreferredSize().add(2 * BORDER);
 		setPreferredSize(size);

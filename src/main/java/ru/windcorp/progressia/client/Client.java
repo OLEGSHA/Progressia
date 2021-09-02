@@ -18,14 +18,19 @@
  
 package ru.windcorp.progressia.client;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
 import ru.windcorp.progressia.client.comms.DefaultClientCommsListener;
 import ru.windcorp.progressia.client.comms.ServerCommsChannel;
+import ru.windcorp.progressia.client.events.ClientEvent;
+import ru.windcorp.progressia.client.events.NewLocalEntityEvent;
 import ru.windcorp.progressia.client.graphics.world.Camera;
 import ru.windcorp.progressia.client.graphics.world.EntityAnchor;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.world.WorldRender;
+import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
-import ru.windcorp.progressia.common.world.entity.EntityData;
 
 public class Client {
 
@@ -33,6 +38,8 @@ public class Client {
 	private final LocalPlayer localPlayer = new LocalPlayer(this);
 
 	private final Camera camera = new Camera((float) Math.toRadians(70));
+	
+	private final EventBus eventBus = ReportingEventBus.create("ClientEvents");
 
 	private final ServerCommsChannel comms;
 
@@ -41,6 +48,7 @@ public class Client {
 		this.comms = comms;
 
 		comms.addListener(new DefaultClientCommsListener(this));
+		subscribe(this);
 	}
 
 	public WorldRender getWorld() {
@@ -63,17 +71,32 @@ public class Client {
 		return comms;
 	}
 
-	public void onLocalPlayerEntityChanged(EntityData entity, EntityData lastKnownEntity) {
-		if (entity == null) {
+	@Subscribe
+	private void onLocalPlayerEntityChanged(NewLocalEntityEvent e) {
+		if (e.getNewEntity() == null) {
 			getCamera().setAnchor(null);
 			return;
 		}
 
 		getCamera().setAnchor(
 			new EntityAnchor(
-				getWorld().getEntityRenderable(entity)
+				getWorld().getEntityRenderable(e.getNewEntity())
 			)
 		);
+	}
+
+	public void subscribe(Object object) {
+		eventBus.register(object);
+	}
+
+	public void unsubscribe(Object object) {
+		eventBus.unregister(object);
+	}
+
+	public void postEvent(ClientEvent event) {
+		event.setClient(this);
+		eventBus.post(event);
+		event.setClient(null);
 	}
 
 }
