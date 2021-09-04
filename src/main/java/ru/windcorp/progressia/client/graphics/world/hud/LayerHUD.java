@@ -15,20 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.client.graphics.world;
+package ru.windcorp.progressia.client.graphics.world.hud;
 
 import com.google.common.eventbus.Subscribe;
 
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.events.NewLocalEntityEvent;
-import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
-import ru.windcorp.progressia.client.graphics.gui.Group;
-import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderHorizontal;
-import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderVertical;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
-import ru.windcorp.progressia.client.graphics.texture.SimpleTextures;
-import ru.windcorp.progressia.test.inv.SlotComponent;
 
 public class LayerHUD extends GUILayer {
 
@@ -49,20 +43,7 @@ public class LayerHUD extends GUILayer {
 			return;
 		}
 		
-		Component content = new Group(getName() + ".Content", new LayoutBorderVertical());
-		
-		Group handDisplays = new Group(
-			getName() + ".Hands",
-			new LayoutBorderHorizontal(),
-			new SlotComponent(getName() + ".Hands.LeftHand", e.getNewEntity().getLeftHand(), 0)
-				.setBackground(SimpleTextures.get("gui/LeftHand")).setScale(4).setLayoutHint(LayoutBorderHorizontal.LEFT),
-			new SlotComponent(getName() + ".Hands.RightHand", e.getNewEntity().getRightHand(), 0)
-				.setBackground(SimpleTextures.get("gui/RightHand")).setScale(4).setLayoutHint(LayoutBorderHorizontal.RIGHT)
-		);
-		
-		content.addChild(handDisplays.setLayoutHint(LayoutBorderVertical.UP));
-		
-		getRoot().addChild(content);
+		getRoot().addChild(new PermanentHUD(getName(), e.getClient().getLocalPlayer()));
 		getRoot().requestReassembly();
 	}
 

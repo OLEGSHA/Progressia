@@ -83,8 +83,8 @@ public class LocalPlayer {
 		}
 
 		if (playerEntity != lastKnownEntity) {
-			getClient().postEvent(new NewLocalEntityEvent.Immutable(getClient(), playerEntity, lastKnownEntity));
 			this.lastKnownEntity = playerEntity;
+			getClient().postEvent(new NewLocalEntityEvent.Immutable(getClient(), playerEntity, lastKnownEntity));
 		}
 
 		return playerEntity;
