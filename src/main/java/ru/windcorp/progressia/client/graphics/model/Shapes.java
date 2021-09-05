@@ -123,6 +123,36 @@ public class Shapes {
 
 		return result;
 	}
+	
+	public static Shape createParallelogram(
+		// Try saying that 10 times fast
+		ShapeRenderProgram program,
+
+		Vec3 origin,
+
+		Vec3 width,
+		Vec3 height,
+
+		Vec4 colorMultiplier,
+
+		Texture texture
+	) {
+		Shape result = new Shape(
+			Usage.STATIC,
+			program,
+			ShapeParts.createRectangle(
+				program,
+				texture,
+				colorMultiplier,
+				origin,
+				width,
+				height,
+				false
+			)
+		);
+
+		return result;
+	}
 
 	public static class PppBuilder {
 
@@ -297,4 +327,108 @@ public class Shapes {
 
 	}
 
+	public static class PgmBuilder {
+		
+		private final ShapeRenderProgram program;
+
+		private final Vec3 origin = new Vec3(0, 0, 0);
+
+		private final Vec3 width = new Vec3(1, 0, 0);
+		private final Vec3 height = new Vec3(0, 1, 0);
+
+		private final Vec4 colorMultiplier = new Vec4(1, 1, 1, 1);
+
+		private final Texture texture;
+
+		public PgmBuilder(ShapeRenderProgram program, Texture texture) {
+			this.program = program;
+			this.texture = texture;
+		}
+
+		public PgmBuilder setOrigin(Vec3 origin) {
+			this.origin.set(origin);
+			return this;
+		}
+
+		public PgmBuilder setOrigin(float x, float y, float z) {
+			this.origin.set(x, y, z);
+			return this;
+		}
+
+		public PgmBuilder setColorMultiplier(Vec4 colorMultiplier) {
+			this.colorMultiplier.set(colorMultiplier);
+			return this;
+		}
+
+		public PgmBuilder setColorMultiplier(float r, float g, float b) {
+			this.colorMultiplier.set(r, g, b, 1);
+			return this;
+		}
+
+		public PgmBuilder setColorMultiplier(float r, float g, float b, float a) {
+			this.colorMultiplier.set(r, g, b, a);
+			return this;
+		}
+
+		public PgmBuilder setWidth(Vec3 vector) {
+			this.width.set(vector);
+			return this;
+		}
+
+		public PgmBuilder setWidth(float x, float y, float z) {
+			this.width.set(x, y, z);
+			return this;
+		}
+
+		public PgmBuilder setWidth(float x) {
+			this.width.set(x, 0, 0);
+			return this;
+		}
+
+		public PgmBuilder setHeight(Vec3 vector) {
+			this.height.set(vector);
+			return this;
+		}
+
+		public PgmBuilder setHeight(float x, float y, float z) {
+			this.height.set(x, y, z);
+			return this;
+		}
+
+		public PgmBuilder setHeight(float y) {
+			this.height.set(0, y, 0);
+			return this;
+		}
+
+		public PgmBuilder setSize(float x, float y) {
+			return this.setWidth(x).setHeight(y);
+		}
+
+		public PgmBuilder setSize(float size) {
+			return this.setSize(size, size);
+		}
+		
+		public PgmBuilder centerAt(float x, float y, float z) {
+			origin.set(x, y, z);
+			
+			origin.mul(2);
+			origin.sub(width);
+			origin.div(2);
+			
+			return this;
+		}
+
+		public Shape create() {
+			return createParallelogram(
+				program,
+				origin,
+				width,
+				height,
+				colorMultiplier,
+				texture
+			);
+		}
+		
+	}
+	
 }

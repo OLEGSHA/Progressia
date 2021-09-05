@@ -84,6 +84,7 @@ public class TestPlayerControls {
 
 	private double lastSpacePress = Double.NEGATIVE_INFINITY;
 	private double lastSprintPress = Double.NEGATIVE_INFINITY;
+	private double lastCtrlPress = Double.NEGATIVE_INFINITY;
 
 	private int selectedBlock = 0;
 	private int selectedTile = 0;
@@ -249,6 +250,13 @@ public class TestPlayerControls {
 			if (!event.isPress())
 				return false;
 			switchPlacingMode();
+			break;
+			
+		case GLFW.GLFW_KEY_LEFT_CONTROL:
+		case GLFW.GLFW_KEY_RIGHT_CONTROL:
+			if (event.isRepeat())
+				return false;
+			handleCtrl(event);
 			break;
 
 		default:
@@ -435,8 +443,60 @@ public class TestPlayerControls {
 		isBlockSelected = !isBlockSelected;
 		updateGUI();
 	}
+	
+	public void handleCtrlIfApplicable(Input input) {
+		if (input.getEvent() instanceof KeyEvent) {
+			KeyEvent ke = (KeyEvent) input.getEvent();
+			if (ke.isRepeat()) {
+				return;
+			}
+			if (ke.getKey() == GLFW.GLFW_KEY_LEFT_CONTROL || ke.getKey() == GLFW.GLFW_KEY_RIGHT_CONTROL) {
+				handleCtrl(ke);
+				input.consume();
+			}
+		}
+	}
 
-	public EntityData getEntity() {
+	private void handleCtrl(KeyEvent event) {
+		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
+			return;
+		}
+		
+		double now = GraphicsInterface.getTime();
+		int change = 0;
+		
+		if (event.isPress()) {
+			change = +1;
+			lastCtrlPress = now;
+		} else {
+			if (now - lastCtrlPress > Units.get("200 ms")) {
+				change = -1;
+				lastCtrlPress = Double.NEGATIVE_INFINITY;
+			}
+		}
+		
+		if (change == 0) {
+			return;
+		}
+		
+		if (event.hasShift()) {
+			change *= -1;
+		}
+		
+		int selected = getEntity().getSelectedHandIndex();
+		int maxSelected = getEntity().getHandCount() - 1;
+		
+		selected += change;
+		if (selected < 0) {
+			selected = maxSelected;
+		} else if (selected > maxSelected) {
+			selected = 0;
+		}
+		
+		getEntity().setSelectedHandIndexNow(selected);
+	}
+
+	public EntityDataPlayer getEntity() {
 		return getPlayer().getEntity();
 	}
 

@@ -20,8 +20,6 @@ package ru.windcorp.progressia.test.inv;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.lwjgl.glfw.GLFW;
-
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.gui.BasicButton;
@@ -35,7 +33,6 @@ import ru.windcorp.progressia.client.graphics.input.WheelScrollEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.InputListener;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
-import ru.windcorp.progressia.common.world.item.ItemContainer;
 import ru.windcorp.progressia.common.world.item.ItemSlot;
 import ru.windcorp.progressia.common.world.item.Items;
 
@@ -43,16 +40,9 @@ public class InventoryScreen extends Component {
 
 	private static final double MIN_PICK_ALL_DELAY = Units.get("0.5 s");
 
-	private static boolean isLeftHandSelected = false;
-	private static double controlStart = Double.NEGATIVE_INFINITY;
-
-	public static boolean isLeftHandSelected() {
-		return isLeftHandSelected;
-	}
-
-	private final ItemContainer leftHand;
-	private final ItemContainer rightHand;
 	private final InventoryComponent mainInventory;
+	
+	private final EntityDataPlayer player;
 
 	private double lastLeftClick = Double.NEGATIVE_INFINITY;
 	private ItemSlot lastLeftClickSlot = null;
@@ -60,10 +50,9 @@ public class InventoryScreen extends Component {
 	public InventoryScreen(String name, InventoryComponent mainInventory, EntityDataPlayer player) {
 		super(name);
 
-		isLeftHandSelected = false;
 		this.mainInventory = mainInventory;
-		this.leftHand = player.getLeftHand();
-		this.rightHand = player.getRightHand();
+		
+		this.player = player;
 
 		setLayout(new LayoutFill(0));
 
@@ -73,39 +62,15 @@ public class InventoryScreen extends Component {
 		mainInventoryPanel.addChild(mainInventory);
 		addChild(Components.center(mainInventoryPanel));
 
-		SlotComponent leftComponent = new SlotComponent(name + ".HandLeft", leftHand, 0);
-		SlotComponent rightComponent = new SlotComponent(name + ".HandRight", rightHand, 0);
-
-		addChild(new HandSlots(name + ".Hands", leftComponent, rightComponent));
+		addChild(new HandSlots(name + ".Hands", player));
 
 		addListeners(mainInventory);
 
 		mainInventory.focusNext();
-		mainInventory.addListener(KeyEvent.class, input -> {
-			if (input.getKey() == GLFW.GLFW_KEY_LEFT_CONTROL || input.getKey() == GLFW.GLFW_KEY_RIGHT_CONTROL) {
-				double now = GraphicsInterface.getTime();
-				if (input.isPress()) {
-					isLeftHandSelected = !isLeftHandSelected;
-					controlStart = now;
-				} else if (input.isRelease()) {
-					if (now - controlStart > Units.get("200 ms")) {
-						isLeftHandSelected = !isLeftHandSelected;
-						controlStart = Double.NEGATIVE_INFINITY;
-					}
-				}
-					
-				return true;
-			}
-			return false;
-		});
 	}
 
 	private void addListeners(InventoryComponent mainInventory) {
-
-		ItemSlot left = leftHand.getSlot(0);
-		ItemSlot right = rightHand.getSlot(0);
-
-		Supplier<ItemSlot> handSlot = () -> isLeftHandSelected() ? left : right;
+		Supplier<ItemSlot> handSlot = () -> player.getSelectedHand().slot();
 
 		Consumer<BasicButton> pickAll = createPickAllAction(handSlot);
 
@@ -137,10 +102,6 @@ public class InventoryScreen extends Component {
 			} else {
 				lastLeftClick = now;
 				lastLeftClickSlot = invSlot;
-			}
-
-			if (!success && !leftHand.getSlot(0).isEmpty() && rightHand.getSlot(0).isEmpty()) {
-				success = Items.pour(leftHand.getSlot(0), invSlot) != 0;
 			}
 
 			if (!success) {

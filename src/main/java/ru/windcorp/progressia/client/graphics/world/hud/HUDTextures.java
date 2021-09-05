@@ -17,23 +17,27 @@
  */
 package ru.windcorp.progressia.client.graphics.world.hud;
 
-import ru.windcorp.progressia.client.graphics.gui.Component;
-import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderVertical;
-import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
-import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
+import ru.windcorp.progressia.client.graphics.texture.Atlases;
+import ru.windcorp.progressia.client.graphics.texture.SimpleTexture;
+import ru.windcorp.progressia.client.graphics.texture.Texture;
+import ru.windcorp.progressia.client.graphics.texture.Atlases.AtlasGroup;
+import ru.windcorp.progressia.common.resource.ResourceManager;
 
-public class PermanentHUD extends Component {
+public class HUDTextures {
 
-	public PermanentHUD(String name, LocalPlayer player) {
-		super(name);
-		setLayout(new LayoutBorderVertical());
+	private static final AtlasGroup HUD_ATLAS_GROUP = new AtlasGroup("HUD", 1 << 12);
 
-		EntityDataPlayer entity = player.getEntity();
-		if (entity == null) {
-			throw new IllegalStateException("Player " + player + " does not have an associated entity");
-		}
-		
-		addChild(new HandsHUD(name + ".Hands", player).setLayoutHint(LayoutBorderVertical.UP));
+	public static Texture getHUDTexture(String name) {
+		return new SimpleTexture(
+			Atlases.getSprite(
+				ResourceManager.getTextureResource("gui/" + name),
+				HUD_ATLAS_GROUP
+			)
+		);
+	}
+
+	public static AtlasGroup getHUDAtlasGroup() {
+		return HUD_ATLAS_GROUP;
 	}
 
 }

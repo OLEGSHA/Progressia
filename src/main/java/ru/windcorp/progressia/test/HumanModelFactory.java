@@ -30,15 +30,14 @@ import ru.windcorp.progressia.client.graphics.texture.ComplexTexture;
 import ru.windcorp.progressia.client.graphics.texture.TexturePrimitive;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.world.entity.HumanoidModel;
-import ru.windcorp.progressia.client.world.entity.EntityRender;
 import ru.windcorp.progressia.client.world.entity.EntityRenderRegistry;
 import ru.windcorp.progressia.client.world.entity.EntityRenderable;
 import ru.windcorp.progressia.common.util.FloatMathUtil;
-import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 
 import static java.lang.Math.*;
 
-public class TestEntityRenderHuman extends EntityRender {
+public class HumanModelFactory {
 
 	private static final float SECOND_LAYER_OFFSET = 1 / 12f;
 
@@ -51,9 +50,7 @@ public class TestEntityRenderHuman extends EntityRender {
 
 	private final TexturePrimitive skin;
 
-	public TestEntityRenderHuman(String id) {
-		super(id);
-
+	public HumanModelFactory() {
 		this.skin = fetchSkin();
 
 		ComplexTexture texture = new ComplexTexture(
@@ -203,8 +200,7 @@ public class TestEntityRenderHuman extends EntityRender {
 		return b.build();
 	}
 
-	@Override
-	public EntityRenderable createRenderable(EntityData entity) {
+	public EntityRenderable createRenderable(EntityDataPlayer entity) {
 		return new HumanoidModel(
 			entity,
 
@@ -237,7 +233,7 @@ public class TestEntityRenderHuman extends EntityRender {
 				0.0f
 			),
 
-			1.8f / (3 + 3 + 2)
+			SpeciesDataHuman.HEIGHT / (3 + 3 + 2)
 		)
 			.setWalkingArmSwing((float) toRadians(30))
 			.setWalkingLegSwing((float) toRadians(50))

@@ -19,22 +19,21 @@ package ru.windcorp.progressia.common.world.item;
 
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.world.entity.SpeciesData;
-import ru.windcorp.progressia.common.world.entity.SpeciesData.Hand;
 
-public class ItemContainerHand extends ItemContainerSingle {
+public class ItemContainerEquipment extends ItemContainerSingle {
 	
-	private static final float HAND_MASS_LIMIT = Units.get("10 kg");
-	private static final float HAND_VOLUME_LIMIT = Units.get("5 kg");
+	private static final float EQUIP_MASS_LIMIT = Units.get("15 kg");
+	private static final float EQUIP_VOLUME_LIMIT = Units.get("60 kg");
 	
-	private final SpeciesData.Hand hand;
+	private final SpeciesData.EquipmentSlot equipmentSlot;
 
-	public ItemContainerHand(String id, Hand hand) {
-		super(id, HAND_MASS_LIMIT, HAND_VOLUME_LIMIT);
-		this.hand = hand;
+	public ItemContainerEquipment(String id, SpeciesData.EquipmentSlot equipmentSlot) {
+		super(id, EQUIP_MASS_LIMIT, EQUIP_VOLUME_LIMIT);
+		this.equipmentSlot = equipmentSlot;
 	}
 	
-	public SpeciesData.Hand getHand() {
-		return hand;
+	public SpeciesData.EquipmentSlot getEquipmentSlot() {
+		return equipmentSlot;
 	}
 
 }

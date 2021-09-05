@@ -283,13 +283,21 @@ public class TestContent {
 	}
 
 	private static void registerEntities() {
-		registerEntity("Core:Player", EntityDataPlayer::new);
-		register(new TestEntityRenderHuman("Core:Player"));
-		register(new EntityLogic("Core:Player"));
+		registerPlayer();
 
 		registerEntity("Test:Statie", TestEntityDataStatie::new);
 		register(new TestEntityRenderStatie("Test:Statie"));
 		register(new TestEntityLogicStatie("Test:Statie"));
+	}
+
+	private static void registerPlayer() {
+		SpeciesData human = new SpeciesDataHuman("Core:Human");
+		SpeciesDataRegistry.getInstance().register(human);
+		SpeciesRenderRegistry.getInstance().register(new SpeciesRenderHuman("Core:Human"));
+		
+		registerEntity("Core:Player", id -> new EntityDataPlayer(id, human));
+		register(new EntityRenderPlayer("Core:Player"));
+		register(new EntityLogic("Core:Player"));
 	}
 
 	private static void regsiterControls() {

@@ -15,26 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item;
+package ru.windcorp.progressia.test;
 
-import ru.windcorp.progressia.common.Units;
-import ru.windcorp.progressia.common.world.entity.SpeciesData;
+import ru.windcorp.progressia.client.graphics.world.hud.HandsHUD.Side;
+import ru.windcorp.progressia.client.world.entity.EntityRenderable;
+import ru.windcorp.progressia.client.world.entity.SpeciesRender;
+import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 import ru.windcorp.progressia.common.world.entity.SpeciesData.Hand;
 
-public class ItemContainerHand extends ItemContainerSingle {
+public class SpeciesRenderHuman extends SpeciesRender {
 	
-	private static final float HAND_MASS_LIMIT = Units.get("10 kg");
-	private static final float HAND_VOLUME_LIMIT = Units.get("5 kg");
-	
-	private final SpeciesData.Hand hand;
+	private final HumanModelFactory modelFactory = new HumanModelFactory();
 
-	public ItemContainerHand(String id, Hand hand) {
-		super(id, HAND_MASS_LIMIT, HAND_VOLUME_LIMIT);
-		this.hand = hand;
+	public SpeciesRenderHuman(String id) {
+		super(id);
 	}
-	
-	public SpeciesData.Hand getHand() {
-		return hand;
+
+	@Override
+	public EntityRenderable createRenderable(EntityDataPlayer entity) {
+		return modelFactory.createRenderable(entity);
+	}
+
+	@Override
+	public Side getHandSide(Hand hand) {
+		return hand.getIndex() == 0 ? Side.RIGHT : Side.LEFT;
 	}
 
 }

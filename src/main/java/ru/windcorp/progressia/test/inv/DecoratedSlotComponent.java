@@ -20,6 +20,7 @@ package ru.windcorp.progressia.test.inv;
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.gui.Button;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
+import ru.windcorp.progressia.client.graphics.world.hud.SlotComponent;
 import ru.windcorp.progressia.common.world.item.ItemContainer;
 import ru.windcorp.progressia.common.world.item.ItemSlot;
 

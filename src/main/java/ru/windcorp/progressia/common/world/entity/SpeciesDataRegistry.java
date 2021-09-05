@@ -15,26 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item;
+package ru.windcorp.progressia.common.world.entity;
 
-import ru.windcorp.progressia.common.Units;
-import ru.windcorp.progressia.common.world.entity.SpeciesData;
-import ru.windcorp.progressia.common.world.entity.SpeciesData.Hand;
+import ru.windcorp.progressia.common.state.codec.ObjectCodec;
+import ru.windcorp.progressia.common.util.namespaces.NamespacedInstanceRegistry;
 
-public class ItemContainerHand extends ItemContainerSingle {
+public class SpeciesDataRegistry extends NamespacedInstanceRegistry<SpeciesData> {
 	
-	private static final float HAND_MASS_LIMIT = Units.get("10 kg");
-	private static final float HAND_VOLUME_LIMIT = Units.get("5 kg");
+	private static final SpeciesDataRegistry INSTANCE = new SpeciesDataRegistry();
 	
-	private final SpeciesData.Hand hand;
+	private final ObjectCodec<SpeciesDatalet> codec = new SpeciesCodec();
 
-	public ItemContainerHand(String id, Hand hand) {
-		super(id, HAND_MASS_LIMIT, HAND_VOLUME_LIMIT);
-		this.hand = hand;
+	public static SpeciesDataRegistry getInstance() {
+		return INSTANCE;
 	}
 	
-	public SpeciesData.Hand getHand() {
-		return hand;
+	public ObjectCodec<SpeciesDatalet> getCodec() {
+		return codec;
 	}
 
 }

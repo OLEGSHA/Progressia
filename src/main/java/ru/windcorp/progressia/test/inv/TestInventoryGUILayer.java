@@ -27,6 +27,7 @@ import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 import ru.windcorp.progressia.common.world.item.ItemContainerMixed;
+import ru.windcorp.progressia.test.TestPlayerControls;
 
 public class TestInventoryGUILayer extends GUILayer {
 
@@ -37,6 +38,10 @@ public class TestInventoryGUILayer extends GUILayer {
 	public TestInventoryGUILayer() {
 		super("Inventory", new LayoutFill(0));
 		setCursorPolicy(CursorPolicy.INDIFFERENT);
+	}
+	
+	public boolean hasContainer() {
+		return container != null;
 	}
 
 	public void setContainer(ItemContainerMixed container, EntityDataPlayer player) {
@@ -83,6 +88,8 @@ public class TestInventoryGUILayer extends GUILayer {
 					}
 				}
 			}
+			
+			TestPlayerControls.getInstance().handleCtrlIfApplicable(input);
 
 			super.handleInput(input);
 			input.consume();

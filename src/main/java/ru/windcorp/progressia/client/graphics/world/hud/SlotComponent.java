@@ -15,12 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.inv;
+package ru.windcorp.progressia.client.graphics.world.hud;
 
+import java.util.function.BooleanSupplier;
 import glm.mat._4.Mat4;
-import glm.vec._3.Vec3;
-import ru.windcorp.progressia.client.graphics.Colors;
-import ru.windcorp.progressia.client.graphics.backend.Usage;
 import ru.windcorp.progressia.client.graphics.flat.FlatRenderProgram;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
@@ -28,8 +26,7 @@ import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
-import ru.windcorp.progressia.client.graphics.model.Shape;
-import ru.windcorp.progressia.client.graphics.model.ShapeParts;
+import ru.windcorp.progressia.client.graphics.model.Shapes.PgmBuilder;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.world.item.ItemRenderRegistry;
 import ru.windcorp.progressia.client.world.item.ItemRenderable;
@@ -52,6 +49,7 @@ public class SlotComponent extends Component {
 	private String amountDisplayString = "";
 
 	private Renderable background = null;
+	private BooleanSupplier backgroundCondition = null;
 
 	public SlotComponent(String name, ItemContainer container, int index) {
 		super(name);
@@ -80,20 +78,18 @@ public class SlotComponent extends Component {
 		return this;
 	}
 
+	public SlotComponent setBackground(Texture texture, BooleanSupplier when) {
+		background = new PgmBuilder(FlatRenderProgram.getDefault(), texture).setSize(TEXTURE_SIZE).create();
+		setBackgroundDisplayCondition(when);
+		return this;
+	}
+	
 	public SlotComponent setBackground(Texture texture) {
-		background = new Shape(
-			Usage.STATIC,
-			FlatRenderProgram.getDefault(),
-			ShapeParts.createRectangle(
-				FlatRenderProgram.getDefault(),
-				texture,
-				Colors.WHITE,
-				new Vec3(0, 0, 0),
-				new Vec3(24, 0, 0),
-				new Vec3(0, 24, 0),
-				false
-			)
-		);
+		return setBackground(texture, null);
+	}
+	
+	public SlotComponent setBackgroundDisplayCondition(BooleanSupplier backgroundCondition) {
+		this.backgroundCondition = backgroundCondition;
 		return this;
 	}
 
@@ -132,7 +128,9 @@ public class SlotComponent extends Component {
 			if (itemRenderer != null) {
 				itemRenderer.render(renderer);
 			} else if (background != null) {
-				background.render(renderer);
+				if (backgroundCondition == null || backgroundCondition.getAsBoolean()) {
+					background.render(renderer);
+				}
 			}
 
 		});

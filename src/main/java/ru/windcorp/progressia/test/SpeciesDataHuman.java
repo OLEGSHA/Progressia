@@ -15,26 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item;
+package ru.windcorp.progressia.test;
 
 import ru.windcorp.progressia.common.Units;
+import ru.windcorp.progressia.common.collision.AABB;
+import ru.windcorp.progressia.common.collision.CollisionModel;
 import ru.windcorp.progressia.common.world.entity.SpeciesData;
-import ru.windcorp.progressia.common.world.entity.SpeciesData.Hand;
 
-public class ItemContainerHand extends ItemContainerSingle {
+public class SpeciesDataHuman extends SpeciesData {
 	
-	private static final float HAND_MASS_LIMIT = Units.get("10 kg");
-	private static final float HAND_VOLUME_LIMIT = Units.get("5 kg");
-	
-	private final SpeciesData.Hand hand;
+	public static final float HEIGHT = Units.get("180 cm");
+	public static final float WIDTH = Units.get("80 cm");
 
-	public ItemContainerHand(String id, Hand hand) {
-		super(id, HAND_MASS_LIMIT, HAND_VOLUME_LIMIT);
-		this.hand = hand;
+	public SpeciesDataHuman(String id) {
+		super(id);
+		
+		withHands(new Hand("Right"), new Hand("Left"));
+		withEquipmentSlots(/* ._. nope */);
 	}
-	
-	public SpeciesData.Hand getHand() {
-		return hand;
+
+	@Override
+	public CollisionModel getCollisionModel() {
+		return new AABB(0, 0, HEIGHT / 2, WIDTH, WIDTH, HEIGHT);
 	}
 
 }

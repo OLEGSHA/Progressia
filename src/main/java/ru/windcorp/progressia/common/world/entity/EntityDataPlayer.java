@@ -18,41 +18,63 @@
 package ru.windcorp.progressia.common.world.entity;
 
 import ru.windcorp.progressia.common.Units;
-import ru.windcorp.progressia.common.collision.AABB;
+import ru.windcorp.progressia.common.state.IntStateField;
 import ru.windcorp.progressia.common.state.ObjectStateField;
-import ru.windcorp.progressia.common.world.item.ItemContainerMixedSimple;
 import ru.windcorp.progressia.common.world.item.ItemContainerHand;
-import ru.windcorp.progressia.common.world.item.ItemContainerMixed;
+import ru.windcorp.progressia.common.world.item.ItemContainerMixedSimple;
 
 public class EntityDataPlayer extends EntityData {
+
+	private final ObjectStateField<SpeciesDatalet> speciesDatalet = field("Core:SpeciesDatalet").setShared()
+		.of(SpeciesDataRegistry.getInstance().getCodec()).build();
 	
 	private final ObjectStateField<ItemContainerMixedSimple> inventory = field("Core:Inventory").setShared().def(
 		() -> new ItemContainerMixedSimple("Core:PlayerInventory", Units.get(15, "kg"), Units.get(50, "L"))
 	).build();
 	
-	private final ObjectStateField<ItemContainerHand> leftHand = field("Core:LeftHand").setShared().def(
-		() -> new ItemContainerHand("Core:PlayerLeftHand", Units.get(10, "kg"), Units.get(5, "L"))
-	).build();
-	
-	private final ObjectStateField<ItemContainerHand> rightHand = field("Core:RightHand").setShared().def(
-		() -> new ItemContainerHand("Core:PlayerRightHand", Units.get(10, "kg"), Units.get(5, "L"))
-	).build();
+	private final IntStateField selectedHand = field("Core:SelectedHand").setShared().ofInt().build();
 
-	public EntityDataPlayer(String id) {
+	public EntityDataPlayer(String id, SpeciesData species) {
 		super(id);
-		setCollisionModel(new AABB(0, 0, 1.8f / 2, 0.8f, 0.8f, 1.8f));
+		
+		setSpecies(species);
 	}
 	
-	public ItemContainerMixed getInventory() {
+	public ItemContainerMixedSimple getInventory() {
 		return inventory.get(this);
 	}
-	
-	public ItemContainerHand getLeftHand() {
-		return leftHand.get(this);
+
+	private void setSpecies(SpeciesData species) {
+		speciesDatalet.setNow(this, species.createDatalet());
+		setCollisionModel(species.getCollisionModel());
 	}
 	
-	public ItemContainerHand getRightHand() {
-		return rightHand.get(this);
+	public SpeciesData getSpecies() {
+		return speciesDatalet.get(this).getSpecies();
+	}
+
+	public ItemContainerHand getHand(int index) {
+		return speciesDatalet.get(this).getHands()[index];
+	}
+	
+	public int getHandCount() {
+		return speciesDatalet.get(this).getHands().length;
+	}
+	
+	public int getEquipmentCount() {
+		return speciesDatalet.get(this).getEquipment().length;
+	}
+	
+	public int getSelectedHandIndex() {
+		return selectedHand.get(this);
+	}
+	
+	public void setSelectedHandIndexNow(int index) {
+		selectedHand.setNow(this, index);
+	}
+	
+	public ItemContainerHand getSelectedHand() {
+		return getHand(getSelectedHandIndex());
 	}
 
 }

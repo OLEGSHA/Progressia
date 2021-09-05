@@ -24,7 +24,7 @@ import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 
 public class TestInventoryGUIManager {
 	
-	private static TestInventoryGUILayer layer;
+	public static TestInventoryGUILayer layer;
 	
 	public static void setup() {
 		layer = new TestInventoryGUILayer();

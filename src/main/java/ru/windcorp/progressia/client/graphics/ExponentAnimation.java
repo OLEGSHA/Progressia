@@ -15,26 +15,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item;
+package ru.windcorp.progressia.client.graphics;
 
-import ru.windcorp.progressia.common.Units;
-import ru.windcorp.progressia.common.world.entity.SpeciesData;
-import ru.windcorp.progressia.common.world.entity.SpeciesData.Hand;
+import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 
-public class ItemContainerHand extends ItemContainerSingle {
+public class ExponentAnimation {
 	
-	private static final float HAND_MASS_LIMIT = Units.get("10 kg");
-	private static final float HAND_VOLUME_LIMIT = Units.get("5 kg");
+	private final float speed;
+	private float value;
 	
-	private final SpeciesData.Hand hand;
-
-	public ItemContainerHand(String id, Hand hand) {
-		super(id, HAND_MASS_LIMIT, HAND_VOLUME_LIMIT);
-		this.hand = hand;
+	public ExponentAnimation(float speed, float value) {
+		this.speed = speed;
+		this.value = value;
 	}
 	
-	public SpeciesData.Hand getHand() {
-		return hand;
+	public float getSpeed() {
+		return speed;
+	}
+	
+	public float getValue() {
+		return value;
+	}
+	
+	public void setValue(float value) {
+		this.value = value;
+	}
+	
+	public float update(float target, double timeStep) {
+		float difference = value - target;
+		value += difference * (1 - Math.exp(speed * timeStep));
+		
+		return value;
+	}
+	
+	public float updateForFrame(float target) {
+		return update(target, GraphicsInterface.getFrameLength());
 	}
 
 }
