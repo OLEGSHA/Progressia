@@ -31,7 +31,6 @@ import ru.windcorp.progressia.common.comms.CommsChannel.State;
 import ru.windcorp.progressia.common.comms.packets.Packet;
 import ru.windcorp.progressia.common.world.PacketSetGravityModel;
 import ru.windcorp.progressia.common.world.PacketSetLocalPlayer;
-import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.Server;
 

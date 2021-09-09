@@ -30,8 +30,11 @@ import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
+
+import org.apache.logging.log4j.LogManager;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.state.IOContext;
@@ -52,10 +55,15 @@ public class Region {
 	private static final int SECTORS_BYTES = Short.BYTES;
 	private static final int SECTOR_SIZE = MAX_CHUNK_SIZE >> (SECTORS_BYTES*8);
 	
+	public int loadedChunks;
+	
 	private static final int DEFINITION_SIZE = Integer.BYTES + Short.BYTES;
 
 	private static final int HEADER_SIZE = DEFINITION_SIZE * REGION_DIAMETER * REGION_DIAMETER * REGION_DIAMETER;
 
+	private AtomicBoolean isUsing = new AtomicBoolean(false);
+	private AtomicBoolean isClosed = new AtomicBoolean(false);
+	
 	private final RandomAccessFile file;
 
 	private final ChunkMap<Integer> offsets = ChunkMaps.newHashMap();
@@ -90,6 +98,7 @@ public class Region {
 
 	public void close() throws IOException {
 		this.file.close();
+		isClosed.lazySet(true);;
 	}
 
 	public int getOffset(Vec3i chunkLoc) {
@@ -115,10 +124,21 @@ public class Region {
 	public void putLength(Vec3i pos, int length) {
 		lengths.put(pos, length);
 	}
+	
+	public AtomicBoolean isClosed()
+	{
+		return isClosed;
+	}
+	
+	public AtomicBoolean isUsing()
+	{
+		return isUsing;
+	}
 
 	private void confirmHeaderHealth() throws IOException {
 
 		Set<Integer> used = new HashSet<Integer>();
+		int maxUsed = 0;
 		final int chunksPerRegion = REGION_DIAMETER * REGION_DIAMETER * REGION_DIAMETER;
 
 		file.seek(0);
@@ -142,6 +162,11 @@ public class Region {
 
 			offsets.put(pos, offset);
 			lengths.put(pos, sectorLength);
+			
+			if (offset+sectorLength > maxUsed)
+			{
+				maxUsed = offset + sectorLength;
+			}
 
 			for (int sector = 0; sector < sectorLength; sector++) {
 				if (!used.add(offset + sector)) {
@@ -149,10 +174,11 @@ public class Region {
 				}
 			}
 		}
-
+		LogManager.getLogger("Region").debug("Efficiency of {}", (double) used.size()/maxUsed);
 	}
 
 	public void save(DefaultChunkData chunk, Server server) throws IOException {
+		isUsing.set(true);
 		Vec3i pos = TestWorldDiskIO.getInRegionCoords(chunk.getPosition());
 		int definitionOffset = DEFINITION_SIZE * (pos.z + REGION_DIAMETER * (pos.y + REGION_DIAMETER * pos.x));
 
@@ -162,7 +188,16 @@ public class Region {
 		int dataOffset = getOffset(pos);
 
 		byte[] buffer = saveToBuffer(chunk, server);
+		if (hasLength(pos) && buffer.length > getLength(pos)*SECTOR_SIZE )
+		{
+			byte emptyBuffer[] = new byte[getLength(pos)*SECTOR_SIZE];
+			writeBuffer(emptyBuffer, definitionOffset, dataOffset, pos);
+			allocateChunk(definitionOffset, pos);
+			dataOffset = getOffset(pos);
+		}
+		
 		writeBuffer(buffer, definitionOffset, dataOffset, pos);
+		isUsing.set(false);
 	}
 
 	private byte[] saveToBuffer(DefaultChunkData chunk, Server server) throws IOException {
@@ -208,6 +243,7 @@ public class Region {
 	public DefaultChunkData load(Vec3i chunkPos, DefaultWorldData world, Server server)
 		throws IOException,
 		DecodingException {
+		isUsing.set(true);
 
 		int dataOffset = 0;
 		int sectorLength = 0;
@@ -222,6 +258,7 @@ public class Region {
 
 		byte[] buffer = readBuffer(dataOffset, sectorLength);
 		DefaultChunkData result = loadFromBuffer(buffer, chunkPos, world, server);
+		isUsing.set(false);
 		return result;
 	}
 

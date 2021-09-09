@@ -18,6 +18,8 @@
 
 package ru.windcorp.progressia.test.region;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import glm.vec._3.i.Vec3i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -227,8 +229,29 @@ public class TestWorldDiskIO implements WorldContainer {
 	@Override
 	public void close() {
 		try {
-			for (Region region : regions.values()) {
-				region.close();
+			ChunkMap<AtomicBoolean> isCloseds = ChunkMaps.newHashMap();
+			ChunkMap<AtomicBoolean> isUsings = ChunkMaps.newHashMap();
+			
+			for (Vec3i region : regions.keys())
+			{
+				isCloseds.put(region, regions.get(region).isClosed());
+				isUsings.put(region, regions.get(region).isUsing());
+			}
+			
+			boolean stillOpen = true;
+			while (stillOpen)
+			{
+				stillOpen = false;
+				for (Vec3i region : regions.keys()) {
+					if (!isCloseds.get(region).get() && !isUsings.get(region).get())
+					{
+						regions.get(region).close();
+					}
+					else if (isUsings.get(region).get())
+					{
+						stillOpen = false;
+					}
+				}
 			}
 		} catch (IOException e) {
 			throw CrashReports.report(e, "Could not close region files");
