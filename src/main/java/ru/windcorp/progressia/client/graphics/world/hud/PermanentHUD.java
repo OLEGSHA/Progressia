@@ -19,21 +19,20 @@ package ru.windcorp.progressia.client.graphics.world.hud;
 
 import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderVertical;
-import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 
 public class PermanentHUD extends Component {
 
-	public PermanentHUD(String name, LocalPlayer player) {
+	public PermanentHUD(String name, HUDManager manager) {
 		super(name);
 		setLayout(new LayoutBorderVertical());
 
-		EntityDataPlayer entity = player.getEntity();
+		EntityDataPlayer entity = manager.getPlayerEntity();
 		if (entity == null) {
-			throw new IllegalStateException("Player " + player + " does not have an associated entity");
+			throw new IllegalStateException("Player " + manager.getPlayer() + " does not have an associated entity");
 		}
 		
-		addChild(new HandsHUD(name + ".Hands", player).setLayoutHint(LayoutBorderVertical.UP));
+		addChild(new HandsHUD(name + ".Hands", manager).setLayoutHint(LayoutBorderVertical.UP));
 	}
 
 }

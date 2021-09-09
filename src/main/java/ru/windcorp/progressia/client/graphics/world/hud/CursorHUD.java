@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.inv;
+package ru.windcorp.progressia.client.graphics.world.hud;
 
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.ExponentAnimation;
@@ -24,14 +24,13 @@ import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
-import ru.windcorp.progressia.client.graphics.world.hud.SlotComponent;
 import ru.windcorp.progressia.client.world.entity.SpeciesRender;
 import ru.windcorp.progressia.client.world.entity.SpeciesRenderRegistry;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 import ru.windcorp.progressia.common.world.entity.SpeciesData.Hand;
 import ru.windcorp.progressia.common.world.item.ItemContainerHand;
 
-public class HandSlots extends Component {
+public class CursorHUD extends Component {
 
 	private class CursorBoundSlot {
 
@@ -64,7 +63,7 @@ public class HandSlots extends Component {
 			float target = player.getSelectedHand() == component.getSlot().getContainer() ? 1 : 0;
 			float sel = selection.updateForFrame(target);
 
-			float distance = HandSlots.this.distance * (1 - sel);
+			float distance = CursorHUD.this.distance * (1 - sel);
 			float x = (float) Math.cos(angle) * distance;
 			float y = (float) Math.sin(angle) * distance;
 			float scale = 0.5f + 0.5f * sel;
@@ -97,7 +96,7 @@ public class HandSlots extends Component {
 
 	private final CursorBoundSlot[] slots;
 
-	public HandSlots(String name, EntityDataPlayer player) {
+	public CursorHUD(String name, EntityDataPlayer player) {
 		super(name);
 		this.player = player;
 

@@ -25,21 +25,33 @@ import ru.windcorp.progressia.client.comms.DefaultClientCommsListener;
 import ru.windcorp.progressia.client.comms.ServerCommsChannel;
 import ru.windcorp.progressia.client.events.ClientEvent;
 import ru.windcorp.progressia.client.events.NewLocalEntityEvent;
+import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.world.Camera;
 import ru.windcorp.progressia.client.graphics.world.EntityAnchor;
+import ru.windcorp.progressia.client.graphics.world.LayerWorld;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
+import ru.windcorp.progressia.client.graphics.world.hud.HUDManager;
 import ru.windcorp.progressia.client.world.WorldRender;
 import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
+import ru.windcorp.progressia.test.LayerAbout;
+import ru.windcorp.progressia.test.LayerTestUI;
 
 public class Client {
 
 	private final WorldRender world;
+	
+	private final LayerWorld layerWorld = new LayerWorld(this);
+	private final LayerTestUI layerTestUI = new LayerTestUI();
+	private final LayerAbout layerAbout = new LayerAbout();
+	
 	private final LocalPlayer localPlayer = new LocalPlayer(this);
 
 	private final Camera camera = new Camera((float) Math.toRadians(70));
 	
 	private final EventBus eventBus = ReportingEventBus.create("ClientEvents");
+	
+	private final HUDManager hudManager = new HUDManager(this);
 
 	private final ServerCommsChannel comms;
 
@@ -49,6 +61,20 @@ public class Client {
 
 		comms.addListener(new DefaultClientCommsListener(this));
 		subscribe(this);
+	}
+	
+	public void install() {
+		GUI.addBottomLayer(layerWorld);
+		GUI.addTopLayer(layerTestUI);
+		hudManager.install();
+		GUI.addTopLayer(layerAbout);
+	}
+	
+	public void remove() {
+		GUI.removeLayer(layerWorld);
+		GUI.removeLayer(layerTestUI);
+		hudManager.remove();
+		GUI.removeLayer(layerAbout);
 	}
 
 	public WorldRender getWorld() {
@@ -69,6 +95,10 @@ public class Client {
 
 	public ServerCommsChannel getComms() {
 		return comms;
+	}
+	
+	public HUDManager getHUD() {
+		return hudManager;
 	}
 
 	@Subscribe

@@ -18,6 +18,7 @@
 package ru.windcorp.progressia.client.world.entity;
 
 import ru.windcorp.progressia.client.graphics.texture.Texture;
+import ru.windcorp.progressia.client.graphics.world.hud.InventoryHUD;
 import ru.windcorp.progressia.client.graphics.world.hud.HUDTextures;
 import ru.windcorp.progressia.client.graphics.world.hud.HandsHUD;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
@@ -34,6 +35,7 @@ public abstract class SpeciesRender extends Namespaced {
 	public abstract EntityRenderable createRenderable(EntityDataPlayer entity);
 	
 	public abstract HandsHUD.Side getHandSide(Hand hand);
+	public abstract InventoryHUD.Side getEquipmentSlotSide(EquipmentSlot equipmentSlot);
 	
 	public Texture getTexture(String name) {
 		return HUDTextures.getHUDTexture(getNamespace() + "_" + getName() + "/" + name);

@@ -31,7 +31,7 @@ public class SpeciesDataHuman extends SpeciesData {
 		super(id);
 		
 		withHands(new Hand("Right"), new Hand("Left"));
-		withEquipmentSlots(/* ._. nope */);
+		withEquipmentSlots(new EquipmentSlot("Backpack", i -> true));
 	}
 
 	@Override

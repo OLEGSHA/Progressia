@@ -17,34 +17,116 @@
  */
 package ru.windcorp.progressia.client.graphics.world.hud;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.google.common.eventbus.Subscribe;
 
-import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.events.NewLocalEntityEvent;
+import ru.windcorp.progressia.client.graphics.GUI;
+import ru.windcorp.progressia.client.graphics.gui.Components;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
+import ru.windcorp.progressia.client.graphics.input.KeyEvent;
+import ru.windcorp.progressia.client.graphics.input.bus.Input;
+import ru.windcorp.progressia.test.TestPlayerControls;
 
 public class LayerHUD extends GUILayer {
 
-	public LayerHUD(Client client) {
+	private final HUDManager manager;
+
+	private boolean showInventory = false;
+	private boolean isHidden = false;
+
+	public LayerHUD(HUDManager manager) {
 		super("LayerHUD", new LayoutFill(15));
+		this.manager = manager;
+
 		setCursorPolicy(CursorPolicy.INDIFFERENT);
 
-		client.subscribe(this);
+		manager.getClient().subscribe(this);
 	}
-	
+
 	@Subscribe
 	private void onEntityChanged(NewLocalEntityEvent e) {
 		while (!getRoot().getChildren().isEmpty()) {
 			getRoot().removeChild(getRoot().getChild(0));
 		}
-		
+
 		if (e.getNewEntity() == null) {
+			getRoot().requestReassembly();
 			return;
 		}
-		
-		getRoot().addChild(new PermanentHUD(getName(), e.getClient().getLocalPlayer()));
+
+		getRoot().addChild(new PermanentHUD(getName() + ".Permanent", manager));
+		getRoot().addChild(Components.hide(new InventoryHUD(getName() + ".Equipment", manager), () -> !showInventory));
+		getRoot().addChild(Components.hide(new CursorHUD(getName() + ".Equipment", manager.getPlayerEntity()), () -> !showInventory));
+
 		getRoot().requestReassembly();
+	}
+
+	public boolean isInventoryShown() {
+		return showInventory;
+	}
+
+	public void setInventoryShown(boolean showInventory) {
+		this.showInventory = showInventory;
+		updateCursorPolicy();
+	}
+
+	public boolean isHidden() {
+		return isHidden;
+	}
+
+	public void setHidden(boolean isHidden) {
+		this.isHidden = isHidden;
+		updateCursorPolicy();
+	}
+
+	private void updateCursorPolicy() {
+		if (showInventory && !isHidden) {
+			setCursorPolicy(CursorPolicy.REQUIRE);
+		} else {
+			setCursorPolicy(CursorPolicy.INDIFFERENT);
+		}
+
+		GUI.updateLayer(this);
+	}
+
+	@Override
+	protected void handleInput(Input input) {
+		if (isHidden) {
+			return;
+		}
+
+		super.handleInput(input);
+
+		if (showInventory) {
+			TestPlayerControls.getInstance().handleCtrlIfApplicable(input);
+			if (!input.isConsumed()) {
+				handleCloseInventoryIfApplicable(input);
+			}
+			input.consume();
+		}
+	}
+
+	private void handleCloseInventoryIfApplicable(Input input) {
+		if (input.getEvent() instanceof KeyEvent) {
+			KeyEvent event = (KeyEvent) input.getEvent();
+
+			if (event.isPress() && (event.getKey() == GLFW.GLFW_KEY_E || event.getKey() == GLFW.GLFW_KEY_ESCAPE)) {
+				setInventoryShown(false);
+				input.consume();
+			}
+		}
+	}
+
+	@Override
+	protected void doRender() {
+		if (isHidden) {
+			return;
+		}
+
+		super.doRender();
 	}
 
 }

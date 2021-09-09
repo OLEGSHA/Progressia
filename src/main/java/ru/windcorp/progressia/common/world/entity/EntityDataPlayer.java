@@ -20,6 +20,7 @@ package ru.windcorp.progressia.common.world.entity;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.state.IntStateField;
 import ru.windcorp.progressia.common.state.ObjectStateField;
+import ru.windcorp.progressia.common.world.item.ItemContainerEquipment;
 import ru.windcorp.progressia.common.world.item.ItemContainerHand;
 import ru.windcorp.progressia.common.world.item.ItemContainerMixedSimple;
 
@@ -59,6 +60,10 @@ public class EntityDataPlayer extends EntityData {
 	
 	public int getHandCount() {
 		return speciesDatalet.get(this).getHands().length;
+	}
+	
+	public ItemContainerEquipment getEquipmentSlot(int index) {
+		return speciesDatalet.get(this).getEquipment()[index];
 	}
 	
 	public int getEquipmentCount() {

@@ -70,6 +70,8 @@ public class PlayerManager {
 		player.getInventory().getSlot(9).setContents(ItemDataRegistry.getInstance().create("Test:RedGraniteCobblestone"), 1);
 		player.getInventory().getSlot(6).setContents(ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream"), 1);
 
+		player.getHand(0).slot().setContents(ItemDataRegistry.getInstance().create("Test:Stick"), 7);
+
 		player.setPosition(getServer().getWorld().getGenerator().suggestSpawnLocation());
 		player.setUpVector(new Vec3(0, 0, 1));
 		player.setLookingAt(new Vec3(2, 1, 0));

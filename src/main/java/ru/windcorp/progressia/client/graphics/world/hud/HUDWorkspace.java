@@ -15,45 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.inv;
+package ru.windcorp.progressia.client.graphics.world.hud;
 
 import ru.windcorp.progressia.client.Client;
-import ru.windcorp.progressia.client.ClientState;
-import ru.windcorp.progressia.client.graphics.GUI;
+import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
+import ru.windcorp.progressia.common.world.item.ItemContainerHand;
 
-public class TestInventoryGUIManager {
+public interface HUDWorkspace {
 	
-	public static TestInventoryGUILayer layer;
+	Client getClient();
 	
-	public static void setup() {
-		layer = new TestInventoryGUILayer();
-		GUI.addTopLayer(layer);
+	default LocalPlayer getPlayer() {
+		return getClient().getLocalPlayer();
 	}
 	
-	public static void shutdown() {
-		GUI.getLayers().stream().filter(TestInventoryGUILayer.class::isInstance).forEach(GUI::removeLayer);
-		layer = null;
+	default EntityDataPlayer getPlayerEntity() {
+		return getClient().getLocalPlayer().getEntity();
 	}
 	
-	public static void openGUI() {
-		
-		Client client = ClientState.getInstance();
-		if (client == null) {
-			return;
-		}
-		
-		if (layer == null) {
-			return;
-		}
-		
-		EntityDataPlayer entity = client.getLocalPlayer().getEntity();
-		if (entity == null) {
-			return;
-		}
-		
-		layer.setContainer(entity.getInventory(), entity);
-		
+	default ItemContainerHand getHand() {
+		return getClient().getLocalPlayer().getEntity().getSelectedHand();
 	}
+	
+	void openContainer(InventoryComponent component);
 
 }

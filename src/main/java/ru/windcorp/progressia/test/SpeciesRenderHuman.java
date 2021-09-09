@@ -17,10 +17,12 @@
  */
 package ru.windcorp.progressia.test;
 
-import ru.windcorp.progressia.client.graphics.world.hud.HandsHUD.Side;
+import ru.windcorp.progressia.client.graphics.world.hud.InventoryHUD;
+import ru.windcorp.progressia.client.graphics.world.hud.HandsHUD;
 import ru.windcorp.progressia.client.world.entity.EntityRenderable;
 import ru.windcorp.progressia.client.world.entity.SpeciesRender;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
+import ru.windcorp.progressia.common.world.entity.SpeciesData.EquipmentSlot;
 import ru.windcorp.progressia.common.world.entity.SpeciesData.Hand;
 
 public class SpeciesRenderHuman extends SpeciesRender {
@@ -37,8 +39,13 @@ public class SpeciesRenderHuman extends SpeciesRender {
 	}
 
 	@Override
-	public Side getHandSide(Hand hand) {
-		return hand.getIndex() == 0 ? Side.RIGHT : Side.LEFT;
+	public HandsHUD.Side getHandSide(Hand hand) {
+		return hand.getIndex() == 0 ? HandsHUD.Side.RIGHT : HandsHUD.Side.LEFT;
+	}
+	
+	@Override
+	public InventoryHUD.Side getEquipmentSlotSide(EquipmentSlot equipmentSlot) {
+		return InventoryHUD.Side.LEFT;
 	}
 
 }

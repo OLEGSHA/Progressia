@@ -17,6 +17,8 @@
  */
 package ru.windcorp.progressia.common.world.item;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 import ru.windcorp.progressia.common.state.Encodable;
@@ -31,7 +33,7 @@ import ru.windcorp.progressia.common.util.namespaces.Namespaced;
  * unique index. If a container has <i>n</i> slots, its slots are numbered 0
  * through <i>n</i> - 1.
  */
-public abstract class ItemContainer extends Namespaced implements Encodable {
+public abstract class ItemContainer extends Namespaced implements Encodable, Iterable<ItemSlot> {
 
 	public ItemContainer(String id) {
 		super(id);
@@ -52,7 +54,32 @@ public abstract class ItemContainer extends Namespaced implements Encodable {
 	 */
 	public abstract int getSlotCount();
 	
-	public abstract void forEach(Consumer<ItemSlot> action);
+	@Override
+	public abstract void forEach(Consumer<? super ItemSlot> action);
+	
+	@Override
+	public Iterator<ItemSlot> iterator() {
+		return new Iterator<ItemSlot>() {
+			
+			private int index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return index < getSlotCount();
+			}
+
+			@Override
+			public ItemSlot next() {
+				if (!hasNext()) {
+					throw new NoSuchElementException("index = " + index + ", size = " + getSlotCount());
+				}
+				ItemSlot slot = getSlot(index);
+				index++;
+				return slot;
+			}
+			
+		};
+	}
 
 	/**
 	 * Computes and returns the mass limit that the container imposes.

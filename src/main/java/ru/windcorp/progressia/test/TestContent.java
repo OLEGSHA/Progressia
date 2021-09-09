@@ -28,7 +28,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
@@ -70,7 +69,6 @@ import ru.windcorp.progressia.server.world.generation.planet.PlanetGravityModel;
 import ru.windcorp.progressia.server.world.tile.*;
 import ru.windcorp.progressia.test.Rocks.RockType;
 import ru.windcorp.progressia.test.gen.TestGravityModel;
-import ru.windcorp.progressia.test.inv.TestInventoryGUIManager;
 
 public class TestContent {
 
@@ -311,7 +309,7 @@ public class TestContent {
 				"Test:BreakBlock",
 				KeyEvent.class,
 				TestContent::onBlockBreakTrigger,
-				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_LEFT).matcher(),
+				KeyMatcher.ofLeftMouseButton(),
 				i -> isAnythingSelected()
 			)
 		);
@@ -323,7 +321,7 @@ public class TestContent {
 				"Test:PlaceBlock",
 				KeyEvent.class,
 				TestContent::onBlockPlaceTrigger,
-				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
+				KeyMatcher.ofRightMouseButton(),
 				i -> isAnythingSelected() && TestPlayerControls.getInstance().isBlockSelected()
 			)
 		);
@@ -336,7 +334,7 @@ public class TestContent {
 				"Test:PlaceTile",
 				KeyEvent.class,
 				TestContent::onTilePlaceTrigger,
-				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
+				KeyMatcher.ofRightMouseButton(),
 				i -> isAnythingSelected() && !TestPlayerControls.getInstance().isBlockSelected()
 			)
 		);
@@ -347,16 +345,25 @@ public class TestContent {
 				"Test:StartNextMusic",
 				KeyEvent.class,
 				TestMusicPlayer::startNextNow,
-				KeyMatcher.of(GLFW.GLFW_KEY_M).matcher()
+				KeyMatcher.of("M")
 			)
 		);
 		
 		triggers.register(
 			ControlTriggers.localOf(
-				"Test:OpenInventory",
+				"Test:ShowInventory",
 				KeyEvent.class,
-				TestInventoryGUIManager::openGUI,
-				KeyMatcher.of(GLFW.GLFW_KEY_E).matcher()
+				TestContent::switchInventory,
+				KeyMatcher.of("E")
+			)
+		);
+		
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:HideHUD",
+				KeyEvent.class,
+				TestContent::switchHUD,
+				KeyMatcher.of("F1")
 			)
 		);
 	}
@@ -495,6 +502,22 @@ public class TestContent {
 			return;
 		}
 		tileContext.addTile(tile);
+	}
+	
+	private static void switchInventory() {
+		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
+		if (client == null || !client.isReady())
+			return;
+		
+		client.getHUD().setInventoryShown(!client.getHUD().isInventoryShown());
+	}
+	
+	private static void switchHUD() {
+		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
+		if (client == null || !client.isReady())
+			return;
+		
+		client.getHUD().setHidden(!client.getHUD().isHidden());
 	}
 
 	private static void registerMisc() {

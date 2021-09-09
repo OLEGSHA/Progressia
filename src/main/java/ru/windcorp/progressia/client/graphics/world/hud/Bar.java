@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.inv;
+package ru.windcorp.progressia.client.graphics.world.hud;
 
 import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;

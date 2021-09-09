@@ -36,7 +36,6 @@ import ru.windcorp.progressia.client.world.entity.SpeciesRender;
 import ru.windcorp.progressia.client.world.entity.SpeciesRenderRegistry;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 import ru.windcorp.progressia.common.world.entity.SpeciesData.Hand;
-import ru.windcorp.progressia.test.inv.TestInventoryGUIManager;
 
 public class HandsHUD extends Component {
 
@@ -91,11 +90,11 @@ public class HandsHUD extends Component {
 
 	private final LocalPlayer player;
 
-	public HandsHUD(String name, LocalPlayer player) {
+	public HandsHUD(String name, HUDManager manager) {
 		super(name);
-		this.player = player;
+		this.player = manager.getPlayer();
 
-		EntityDataPlayer entity = player.getEntity();
+		EntityDataPlayer entity = manager.getPlayerEntity();
 		String speciesId = entity.getSpecies().getId();
 		SpeciesRender speciesRender = SpeciesRenderRegistry.getInstance().get(speciesId);
 
@@ -130,7 +129,7 @@ public class HandsHUD extends Component {
 	}
 
 	private boolean shouldRenderHandPlaceholder() {
-		return TestInventoryGUIManager.layer.hasContainer();
+		return true;
 	}
 
 }

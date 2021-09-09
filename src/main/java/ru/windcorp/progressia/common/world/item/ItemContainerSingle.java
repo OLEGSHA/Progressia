@@ -74,7 +74,7 @@ public abstract class ItemContainerSingle extends ItemContainer {
 	}
 
 	@Override
-	public void forEach(Consumer<ItemSlot> action) {
+	public void forEach(Consumer<? super ItemSlot> action) {
 		action.accept(slot);
 	}
 

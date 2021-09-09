@@ -17,12 +17,18 @@
  */
 package ru.windcorp.progressia.client.graphics.gui;
 
+import java.util.function.BooleanSupplier;
+
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 
 public class Components {
 	
 	public static Component center(Component c) {
 		return new Group(c.getName() + ".Centerer", new LayoutAlign(), c);
+	}
+	
+	public static Component hide(Component c, BooleanSupplier shouldHide) {
+		return new Hider(c.getName() + ".Hider", c, shouldHide);
 	}
 
 	private Components() {

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.inv;
+package ru.windcorp.progressia.client.graphics.world.hud;
 
 import java.util.Collection;
 
@@ -27,6 +27,6 @@ public abstract class InventoryComponent extends Component {
 		super(name);
 	}
 
-	public abstract Collection<DecoratedSlotComponent> getSlots();
+	public abstract Collection<InteractiveSlotComponent> getSlots();
 
 }

@@ -43,6 +43,7 @@ import ru.windcorp.progressia.client.graphics.gui.event.HoverEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.ParentChangedEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
+import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.input.bus.InputBus;
 import ru.windcorp.progressia.client.graphics.input.bus.InputListener;
@@ -557,12 +558,35 @@ public class Component extends Named {
 		inputBus.register(type, handlesConsumed, listener);
 	}
 
-	public <T extends InputEvent> void addListener(Class<? extends T> type, InputListener<T> listener) {
+	public <T extends InputEvent> void addListener(Class<T> type, InputListener<? super T> listener) {
 		if (inputBus == null) {
 			inputBus = new InputBus();
 		}
 
 		inputBus.register(type, listener);
+	}
+	
+	public <T extends InputEvent> void addListener(Class<T> type, Runnable listener) {
+		addListener(type, event -> {
+			listener.run();
+			return true;
+		});
+	}
+	
+	public void addListener(KeyMatcher matcher, InputListener<? super KeyEvent> listener) {
+		addListener(KeyEvent.class, event -> {
+			if (matcher.test(event)) {
+				return listener.handle(event);
+			}
+			return false;
+		});
+	}
+	
+	public void addListener(KeyMatcher matcher, Runnable listener) {
+		addListener(matcher, event -> {
+			listener.run();
+			return true;
+		});
 	}
 
 	public void removeListener(InputListener<?> listener) {

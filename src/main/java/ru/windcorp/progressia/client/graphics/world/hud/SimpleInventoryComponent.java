@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.inv;
+package ru.windcorp.progressia.client.graphics.world.hud;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,9 +32,9 @@ import ru.windcorp.progressia.common.world.item.ItemContainer;
 public class SimpleInventoryComponent extends InventoryComponent {
 
 	private final Group slots = new Group("Inventory.Slots", new LayoutGrid(15));
-	private final Collection<DecoratedSlotComponent> slotCollection = new ArrayList<>();
+	private final Collection<InteractiveSlotComponent> slotCollection = new ArrayList<>();
 
-	public SimpleInventoryComponent(ItemContainer container) {
+	public SimpleInventoryComponent(ItemContainer container, HUDWorkspace workspace) {
 		super("Inventory");
 
 		setLayout(new LayoutBorderHorizontal(15));
@@ -65,14 +65,14 @@ public class SimpleInventoryComponent extends InventoryComponent {
 		addChild(massBar.setLayoutHint(LayoutBorderHorizontal.LEFT));
 
 		for (int i = 0; i < container.getSlotCount(); ++i) {
-			addSlot(container, i);
+			addSlot(container, i, workspace);
 		}
 	}
 
-	private void addSlot(ItemContainer container, int index) {
+	private void addSlot(ItemContainer container, int index, HUDWorkspace workspace) {
 		final int maxX = 6;
 
-		DecoratedSlotComponent component = new DecoratedSlotComponent("Inventory.Slot." + index, container, index);
+		InteractiveSlotComponent component = new InteractiveSlotComponent("Inventory.Slot." + index, container, index, workspace);
 
 		Vec2i pos = new Vec2i(index % maxX, index / maxX);
 		slots.addChild(component.setLayoutHint(pos));
@@ -80,7 +80,7 @@ public class SimpleInventoryComponent extends InventoryComponent {
 	}
 
 	@Override
-	public Collection<DecoratedSlotComponent> getSlots() {
+	public Collection<InteractiveSlotComponent> getSlots() {
 		return slotCollection;
 	}
 

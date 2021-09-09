@@ -79,7 +79,7 @@ public abstract class ItemContainerMixed extends ItemContainer {
 	}
 	
 	@Override
-	public void forEach(Consumer<ItemSlot> action) {
+	public void forEach(Consumer<? super ItemSlot> action) {
 		getSlots().forEach(action);
 	}
 

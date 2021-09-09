@@ -19,15 +19,9 @@
 package ru.windcorp.progressia.client;
 
 import ru.windcorp.progressia.client.comms.localhost.LocalServerCommsChannel;
-import ru.windcorp.progressia.client.graphics.GUI;
-import ru.windcorp.progressia.client.graphics.world.LayerWorld;
-import ru.windcorp.progressia.client.graphics.world.hud.LayerHUD;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.ServerState;
-import ru.windcorp.progressia.test.LayerAbout;
-import ru.windcorp.progressia.test.LayerTestUI;
 import ru.windcorp.progressia.test.TestContent;
-import ru.windcorp.progressia.test.inv.TestInventoryGUIManager;
 
 public class ClientState {
 
@@ -55,12 +49,7 @@ public class ClientState {
 
 		setInstance(client);
 
-		GUI.addBottomLayer(new LayerWorld(client));
-		GUI.addTopLayer(new LayerTestUI());
-		GUI.addTopLayer(new LayerHUD(client));
-		TestInventoryGUIManager.setup();
-		GUI.addTopLayer(new LayerAbout());
-
+		client.install();
 	}
 
 	private ClientState() {
