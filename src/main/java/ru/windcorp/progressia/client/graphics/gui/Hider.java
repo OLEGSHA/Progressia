@@ -39,12 +39,21 @@ public class Hider extends Component {
 	}
 	
 	@Override
-	protected void handleInput(Input input) {
+	public void dispatchInput(Input input) {
 		if (shouldHide.getAsBoolean()) {
 			return;
 		}
 		
-		super.handleInput(input);
+		super.dispatchInput(input);
+	}
+	
+	@Override
+	public synchronized Component findFocused() {
+		if (shouldHide.getAsBoolean()) {
+			return null;
+		}
+		
+		return super.findFocused();
 	}
 	
 	@Override

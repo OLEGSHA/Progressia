@@ -191,7 +191,8 @@ public class RenderTarget {
 		assembleCurrentClipFromFaces();
 		
 		float depth = this.depth--;
-		Mat4 transform = new Mat4().translate(0, 0, depth).mul(getTransform());
+		final float kostyl = 1e-2f;
+		Mat4 transform = new Mat4().translate(0, 0, depth).scale(1, 1, kostyl).mul(getTransform());
 		assembled.add(new Clip(maskStack, transform, renderable));
 	}
 
