@@ -231,24 +231,19 @@ public class TestWorldDiskIO implements WorldContainer {
 		try {
 			ChunkMap<AtomicBoolean> isCloseds = ChunkMaps.newHashMap();
 			ChunkMap<AtomicBoolean> isUsings = ChunkMaps.newHashMap();
-			
-			for (Vec3i region : regions.keys())
-			{
+
+			for (Vec3i region : regions.keys()) {
 				isCloseds.put(region, regions.get(region).isClosed());
 				isUsings.put(region, regions.get(region).isUsing());
 			}
-			
+
 			boolean stillOpen = true;
-			while (stillOpen)
-			{
+			while (stillOpen) {
 				stillOpen = false;
 				for (Vec3i region : regions.keys()) {
-					if (!isCloseds.get(region).get() && !isUsings.get(region).get())
-					{
+					if (!isCloseds.get(region).get() && !isUsings.get(region).get()) {
 						regions.get(region).close();
-					}
-					else if (isUsings.get(region).get())
-					{
+					} else if (isUsings.get(region).get()) {
 						stillOpen = false;
 					}
 				}

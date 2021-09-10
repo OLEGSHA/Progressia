@@ -40,14 +40,14 @@ import ru.windcorp.progressia.common.world.io.ChunkIO;
 import ru.windcorp.progressia.server.Server;
 
 public class Region {
-	
+
 	private static final boolean RESET_CORRUPTED = true;
-	
+
 	public int loadedChunks;
 
 	private AtomicBoolean isUsing = new AtomicBoolean(false);
 	private AtomicBoolean isClosed = new AtomicBoolean(false);
-	
+
 	private final RegionFile file;
 
 	private final ChunkMap<Integer> offsets = ChunkMaps.newHashMap();
@@ -87,28 +87,26 @@ public class Region {
 	public void putOffset(Vec3i pos, int offset) {
 		offsets.put(pos, offset);
 	}
-	
-	public AtomicBoolean isClosed()
-	{
+
+	public AtomicBoolean isClosed() {
 		return isClosed;
 	}
-	
-	public AtomicBoolean isUsing()
-	{
+
+	public AtomicBoolean isUsing() {
 		return isUsing;
 	}
 
 	public void save(DefaultChunkData chunk, Server server) throws IOException {
 		isUsing.set(true);
 		Vec3i pos = TestWorldDiskIO.getInRegionCoords(chunk.getPosition());
-		
+
 		if (!hasOffset(pos)) {
 			putOffset(pos, file.allocateChunk(pos));
 		}
 		int dataOffset = getOffset(pos);
 
 		byte[] buffer = saveToBuffer(chunk, server);
-		
+
 		file.writeBuffer(buffer, dataOffset, pos);
 		isUsing.set(false);
 	}
@@ -128,8 +126,6 @@ public class Region {
 
 		return arrayStream.toByteArray();
 	}
-
-	
 
 	public DefaultChunkData load(Vec3i chunkPos, DefaultWorldData world, Server server)
 		throws IOException,

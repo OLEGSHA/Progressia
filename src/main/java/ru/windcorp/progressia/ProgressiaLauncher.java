@@ -18,7 +18,6 @@
 
 package ru.windcorp.progressia;
 
-import ru.windcorp.progressia.client.ClientProxy;
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.crash.analyzers.OutOfMemoryAnalyzer;
@@ -28,15 +27,19 @@ import ru.windcorp.progressia.test.LayerTitle;
 public class ProgressiaLauncher {
 
 	public static String[] arguments;
-	private static ClientProxy proxy;
+	private static Proxy proxy;
 
-	public static void launch(String[] args, ClientProxy inProxy) {
+	public static void launch(String[] args, Proxy proxy) {
 		arguments = args.clone();
 		setupCrashReports();
 
-		inProxy.initialize();
-		proxy = inProxy;
+		proxy.initialize();
+		ProgressiaLauncher.proxy = proxy;
 		GUI.addTopLayer(new LayerTitle("Title"));
+	}
+	
+	public static Proxy getProxy() {
+		return proxy;
 	}
 
 	private static void setupCrashReports() {
