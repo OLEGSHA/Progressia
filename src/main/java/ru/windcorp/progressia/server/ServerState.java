@@ -25,8 +25,8 @@ import java.util.function.Function;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.world.generation.WorldGenerator;
 import ru.windcorp.progressia.server.world.io.WorldContainer;
+import ru.windcorp.progressia.server.world.io.region.RegionFormat;
 import ru.windcorp.progressia.test.gen.TestGenerationConfig;
-import ru.windcorp.progressia.test.region.RegionFormat;
 
 public class ServerState {
 

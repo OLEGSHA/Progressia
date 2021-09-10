@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.test.region;
+package ru.windcorp.progressia.server.world.io.region;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -59,7 +59,7 @@ public class Region {
 			this.file.confirmHeaderHealth(offsets);
 		} catch (IOException e) {
 
-			TestWorldDiskIO.LOG.debug("Uh the file broke");
+			RegionWorldContainer.LOG.debug("Uh the file broke");
 			if (RESET_CORRUPTED) {
 				this.file.makeHeader();
 			}
@@ -98,7 +98,7 @@ public class Region {
 
 	public void save(DefaultChunkData chunk, Server server) throws IOException {
 		isUsing.set(true);
-		Vec3i pos = TestWorldDiskIO.getInRegionCoords(chunk.getPosition());
+		Vec3i pos = RegionWorldContainer.getInRegionCoords(chunk.getPosition());
 
 		if (!hasOffset(pos)) {
 			putOffset(pos, file.allocateChunk(pos));
@@ -121,7 +121,7 @@ public class Region {
 			)
 		) {
 			ChunkIO.save(chunk, dataStream, IOContext.SAVE);
-			TestWorldDiskIO.writeGenerationHint(chunk, dataStream, server);
+			RegionWorldContainer.writeGenerationHint(chunk, dataStream, server);
 		}
 
 		return arrayStream.toByteArray();
@@ -133,7 +133,7 @@ public class Region {
 		isUsing.set(true);
 
 		int dataOffset = 0;
-		Vec3i pos = TestWorldDiskIO.getInRegionCoords(chunkPos);
+		Vec3i pos = RegionWorldContainer.getInRegionCoords(chunkPos);
 
 		if (hasOffset(pos)) {
 			dataOffset = getOffset(pos);
@@ -160,7 +160,7 @@ public class Region {
 		);
 
 		DefaultChunkData result = ChunkIO.load(world, chunkPos, dataStream, IOContext.SAVE);
-		TestWorldDiskIO.readGenerationHint(result, dataStream, server);
+		RegionWorldContainer.readGenerationHint(result, dataStream, server);
 		return result;
 	}
 }

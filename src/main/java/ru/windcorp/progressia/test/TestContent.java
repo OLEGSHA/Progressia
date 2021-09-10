@@ -380,7 +380,7 @@ public class TestContent {
 		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
 		if (client == null || !client.isReady())
 			return null;
-
+		
 		return client.getLocalPlayer().getSelection();
 	}
 

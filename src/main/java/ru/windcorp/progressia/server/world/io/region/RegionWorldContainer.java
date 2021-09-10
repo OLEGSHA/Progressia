@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ru.windcorp.progressia.test.region;
+package ru.windcorp.progressia.server.world.io.region;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -43,7 +43,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class TestWorldDiskIO implements WorldContainer {
+public class RegionWorldContainer implements WorldContainer {
 
 	private static final boolean ENABLE = true;
 
@@ -68,7 +68,7 @@ public class TestWorldDiskIO implements WorldContainer {
 	private final Path path;
 	private final ChunkMap<Region> regions = ChunkMaps.newHashMap();
 
-	public TestWorldDiskIO(Path path) throws IOException {
+	public RegionWorldContainer(Path path) throws IOException {
 		this.path = path;
 
 		Files.createDirectories(getPath());

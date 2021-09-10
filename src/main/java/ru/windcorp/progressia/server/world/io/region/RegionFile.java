@@ -1,6 +1,6 @@
-package ru.windcorp.progressia.test.region;
+package ru.windcorp.progressia.server.world.io.region;
 
-import static ru.windcorp.progressia.test.region.TestWorldDiskIO.REGION_DIAMETER;
+import static ru.windcorp.progressia.server.world.io.region.RegionWorldContainer.REGION_DIAMETER;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
