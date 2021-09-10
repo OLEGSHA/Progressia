@@ -257,9 +257,24 @@ public class TestContent {
 		register(new TestEntityRenderStatie("Test:Statie"));
 		register(new TestEntityLogicStatie("Test:Statie"));
 		
+		registerSands();
+	}
+	
+	private static void registerSands()
+	{
+		TestEntityLogicFallingBlock.addFallables();
+		
 		register("Test:FallingBlock", TestEntityDataFallingBlock::new);
 		register(new TestEntityLogicFallingBlock("Test:FallingBlock"));
-		register(new TestEntityRenderFallingBlock("Test:FallingBlock"));
+		register(new TestEntityRenderFallingBlock("Test:FallingBlock","Sand"));
+		
+		for (String str : TestEntityLogicFallingBlock.FallingBlocks)
+		{
+			register("Test:FallingBlock" + str.substring(5), TestEntityDataFallingBlock::new);
+			register(new TestEntityLogicFallingBlock("Test:FallingBlock"+str.substring(5)));
+			register(new TestEntityRenderFallingBlock("Test:FallingBlock"+str.substring(5), str.substring(5)));
+		}
+		
 	}
 
 	private static void regsiterControls() {

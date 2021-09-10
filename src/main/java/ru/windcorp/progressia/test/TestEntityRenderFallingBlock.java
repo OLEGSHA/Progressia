@@ -1,6 +1,5 @@
 package ru.windcorp.progressia.test;
 
-import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.Shapes;
@@ -20,10 +19,9 @@ import ru.windcorp.progressia.common.world.entity.EntityData;
 public class TestEntityRenderFallingBlock extends EntityRender {
 	private Renderable cube;
 
-	public TestEntityRenderFallingBlock(String id) {
+	public TestEntityRenderFallingBlock(String id, String blockName) {
 		super(id);
-		String dflt = TestEntityLogicFallingBlock.FallingBlocks.toArray()[0].toString().substring(5);
-		cube = new Shapes.PppBuilder(WorldRenderProgram.getDefault(), BlockRenderRegistry.getBlockTexture(dflt ) )// TODO idk actual ggood this
+		cube = new Shapes.PppBuilder(WorldRenderProgram.getDefault(), BlockRenderRegistry.getBlockTexture(blockName ) )// TODO idk actual ggood this
 						.create();
 	}
 
@@ -36,18 +34,9 @@ public class TestEntityRenderFallingBlock extends EntityRender {
 		return new EntityRenderable(entity) {
 			@Override
 			public void doRender(ShapeRenderHelper renderer) {
-				// LogManager.getLogger().info("Rendering FallingBlock");
 				if (((TestEntityDataFallingBlock) entity).isDone()) {
 					return;
-					// setTexture(new
-					// SimpleTexture(Atlases.getSprite(ResourceManager.getTextureResource("blocks/LogSide"),
-					// new AtlasGroup("Blocks", 1 << 12))));
 				}
-				TestEntityDataFallingBlock fallEntity = (TestEntityDataFallingBlock) ClientState.getInstance().getWorld().getData().getEntity(entity.getEntityId());
-				setTexture(BlockRenderRegistry.getBlockTexture(fallEntity.getBlock().getId().substring(5)));
-				// setTexture(new
-				// SimpleTexture(Atlases.getSprite(ResourceManager.getTextureResource("blocks/Sand"),
-				// new AtlasGroup("Blocks", 1 << 12))));
 				cube.render(renderer);
 			}
 		};

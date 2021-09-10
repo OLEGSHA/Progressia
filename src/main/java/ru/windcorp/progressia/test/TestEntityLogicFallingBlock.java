@@ -27,7 +27,7 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 
 	public static Set<String> FallingBlocks = new HashSet<String>();
 
-	public void addFallables() {
+	public static void addFallables() {
 		FallingBlocks.add("Test:Sand");
 		for (Rock rock : TestContent.ROCKS.getRocks())
 		{
@@ -38,7 +38,6 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 
 	public TestEntityLogicFallingBlock(String id) {
 		super(id);
-		addFallables();
 	}
 
 	/*private Vec3i trueMod(Vec3i input, Vec3i modulus) // Move this to a class in
@@ -55,7 +54,7 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 		return temp;
 	}*/
 	
-	public Vec3i getBestCardinal(Vec3 dir)
+	public static Vec3i getBestCardinal(Vec3 dir)
 	{
 		Vec3 a = dir.abs_();
 		if (a.x>a.y && a.x>a.z)
@@ -69,12 +68,12 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 		return new Vec3i(0,0,dir.z>0 ? 1 : -1);
 	}
 	
-	public List<Vec3i> getGoodCardinals(Vec3 dir)
+	public static List<Vec3i> getGoodCardinals(Vec3 dir)
 	{
 		return getGoodCardinals(dir,.05f);
 	}
 
-	public List<Vec3i> getGoodCardinals(Vec3 dir, float d) {
+	public static List<Vec3i> getGoodCardinals(Vec3 dir, float d) {
 		List<Vec3i> list = new ArrayList<>();
 		Vec3 a = dir.abs_();
 		if (a.x>d)
@@ -142,14 +141,13 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 		}
 
 		Vec3i occupiedBlock = fallBlock.getBlockInWorld(null);
-		Vec3i underBlock = occupiedBlock.sub_(getBestCardinal(fallBlock.getUpVector()));
 		List<Vec3i> underBlocks = getGoodCardinals(fallBlock.getUpVector());
 		
 		boolean notSupported = false;
 		for (Vec3i v3 : underBlocks)
 		{
 			Vec3i inWorld = occupiedBlock.sub_(v3); 
-			if (context.getBlock(inWorld).getId()=="Test:Air") {
+			if (context.getBlock(inWorld) != null && context.getBlock(inWorld).getId()=="Test:Air") {
 				notSupported=true;
 				break;
 			}
@@ -166,10 +164,7 @@ public class TestEntityLogicFallingBlock extends EntityLogic {
 		 String.valueOf(occupiedBlock.z));*/
 		 //LogManager.getLogger().info("Block is of type " +
 		 //context.getWorldData().getChunk(chunkCoords).getBlock(inChunkCoords).getId());
-
-		if (context.getBlock(underBlock) != null
-		//		&& context.getBlock(underBlock).getId() != "Test:Air") {
-			&& !notSupported) {
+		if ( !notSupported && context.isLocationLoaded(occupiedBlock)) {
 			LogManager.getLogger().info("Deleting FallingBlock at " + String.valueOf(occupiedBlock.x) + " " + String.valueOf(occupiedBlock.y) + " " + String.valueOf(occupiedBlock.z));
 			context.setBlock(occupiedBlock, fallBlock2.getBlock());
 			fallBlock.setInvisible();

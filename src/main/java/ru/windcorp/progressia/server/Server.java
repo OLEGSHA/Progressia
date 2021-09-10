@@ -94,8 +94,7 @@ public class Server {
 		world.addListener(new WorldDataListener() {
 			@Override
 			public void onChunkLoaded(DefaultWorldData world, DefaultChunkData chunk) {
-				//PlanetGenerator.this.planet;
-				//LogManager.getLogger().info("Loaded chunk");
+				
 				GravityModelRegistry.getInstance().get("Test:PlanetGravityModel");
 				chunk.addListener(new ChunkDataListener() { // Falling Block
 															// spawning logic
@@ -105,35 +104,34 @@ public class Server {
 						Vec3i chunkWorldPos = new Vec3i(0,0,0);
 						Coordinates.getInWorld(chunk_2.getPosition(), blockInChunk, chunkWorldPos); 
 						
-						/*List<Vec3i> underBlocks = getGoodCardinals(fallBlock.getUpVector().negate_());
 						
-						boolean notSupported = false;
-						for (Vec3i v3 : underBlocks)
+						
+						
+						boolean isUnsupported = false;
+						List<Vec3i> cards = TestEntityLogicFallingBlock.getGoodCardinals(chunk_2.getWorld().getGravityModel().getUp(new Vec3(chunkWorldPos.x,chunkWorldPos.y,chunkWorldPos.z), null));
+						for (Vec3i card : cards)
 						{
-							Vec3i inWorld = occupiedBlock.sub_(v3); 
-							if (context.getBlock(inWorld).getId()=="Test:Air") {
-								notSupported=true;
-								break;
+							if (chunk_2.getWorld().isLocationLoaded(chunkWorldPos.sub_(card)) &&
+								chunk_2.getWorld().getBlock(chunkWorldPos.sub_(card)).getId() == "Test:Air")
+							{
+								isUnsupported = true;
 							}
-						}*/
-						
-						//chunk.getPosition().mul_(16).add_(blockInChunk);
-						//LogManager.getLogger().info("Put block {} at {}<{}<{}",current.getId(),chunkWorldPos.x,chunkWorldPos.y,chunkWorldPos.z);
-						
-						if (TestEntityLogicFallingBlock.FallingBlocks
-								.contains(chunk_2.getWorld().getBlock(chunkWorldPos.add_(0, 0, 1)).getId())) {
-							chunk_2.getWorld().setBlock(chunkWorldPos.add_(0, 0, 1), BlockDataRegistry.getInstance()
-									.get(chunk_2.getWorld().getBlock(chunkWorldPos.add_(0, 0, 1)).getId()), true);
+							if (TestEntityLogicFallingBlock.FallingBlocks
+								.contains(chunk_2.getWorld().getBlock(chunkWorldPos.add_(card)).getId())) {
+								chunk_2.getWorld().setBlock(chunkWorldPos.add_(card), BlockDataRegistry.getInstance()
+									.get(chunk_2.getWorld().getBlock(chunkWorldPos.add_(card)).getId()), true);
+							}
 						}
 						if (!TestEntityLogicFallingBlock.FallingBlocks.contains(current.getId())) {
 							return;
 						}
-						//LogManager.getLogger().info("Cont");
-						if (chunk_2.getWorld().getBlock(chunkWorldPos.add_(0, 0, -1)).getId() == "Test:Air") {
-							LogManager.getLogger().info("Inserting FallingBlock {},{},{}",
-								chunkWorldPos.x,chunkWorldPos.y,chunkWorldPos.z);
+						if (isUnsupported) {
+							
 
 							TestEntityDataFallingBlock fallingBlock = new TestEntityDataFallingBlock(current);
+							
+							LogManager.getLogger().info("Inserting {} {},{},{}", fallingBlock.getId(),
+								chunkWorldPos.x,chunkWorldPos.y,chunkWorldPos.z);
 
 							Vec3i worldPos = chunk_2.getPosition().mul_(16).add_(blockInChunk);
 							Vec3 floatWorldPos = new Vec3(worldPos.x, worldPos.y, worldPos.z);
@@ -142,15 +140,7 @@ public class Server {
 							fallingBlock.setEntityId(("Test:FallingBlock" + floatWorldPos.toString()
 									+ String.valueOf(new Random().nextFloat())).hashCode());
 
-							chunk.getWorld().addEntity(fallingBlock);
-							//invokeLater(() -> world.addEntity(fallingBlock));
-
-							//chunk.setBlock(blockInChunk, previous, false);
-							//invokeLater(() -> world.setBlock(chunkWorldPos, BlockDataRegistry.getInstance().get("Test:Air"), false));
-							
-
-							//LogManager.getLogger().info(String.valueOf(chunkWorldPos.x) + " "
-							//		+ String.valueOf(chunkWorldPos.y) + " " + String.valueOf(chunkWorldPos.z));
+							invokeLater(() -> chunk.getWorld().addEntity(fallingBlock));
 						}
 					}
 				});

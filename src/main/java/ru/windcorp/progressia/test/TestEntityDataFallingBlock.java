@@ -1,7 +1,5 @@
 package ru.windcorp.progressia.test;
 
-import org.apache.logging.log4j.LogManager;
-
 import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
@@ -18,19 +16,23 @@ public class TestEntityDataFallingBlock extends EntityData {
 	private boolean isDone = false;
 	private boolean hasDeleted = false;
 
-	public TestEntityDataFallingBlock() {
-		this("Test:FallingBlock", new BlockData("Test:LogTop"));
+	public TestEntityDataFallingBlock()
+	{
+		this("Test:FallingBlock");
 	}
 	
-	public TestEntityDataFallingBlock(BlockData data) {
-		this("Test:FallingBlock", data);
+	public TestEntityDataFallingBlock(String id, BlockData inBlock) {
+		super(id);
+		block = inBlock;
+		setCollisionModel(new AABB(0, 0, 0, 1, 1, 1));
 	}
 
-	protected TestEntityDataFallingBlock(String id, BlockData blockInput) {
-		super(id);
-		setCollisionModel(new AABB(0, 0, 0, 1, 1, 1));
-		block = blockInput;
-		LogManager.getLogger().info(blockInput.getId());
+	public TestEntityDataFallingBlock(String string) {
+		this(string, new BlockData((String) TestEntityLogicFallingBlock.FallingBlocks.toArray()[0]));
+	}
+
+	public TestEntityDataFallingBlock(BlockData current) {
+		this("Test:FallingBlock"+current.getId().substring(5), current);
 	}
 
 	public void setDestroyed() {
@@ -40,15 +42,16 @@ public class TestEntityDataFallingBlock extends EntityData {
 	public boolean hasDestroyed() {
 		return hasDeleted;
 	}
-
-	public BlockData getBlock() {
+	
+	public BlockData getBlock()
+	{
 		return block;
 	}
 
 	public void setInvisible() {
 		// block = new BlockData("Test:Log");
 		isDone = true;
-		setCollisionModel(new AABB(0, 0, 0, .5f, 0.5f, 0.5f));
+		setCollisionModel(new AABB(0, 0, 0, 0.5f, 0.5f, 0.5f));
 	}
 
 	public boolean isDone() {
