@@ -31,11 +31,13 @@ import ru.windcorp.progressia.common.world.item.ItemContainer;
 
 public class SimpleInventoryComponent extends InventoryComponent {
 
-	private final Group slots = new Group("Inventory.Slots", new LayoutGrid(15));
+	private final Group slots = new Group("Inventory.Slots", new LayoutGrid(0, 15));
 	private final Collection<InteractiveSlotComponent> slotCollection = new ArrayList<>();
+	private final ItemContainer container;
 
 	public SimpleInventoryComponent(ItemContainer container, HUDWorkspace workspace) {
 		super("Inventory");
+		this.container = container;
 
 		setLayout(new LayoutBorderHorizontal(15));
 
@@ -77,6 +79,11 @@ public class SimpleInventoryComponent extends InventoryComponent {
 		Vec2i pos = new Vec2i(index % maxX, index / maxX);
 		slots.addChild(component.setLayoutHint(pos));
 		slotCollection.add(component);
+	}
+	
+	@Override
+	public ItemContainer getContainer() {
+		return container;
 	}
 
 	@Override

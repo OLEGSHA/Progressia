@@ -25,6 +25,7 @@ import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
 import ru.windcorp.progressia.client.graphics.input.WheelScrollEvent;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.world.item.ItemContainer;
+import ru.windcorp.progressia.common.world.item.ItemDataContainer;
 import ru.windcorp.progressia.common.world.item.ItemSlot;
 import ru.windcorp.progressia.common.world.item.Items;
 
@@ -119,8 +120,16 @@ public class InteractiveSlotComponent extends Button {
 		ItemSlot invSlot = getSlot();
 
 		boolean success = false;
+		
+		if (handSlot.isEmpty() && invSlot.getAmount() == 1 && invSlot.getContents() instanceof ItemDataContainer) {
+			ItemDataContainer item = (ItemDataContainer) invSlot.getContents();
+			if (item.canOpenContainer()) {
+				workspace.openContainer(new SimpleInventoryComponent(item.getContainer(), workspace));
+				success = true;
+			}
+		}
 
-		if (handSlot.isEmpty()) {
+		if (!success && handSlot.isEmpty()) {
 			success = Items.pour(invSlot, handSlot, invSlot.getAmount() / 2) != 0;
 		}
 

@@ -23,8 +23,10 @@ import com.google.common.eventbus.Subscribe;
 
 import ru.windcorp.progressia.client.events.NewLocalEntityEvent;
 import ru.windcorp.progressia.client.graphics.GUI;
+import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.Components;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
+import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.Input;
@@ -33,6 +35,7 @@ import ru.windcorp.progressia.test.TestPlayerControls;
 public class LayerHUD extends GUILayer {
 
 	private final HUDManager manager;
+	private WindowedHUD windowManager = null;
 
 	private boolean showInventory = false;
 	private boolean isHidden = false;
@@ -58,10 +61,23 @@ public class LayerHUD extends GUILayer {
 		}
 
 		getRoot().addChild(new PermanentHUD(getName() + ".Permanent", manager));
-		getRoot().addChild(Components.hide(new InventoryHUD(getName() + ".Equipment", manager), () -> !showInventory));
-		getRoot().addChild(Components.hide(new CursorHUD(getName() + ".Equipment", manager.getPlayerEntity()), () -> !showInventory));
+
+		Component inventoryGroup = new Group(getName() + ".InventoryGroup", new LayoutFill());
+		
+		inventoryGroup.addChild(new InventoryHUD(getName() + ".Equipment", manager));
+		
+		windowManager = new WindowedHUD(getName() + ".Windows");
+		inventoryGroup.addChild(windowManager);
+
+		inventoryGroup.addChild(new CursorHUD(getName() + ".Cursor", manager.getPlayerEntity()));
+		
+		getRoot().addChild(Components.hide(inventoryGroup, () -> !showInventory));
 
 		getRoot().requestReassembly();
+	}
+	
+	public WindowedHUD getWindowManager() {
+		return windowManager;
 	}
 
 	public boolean isInventoryShown() {

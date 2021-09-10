@@ -17,21 +17,15 @@
  */
 package ru.windcorp.progressia.common.world.entity;
 
-import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.state.IntStateField;
 import ru.windcorp.progressia.common.state.ObjectStateField;
 import ru.windcorp.progressia.common.world.item.ItemContainerEquipment;
 import ru.windcorp.progressia.common.world.item.ItemContainerHand;
-import ru.windcorp.progressia.common.world.item.ItemContainerMixedSimple;
 
 public class EntityDataPlayer extends EntityData {
 
 	private final ObjectStateField<SpeciesDatalet> speciesDatalet = field("Core:SpeciesDatalet").setShared()
 		.of(SpeciesDataRegistry.getInstance().getCodec()).build();
-	
-	private final ObjectStateField<ItemContainerMixedSimple> inventory = field("Core:Inventory").setShared().def(
-		() -> new ItemContainerMixedSimple("Core:PlayerInventory", Units.get(15, "kg"), Units.get(50, "L"))
-	).build();
 	
 	private final IntStateField selectedHand = field("Core:SelectedHand").setShared().ofInt().build();
 
@@ -39,10 +33,6 @@ public class EntityDataPlayer extends EntityData {
 		super(id);
 		
 		setSpecies(species);
-	}
-	
-	public ItemContainerMixedSimple getInventory() {
-		return inventory.get(this);
 	}
 
 	private void setSpecies(SpeciesData species) {

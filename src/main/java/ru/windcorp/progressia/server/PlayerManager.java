@@ -62,15 +62,9 @@ public class PlayerManager {
 
 	private EntityDataPlayer spawnPlayerEntity(String login) {
 		EntityDataPlayer player = (EntityDataPlayer) EntityDataRegistry.getInstance().create("Core:Player");
-		
-		player.getInventory().addSlots(10);
-		
-		player.getInventory().getSlot(3).setContents(ItemDataRegistry.getInstance().create("Test:Stick"), 7);
-		player.getInventory().getSlot(5).setContents(ItemDataRegistry.getInstance().create("Test:Stick"), 4);
-		player.getInventory().getSlot(9).setContents(ItemDataRegistry.getInstance().create("Test:RedGraniteCobblestone"), 1);
-		player.getInventory().getSlot(6).setContents(ItemDataRegistry.getInstance().create("Test:MoonTypeIceCream"), 1);
 
 		player.getHand(0).slot().setContents(ItemDataRegistry.getInstance().create("Test:Stick"), 7);
+		player.getEquipmentSlot(0).slot().setContents(ItemDataRegistry.getInstance().create("Test:CardboardBackpack"), 1);
 
 		player.setPosition(getServer().getWorld().getGenerator().suggestSpawnLocation());
 		player.setUpVector(new Vec3(0, 0, 1));

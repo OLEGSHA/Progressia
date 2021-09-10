@@ -31,7 +31,6 @@ import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderHorizontal;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutHorizontal;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
-import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.world.entity.SpeciesRender;
 import ru.windcorp.progressia.client.world.entity.SpeciesRenderRegistry;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
@@ -59,7 +58,7 @@ public class HandsHUD extends Component {
 			Renderable renderable = slotComponent.assembleToRenderable();
 
 			target.addCustomRenderer(renderer -> {
-				float scale = player.getEntity().getSelectedHand() == slotComponent.getSlot().getContainer() ? 2 : 1;
+				float scale = manager.getHand() == slotComponent.getSlot().getContainer() ? 2 : 1;
 				renderer.pushTransform()
 					.translate(getX() + getWidth() / 2, getY(), 0)
 					.scale(selected.updateForFrame(scale));
@@ -88,11 +87,11 @@ public class HandsHUD extends Component {
 		}
 	}
 
-	private final LocalPlayer player;
+	private final HUDManager manager;
 
 	public HandsHUD(String name, HUDManager manager) {
 		super(name);
-		this.player = manager.getPlayer();
+		this.manager = manager;
 
 		EntityDataPlayer entity = manager.getPlayerEntity();
 		String speciesId = entity.getSpecies().getId();
@@ -129,7 +128,7 @@ public class HandsHUD extends Component {
 	}
 
 	private boolean shouldRenderHandPlaceholder() {
-		return true;
+		return manager.isInventoryShown();
 	}
 
 }

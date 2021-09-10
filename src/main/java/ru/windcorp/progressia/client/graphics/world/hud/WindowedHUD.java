@@ -17,19 +17,32 @@
  */
 package ru.windcorp.progressia.client.graphics.world.hud;
 
-import java.util.Collection;
-
 import ru.windcorp.progressia.client.graphics.gui.Component;
-import ru.windcorp.progressia.common.world.item.ItemContainer;
 
-public abstract class InventoryComponent extends Component {
+public class WindowedHUD extends Component {
 
-	public InventoryComponent(String name) {
+	public WindowedHUD(String name) {
 		super(name);
+		setLayout(null);
 	}
 
-	public abstract ItemContainer getContainer();
+	public void addWindow(InventoryWindow window) {
+		addChild(window);
+		window.setSize(window.getPreferredSize());
+
+		centerWindow(window);
+	}
 	
-	public abstract Collection<InteractiveSlotComponent> getSlots();
+	public void closeWindow(InventoryWindow window) {
+		removeChild(window);
+		requestReassembly();
+	}
+
+	private void centerWindow(InventoryWindow window) {
+		window.setPosition(
+			(getWidth() - window.getWidth()) / 2,
+			(getHeight() - window.getHeight()) / 2
+		);
+	}
 
 }

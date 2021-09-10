@@ -23,3 +23,5 @@ LayerTestGUI.IsVSync = Верт. синхр.:   %5s (F12)
 
 LayerButtonTest.Title = Тест Кнопок
 LayerInventory.Title = Игрок
+
+Inventory.Test:CardboardBackpack.Title = Картонный рюкзак

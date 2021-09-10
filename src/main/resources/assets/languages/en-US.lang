@@ -23,3 +23,5 @@ LayerTestGUI.IsVSync = VSync:          %5s (F12)
 
 LayerButtonTest.Title = Button Test
 LayerInventory.Title = Player
+
+Inventory.Test:CardboardBackpack.Title = Cardboard Backpack

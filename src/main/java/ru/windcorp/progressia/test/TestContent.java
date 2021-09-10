@@ -54,6 +54,7 @@ import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
 import ru.windcorp.progressia.common.world.io.ChunkIO;
 import ru.windcorp.progressia.common.world.item.ItemData;
+import ru.windcorp.progressia.common.world.item.ItemDataContainer;
 import ru.windcorp.progressia.common.world.item.ItemDataRegistry;
 import ru.windcorp.progressia.common.world.item.ItemDataSimple;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
@@ -104,7 +105,7 @@ public class TestContent {
 		register(new BlockRenderNone("Test:Air"));
 		register(new TestBlockLogicAir("Test:Air"));
 		placeableBlacklist.add("Test:Air");
-		
+
 		registerSimplestBlock("Dirt");
 		registerSimplestBlock("Chernozem");
 		registerSimplestBlock("Stone");
@@ -113,7 +114,7 @@ public class TestContent {
 		registerSimplestBlock("Sand");
 		registerSimplestBlock("Concrete");
 		registerSimplestBlock("WoodenPlank");
-		
+
 		registerRocks();
 
 		register(new BlockData("Test:Glass"));
@@ -130,12 +131,12 @@ public class TestContent {
 			)
 		);
 		register(new BlockLogic("Test:Log"));
-		
+
 		register(new BlockData("Test:TemporaryLeaves"));
 		register(new BlockRenderTransparentCube("Test:TemporaryLeaves", getBlockTexture("TemporaryLeaves")));
-		// Sic, using Glass logic for leaves because  Test
-		register(new TestBlockLogicGlass("Test:TemporaryLeaves")); 
-		
+		// Sic, using Glass logic for leaves because Test
+		register(new TestBlockLogicGlass("Test:TemporaryLeaves"));
+
 		register(new BlockData("Test:StatieSpawner"));
 		register(new BlockRenderOpaqueCube("Test:StatieSpawner", getBlockTexture("StatieSpawner")));
 		register(new TestBlockLogicStatieSpawner("Test:StatieSpawner"));
@@ -234,16 +235,29 @@ public class TestContent {
 
 		registerHerb("Bush", 1);
 		registerHerb("Fern", 3);
-		
+
 		TileDataRegistry.getInstance().values().forEach(PLACEABLE_TILES::add);
 		PLACEABLE_TILES.removeIf(b -> placeableBlacklist.contains(b.getId()));
 		PLACEABLE_TILES.sort(Comparator.comparing(TileData::getId));
 	}
-	
+
 	private static void registerItems() {
 		registerSimplestItem("MoonTypeIceCream", Units.get("200 g"), Units.get("1 L"));
 		registerSimplestItem("Stick", Units.get("260 g"), Units.get("0.5 L"));
 		registerSimplestItem("RedGraniteCobblestone", Units.get("4 kg"), Units.get("1500 cm^3"));
+
+		registerItem(
+			"Test:CardboardBackpack",
+			s -> new ItemDataContainer(
+				"Test:CardboardBackpack",
+				Units.get("0.7 kg"), // Own mass
+				Units.get("5 kg"), // Container mass limit
+				Units.get("125 L"), // Own volume
+				Units.get("125 L"), // Container volume limit
+				false // Whether container contents contribute to item volume
+			)
+		);
+		register(new ItemRenderSimple("Test:CardboardBackpack", getItemTexture("CardboardBackpack")));
 	}
 
 	private static void registerSimplestBlock(String name) {
@@ -273,7 +287,7 @@ public class TestContent {
 		register(new TileRenderHerb(id, getTileTexture(name), maxCount));
 		register(new HangingTileLogic(id));
 	}
-	
+
 	private static void registerSimplestItem(String name, float mass, float volume) {
 		String id = "Test:" + name;
 		registerItem(id, s -> new ItemDataSimple(s, mass, volume));
@@ -292,7 +306,7 @@ public class TestContent {
 		SpeciesData human = new SpeciesDataHuman("Core:Human");
 		SpeciesDataRegistry.getInstance().register(human);
 		SpeciesRenderRegistry.getInstance().register(new SpeciesRenderHuman("Core:Human"));
-		
+
 		registerEntity("Core:Player", id -> new EntityDataPlayer(id, human));
 		register(new EntityRenderPlayer("Core:Player"));
 		register(new EntityLogic("Core:Player"));
@@ -348,7 +362,7 @@ public class TestContent {
 				KeyMatcher.of("M")
 			)
 		);
-		
+
 		triggers.register(
 			ControlTriggers.localOf(
 				"Test:ShowInventory",
@@ -357,7 +371,7 @@ public class TestContent {
 				KeyMatcher.of("E")
 			)
 		);
-		
+
 		triggers.register(
 			ControlTriggers.localOf(
 				"Test:HideHUD",
@@ -375,11 +389,11 @@ public class TestContent {
 	private static void register(TileData x) {
 		TileDataRegistry.getInstance().register(x);
 	}
-	
+
 	private static void registerItem(String id, IdFactory<ItemData> factory) {
 		ItemDataRegistry.getInstance().register(id, factory);
 	}
-	
+
 	private static void registerEntity(
 		String id,
 		IdFactory<EntityData> factory
@@ -394,7 +408,7 @@ public class TestContent {
 	private static void register(TileRender x) {
 		TileRenderRegistry.getInstance().register(x);
 	}
-	
+
 	private static void register(ItemRender x) {
 		ItemRenderRegistry.getInstance().register(x);
 	}
@@ -503,20 +517,20 @@ public class TestContent {
 		}
 		tileContext.addTile(tile);
 	}
-	
+
 	private static void switchInventory() {
 		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
 		if (client == null || !client.isReady())
 			return;
-		
+
 		client.getHUD().setInventoryShown(!client.getHUD().isInventoryShown());
 	}
-	
+
 	private static void switchHUD() {
 		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
 		if (client == null || !client.isReady())
 			return;
-		
+
 		client.getHUD().setHidden(!client.getHUD().isHidden());
 	}
 

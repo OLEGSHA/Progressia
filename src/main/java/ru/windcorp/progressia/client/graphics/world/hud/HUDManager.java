@@ -40,7 +40,8 @@ public class HUDManager implements HUDWorkspace {
 	
 	@Override
 	public void openContainer(InventoryComponent component) {
-		System.err.println("openContainer NYI");
+		InventoryWindow window = new InventoryWindow("Window", component);
+		layer.getWindowManager().addWindow(window);
 	}
 	
 	public void closeEverything() {
