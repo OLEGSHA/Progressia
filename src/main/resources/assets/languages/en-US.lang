@@ -26,6 +26,7 @@ LayerButtonTest.Return = Back To Menu
 
 LayerTitle.Title = Progressia
 LayerTitle.Play = Play World
+LayerTitle.Reset = Reset World
 LayerTitle.Options = Options
 LayerTitle.Quit = Quit
 

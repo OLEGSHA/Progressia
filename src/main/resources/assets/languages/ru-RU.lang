@@ -21,13 +21,14 @@ LayerTestGUI.PlacementModeHint = (Блок %s плитки: Ctrl + прокру�
 LayerTestGUI.IsFullscreen = Полный экран:   %5s (F11)
 LayerTestGUI.IsVSync = Верт. синхр.:   %5s (F12)
 
-LayerButtonTest.Title = Тест Кнопок
-LayerButtonTest.Return = Back To Menu [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+LayerButtonTest.Title = Тест кнопок
+LayerButtonTest.Return = Главное меню
 
 LayerTitle.Title = Прогрессия
-LayerTitle.Play = ???????
-LayerTitle.Options = ????????
-LayerTitle.Quit = ????????
+LayerTitle.Play = Играть
+LayerTitle.Reset = Сбросить мир
+LayerTitle.Options = Настройки
+LayerTitle.Quit = Выход
 
-LayerText.Load = Loading... (Change)
-LayerText.Save = Saving...(Cahnsf)
+LayerText.Load = Загрузка...
+LayerText.Save = Сохранение...
