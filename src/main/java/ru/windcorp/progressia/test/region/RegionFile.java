@@ -70,6 +70,8 @@ public class RegionFile {
 			if (offset == 0) {
 				continue;
 			}
+			
+			offset--;
 
 			Vec3i pos = new Vec3i();
 			pos.x = i / REGION_DIAMETER / REGION_DIAMETER;
@@ -181,10 +183,10 @@ public class RegionFile {
 		
 		int outputLen = (int) file.length();
 
-		int dataOffset = (int) (outputLen - HEADER_SIZE) / SECTOR_SIZE + 1;
+		int dataOffset = (int) Math.ceil((double) (outputLen - HEADER_SIZE) / SECTOR_SIZE);
 
 		file.seek(definitionOffset);
-		file.writeInt(dataOffset);
+		file.writeInt(dataOffset+1);
 
 		file.setLength(HEADER_SIZE + dataOffset * SECTOR_SIZE);
 		return dataOffset;
@@ -194,7 +196,7 @@ public class RegionFile {
 	{
 		int outputLen = (int) file.length();
 
-		int dataOffset = (int) (outputLen - HEADER_SIZE) / SECTOR_SIZE + 1;
+		int dataOffset = (int) Math.ceil((double) (outputLen - HEADER_SIZE) / SECTOR_SIZE);
 		
 		file.setLength(HEADER_SIZE + dataOffset * SECTOR_SIZE);
 		
