@@ -108,7 +108,6 @@ public class TestContent {
 		registerSimplestBlock("Water");
 		registerSimplestBlock("Brick");
 		registerSimplestBlock("BrickWhite");
-		registerSimplestBlock("Sand");
 		registerSimplestBlock("Concrete");
 		registerSimplestBlock("WoodenPlank");
 		
@@ -195,7 +194,6 @@ public class TestContent {
 		});
 
 		registerSimplestTransparentTile("Stones");
-		registerSimplestTransparentTile("Sand");
 
 		registerSimplestOpaqueTile("SnowOpaque");
 		Arrays.asList(

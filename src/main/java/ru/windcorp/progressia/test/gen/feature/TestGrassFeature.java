@@ -67,7 +67,6 @@ public class TestGrassFeature extends SurfaceTopLayerFeature {
 
 	private final List<TileData> scatter = ImmutableList.of(
 		TileDataRegistry.getInstance().get("Test:Stones"),
-		TileDataRegistry.getInstance().get("Test:Sand"),
 		TileDataRegistry.getInstance().get("Test:Bush"),
 		TileDataRegistry.getInstance().get("Test:Fern")
 	);
