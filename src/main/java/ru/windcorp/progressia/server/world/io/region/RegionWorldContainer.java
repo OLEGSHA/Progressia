@@ -185,7 +185,7 @@ public class RegionWorldContainer implements WorldContainer {
 
 	private Region openRegion(Path path, Vec3i regionCoords) throws IOException {
 		RandomAccessFile raf = new RandomAccessFile(path.toFile(), "rw");
-		Region region = new Region(raf);
+		Region region = new Region(raf, regionCoords);
 		regions.put(regionCoords, region);
 		return region;
 	}

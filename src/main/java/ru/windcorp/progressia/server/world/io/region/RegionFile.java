@@ -23,6 +23,8 @@ public class RegionFile {
 	private static final int SECTORS_BYTES = Short.BYTES;
 	private static final int SECTOR_SIZE = MAX_CHUNK_SIZE >> (SECTORS_BYTES * 8);
 	private static final int SECTOR_HEADER_SIZE = 1;
+	private static final int ID_HEADER_SIZE = 16;
+	private static final byte[] HEADER_ID = {'P','R','O','G'};
 
 	final byte endBytes[] = new byte[SECTOR_SIZE];
 
@@ -42,7 +44,7 @@ public class RegionFile {
 
 	private static final int DEFINITION_SIZE = Integer.BYTES;
 
-	private static final int HEADER_SIZE = DEFINITION_SIZE * REGION_DIAMETER * REGION_DIAMETER * REGION_DIAMETER;
+	private static final int HEADER_SIZE = DEFINITION_SIZE * REGION_DIAMETER * REGION_DIAMETER * REGION_DIAMETER + ID_HEADER_SIZE;
 
 	private final RandomAccessFile file;
 
@@ -50,7 +52,7 @@ public class RegionFile {
 		file = inFile;
 	}
 
-	public void confirmHeaderHealth(ChunkMap<Integer> offsets) throws IOException {
+	public void confirmHeaderHealth(ChunkMap<Integer> offsets, Vec3i regionCoords) throws IOException {
 
 		Set<Integer> used = new HashSet<Integer>();
 		int maxUsed = 0;
@@ -59,9 +61,28 @@ public class RegionFile {
 		if (file.length() < HEADER_SIZE) {
 			throw new IOException("File is too short to contain a header");
 		}
+		
+		
+		char prog;
+		for (int i=0;i<4;i++) {
+			prog = file.readChar();
+			if (prog != HEADER_ID[i])
+			{
+				throw new IOException("File is not a .progressia_chunk file");
+			}
+		}
+		
+		int tempX = file.readInt();
+		int tempY = file.readInt();
+		int tempZ = file.readInt();
+		
+		if (regionCoords.x != tempX || regionCoords.y != tempY || regionCoords.z != tempZ)
+		{
+			throw new IOException("Region file is in the wrong place/ has the wrong name.");
+		}
 
 		for (int i = 0; i < chunksPerRegion; i++) {
-			file.seek(i * DEFINITION_SIZE);
+			file.seek(i * DEFINITION_SIZE + ID_HEADER_SIZE);
 			int offset = file.readInt();
 
 			if (offset == 0) {
@@ -109,8 +130,12 @@ public class RegionFile {
 		LogManager.getLogger("Region").debug("Efficiency of {}", (double) used.size() / maxUsed);
 	}
 
-	public void makeHeader() throws IOException {
+	public void makeHeader(Vec3i regionCoords) throws IOException {
 		file.seek(0);
+		file.write(HEADER_ID);
+		file.writeInt(regionCoords.x);
+		file.writeInt(regionCoords.y);
+		file.writeInt(regionCoords.z);
 		for (int i = 0; i < HEADER_SIZE; i++) {
 			file.write(0);
 		}
@@ -163,7 +188,7 @@ public class RegionFile {
 	}
 
 	public int allocateChunk(Vec3i pos) throws IOException {
-		int definitionOffset = DEFINITION_SIZE * (pos.z + REGION_DIAMETER * (pos.y + REGION_DIAMETER * pos.x));
+		int definitionOffset = ID_HEADER_SIZE + DEFINITION_SIZE * (pos.z + REGION_DIAMETER * (pos.y + REGION_DIAMETER * pos.x));
 
 		int outputLen = (int) file.length();
 

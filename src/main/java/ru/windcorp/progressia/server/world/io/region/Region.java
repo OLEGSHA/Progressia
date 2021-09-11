@@ -52,16 +52,16 @@ public class Region {
 
 	private final ChunkMap<Integer> offsets = ChunkMaps.newHashMap();
 
-	public Region(RandomAccessFile file) throws IOException {
+	public Region(RandomAccessFile file, Vec3i regionCoords) throws IOException {
 		this.file = new RegionFile(file);
 
 		try {
-			this.file.confirmHeaderHealth(offsets);
+			this.file.confirmHeaderHealth(offsets, regionCoords);
 		} catch (IOException e) {
 
 			RegionWorldContainer.LOG.debug("Uh the file broke");
 			if (RESET_CORRUPTED) {
-				this.file.makeHeader();
+				this.file.makeHeader(regionCoords);
 			}
 
 		}
