@@ -18,7 +18,14 @@
  
 package ru.windcorp.progressia.server;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.function.Function;
+
 import ru.windcorp.progressia.common.world.DefaultWorldData;
+import ru.windcorp.progressia.server.world.generation.WorldGenerator;
+import ru.windcorp.progressia.server.world.io.WorldContainer;
+import ru.windcorp.progressia.server.world.io.region.RegionFormat;
 import ru.windcorp.progressia.test.gen.TestGenerationConfig;
 
 public class ServerState {
@@ -33,10 +40,15 @@ public class ServerState {
 		ServerState.instance = instance;
 	}
 
-	public static void startServer() {
-		Server server = new Server(new DefaultWorldData(), TestGenerationConfig.createGenerator());
+	public static void startServer() throws IOException {
+		
+		Function<Server, WorldGenerator> generator = new TestGenerationConfig().getGenerator();
+		WorldContainer container = new RegionFormat("Test:Region").create(Paths.get("tmp_world"));
+		
+		Server server = new Server(new DefaultWorldData(), generator, container);
 		setInstance(server);
 		server.start();
+		
 	}
 
 	private ServerState() {

@@ -28,7 +28,7 @@ import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.test.TestWorldDiskIO;
+import ru.windcorp.progressia.server.world.io.WorldContainer;
 
 /**
  * Chunk manager provides facilities to load, unload and generate chunks for a
@@ -54,6 +54,10 @@ public class ChunkManager {
 	 */
 	public Server getServer() {
 		return getLoadManager().getServer();
+	}
+	
+	public WorldContainer getContainer() {
+		return getServer().getWorld().getContainer();
 	}
 
 	/**
@@ -119,7 +123,7 @@ public class ChunkManager {
 
 		DefaultWorldData world = getServer().getWorld().getData();
 
-		DefaultChunkData chunk = TestWorldDiskIO.tryToLoad(chunkPos, world, getServer());
+		DefaultChunkData chunk = getServer().getWorld().getContainer().load(chunkPos, world, getServer());
 		if (chunk != null) {
 			world.addChunk(chunk);
 			return LoadResult.LOADED_FROM_DISK;
@@ -150,7 +154,7 @@ public class ChunkManager {
 		entitiesToRemove.forEach(world::removeEntity);
 		
 		world.removeChunk(chunk);
-		TestWorldDiskIO.saveChunk(chunk, getServer());
+		getContainer().save(chunk, getServer().getWorld().getData(), getServer());
 
 		return true;
 	}

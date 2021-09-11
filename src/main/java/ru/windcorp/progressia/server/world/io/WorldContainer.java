@@ -15,45 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package ru.windcorp.progressia.server.world.io;
 
-package ru.windcorp.progressia.client.comms.localhost;
-
-import java.io.IOException;
-
-import ru.windcorp.progressia.common.comms.packets.Packet;
+import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.world.DefaultChunkData;
+import ru.windcorp.progressia.common.world.DefaultWorldData;
+import ru.windcorp.progressia.server.Player;
+import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.comms.ClientPlayer;
 
-public class LocalClient extends ClientPlayer {
+import java.nio.file.Path;
 
-	private final LocalServerCommsChannel serverComms;
+public interface WorldContainer {
 
-	private final String login;
+	Path getPath();
 
-	public LocalClient(int id, String login, LocalServerCommsChannel serverComms) {
-		super(id);
-		setState(State.CONNECTED);
+	DefaultChunkData load(Vec3i position, DefaultWorldData world, Server server);
 
-		this.serverComms = serverComms;
-		this.login = login;
-	}
+	void save(DefaultChunkData chunk, DefaultWorldData world, Server server);
 
-	@Override
-	public String getLogin() {
-		return this.login;
-	}
+	Player loadPlayer(String login, ClientPlayer clientPlayer, Server server);
 
-	@Override
-	protected void doSendPacket(Packet packet) throws IOException {
-		this.serverComms.relayPacketToClient(packet);
-	}
+	void savePlayer(Player player, Server server);
 
-	public void relayPacketToServer(Packet packet) {
-		onPacketReceived(packet);
-	}
-
-	@Override
-	public void disconnect() {
-		// Do nothing
-	}
+	void close();
 
 }

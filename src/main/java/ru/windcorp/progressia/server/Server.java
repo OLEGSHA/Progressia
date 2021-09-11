@@ -21,8 +21,6 @@ package ru.windcorp.progressia.server;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.apache.logging.log4j.LogManager;
-
 import com.google.common.eventbus.EventBus;
 
 import glm.vec._3.i.Vec3i;
@@ -46,6 +44,7 @@ import ru.windcorp.progressia.server.world.context.impl.DefaultServerContext;
 import ru.windcorp.progressia.server.world.context.impl.ReportingServerContext;
 import ru.windcorp.progressia.server.world.context.impl.RotatingServerContext;
 import ru.windcorp.progressia.server.world.generation.WorldGenerator;
+import ru.windcorp.progressia.server.world.io.WorldContainer;
 import ru.windcorp.progressia.server.world.tasks.WorldAccessor;
 import ru.windcorp.progressia.server.world.ticking.Change;
 import ru.windcorp.progressia.server.world.ticking.Evaluation;
@@ -78,11 +77,16 @@ public class Server {
 
 	private final TickingSettings tickingSettings = new TickingSettings();
 
-	public Server(DefaultWorldData world, Function<Server, WorldGenerator> generatorCreator) {
+	public Server(
+		DefaultWorldData world,
+		Function<Server, WorldGenerator> generatorCreator,
+		WorldContainer worldContainer
+	) {
 		this.world = new DefaultWorldLogic(
 			world,
 			this,
 			generatorCreator.apply(this),
+			worldContainer,
 			worldAccessor
 		);
 		this.serverThread = new ServerThread(this);
@@ -241,14 +245,14 @@ public class Server {
 	public void scheduleChange(Change change) {
 		serverThread.getTicker().requestChange(change);
 	}
-	
+
 	/**
 	 * Delayed
 	 */
 	public void scheduleEvaluation(Evaluation evaluation) {
 		serverThread.getTicker().requestEvaluation(evaluation);
 	}
-	
+
 	/**
 	 * Immediate if possible, otherwise delayed
 	 */
@@ -347,8 +351,8 @@ public class Server {
 	 *                reason
 	 */
 	public void shutdown(String message) {
-		LogManager.getLogger().warn("Server.shutdown() is not yet implemented");
 		serverThread.stop();
+		getWorld().getContainer().close();
 	}
 
 	private void scheduleWorldTicks(Server server) {

@@ -15,45 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package ru.windcorp.progressia.client.comms.localhost;
+package ru.windcorp.progressia.server.world.io.region;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
-import ru.windcorp.progressia.common.comms.packets.Packet;
-import ru.windcorp.progressia.server.comms.ClientPlayer;
+import ru.windcorp.progressia.server.world.io.WorldContainer;
+import ru.windcorp.progressia.server.world.io.WorldContainerFormat;
 
-public class LocalClient extends ClientPlayer {
+public class RegionFormat extends WorldContainerFormat {
 
-	private final LocalServerCommsChannel serverComms;
-
-	private final String login;
-
-	public LocalClient(int id, String login, LocalServerCommsChannel serverComms) {
+	public RegionFormat(String id) {
 		super(id);
-		setState(State.CONNECTED);
-
-		this.serverComms = serverComms;
-		this.login = login;
 	}
 
 	@Override
-	public String getLogin() {
-		return this.login;
-	}
-
-	@Override
-	protected void doSendPacket(Packet packet) throws IOException {
-		this.serverComms.relayPacketToClient(packet);
-	}
-
-	public void relayPacketToServer(Packet packet) {
-		onPacketReceived(packet);
-	}
-
-	@Override
-	public void disconnect() {
-		// Do nothing
+	public WorldContainer create(Path directory) throws IOException {
+		return new RegionWorldContainer(directory);
 	}
 
 }

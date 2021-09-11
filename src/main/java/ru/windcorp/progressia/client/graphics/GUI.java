@@ -15,12 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.graphics;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -58,6 +59,7 @@ public class GUI {
 	}
 
 	public static void addBottomLayer(Layer layer) {
+		Objects.requireNonNull(layer, "layer");
 		modify(layers -> {
 			layers.add(layer);
 			layer.onAdded();
@@ -65,6 +67,7 @@ public class GUI {
 	}
 
 	public static void addTopLayer(Layer layer) {
+		Objects.requireNonNull(layer, "layer");
 		modify(layers -> {
 			layers.add(0, layer);
 			layer.onAdded();
@@ -72,6 +75,7 @@ public class GUI {
 	}
 
 	public static void removeLayer(Layer layer) {
+		Objects.requireNonNull(layer, "layer");
 		modify(layers -> {
 			layers.remove(layer);
 			layer.onRemoved();
@@ -88,33 +92,33 @@ public class GUI {
 
 	public static void render() {
 		synchronized (LAYERS) {
-			
+
 			if (!MODIFICATION_QUEUE.isEmpty()) {
 				MODIFICATION_QUEUE.forEach(action -> action.affect(LAYERS));
 				MODIFICATION_QUEUE.clear();
-				
+
 				boolean isMouseCurrentlyCaptured = GraphicsInterface.isMouseCaptured();
 				Layer.CursorPolicy policy = Layer.CursorPolicy.REQUIRE;
-				
+
 				for (Layer layer : LAYERS) {
 					Layer.CursorPolicy currentPolicy = layer.getCursorPolicy();
-					
+
 					if (currentPolicy != Layer.CursorPolicy.INDIFFERENT) {
 						policy = currentPolicy;
 						break;
 					}
 				}
-				
+
 				boolean shouldCaptureMouse = (policy == Layer.CursorPolicy.FORBID);
 				if (shouldCaptureMouse != isMouseCurrentlyCaptured) {
 					GraphicsInterface.setMouseCaptured(shouldCaptureMouse);
 				}
 			}
-			
+
 			for (int i = LAYERS.size() - 1; i >= 0; --i) {
 				LAYERS.get(i).render();
 			}
-			
+
 		}
 	}
 

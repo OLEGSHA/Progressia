@@ -27,24 +27,24 @@ import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutHorizontal;
 
 public class Checkbox extends BasicButton {
-	
+
 	private class Tick extends Component {
 
 		public Tick() {
 			super(Checkbox.this.getName() + ".Tick");
-			
+
 			setPreferredSize(new Vec2i(Typefaces.getDefault().getLineHeight() * 3 / 2));
 		}
-		
+
 		@Override
 		protected void assembleSelf(RenderTarget target) {
-			
+
 			int size = getPreferredSize().x;
 			int x = getX();
 			int y = getY() + (getHeight() - size) / 2;
-			
+
 			// Border
-			
+
 			Vec4 borderColor;
 			if (Checkbox.this.isPressed() || Checkbox.this.isHovered() || Checkbox.this.isFocused()) {
 				borderColor = Colors.BLUE;
@@ -52,9 +52,9 @@ public class Checkbox extends BasicButton {
 				borderColor = Colors.LIGHT_GRAY;
 			}
 			target.fill(x, y, size, size, borderColor);
-			
+
 			// Inside area
-			
+
 			if (Checkbox.this.isPressed()) {
 				// Do nothing
 			} else {
@@ -66,9 +66,9 @@ public class Checkbox extends BasicButton {
 				}
 				target.fill(x + 2, y + 2, size - 4, size - 4, backgroundColor);
 			}
-			
+
 			// "Tick"
-			
+
 			if (Checkbox.this.isChecked()) {
 				target.fill(x + 4, y + 4, size - 8, size - 8, Colors.BLUE);
 			}
@@ -81,10 +81,10 @@ public class Checkbox extends BasicButton {
 	public Checkbox(String name, String label, Font labelFont, boolean check) {
 		super(name, label, labelFont);
 		this.checked = check;
-		
+
 		assert getChildren().size() == 1 : "Checkbox expects that BasicButton contains exactly one child";
 		Component basicChild = getChild(0);
-		
+
 		Group group = new Group(getName() + ".LabelAndTick", new LayoutHorizontal(0, 10));
 		removeChild(basicChild);
 		setLayout(new LayoutAlign(0, 0.5f, 10));
@@ -92,18 +92,18 @@ public class Checkbox extends BasicButton {
 		group.addChild(new Tick());
 		group.addChild(basicChild);
 		addChild(group);
-		
+
 		addAction(b -> switchState());
 	}
-	
+
 	public Checkbox(String name, String label, Font labelFont) {
 		this(name, label, labelFont, false);
 	}
-	
+
 	public Checkbox(String name, String label, boolean check) {
 		this(name, label, new Font(), check);
 	}
-	
+
 	public Checkbox(String name, String label) {
 		this(name, label, false);
 	}
@@ -111,14 +111,14 @@ public class Checkbox extends BasicButton {
 	public void switchState() {
 		setChecked(!isChecked());
 	}
-	
+
 	/**
 	 * @return the checked
 	 */
 	public boolean isChecked() {
 		return checked;
 	}
-	
+
 	/**
 	 * @param checked the checked to set
 	 */
@@ -129,21 +129,21 @@ public class Checkbox extends BasicButton {
 	@Override
 	protected void assembleSelf(RenderTarget target) {
 		// Change label font color
-		
+
 		if (isPressed()) {
 			getLabel().setFont(getLabel().getFont().withColor(Colors.BLUE));
 		} else {
 			getLabel().setFont(getLabel().getFont().withColor(Colors.BLACK));
 		}
 	}
-	
+
 	@Override
 	protected void postAssembleSelf(RenderTarget target) {
 		// Apply disable tint
-		
+
 		if (!isEnabled()) {
 			target.fill(getX(), getY(), getWidth(), getHeight(), Colors.toVector(0x88FFFFFF));
 		}
 	}
-	
+
 }

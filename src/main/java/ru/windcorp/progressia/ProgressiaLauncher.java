@@ -15,21 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia;
 
+import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.crash.analyzers.OutOfMemoryAnalyzer;
 import ru.windcorp.progressia.common.util.crash.providers.*;
+import ru.windcorp.progressia.test.LayerTitle;
 
 public class ProgressiaLauncher {
 
 	public static String[] arguments;
+	private static Proxy proxy;
 
 	public static void launch(String[] args, Proxy proxy) {
 		arguments = args.clone();
 		setupCrashReports();
+
 		proxy.initialize();
+		ProgressiaLauncher.proxy = proxy;
+		GUI.addTopLayer(new LayerTitle("Title"));
+	}
+	
+	public static Proxy getProxy() {
+		return proxy;
 	}
 
 	private static void setupCrashReports() {

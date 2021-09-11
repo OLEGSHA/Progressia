@@ -15,19 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
+
+import glm.vec._3.Vec3;
+import ru.windcorp.progressia.common.world.entity.EntityData;
+import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
+import ru.windcorp.progressia.server.comms.ClientPlayer;
+import ru.windcorp.progressia.server.events.PlayerJoinedEvent;
+import ru.windcorp.progressia.server.events.PlayerLeftEvent;
+import ru.windcorp.progressia.test.TestContent;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
-import glm.vec._3.Vec3;
-import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.common.world.entity.EntityData;
-import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
-import ru.windcorp.progressia.server.events.PlayerJoinedEvent;
-import ru.windcorp.progressia.test.TestContent;
 
 public class PlayerManager {
 
@@ -48,30 +49,37 @@ public class PlayerManager {
 		getServer().postEvent(new PlayerJoinedEvent.Immutable(getServer(), player));
 	}
 
-	public EntityData conjurePlayerEntity(String login) {
-		// TODO Live up to the name
-		if (TestContent.PLAYER_LOGIN.equals(login)) {
-			EntityData entity = spawnPlayerEntity(login);
-			return entity;
-		} else {
-			throw CrashReports.report(null, "Unknown login %s, javahorse stupid", login);
-		}
+	public void removePlayer(Player player) {
+		server.getWorld().getContainer().savePlayer(player, server);
+		this.players.remove(player);
+		getServer().postEvent(new PlayerLeftEvent.Immutable(getServer(), player));
 	}
 
-	private EntityData spawnPlayerEntity(String login) {
+	public Player conjurePlayer(ClientPlayer clientPlayer, String login) {
+
+		Player player = getServer().getWorld().getContainer().loadPlayer(login, clientPlayer, getServer());
+		if (player == null) { // create new player
+			EntityData entity = spawnPlayerEntity(clientPlayer, login);
+			player = new Player(entity, getServer(), clientPlayer);
+		}
+
+		getServer().getWorld().getData().addEntity(player.getEntity());
+
+		return player;
+	}
+
+	private EntityData spawnPlayerEntity(ClientPlayer clientPlayer, String login) {
 		EntityData player = EntityDataRegistry.getInstance().create("Test:Player");
 
 		player.setEntityId(TestContent.PLAYER_ENTITY_ID);
 		player.setPosition(getServer().getWorld().getGenerator().suggestSpawnLocation());
-		
+
 		player.setUpVector(new Vec3(0, 0, 1));
 		player.setLookingAt(new Vec3(2, 1, 0));
 
-		getServer().getWorld().getData().addEntity(player);
-
 		return player;
 	}
-	
+
 	public Object getMutex() {
 		return players;
 	}

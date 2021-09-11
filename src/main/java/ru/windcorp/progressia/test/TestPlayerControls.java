@@ -46,10 +46,10 @@ import ru.windcorp.progressia.server.ServerState;
 
 public class TestPlayerControls {
 
-	private static final TestPlayerControls INSTANCE = new TestPlayerControls();
+	private static TestPlayerControls instance = new TestPlayerControls();
 
 	public static TestPlayerControls getInstance() {
-		return INSTANCE;
+		return instance;
 	}
 
 	private static final double MODE_SWITCH_MAX_DELAY = 300 * Units.MILLISECONDS;
@@ -90,6 +90,10 @@ public class TestPlayerControls {
 
 	private LayerTestGUI debugLayer = null;
 	private Runnable updateCallback = null;
+	
+	public static void resetInstance() {
+		instance = new TestPlayerControls();
+	}
 
 	public void applyPlayerControls() {
 		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {

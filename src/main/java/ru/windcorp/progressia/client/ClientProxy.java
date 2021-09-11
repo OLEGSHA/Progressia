@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client;
 
 import ru.windcorp.progressia.Proxy;
@@ -30,7 +30,6 @@ import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.common.resource.ResourceManager;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
-import ru.windcorp.progressia.server.ServerState;
 import ru.windcorp.progressia.test.TestContent;
 import ru.windcorp.progressia.test.TestMusicPlayer;
 
@@ -38,7 +37,9 @@ public class ClientProxy implements Proxy {
 
 	@Override
 	public void initialize() {
+
 		GraphicsBackend.initialize();
+
 		try {
 			RenderTaskQueue.waitAndInvoke(FlatRenderProgram::init);
 			RenderTaskQueue.waitAndInvoke(WorldRenderProgram::init);
@@ -58,10 +59,6 @@ public class ClientProxy implements Proxy {
 
 		AudioSystem.initialize();
 
-		ServerState.startServer();
-		ClientState.connectToLocalServer();
-		
 		TestMusicPlayer.start();
 	}
-
 }
