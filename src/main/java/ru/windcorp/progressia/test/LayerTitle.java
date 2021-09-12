@@ -51,6 +51,8 @@ public class LayerTitle extends GUILayer {
 			System.exit(0);
 		}));
 		
+		content.addChild(new CubeComponent(name+".Cube"));
+		
 		getRoot().addChild(content);
 	}
 
