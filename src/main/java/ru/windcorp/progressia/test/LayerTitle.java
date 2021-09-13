@@ -4,13 +4,15 @@ import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.font.Font;
+import ru.windcorp.progressia.client.graphics.gui.Background;
 import ru.windcorp.progressia.client.graphics.gui.BasicButton;
 import ru.windcorp.progressia.client.graphics.gui.Button;
-import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.Label;
+import ru.windcorp.progressia.client.graphics.gui.TextureComponent;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
+import ru.windcorp.progressia.client.graphics.texture.SimpleTextures;
 import ru.windcorp.progressia.client.localization.MutableString;
 import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
@@ -24,17 +26,16 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-public class LayerTitle extends GUILayer {
+public class LayerTitle extends Background {
 	
 	private final BasicButton resetButton;
 
 	public LayerTitle(String name) {
-		super(name, new LayoutAlign(0.5f, 0.7f, 15));
+		super(name, new LayoutAlign(0.5f, 0.7f, 15), SimpleTextures.get("title/background"));
 		Group content = new Group("Layer" + name + ".Group", new LayoutVertical(15));
 
-		MutableString title = new MutableStringLocalized("Layer" + name + ".Title");
-		Font titleFont = new Font().deriveBold().withColor(Colors.BLACK).withAlign(0.5f);
-		content.addChild(new Label(name + ".Title", titleFont, title));
+		Font titleFont = new Font().deriveBold().withColor(Colors.BLUE).withAlign(0.5f);
+		content.addChild(new TextureComponent(name + ".Title", SimpleTextures.get("title/progressia")));
 
 		Font buttonFont = titleFont.deriveNotBold();
 		MutableString playText = new MutableStringLocalized("Layer" + name + ".Play");
