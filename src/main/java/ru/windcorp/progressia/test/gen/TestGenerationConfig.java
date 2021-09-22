@@ -26,6 +26,7 @@ import java.util.function.Function;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.noise.discrete.WorleyProceduralNoise;
 import ru.windcorp.progressia.common.world.Coordinates;
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.generation.WorldGenerator;
 import ru.windcorp.progressia.server.world.generation.planet.Planet;
@@ -125,19 +126,16 @@ public class TestGenerationConfig {
 			)
 		);
 
-		Function<String, SurfaceFloatField> floweriness = flowerName -> fields.register(
-			"Test:Flower" + flowerName,
-			f -> multiply(
-				selectPositive(squash(scale(octaves(fields.primitive(), 2, 3), 100), 2), 1, 0.5),
-				tweak(fields.get("Test:Forest", f), 1, -1, 1.1),
-				anti(squash(fields.get("Test:Cliff", f), 10))
-			)
+		Function<AbsFace, Field> floweriness = f -> multiply(
+			amplify(withMin(squash(scale(octaves(fields.primitive(), 2, 3), 100), 5), 0), 2),
+			tweak(fields.get("Test:Forest", f), 1, -1, 1.1),
+			anti(squash(fields.get("Test:Cliff", f), 10))
 		);
 
 		features.add(new TestBushFeature("Test:BushFeature", forestiness));
 		features.add(new TestTreeFeature("Test:TreeFeature", forestiness));
 		features.add(new TestGrassFeature("Test:GrassFeature", grassiness));
-		features.add(new TestFlowerFeature("Test:FlowerFeature", floweriness));
+		features.add(new TestFlowerFeature("Test:FlowerFeature", TestContent.FLOWERS, floweriness, fields));
 	}
 
 }

@@ -62,6 +62,7 @@ import ru.windcorp.progressia.server.world.context.ServerTileStackContext;
 import ru.windcorp.progressia.server.world.entity.*;
 import ru.windcorp.progressia.server.world.generation.planet.PlanetGravityModel;
 import ru.windcorp.progressia.server.world.tile.*;
+import ru.windcorp.progressia.test.Flowers.FlowerVariant;
 import ru.windcorp.progressia.test.Rocks.RockType;
 import ru.windcorp.progressia.test.gen.TestGravityModel;
 
@@ -75,6 +76,7 @@ public class TestContent {
 	public static final List<TileData> PLACEABLE_TILES = new ArrayList<>();
 
 	public static final Rocks ROCKS = new Rocks();
+	public static final Flowers FLOWERS = new Flowers();
 
 	public static void registerContent() {
 		registerWorldContent();
@@ -183,15 +185,8 @@ public class TestContent {
 			);
 			register(new TestTileLogicGrass(id));
 		});
-
-		Arrays.asList(
-			"Yellow",
-			"White",
-			"Purple",
-			"Blue"
-		).forEach(color -> {
-			registerSimplestTransparentTile(color + "Flowers");
-		});
+		
+		registerFlowers();
 
 		registerSimplestTransparentTile("Stones");
 
@@ -216,21 +211,12 @@ public class TestContent {
 		registerSimplestOpaqueTile("TilesLarge");
 		registerSimplestOpaqueTile("TilesSmall");
 
-		registerHerb("LowGrass", 6);
-		registerHerb("MediumGrass", 6);
-		registerHerb("TallGrass", 6);
-
-		Arrays.asList(
-			"Dandelion",
-			"Lavander"
-		).forEach(variant -> {
-			String fullName = "Tiny" + variant + "Flowers";
-			String id = "Test:" + fullName;
-
-			register(new TileData(id));
-			register(new TileRenderTinyFlower(id, getTileTexture(fullName), 8, 0.5f));
-			register(new HangingTileLogic(id));
-		});
+		registerHerb("GrassMeadow0", 6);
+		registerHerb("GrassMeadow1", 6);
+		registerHerb("GrassMeadow2", 6);
+		registerHerb("GrassBluegrass0", 6);
+		registerHerb("GrassBluegrass1", 6);
+		registerHerb("GrassBluegrass2", 6);
 
 		registerHerb("Bush", 1);
 		registerHerb("Fern", 3);
@@ -238,6 +224,21 @@ public class TestContent {
 		TileDataRegistry.getInstance().values().forEach(PLACEABLE_TILES::add);
 		PLACEABLE_TILES.removeIf(b -> placeableBlacklist.contains(b.getId()));
 		PLACEABLE_TILES.sort(Comparator.comparing(TileData::getId));
+	}
+
+	private static void registerFlowers() {
+		
+		final float common = 0.8f;
+		
+		FLOWERS.create("Clover", common, FlowerVariant.HERB, FlowerVariant.TINY, FlowerVariant.FLAT);
+		FLOWERS.create("Dandelion", common, FlowerVariant.TINY, FlowerVariant.FLAT);
+		FLOWERS.create("Geranium", common, FlowerVariant.TINY, FlowerVariant.FLAT);
+		FLOWERS.create("Knapweed", common, FlowerVariant.TINY, FlowerVariant.FLAT);
+		FLOWERS.create("YellowPea", common, FlowerVariant.TINY, FlowerVariant.FLAT);
+		FLOWERS.create("Daisy", common, FlowerVariant.TINY, FlowerVariant.FLAT);
+		FLOWERS.create("Lavander", common, FlowerVariant.TINY, FlowerVariant.FLAT);
+		
+		FLOWERS.registerAllFlowers();
 	}
 
 	private static void registerSimplestBlock(String name) {

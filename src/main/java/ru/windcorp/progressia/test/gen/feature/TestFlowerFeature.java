@@ -17,35 +17,73 @@
  */
 package ru.windcorp.progressia.test.gen.feature;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
 import com.google.common.collect.ImmutableSet;
 
+import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.rels.RelFace;
 import ru.windcorp.progressia.common.world.tile.TileData;
-import ru.windcorp.progressia.common.world.tile.TileDataRegistry;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceFloatField;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceTopLayerFeature;
 import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceBlockContext;
+import ru.windcorp.progressia.test.Flowers;
+import ru.windcorp.progressia.test.Flowers.Flower;
+import ru.windcorp.progressia.test.Flowers.FlowerVariant;
 import ru.windcorp.progressia.test.TestContent;
+import ru.windcorp.progressia.test.gen.Fields;
+import ru.windcorp.progressia.test.gen.Fields.Field;
 
 public class TestFlowerFeature extends SurfaceTopLayerFeature {
 
 	private static class FlowerGenerator {
-		private final TileData tile;
+		
+		private final TileData[] variants;
 		private final SurfaceFloatField floweriness;
 
-		public FlowerGenerator(TileData tile, Function<String, SurfaceFloatField> flowerinessGenerator) {
-			this.tile = tile;
-			this.floweriness = flowerinessGenerator.apply(tile.getName());
+		public FlowerGenerator(Flower flower, Function<AbsFace, Field> flowerinessGenerator, Fields fields) {
+			this.floweriness = fields.register(
+				"Test:Flower" + flower.getName(),
+				f -> Fields.rarify(flowerinessGenerator.apply(f), flower.getRarity())
+			);
+			
+			List<TileData> tiles = new ArrayList<>();
+			for (FlowerVariant variant : FlowerVariant.values()) {
+				TileData tile = flower.getTile(variant);
+				if (tile == null) {
+					continue;
+				}
+				
+				tiles.add(tile);
+			}
+			
+			this.variants = tiles.toArray(new TileData[tiles.size()]);
 		}
 
 		public void generate(SurfaceBlockContext context) {
-			if (context.getRandom().nextDouble() < floweriness.get(context)) {
-				context.addTile(RelFace.UP, tile);
+			float floweriness = this.floweriness.get(context);
+			
+			if (floweriness <= 0) {
+				return;
 			}
+			
+			float random = context.getRandom().nextFloat();
+			
+			int variant = (int) Math.floor((random + floweriness - 1) * variants.length);
+			
+			if (variant < 0) {
+				return;
+			} else if (variant >= variants.length) {
+				// Screw doing float math properly, just clamp it
+				variant = variants.length - 1;
+			}
+			
+			context.addTile(RelFace.UP, variants[variant]);
 		}
+		
 	}
 
 	private final Set<String> soilWhitelist;
@@ -58,12 +96,11 @@ public class TestFlowerFeature extends SurfaceTopLayerFeature {
 
 	private final FlowerGenerator[] flowers;
 
-	public TestFlowerFeature(String id, Function<String, SurfaceFloatField> flowerinessGenerator) {
+	public TestFlowerFeature(String id, Flowers flowers, Function<AbsFace, Field> flowerinessGenerator, Fields fields) {
 		super(id);
 
-		this.flowers = TileDataRegistry.getInstance().values().stream()
-			.filter(tile -> tile.getName().endsWith("Flowers"))
-			.map(tile -> new FlowerGenerator(tile, flowerinessGenerator))
+		this.flowers = flowers.getFlowers().stream()
+			.map(flower -> new FlowerGenerator(flower, flowerinessGenerator, fields))
 			.toArray(FlowerGenerator[]::new);
 	}
 

@@ -19,6 +19,7 @@ package ru.windcorp.progressia.test.gen.feature;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -57,12 +58,26 @@ public class TestGrassFeature extends SurfaceTopLayerFeature {
 		flatGrasses.put(0.1f, 0.2f, TileDataRegistry.getInstance().get("Test:GrassWeb"));
 		flatGrasses.put(0.05f, 0.1f, TileDataRegistry.getInstance().get("Test:GrassThreads"));
 	}
+	
+	private static final Function<SurfaceBlockContext, TileData> randomPicker(String commonId, String rareId) {
+		TileData common = TileDataRegistry.getInstance().get(commonId);
+		TileData rare = TileDataRegistry.getInstance().get(rareId);
+		final float rareChance = 0.2f;
+		
+		return context -> {
+			if (context.getRandom().nextFloat() < rareChance) {
+				return rare;
+			} else {
+				return common;
+			}
+		};
+	}
 
-	private final FloatRangeMap<TileData> herbGrasses = new ArrayFloatRangeMap<>();
+	private final FloatRangeMap<Function<SurfaceBlockContext, TileData>> herbGrasses = new ArrayFloatRangeMap<>();
 	{
-		herbGrasses.put(0.6f, 1, TileDataRegistry.getInstance().get("Test:TallGrass"));
-		herbGrasses.put(0.4f, 0.6f, TileDataRegistry.getInstance().get("Test:MediumGrass"));
-		herbGrasses.put(0.1f, 0.4f, TileDataRegistry.getInstance().get("Test:LowGrass"));
+		herbGrasses.put(0.6f, 1, randomPicker("Test:GrassMeadow2", "Test:GrassBluegrass2"));
+		herbGrasses.put(0.4f, 0.6f, randomPicker("Test:GrassMeadow1", "Test:GrassBluegrass1"));
+		herbGrasses.put(0.1f, 0.4f, randomPicker("Test:GrassMeadow0", "Test:GrassBluegrass0"));
 	}
 
 	private final List<TileData> scatter = ImmutableList.of(
@@ -134,9 +149,9 @@ public class TestGrassFeature extends SurfaceTopLayerFeature {
 		}
 
 		if (context.getRandom().nextDouble() < grassiness) {
-			TileData herbGrass = herbGrasses.get((float) grassiness);
+			Function<SurfaceBlockContext, TileData> herbGrass = herbGrasses.get((float) grassiness);
 			if (herbGrass != null) {
-				context.addTile(RelFace.UP, herbGrass);
+				context.addTile(RelFace.UP, herbGrass.apply(context));
 			}
 		}
 	}

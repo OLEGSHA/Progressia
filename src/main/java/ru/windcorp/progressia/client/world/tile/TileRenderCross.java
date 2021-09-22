@@ -114,7 +114,8 @@ public class TileRenderCross extends TileRender implements TileOptimizedCustom {
 						origin,
 						width,
 						height,
-						false
+						false,
+						new Vec3(0, 0, 1)
 					)
 				);
 				output.accept(
@@ -125,7 +126,8 @@ public class TileRenderCross extends TileRender implements TileOptimizedCustom {
 						origin,
 						width,
 						height,
-						true
+						true,
+						new Vec3(0, 0, 1)
 					)
 				);
 			}

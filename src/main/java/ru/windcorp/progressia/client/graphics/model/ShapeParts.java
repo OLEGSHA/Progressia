@@ -25,13 +25,14 @@ import glm.vec._3.Vec3;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram.VertexBuilder;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
+import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram.WRPVertexBuilder;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 
 public class ShapeParts {
 
 	private ShapeParts() {
 	}
-
+	
 	public static ShapePart createRectangle(
 		ShapeRenderProgram program,
 		Texture texture,
@@ -41,25 +42,65 @@ public class ShapeParts {
 		Vec3 height,
 		boolean flip
 	) {
-		VertexBuilder builder = program.getVertexBuilder();
+		return createRectangle(program, texture, colorMultiplier, origin, width, height, flip, null);
+	}
 
-		builder.addVertex(
-			origin,
-			colorMultiplier,
-			new Vec2(0, 0)
-		).addVertex(
-			origin.add_(height),
-			colorMultiplier,
-			new Vec2(0, 1)
-		).addVertex(
-			origin.add_(width),
-			colorMultiplier,
-			new Vec2(1, 0)
-		).addVertex(
-			origin.add_(width).add(height),
-			colorMultiplier,
-			new Vec2(1, 1)
-		);
+	public static ShapePart createRectangle(
+		ShapeRenderProgram program,
+		Texture texture,
+		Vec4 colorMultiplier,
+		Vec3 origin,
+		Vec3 width,
+		Vec3 height,
+		boolean flip,
+		Vec3 forcedNormals
+	) {
+		VertexBuilder builder = program.getVertexBuilder();
+		
+		if (forcedNormals != null && builder instanceof WRPVertexBuilder) {
+			((WRPVertexBuilder) builder).addVertex(
+				origin,
+				colorMultiplier,
+				new Vec2(0, 0),
+				forcedNormals
+			);
+			((WRPVertexBuilder) builder).addVertex(
+				origin.add_(height),
+				colorMultiplier,
+				new Vec2(0, 1),
+				forcedNormals
+			);
+			((WRPVertexBuilder) builder).addVertex(
+				origin.add_(width),
+				colorMultiplier,
+				new Vec2(1, 0),
+				forcedNormals
+			);
+			((WRPVertexBuilder) builder).addVertex(
+				origin.add_(width).add(height),
+				colorMultiplier,
+				new Vec2(1, 1),
+				forcedNormals
+			);
+		} else {
+			builder.addVertex(
+				origin,
+				colorMultiplier,
+				new Vec2(0, 0)
+			).addVertex(
+				origin.add_(height),
+				colorMultiplier,
+				new Vec2(0, 1)
+			).addVertex(
+				origin.add_(width),
+				colorMultiplier,
+				new Vec2(1, 0)
+			).addVertex(
+				origin.add_(width).add(height),
+				colorMultiplier,
+				new Vec2(1, 1)
+			);
+		}
 
 		ShortBuffer buffer = flip ? ShortBuffer.wrap(
 			new short[] {

@@ -218,6 +218,10 @@ public class Fields {
 	public static Field anti(Field f) {
 		return tweak(f, 1, -1, 1);
 	}
+	
+	public static Field rarify(Field f, float rarity) {
+		return (x, y) -> Math.max((f.compute(x, y) - rarity) / (1 - rarity), 0);
+	}
 
 	public static Field octaves(Field f, double scaleFactor, double amplitudeFactor, int octaves) {
 		return (x, y) -> {
