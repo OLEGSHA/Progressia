@@ -63,9 +63,10 @@ public class RegionFile {
 		}
 		
 		
-		char prog;
+		byte prog;
+		file.seek(0);
 		for (int i=0;i<4;i++) {
-			prog = file.readChar();
+			prog = file.readByte();
 			if (prog != HEADER_ID[i])
 			{
 				throw new IOException("File is not a .progressia_chunk file");
@@ -132,13 +133,14 @@ public class RegionFile {
 
 	public void makeHeader(Vec3i regionCoords) throws IOException {
 		file.seek(0);
+		for (int i = 0; i < HEADER_SIZE; i++) {
+			file.write(0);
+		}
+		file.seek(0);
 		file.write(HEADER_ID);
 		file.writeInt(regionCoords.x);
 		file.writeInt(regionCoords.y);
 		file.writeInt(regionCoords.z);
-		for (int i = 0; i < HEADER_SIZE; i++) {
-			file.write(0);
-		}
 	}
 
 	public void writeBuffer(byte[] buffer, int dataOffset, Vec3i pos) throws IOException {

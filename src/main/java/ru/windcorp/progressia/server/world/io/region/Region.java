@@ -60,6 +60,7 @@ public class Region {
 		} catch (IOException e) {
 
 			RegionWorldContainer.LOG.debug("Uh the file broke");
+			RegionWorldContainer.LOG.debug(e.getLocalizedMessage());
 			if (RESET_CORRUPTED) {
 				this.file.makeHeader(regionCoords);
 			}

@@ -20,7 +20,7 @@ public class CubeComponent extends Component {
 	
 	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 	
-	private int size = 250;
+	private int size = 400;
 	
 	public CubeComponent(String name) {
 		super(name);
@@ -59,12 +59,12 @@ public class CubeComponent extends Component {
 			normals[i] = transforms[i].rotate((float) (time%(6000*6.28) )/ 6000, new Vec3(0,1,0)).rotate((float) 24, new Vec3(1,.5,0)).mul_(normals[i]);
 		}
 		
-		transforms[0].translate(new Vec3(-size/2,-size/2,size/2+13));
-		transforms[1].translate(new Vec3(-size/2,-size/2-13,-size/2)).rotate((float) pi2, new Vec3(1,0,0));
+		transforms[0].translate(new Vec3(-size/2,-size/2,size/2+11));
+		transforms[1].translate(new Vec3(-size/2,-size/2-12,-size/2)).rotate((float) pi2, new Vec3(1,0,0));
 		transforms[2].translate(new Vec3(-size/2+13,-size/2,size/2)).rotate((float) pi2, new Vec3(0,1,0));
-		transforms[3].translate(new Vec3(-size/2,-size/2,-size/2+13));
-		transforms[4].translate(new Vec3(-size/2,size/2-13,-size/2)).rotate((float) pi2, new Vec3(1,0,0));
-		transforms[5].translate(new Vec3(size/2+13,-size/2,size/2)).rotate((float) pi2, new Vec3(0,1,0));
+		transforms[3].translate(new Vec3(-size/2,-size/2,-size/2+14));
+		transforms[4].translate(new Vec3(-size/2,size/2-15.5,-size/2)).rotate((float) pi2, new Vec3(1,0,0));
+		transforms[5].translate(new Vec3(size/2+15.5,-size/2,size/2)).rotate((float) pi2, new Vec3(0,1,0));
 	}
 	
 	@Override
@@ -72,7 +72,9 @@ public class CubeComponent extends Component {
 	{
 		computeTransforms();
 		
-		target.pushTransform(new Mat4(1).translate(new Vec3(getX()+size*r3/2,getY()+size*r3/2,0)));
+		setPosition(750,780);
+		
+		target.pushTransform(new Mat4(1).translate(new Vec3(getX()+size*r3/2,getY()-size*r3/2,0))); //-size*r3/2
 		
 		for (int b=0; b<6;b++)
 		{

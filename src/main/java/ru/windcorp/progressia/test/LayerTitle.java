@@ -31,30 +31,35 @@ public class LayerTitle extends Background {
 	private final BasicButton resetButton;
 
 	public LayerTitle(String name) {
-		super(name, new LayoutAlign(0.5f, 0.7f, 15), SimpleTextures.get("title/background"));
+		super(name, new LayoutAlign(0, 1f, 15), SimpleTextures.get("title/background"));
 		Group content = new Group("Layer" + name + ".Group", new LayoutVertical(15));
+		Group buttonContent = new Group("Layer" + name + ".ButtonGroup", new LayoutVertical(15));
 
 		Font titleFont = new Font().deriveBold().withColor(Colors.BLUE).withAlign(0.5f);
 		content.addChild(new TextureComponent(name + ".Title", SimpleTextures.get("title/progressia")));
 
 		Font buttonFont = titleFont.deriveNotBold();
 		MutableString playText = new MutableStringLocalized("Layer" + name + ".Play");
-		content.addChild(new Button(name + ".Play", new Label(name + ".Play", buttonFont, playText)).addAction(this::startGame));
+		buttonContent.addChild(new Button(name + ".Play", new Label(name + ".Play", buttonFont, playText)).addAction(this::startGame));
 		
 		MutableString resetText = new MutableStringLocalized("Layer" + name + ".Reset");
 		this.resetButton = new Button(name + ".Reset", new Label(name + ".Reset", buttonFont, resetText)).addAction(this::resetWorld);
-		content.addChild(resetButton);
+		buttonContent.addChild(resetButton);
 		
 		updateResetButton();
 
 		MutableString quitText = new MutableStringLocalized("Layer" + name + ".Quit");
-		content.addChild(new Button(name + "Quit", new Label(name + ".Quit", buttonFont, quitText)).addAction(b -> {
+		buttonContent.addChild(new Button(name + "Quit", new Label(name + ".Quit", buttonFont, quitText)).addAction(b -> {
 			System.exit(0);
 		}));
 		
-		content.addChild(new CubeComponent(name+".Cube"));
-		
+		content.addChild(buttonContent);
 		getRoot().addChild(content);
+		buttonContent.setPreferredSize(500, 1000);
+		
+		CubeComponent cube = new CubeComponent(name+".Cube");
+		
+		getRoot().addChild(cube);
 	}
 
 	private void updateResetButton() {
