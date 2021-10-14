@@ -30,6 +30,8 @@ import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 
 public class LayerAbout extends GUILayer {
 
+	public static String version = "pre-alpha 3";
+
 	public LayerAbout() {
 		super("LayerAbout", new LayoutAlign(1, 1, 5));
 
@@ -50,7 +52,7 @@ public class LayerAbout extends GUILayer {
 			new Label(
 				"Version",
 				font,
-				new MutableStringLocalized("LayerAbout.Version").format("pre-alpha 3")
+				new MutableStringLocalized("LayerAbout.Version").format(version)
 			)
 		);
 

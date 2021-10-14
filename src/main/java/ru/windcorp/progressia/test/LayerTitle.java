@@ -11,6 +11,7 @@ import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.TextureComponent;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
+import ru.windcorp.progressia.client.graphics.gui.layout.LayoutEdges;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.graphics.texture.SimpleTextures;
 import ru.windcorp.progressia.client.localization.MutableString;
@@ -33,10 +34,27 @@ public class LayerTitle extends Background {
 	public LayerTitle(String name) {
 		super(name, new LayoutAlign(0, 1f, 15), SimpleTextures.get("title/background"));
 		Group content = new Group("Layer" + name + ".Group", new LayoutVertical(15));
-		Group buttonContent = new Group("Layer" + name + ".ButtonGroup", new LayoutVertical(15));
+		Group info = new Group("Layer"+name+".InfoGroup", new LayoutEdges(30));
+		Group buttonContent = new Group("Layer" + name + ".ButtonGroup", new LayoutColumn(15, 320));
 
 		Font titleFont = new Font().deriveBold().withColor(Colors.BLUE).withAlign(0.5f);
 		content.addChild(new TextureComponent(name + ".Title", SimpleTextures.get("title/progressia")));
+
+		info.addChild(new Label(
+				"About",
+				titleFont,
+				new MutableStringLocalized("LayerAbout.Title")
+			)
+		);
+
+		info.addChild(
+				new Label(
+						"Version",
+						titleFont,
+						new MutableStringLocalized("LayerAbout.Version").format(LayerAbout.version)
+				)
+		);
+		content.addChild(info);
 
 		Font buttonFont = titleFont.deriveNotBold();
 		MutableString playText = new MutableStringLocalized("Layer" + name + ".Play");
@@ -57,7 +75,7 @@ public class LayerTitle extends Background {
 		getRoot().addChild(content);
 		buttonContent.setPreferredSize(500, 1000);
 		
-		CubeComponent cube = new CubeComponent(name+".Cube");
+		CubeComponent cube = new CubeComponent(name+".Cube",300);
 		
 		getRoot().addChild(cube);
 	}

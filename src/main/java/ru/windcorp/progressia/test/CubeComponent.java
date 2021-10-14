@@ -21,9 +21,14 @@ public class CubeComponent extends Component {
 	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 	
 	private int size = 400;
-	
-	public CubeComponent(String name) {
+
+	public CubeComponent(String name)
+	{
+		this(name, 400);
+	}
+	public CubeComponent(String name, int size) {
 		super(name);
+		this.size = size;
 		transforms = new Mat4[6];
 		normals = new Vec4[6];
 		setPreferredSize((int) Math.ceil(r3*size),(int) Math.ceil(r3*size));

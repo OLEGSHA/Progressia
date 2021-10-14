@@ -27,8 +27,8 @@ import ru.windcorp.progressia.client.graphics.gui.Layout;
 
 public class LayoutAlign implements Layout {
 
-	private final int margin;
-	private double alignX, alignY;
+	protected final int margin;
+	protected double alignX, alignY;
 
 	public LayoutAlign(double alignX, double alignY, int margin) {
 		this.alignX = alignX;
