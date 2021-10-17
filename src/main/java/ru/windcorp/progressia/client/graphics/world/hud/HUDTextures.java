@@ -17,15 +17,20 @@
  */
 package ru.windcorp.progressia.client.graphics.world.hud;
 
+import java.io.IOException;
+
 import ru.windcorp.progressia.client.graphics.texture.Atlases;
 import ru.windcorp.progressia.client.graphics.texture.SimpleTexture;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.graphics.texture.Atlases.AtlasGroup;
 import ru.windcorp.progressia.common.resource.ResourceManager;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class HUDTextures {
 
 	private static final AtlasGroup HUD_ATLAS_GROUP = new AtlasGroup("HUD", 1 << 12);
+	
+	private static ItemAmountTypeface itemAmountTypeface = null;
 
 	public static Texture getHUDTexture(String name) {
 		return new SimpleTexture(
@@ -38,6 +43,18 @@ public class HUDTextures {
 
 	public static AtlasGroup getHUDAtlasGroup() {
 		return HUD_ATLAS_GROUP;
+	}
+	
+	public static ItemAmountTypeface getItemAmountTypeface() {
+		return itemAmountTypeface;
+	}
+	
+	public static void loadItemAmountTypeface() {
+		try {
+			itemAmountTypeface = new ItemAmountTypeface();
+		} catch (IOException e) {
+			throw CrashReports.report(e, "Could not load item amount typeface");
+		}
 	}
 
 }

@@ -27,6 +27,7 @@ import ru.windcorp.progressia.client.graphics.font.GNUUnifontLoader;
 import ru.windcorp.progressia.client.graphics.font.Typefaces;
 import ru.windcorp.progressia.client.graphics.texture.Atlases;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
+import ru.windcorp.progressia.client.graphics.world.hud.HUDTextures;
 import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.common.resource.ResourceManager;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
@@ -46,6 +47,7 @@ public class ClientProxy implements Proxy {
 				() -> Typefaces
 					.setDefault(GNUUnifontLoader.load(ResourceManager.getResource("assets/unifont-13.0.03.hex.gz")))
 			);
+			RenderTaskQueue.waitAndInvoke(HUDTextures::loadItemAmountTypeface);
 		} catch (InterruptedException e) {
 			throw CrashReports.report(e, "ClientProxy failed");
 		}

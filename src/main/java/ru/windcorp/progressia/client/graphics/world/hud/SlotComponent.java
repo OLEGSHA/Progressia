@@ -20,6 +20,7 @@ package ru.windcorp.progressia.client.graphics.world.hud;
 import java.util.function.BooleanSupplier;
 import glm.mat._4.Mat4;
 import ru.windcorp.progressia.client.graphics.Colors;
+import ru.windcorp.progressia.client.graphics.backend.InputTracker;
 import ru.windcorp.progressia.client.graphics.flat.FlatRenderProgram;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
@@ -42,6 +43,7 @@ public class SlotComponent extends Component {
 	static final float TEXTURE_SIZE = 24;
 
 	private static Renderable containerOpenDecoration = null;
+	private static Renderable containerOpenableDecoration = null;
 
 	private final ItemContainer container;
 	private final int index;
@@ -63,7 +65,7 @@ public class SlotComponent extends Component {
 
 		setScale(2);
 
-		Font sizeFont = new Font().deriveOutlined().withScale(1);
+		Font sizeFont = new Font(HUDTextures.getItemAmountTypeface()).deriveOutlined().withScale(2);
 		addChild(new DynamicLabel(getName() + ".Size", sizeFont, () -> amountDisplayString, getPreferredSize().x));
 
 		setLayout(new LayoutAlign(0, 0, 0));
@@ -72,6 +74,13 @@ public class SlotComponent extends Component {
 			containerOpenDecoration = new PgmBuilder(
 				FlatRenderProgram.getDefault(),
 				HUDTextures.getHUDTexture("DecorationContainerOpen")
+			).setSize(TEXTURE_SIZE + 2).setOrigin(-1, -1, 0).create();
+		}
+		
+		if (containerOpenableDecoration == null) {
+			containerOpenableDecoration = new PgmBuilder(
+				FlatRenderProgram.getDefault(),
+				HUDTextures.getHUDTexture("DecorationContainerOpenable")
 			).setSize(TEXTURE_SIZE + 2).setOrigin(-1, -1, 0).create();
 		}
 	}
@@ -155,10 +164,26 @@ public class SlotComponent extends Component {
 
 		if (contents instanceof ItemDataContainer) {
 			ItemDataContainer asContainer = (ItemDataContainer) contents;
+			
 			if (asContainer.isOpen()) {
 				renderer.pushColorMultiplier().mul(Colors.BLUE);
 				containerOpenDecoration.render(renderer);
 				renderer.popColorMultiplier();
+			} else {
+				
+				double dx = InputTracker.getCursorX() - (getX() + getWidth() / 2);
+				double dy = InputTracker.getCursorY() - (getY() + getHeight() / 2);
+				double distanceToCursorSquared = dx*dx + dy*dy;
+				final double maxDistanceSquared = (scale * TEXTURE_SIZE * 4) * (scale * TEXTURE_SIZE * 4);
+				
+				float opacity = (float) (1 - distanceToCursorSquared / maxDistanceSquared);
+				
+				if (opacity > 0) {
+					renderer.pushColorMultiplier().mul(Colors.BLUE.x, Colors.BLUE.y, Colors.BLUE.z, opacity);
+					containerOpenableDecoration.render(renderer);
+					renderer.popColorMultiplier();
+				}
+				
 			}
 		}
 	}

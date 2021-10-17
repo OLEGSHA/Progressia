@@ -45,6 +45,12 @@ public class ExponentAnimation {
 		float difference = value - target;
 		value += difference * (1 - Math.exp(speed * timeStep));
 		
+		float newDifference = value - target;
+		if (difference * newDifference < 0) {
+			// Whoops, we've overshot
+			value = target;
+		}
+		
 		return value;
 	}
 	

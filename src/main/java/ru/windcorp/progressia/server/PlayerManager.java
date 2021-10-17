@@ -63,7 +63,7 @@ public class PlayerManager {
 	private EntityDataPlayer spawnPlayerEntity(String login) {
 		EntityDataPlayer player = (EntityDataPlayer) EntityDataRegistry.getInstance().create("Core:Player");
 
-		player.getHand(0).slot().setContents(ItemDataRegistry.getInstance().create("Test:Stick"), 7);
+		player.getHand(0).slot().setContents(ItemDataRegistry.getInstance().create("Test:Stick"), 20);
 		player.getEquipmentSlot(0).slot().setContents(ItemDataRegistry.getInstance().create("Test:CardboardBackpack"), 1);
 
 		player.setPosition(getServer().getWorld().getGenerator().suggestSpawnLocation());
