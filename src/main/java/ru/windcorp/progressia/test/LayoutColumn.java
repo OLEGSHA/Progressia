@@ -1,10 +1,7 @@
 package ru.windcorp.progressia.test;
 
-import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
-
-import static java.lang.Math.min;
 
 public class LayoutColumn extends LayoutVertical {
 

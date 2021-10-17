@@ -3,8 +3,6 @@ package ru.windcorp.progressia.client.graphics.gui.layout;
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.Layout;
-import ru.windcorp.progressia.client.localization.MutableStringLocalized;
-
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
