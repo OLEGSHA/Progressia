@@ -24,6 +24,10 @@ public abstract class StateStorage {
 
 	public abstract void setInt(int index, int value);
 	
+	public abstract boolean getBoolean(int index);
+
+	public abstract void setBoolean(int index, boolean value);
+	
 	public abstract Object getObject(int index);
 	
 	public abstract void setObject(int index, Object object);

@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import ru.windcorp.progressia.common.state.Encodable;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
+import ru.windcorp.progressia.common.world.item.inventory.Inventory;
 
 /**
  * A collection of {@link ItemSlot}s representing a single storage unit. A
@@ -34,9 +35,19 @@ import ru.windcorp.progressia.common.util.namespaces.Namespaced;
  * through <i>n</i> - 1.
  */
 public abstract class ItemContainer extends Namespaced implements Encodable, Iterable<ItemSlot> {
+	
+	private Inventory inventory;
 
 	public ItemContainer(String id) {
 		super(id);
+	}
+	
+	public Inventory getInventory() {
+		return inventory;
+	}
+	
+	public void setInventory(Inventory inventory) {
+		this.inventory = inventory;
 	}
 
 	/**

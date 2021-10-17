@@ -17,8 +17,6 @@
  */
 package ru.windcorp.progressia.client.graphics.world.hud;
 
-import java.util.function.Consumer;
-
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
@@ -34,6 +32,7 @@ import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.localization.MutableString;
 import ru.windcorp.progressia.client.localization.MutableStringLocalized;
+import ru.windcorp.progressia.client.world.item.inventory.InventoryComponent;
 
 public class InventoryWindow extends Panel {
 	
@@ -41,13 +40,18 @@ public class InventoryWindow extends Panel {
 	private static final Vec4 CLOSE_BUTTON_IDLE = Colors.toVector(0xFFBC1515);
 	private static final Vec4 CLOSE_BUTTON_HOVER = Colors.toVector(0xFFFA6464);
 	private static final Vec4 CLOSE_BUTTON_PRESSED = Colors.BLACK;
+	
+	private final InventoryComponent content;
+	private final HUDWorkspace workspace;
 
-	public InventoryWindow(String name, InventoryComponent component) {
+	public InventoryWindow(String name, InventoryComponent component, HUDWorkspace workspace) {
 		super(name, new LayoutVertical(15, 15));
+		this.content = component;
+		this.workspace = workspace;
 
 		Group titleBar = new Group(getName() + ".TitleBar", new LayoutBorderHorizontal());
 		titleBar.addChild(createLabel(component).setLayoutHint(LayoutBorderHorizontal.CENTER));
-		titleBar.addChild(createCloseButton().setLayoutHint(LayoutBorderHorizontal.RIGHT));
+		titleBar.addChild(createCloseButton(component).setLayoutHint(LayoutBorderHorizontal.RIGHT));
 
 		addChild(titleBar);
 
@@ -55,21 +59,22 @@ public class InventoryWindow extends Panel {
 	}
 
 	private Label createLabel(InventoryComponent component) {
-		String translationKey = "Inventory." + component.getContainer().getId() + ".Title";
+		String translationKey = "Inventory." + component.getInventory().getId() + ".Title";
 		MutableString titleText = new MutableStringLocalized(translationKey);
 		Font titleFont = new Font().deriveBold().withColor(Colors.BLACK).withAlign(Typeface.ALIGN_LEFT);
 
 		return new Label(getName() + ".Title", titleFont, titleText);
 	}
 
-	private void doWithManager(Consumer<WindowedHUD> action) {
+	private WindowedHUD getManager() {
 		Component parent = getParent();
 		if (parent instanceof WindowedHUD) {
-			action.accept((WindowedHUD) parent);
+			return (WindowedHUD) parent;
 		}
+		return null;
 	}
 
-	private Component createCloseButton() {
+	private Component createCloseButton(InventoryComponent component) {
 		
 		Button button = new Button(getName() + ".CloseButton", CLOSE_CHAR) {
 			
@@ -91,7 +96,18 @@ public class InventoryWindow extends Panel {
 			
 		};
 		
-		button.addAction(b -> doWithManager(manager -> manager.closeWindow(this)));
+		button.addAction(b -> {
+			
+			content.getInventory().close(workspace.getPlayerEntity());
+			
+			WindowedHUD manager = getManager();
+			if (manager == null) {
+				return;
+			}
+			
+			manager.closeWindow(this);
+			
+		});
 
 		button.setLayout(new LayoutFill());
 		
@@ -99,6 +115,10 @@ public class InventoryWindow extends Panel {
 		button.setPreferredSize(height, height);
 		
 		return button;
+	}
+	
+	public InventoryComponent getContent() {
+		return content;
 	}
 
 }

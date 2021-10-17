@@ -121,12 +121,8 @@ public class InteractiveSlotComponent extends Button {
 
 		boolean success = false;
 		
-		if (handSlot.isEmpty() && invSlot.getAmount() == 1 && invSlot.getContents() instanceof ItemDataContainer) {
-			ItemDataContainer item = (ItemDataContainer) invSlot.getContents();
-			if (item.canOpenContainer()) {
-				workspace.openContainer(new SimpleInventoryComponent(item.getContainer(), workspace));
-				success = true;
-			}
+		if (handSlot.isEmpty()) {
+			success = tryToOpen(invSlot);
 		}
 
 		if (!success && handSlot.isEmpty()) {
@@ -144,6 +140,18 @@ public class InteractiveSlotComponent extends Button {
 		if (success) {
 			requestReassembly();
 		}
+	}
+
+	private boolean tryToOpen(ItemSlot invSlot) {
+		if (invSlot.getAmount() != 1) {
+			return false;
+		}
+		if (!(invSlot.getContents() instanceof ItemDataContainer)) {
+			return false;
+		}
+		
+		ItemDataContainer item = (ItemDataContainer) invSlot.getContents();
+		return item.open(workspace.getPlayerEntity()) != null;
 	}
 
 	private void onSingleMoveAction(boolean fromHand) {

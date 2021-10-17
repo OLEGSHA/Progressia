@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.client.graphics.world.hud;
+package ru.windcorp.progressia.client.world.item.inventory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,15 +27,19 @@ import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderHorizontal;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderVertical;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutGrid;
+import ru.windcorp.progressia.client.graphics.world.hud.Bar;
+import ru.windcorp.progressia.client.graphics.world.hud.HUDWorkspace;
+import ru.windcorp.progressia.client.graphics.world.hud.InteractiveSlotComponent;
 import ru.windcorp.progressia.common.world.item.ItemContainer;
 
-public class SimpleInventoryComponent extends InventoryComponent {
+public class ContainerComponentSimple extends ContainerComponent {
 
 	private final Group slots = new Group("Inventory.Slots", new LayoutGrid(0, 15));
 	private final Collection<InteractiveSlotComponent> slotCollection = new ArrayList<>();
+	
 	private final ItemContainer container;
 
-	public SimpleInventoryComponent(ItemContainer container, HUDWorkspace workspace) {
+	public ContainerComponentSimple(ItemContainer container, HUDWorkspace workspace) {
 		super("Inventory");
 		this.container = container;
 
@@ -80,7 +84,7 @@ public class SimpleInventoryComponent extends InventoryComponent {
 		slots.addChild(component.setLayoutHint(pos));
 		slotCollection.add(component);
 	}
-	
+
 	@Override
 	public ItemContainer getContainer() {
 		return container;

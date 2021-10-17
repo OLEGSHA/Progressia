@@ -17,17 +17,26 @@
  */
 package ru.windcorp.progressia.common.world.entity;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
 import ru.windcorp.progressia.common.state.IntStateField;
 import ru.windcorp.progressia.common.state.ObjectStateField;
+import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
 import ru.windcorp.progressia.common.world.item.ItemContainerEquipment;
 import ru.windcorp.progressia.common.world.item.ItemContainerHand;
+import ru.windcorp.progressia.common.world.item.inventory.InventoryClosingEvent;
+import ru.windcorp.progressia.common.world.item.inventory.InventoryOpenedEvent;
+import ru.windcorp.progressia.common.world.item.inventory.InventoryUser;
 
-public class EntityDataPlayer extends EntityData {
+public class EntityDataPlayer extends EntityData implements InventoryUser {
 
 	private final ObjectStateField<SpeciesDatalet> speciesDatalet = field("Core:SpeciesDatalet").setShared()
 		.of(SpeciesDataRegistry.getInstance().getCodec()).build();
 	
 	private final IntStateField selectedHand = field("Core:SelectedHand").setShared().ofInt().build();
+	
+	private final EventBus eventBus = ReportingEventBus.create("EntityDataPlayer");
 
 	public EntityDataPlayer(String id, SpeciesData species) {
 		super(id);
@@ -70,6 +79,24 @@ public class EntityDataPlayer extends EntityData {
 	
 	public ItemContainerHand getSelectedHand() {
 		return getHand(getSelectedHandIndex());
+	}
+	
+	@Subscribe
+	private void onInventoryOpened(InventoryOpenedEvent event) {
+		eventBus.post(event);
+	}
+	
+	@Subscribe
+	private void onInventoryClosed(InventoryClosingEvent event) {
+		eventBus.post(event);
+	}
+	
+	public void subscribe(Object listener) {
+		eventBus.register(listener);
+	}
+	
+	public void unsubscribe(Object listener) {
+		eventBus.unregister(listener);
 	}
 
 }

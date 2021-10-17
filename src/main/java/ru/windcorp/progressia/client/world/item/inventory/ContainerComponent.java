@@ -15,46 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.common.state;
+package ru.windcorp.progressia.client.world.item.inventory;
 
-class PrimitiveCounters {
+import java.util.Collection;
 
-	private int ints = 0;
-	private int booleans = 0;
-	private int objects = 0;
+import ru.windcorp.progressia.client.graphics.gui.Component;
+import ru.windcorp.progressia.client.graphics.world.hud.InteractiveSlotComponent;
+import ru.windcorp.progressia.common.world.item.ItemContainer;
 
-	public PrimitiveCounters() {
+public abstract class ContainerComponent extends Component {
+
+	public ContainerComponent(String name) {
+		super(name);
 	}
 
-	public PrimitiveCounters(PrimitiveCounters copyFrom) {
-		this.ints = copyFrom.ints;
-		this.booleans = copyFrom.booleans;
-		this.objects = copyFrom.objects;
-	}
-
-	public int getInts() {
-		return ints;
-	}
-
-	public int getIntsThenIncrement() {
-		return this.ints++;
-	}
+	public abstract ItemContainer getContainer();
 	
-	public int getBooleans() {
-		return booleans;
-	}
-	
-	public int getBooleansThenIncrement() {
-		return this.booleans++;
-	}
-	
-	public int getObjects() {
-		return objects;
-	}
-
-	public int getObjectsThenIncrement() {
-		return this.objects++;
-	}
+	public abstract Collection<InteractiveSlotComponent> getSlots();
 
 }

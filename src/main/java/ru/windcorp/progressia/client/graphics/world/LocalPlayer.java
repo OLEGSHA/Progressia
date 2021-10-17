@@ -21,6 +21,7 @@ package ru.windcorp.progressia.client.graphics.world;
 import org.apache.logging.log4j.LogManager;
 
 import ru.windcorp.progressia.client.Client;
+import ru.windcorp.progressia.client.events.ClientEvent;
 import ru.windcorp.progressia.client.events.NewLocalEntityEvent;
 import ru.windcorp.progressia.client.world.WorldRender;
 import ru.windcorp.progressia.client.world.entity.EntityRenderable;
@@ -83,8 +84,9 @@ public class LocalPlayer {
 		}
 
 		if (playerEntity != lastKnownEntity) {
+			ClientEvent event = new NewLocalEntityEvent.Immutable(getClient(), playerEntity, lastKnownEntity);
 			this.lastKnownEntity = playerEntity;
-			getClient().postEvent(new NewLocalEntityEvent.Immutable(getClient(), playerEntity, lastKnownEntity));
+			getClient().postEvent(event);
 		}
 
 		return playerEntity;

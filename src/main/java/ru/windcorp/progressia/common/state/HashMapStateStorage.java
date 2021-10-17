@@ -22,10 +22,13 @@ import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 public class HashMapStateStorage extends StateStorage {
 
 	private final TIntIntMap ints = new TIntIntHashMap();
+	private final TIntSet booleans = new TIntHashSet();
 	private final TIntObjectMap<Object> objects = new TIntObjectHashMap<>();
 
 	@Override
@@ -36,6 +39,20 @@ public class HashMapStateStorage extends StateStorage {
 	@Override
 	public void setInt(int index, int value) {
 		ints.put(index, value);
+	}
+	
+	@Override
+	public boolean getBoolean(int index) {
+		return booleans.contains(index);
+	}
+	
+	@Override
+	public void setBoolean(int index, boolean value) {
+		if (value) {
+			booleans.add(index);
+		} else {
+			booleans.remove(index);
+		}
 	}
 	
 	@Override

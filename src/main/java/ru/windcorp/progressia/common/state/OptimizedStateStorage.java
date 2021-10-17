@@ -21,11 +21,13 @@ package ru.windcorp.progressia.common.state;
 public class OptimizedStateStorage extends StateStorage {
 
 	private final int[] ints;
+	private final boolean[] booleans;
 	private final Object[] objects;
 
 	public OptimizedStateStorage(PrimitiveCounters sizes) {
-		this.ints = new int[sizes.getInts()];
-		this.objects = new Object[sizes.getObjects()];
+		this.ints = sizes.getInts() == 0 ? null : new int[sizes.getInts()];
+		this.booleans = sizes.getBooleans() == 0 ? null : new boolean[sizes.getBooleans()];
+		this.objects = sizes.getObjects() == 0 ? null : new Object[sizes.getObjects()];
 	}
 
 	@Override
@@ -36,6 +38,16 @@ public class OptimizedStateStorage extends StateStorage {
 	@Override
 	public void setInt(int index, int value) {
 		ints[index] = value;
+	}
+	
+	@Override
+	public boolean getBoolean(int index) {
+		return booleans[index];
+	}
+	
+	@Override
+	public void setBoolean(int index, boolean value) {
+		booleans[index] = value;
 	}
 	
 	@Override

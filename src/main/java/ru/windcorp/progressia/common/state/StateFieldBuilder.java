@@ -29,11 +29,17 @@ public interface StateFieldBuilder {
 		IntStateField build();
 	}
 	
+	public static interface Boolean {
+		BooleanStateField build();
+	}
+	
 	public static interface Obj<T> {
 		ObjectStateField<T> build();
 	}
 
 	Int ofInt();
+	
+	Boolean ofBoolean();
 	
 	<T> Obj<T> of(ObjectCodec<T> codec, Supplier<T> defaultValue);
 	

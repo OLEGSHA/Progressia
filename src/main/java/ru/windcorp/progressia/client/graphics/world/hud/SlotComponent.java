@@ -19,6 +19,7 @@ package ru.windcorp.progressia.client.graphics.world.hud;
 
 import java.util.function.BooleanSupplier;
 import glm.mat._4.Mat4;
+import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.flat.FlatRenderProgram;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
@@ -26,17 +27,21 @@ import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.DynamicLabel;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
+import ru.windcorp.progressia.client.graphics.model.ShapeRenderHelper;
 import ru.windcorp.progressia.client.graphics.model.Shapes.PgmBuilder;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.world.item.ItemRenderRegistry;
 import ru.windcorp.progressia.client.world.item.ItemRenderable;
 import ru.windcorp.progressia.common.world.item.ItemContainer;
 import ru.windcorp.progressia.common.world.item.ItemData;
+import ru.windcorp.progressia.common.world.item.ItemDataContainer;
 import ru.windcorp.progressia.common.world.item.ItemSlot;
 
 public class SlotComponent extends Component {
 
 	static final float TEXTURE_SIZE = 24;
+
+	private static Renderable containerOpenDecoration = null;
 
 	private final ItemContainer container;
 	private final int index;
@@ -62,6 +67,13 @@ public class SlotComponent extends Component {
 		addChild(new DynamicLabel(getName() + ".Size", sizeFont, () -> amountDisplayString, getPreferredSize().x));
 
 		setLayout(new LayoutAlign(0, 0, 0));
+
+		if (containerOpenDecoration == null) {
+			containerOpenDecoration = new PgmBuilder(
+				FlatRenderProgram.getDefault(),
+				HUDTextures.getHUDTexture("DecorationContainerOpen")
+			).setSize(TEXTURE_SIZE + 2).setOrigin(-1, -1, 0).create();
+		}
 	}
 
 	public ItemSlot getSlot() {
@@ -83,11 +95,11 @@ public class SlotComponent extends Component {
 		setBackgroundDisplayCondition(when);
 		return this;
 	}
-	
+
 	public SlotComponent setBackground(Texture texture) {
 		return setBackground(texture, null);
 	}
-	
+
 	public SlotComponent setBackgroundDisplayCondition(BooleanSupplier backgroundCondition) {
 		this.backgroundCondition = backgroundCondition;
 		return this;
@@ -120,13 +132,14 @@ public class SlotComponent extends Component {
 	}
 
 	private void assembleItem(RenderTarget target) {
-		target.pushTransform(new Mat4().translate(getX(), getY(), 0).scale(scale));
+		target.pushTransform(new Mat4().translate(getX(), getY(), 0).scale(scale, scale, 1));
 		target.addCustomRenderer(renderer -> {
 
 			updateItemRenderer();
 
 			if (itemRenderer != null) {
 				itemRenderer.render(renderer);
+				renderDecorations(renderer);
 			} else if (background != null) {
 				if (backgroundCondition == null || backgroundCondition.getAsBoolean()) {
 					background.render(renderer);
@@ -135,6 +148,19 @@ public class SlotComponent extends Component {
 
 		});
 		target.popTransform();
+	}
+
+	private void renderDecorations(ShapeRenderHelper renderer) {
+		ItemData contents = getSlot().getContents();
+
+		if (contents instanceof ItemDataContainer) {
+			ItemDataContainer asContainer = (ItemDataContainer) contents;
+			if (asContainer.isOpen()) {
+				renderer.pushColorMultiplier().mul(Colors.BLUE);
+				containerOpenDecoration.render(renderer);
+				renderer.popColorMultiplier();
+			}
+		}
 	}
 
 }

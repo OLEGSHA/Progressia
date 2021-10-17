@@ -15,46 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.common.state;
+package ru.windcorp.progressia.client.world.item.inventory;
 
-class PrimitiveCounters {
+import ru.windcorp.progressia.client.graphics.world.hud.HUDWorkspace;
+import ru.windcorp.progressia.common.util.namespaces.Namespaced;
+import ru.windcorp.progressia.common.world.item.inventory.Inventory;
 
-	private int ints = 0;
-	private int booleans = 0;
-	private int objects = 0;
+public abstract class InventoryRender extends Namespaced {
 
-	public PrimitiveCounters() {
-	}
-
-	public PrimitiveCounters(PrimitiveCounters copyFrom) {
-		this.ints = copyFrom.ints;
-		this.booleans = copyFrom.booleans;
-		this.objects = copyFrom.objects;
-	}
-
-	public int getInts() {
-		return ints;
-	}
-
-	public int getIntsThenIncrement() {
-		return this.ints++;
+	public InventoryRender(String id) {
+		super(id);
 	}
 	
-	public int getBooleans() {
-		return booleans;
-	}
-	
-	public int getBooleansThenIncrement() {
-		return this.booleans++;
-	}
-	
-	public int getObjects() {
-		return objects;
-	}
-
-	public int getObjectsThenIncrement() {
-		return this.objects++;
-	}
+	public abstract InventoryComponent createComponent(Inventory inventory, HUDWorkspace workspace);
 
 }

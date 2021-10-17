@@ -85,6 +85,21 @@ public class InspectingStatefulObjectLayout
 
 		}
 		
+		private class Boolean implements StateFieldBuilder.Boolean {
+			
+			@Override
+			public BooleanStateField build() {
+				return registerField(
+					new BooleanStateField(
+						id,
+						isLocal,
+						fieldIndexCounters.getBooleansThenIncrement()
+					)
+				);
+			}
+			
+		}
+		
 		private class Obj<T> implements StateFieldBuilder.Obj<T> {
 
 			private final ObjectCodec<T> codec;
@@ -121,6 +136,11 @@ public class InspectingStatefulObjectLayout
 		@Override
 		public Int ofInt() {
 			return new Int();
+		}
+		
+		@Override
+		public Boolean ofBoolean() {
+			return new Boolean();
 		}
 		
 		@Override

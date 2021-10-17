@@ -15,21 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.client.graphics.world.hud;
+package ru.windcorp.progressia.common.world.item.inventory;
 
-import java.util.Collection;
-
-import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.common.world.item.ItemContainer;
 
-public abstract class InventoryComponent extends Component {
+public class InventorySimple extends Inventory {
 
-	public InventoryComponent(String name) {
-		super(name);
+	public InventorySimple(String id, ItemContainer container) {
+		super(id, container);
 	}
-
-	public abstract ItemContainer getContainer();
 	
-	public abstract Collection<InteractiveSlotComponent> getSlots();
+	public ItemContainer getContainer() {
+		return getContainers()[0];
+	}
 
 }

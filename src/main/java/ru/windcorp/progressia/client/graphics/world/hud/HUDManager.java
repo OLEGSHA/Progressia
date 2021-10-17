@@ -17,8 +17,19 @@
  */
 package ru.windcorp.progressia.client.graphics.world.hud;
 
+import com.google.common.eventbus.Subscribe;
+
 import ru.windcorp.progressia.client.Client;
+import ru.windcorp.progressia.client.events.NewLocalEntityEvent;
 import ru.windcorp.progressia.client.graphics.GUI;
+import ru.windcorp.progressia.client.graphics.gui.Component;
+import ru.windcorp.progressia.client.world.item.inventory.InventoryComponent;
+import ru.windcorp.progressia.client.world.item.inventory.InventoryRender;
+import ru.windcorp.progressia.client.world.item.inventory.InventoryRenderRegistry;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
+import ru.windcorp.progressia.common.world.item.inventory.Inventory;
+import ru.windcorp.progressia.common.world.item.inventory.InventoryClosingEvent;
+import ru.windcorp.progressia.common.world.item.inventory.InventoryOpenedEvent;
 
 public class HUDManager implements HUDWorkspace {
 	
@@ -28,6 +39,17 @@ public class HUDManager implements HUDWorkspace {
 	public HUDManager(Client client) {
 		this.client = client;
 		this.layer = new LayerHUD(this);
+		client.subscribe(new Object() {
+			@Subscribe
+			public void onLocalEntityChanged(NewLocalEntityEvent e) {
+				if (e.getNewEntity() != null) {
+					e.getNewEntity().subscribe(HUDManager.this);
+				}
+				if (e.getPreviousEntity() != null) {
+					e.getPreviousEntity().unsubscribe(HUDManager.this);
+				}
+			}
+		});
 	}
 	
 	public void install() {
@@ -39,8 +61,8 @@ public class HUDManager implements HUDWorkspace {
 	}
 	
 	@Override
-	public void openContainer(InventoryComponent component) {
-		InventoryWindow window = new InventoryWindow("Window", component);
+	public void openInventory(InventoryComponent component) {
+		InventoryWindow window = new InventoryWindow("Window", component, this);
 		layer.getWindowManager().addWindow(window);
 	}
 	
@@ -67,6 +89,37 @@ public class HUDManager implements HUDWorkspace {
 	@Override
 	public Client getClient() {
 		return client;
+	}
+	
+	@Subscribe
+	private void onInventoryOpened(InventoryOpenedEvent event) {
+		Inventory inventory = event.getInventory();
+		InventoryRender render = InventoryRenderRegistry.getInstance().get(inventory.getId());
+		
+		if (render == null) {
+			throw CrashReports.report(null, "InventoryRender not found for ID %s", inventory.getId());
+		}
+		
+		try {
+			InventoryComponent component = render.createComponent(inventory, this);
+			openInventory(component);
+		} catch (Exception e) {
+			throw CrashReports.report(null, "Could not open inventory %s", inventory.getId());
+		}
+	}
+	
+	@Subscribe
+	private void onInventoryClosing(InventoryClosingEvent event) {
+		Inventory inventory = event.getInventory();
+		
+		for (Component component : layer.getWindowManager().getChildren()) {
+			if (component instanceof InventoryWindow) {
+				InventoryWindow window = (InventoryWindow) component;
+				if (window.getContent().getInventory() == inventory) {
+					layer.getWindowManager().closeWindow(window);
+				}
+			}
+		}
 	}
 
 }

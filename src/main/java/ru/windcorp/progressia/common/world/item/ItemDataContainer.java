@@ -18,18 +18,21 @@
 package ru.windcorp.progressia.common.world.item;
 
 import ru.windcorp.progressia.common.state.ObjectStateField;
+import ru.windcorp.progressia.common.world.item.inventory.InventorySimple;
+import ru.windcorp.progressia.common.world.item.inventory.InventoryUser;
 
 public class ItemDataContainer extends ItemData {
-	
-	private final ObjectStateField<ItemContainer> container = field("Core:Contents").def(this::createContainer).build();
-	
+
+	private final ObjectStateField<InventorySimple> inventory = field("Core:Contents").setShared().def(this::createInventory)
+		.build();
+
 	private final float ownMass;
 	private final float containerMassLimit;
-	
+
 	private final float ownVolume;
 	private final float containerVolumeLimit;
 	private final boolean containerContributesVolume;
-	
+
 	public ItemDataContainer(
 		String id,
 		float ownMass,
@@ -46,27 +49,49 @@ public class ItemDataContainer extends ItemData {
 		this.containerContributesVolume = containerContributesVolume;
 	}
 
-	protected ItemContainer createContainer() {
-		return new ItemContainerMixedSimple(getId(), containerMassLimit, containerVolumeLimit, 10);
+	protected InventorySimple createInventory() {
+		return new InventorySimple(
+			getId(),
+			new ItemContainerMixedSimple(getId(), containerMassLimit, containerVolumeLimit, 10)
+		);
 	}
 	
-	public ItemContainer getContainer() {
-		return container.get(this);
+	public InventorySimple getInventory() {
+		return inventory.get(this);
 	}
-	
-	public boolean canOpenContainer() {
+
+	public boolean isOpen() {
+		return !getInventory().getUsers().isEmpty();
+	}
+
+	public boolean canOpen(InventoryUser user) {
 		return true;
+	}
+
+	public synchronized InventorySimple open(InventoryUser user) {
+		if (isOpen()) {
+			return null;
+		} else if (!canOpen(user)) {
+			return null;
+		} else {
+			getInventory().open(user);
+			return getInventory();
+		}
+	}
+
+	public synchronized void close() {
+		getInventory().closeAll();
 	}
 
 	@Override
 	public float getMass() {
-		return ownMass + getContainer().getMass();
+		return ownMass + getInventory().getMass();
 	}
 
 	@Override
 	public float getVolume() {
 		if (containerContributesVolume) {
-			return ownVolume + getContainer().getVolume();
+			return ownVolume + getInventory().getVolume();
 		} else {
 			return ownVolume;
 		}

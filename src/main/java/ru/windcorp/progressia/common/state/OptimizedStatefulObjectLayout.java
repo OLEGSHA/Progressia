@@ -76,6 +76,16 @@ public class OptimizedStatefulObjectLayout
 		}
 		
 		@Override
+		public Boolean ofBoolean() {
+			return new Boolean() {
+				@Override
+				public BooleanStateField build() {
+					return (BooleanStateField) result;
+				}
+			};
+		}
+		
+		@Override
 		public <T> Obj<T> of(ObjectCodec<T> codec, Supplier<T> defaultValue) {
 			return new Obj<T>() {
 				@SuppressWarnings("unchecked")

@@ -36,6 +36,7 @@ import ru.windcorp.progressia.client.comms.controls.*;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
 import ru.windcorp.progressia.client.graphics.world.Selection;
+import ru.windcorp.progressia.client.graphics.world.hud.HUDWorkspace;
 import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerRegistry;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSimple;
@@ -44,6 +45,10 @@ import ru.windcorp.progressia.client.world.entity.*;
 import ru.windcorp.progressia.client.world.item.ItemRender;
 import ru.windcorp.progressia.client.world.item.ItemRenderRegistry;
 import ru.windcorp.progressia.client.world.item.ItemRenderSimple;
+import ru.windcorp.progressia.client.world.item.inventory.InventoryComponent;
+import ru.windcorp.progressia.client.world.item.inventory.InventoryComponentSimple;
+import ru.windcorp.progressia.client.world.item.inventory.InventoryRender;
+import ru.windcorp.progressia.client.world.item.inventory.InventoryRenderRegistry;
 import ru.windcorp.progressia.client.world.tile.*;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.collision.CollisionModel;
@@ -57,6 +62,7 @@ import ru.windcorp.progressia.common.world.item.ItemData;
 import ru.windcorp.progressia.common.world.item.ItemDataContainer;
 import ru.windcorp.progressia.common.world.item.ItemDataRegistry;
 import ru.windcorp.progressia.common.world.item.ItemDataSimple;
+import ru.windcorp.progressia.common.world.item.inventory.Inventory;
 import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.tile.*;
 import ru.windcorp.progressia.server.Server;
@@ -258,6 +264,7 @@ public class TestContent {
 			)
 		);
 		register(new ItemRenderSimple("Test:CardboardBackpack", getItemTexture("CardboardBackpack")));
+		registerSimplestInventory("Test:CardboardBackpack");
 	}
 
 	private static void registerSimplestBlock(String name) {
@@ -300,6 +307,15 @@ public class TestContent {
 		registerEntity("Test:Statie", TestEntityDataStatie::new);
 		register(new TestEntityRenderStatie("Test:Statie"));
 		register(new TestEntityLogicStatie("Test:Statie"));
+	}
+	
+	private static void registerSimplestInventory(String id) {
+		InventoryRenderRegistry.getInstance().register(new InventoryRender(id) {
+			@Override
+			public InventoryComponent createComponent(Inventory inventory, HUDWorkspace workspace) {
+				return new InventoryComponentSimple(id, inventory, workspace);
+			}
+		});
 	}
 
 	private static void registerPlayer() {

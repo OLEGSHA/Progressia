@@ -19,6 +19,7 @@ package ru.windcorp.progressia.client.graphics.world.hud;
 
 import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
+import ru.windcorp.progressia.client.world.item.inventory.InventoryComponent;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 import ru.windcorp.progressia.common.world.item.ItemContainerHand;
 
@@ -38,6 +39,6 @@ public interface HUDWorkspace {
 		return getClient().getLocalPlayer().getEntity().getSelectedHand();
 	}
 	
-	void openContainer(InventoryComponent component);
+	void openInventory(InventoryComponent component);
 
 }
