@@ -20,6 +20,8 @@ package ru.windcorp.progressia.client.world.item.inventory;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.common.eventbus.Subscribe;
+
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.gui.Component;
@@ -30,7 +32,9 @@ import ru.windcorp.progressia.client.graphics.gui.layout.LayoutGrid;
 import ru.windcorp.progressia.client.graphics.world.hud.Bar;
 import ru.windcorp.progressia.client.graphics.world.hud.HUDWorkspace;
 import ru.windcorp.progressia.client.graphics.world.hud.InteractiveSlotComponent;
-import ru.windcorp.progressia.common.world.item.ItemContainer;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainer;
+import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotAddedEvent;
+import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotRemovedEvent;
 
 public class ContainerComponentSimple extends ContainerComponent {
 
@@ -42,6 +46,10 @@ public class ContainerComponentSimple extends ContainerComponent {
 	public ContainerComponentSimple(ItemContainer container, HUDWorkspace workspace) {
 		super("Inventory");
 		this.container = container;
+		
+		if (container.getInventory() != null) {
+			container.getInventory().subscribe(this);
+		}
 
 		setLayout(new LayoutBorderHorizontal(15));
 
@@ -93,6 +101,16 @@ public class ContainerComponentSimple extends ContainerComponent {
 	@Override
 	public Collection<InteractiveSlotComponent> getSlots() {
 		return slotCollection;
+	}
+	
+	@Subscribe
+	private void onSlotAdded(ItemSlotAddedEvent e) {
+		
+	}
+	
+	@Subscribe
+	private void onSlotAdded(ItemSlotRemovedEvent e) {
+		
 	}
 
 }

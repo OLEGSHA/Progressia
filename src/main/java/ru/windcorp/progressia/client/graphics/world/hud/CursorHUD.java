@@ -28,7 +28,7 @@ import ru.windcorp.progressia.client.world.entity.SpeciesRender;
 import ru.windcorp.progressia.client.world.entity.SpeciesRenderRegistry;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 import ru.windcorp.progressia.common.world.entity.SpeciesData.Hand;
-import ru.windcorp.progressia.common.world.item.ItemContainerHand;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainerHand;
 
 public class CursorHUD extends Component {
 

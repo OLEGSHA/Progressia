@@ -21,7 +21,7 @@ import ru.windcorp.progressia.client.Client;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.world.item.inventory.InventoryComponent;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
-import ru.windcorp.progressia.common.world.item.ItemContainerHand;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainerHand;
 
 public interface HUDWorkspace {
 	

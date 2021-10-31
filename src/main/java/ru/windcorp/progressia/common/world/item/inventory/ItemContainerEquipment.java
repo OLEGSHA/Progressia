@@ -17,20 +17,23 @@
  */
 package ru.windcorp.progressia.common.world.item.inventory;
 
-public class InventoryOpenedEvent extends InventoryEvent {
-	
-	private final InventoryUser newUser;
+import ru.windcorp.progressia.common.Units;
+import ru.windcorp.progressia.common.world.entity.SpeciesData;
 
-	public InventoryOpenedEvent(Inventory inventory, InventoryUser newUser) {
-		super(inventory);
-		this.newUser = newUser;
+public class ItemContainerEquipment extends ItemContainerSingle {
+	
+	private static final float EQUIP_MASS_LIMIT = Units.get("15 kg");
+	private static final float EQUIP_VOLUME_LIMIT = Units.get("60 kg");
+	
+	private final SpeciesData.EquipmentSlot equipmentSlot;
+
+	public ItemContainerEquipment(String id, SpeciesData.EquipmentSlot equipmentSlot) {
+		super(id, EQUIP_MASS_LIMIT, EQUIP_VOLUME_LIMIT);
+		this.equipmentSlot = equipmentSlot;
 	}
 	
-	/**
-	 * @return the newUser
-	 */
-	public InventoryUser getNewUser() {
-		return newUser;
+	public SpeciesData.EquipmentSlot getEquipmentSlot() {
+		return equipmentSlot;
 	}
 
 }

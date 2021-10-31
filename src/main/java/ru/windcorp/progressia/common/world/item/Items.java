@@ -17,6 +17,8 @@
  */
 package ru.windcorp.progressia.common.world.item;
 
+import ru.windcorp.progressia.common.world.item.inventory.ItemSlot;
+
 public class Items {
 
 	/**

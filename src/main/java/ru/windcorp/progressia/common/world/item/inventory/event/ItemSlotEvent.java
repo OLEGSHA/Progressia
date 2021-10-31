@@ -15,26 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item;
+package ru.windcorp.progressia.common.world.item.inventory.event;
 
-import ru.windcorp.progressia.common.Units;
-import ru.windcorp.progressia.common.world.entity.SpeciesData;
-import ru.windcorp.progressia.common.world.entity.SpeciesData.Hand;
+import ru.windcorp.progressia.common.world.item.inventory.ItemSlot;
 
-public class ItemContainerHand extends ItemContainerSingle {
+public abstract class ItemSlotEvent extends ItemContainerEvent {
 	
-	private static final float HAND_MASS_LIMIT = Units.get("10 kg");
-	private static final float HAND_VOLUME_LIMIT = Units.get("5 kg");
-	
-	private final SpeciesData.Hand hand;
+	private final ItemSlot slot;
 
-	public ItemContainerHand(String id, Hand hand) {
-		super(id, HAND_MASS_LIMIT, HAND_VOLUME_LIMIT);
-		this.hand = hand;
+	public ItemSlotEvent(ItemSlot slot) {
+		super(slot.getContainer());
+		this.slot = slot;
 	}
 	
-	public SpeciesData.Hand getHand() {
-		return hand;
+	/**
+	 * @return the slot
+	 */
+	public ItemSlot getSlot() {
+		return slot;
 	}
 
 }

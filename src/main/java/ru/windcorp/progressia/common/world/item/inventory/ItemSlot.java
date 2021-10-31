@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item;
+package ru.windcorp.progressia.common.world.item.inventory;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -23,6 +23,9 @@ import java.io.IOException;
 
 import ru.windcorp.progressia.common.state.Encodable;
 import ru.windcorp.progressia.common.state.IOContext;
+import ru.windcorp.progressia.common.world.item.ItemData;
+import ru.windcorp.progressia.common.world.item.ItemDataRegistry;
+import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotChangedEvent;
 
 /**
  * An entity optionally containing an {@link ItemData}. Item slots are typically
@@ -40,6 +43,10 @@ public class ItemSlot implements Encodable {
 	 */
 	public ItemContainer getContainer() {
 		return container;
+	}
+	
+	public Inventory getInventory() {
+		return getContainer().getInventory();
 	}
 	
 	/**
@@ -76,6 +83,11 @@ public class ItemSlot implements Encodable {
 		this.amount = amount;
 		
 		checkState();
+		
+		Inventory inventory = getInventory();
+		if (inventory != null) {
+			inventory.getEventBus().post(new ItemSlotChangedEvent(this));
+		}
 	}
 
 	/**

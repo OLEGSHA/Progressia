@@ -15,14 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item;
-
-import java.util.ArrayList;
-import java.util.List;
+package ru.windcorp.progressia.common.world.item.inventory;
 
 public class ItemContainerMixedSimple extends ItemContainerMixed {
-	
-	private final List<ItemSlot> list;
 	
 	private final float massLimit;
 	private final float volumeLimit;
@@ -33,16 +28,10 @@ public class ItemContainerMixedSimple extends ItemContainerMixed {
 	
 	public ItemContainerMixedSimple(String id, float massLimit, float volumeLimit, int startingSlots) {
 		super(id);
-		this.list = new ArrayList<>();
 		this.massLimit = massLimit;
 		this.volumeLimit = volumeLimit;
 		
 		addSlots(startingSlots);
-	}
-	
-	@Override
-	protected List<ItemSlot> getSlots() {
-		return list;
 	}
 
 	@Override

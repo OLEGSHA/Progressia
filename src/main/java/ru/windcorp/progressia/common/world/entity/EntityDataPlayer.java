@@ -23,11 +23,11 @@ import com.google.common.eventbus.Subscribe;
 import ru.windcorp.progressia.common.state.IntStateField;
 import ru.windcorp.progressia.common.state.ObjectStateField;
 import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
-import ru.windcorp.progressia.common.world.item.ItemContainerEquipment;
-import ru.windcorp.progressia.common.world.item.ItemContainerHand;
-import ru.windcorp.progressia.common.world.item.inventory.InventoryClosingEvent;
-import ru.windcorp.progressia.common.world.item.inventory.InventoryOpenedEvent;
 import ru.windcorp.progressia.common.world.item.inventory.InventoryUser;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainerEquipment;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainerHand;
+import ru.windcorp.progressia.common.world.item.inventory.event.InventoryClosingEvent;
+import ru.windcorp.progressia.common.world.item.inventory.event.InventoryOpenedEvent;
 
 public class EntityDataPlayer extends EntityData implements InventoryUser {
 

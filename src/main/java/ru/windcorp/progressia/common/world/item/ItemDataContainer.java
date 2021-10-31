@@ -20,6 +20,7 @@ package ru.windcorp.progressia.common.world.item;
 import ru.windcorp.progressia.common.state.ObjectStateField;
 import ru.windcorp.progressia.common.world.item.inventory.InventorySimple;
 import ru.windcorp.progressia.common.world.item.inventory.InventoryUser;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainerMixedSimple;
 
 public class ItemDataContainer extends ItemData {
 

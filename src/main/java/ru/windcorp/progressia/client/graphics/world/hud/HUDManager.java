@@ -28,8 +28,8 @@ import ru.windcorp.progressia.client.world.item.inventory.InventoryRender;
 import ru.windcorp.progressia.client.world.item.inventory.InventoryRenderRegistry;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.world.item.inventory.Inventory;
-import ru.windcorp.progressia.common.world.item.inventory.InventoryClosingEvent;
-import ru.windcorp.progressia.common.world.item.inventory.InventoryOpenedEvent;
+import ru.windcorp.progressia.common.world.item.inventory.event.InventoryClosingEvent;
+import ru.windcorp.progressia.common.world.item.inventory.event.InventoryOpenedEvent;
 
 public class HUDManager implements HUDWorkspace {
 	

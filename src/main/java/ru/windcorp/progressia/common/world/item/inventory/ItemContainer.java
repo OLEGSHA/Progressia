@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item;
+package ru.windcorp.progressia.common.world.item.inventory;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 
 import ru.windcorp.progressia.common.state.Encodable;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.item.inventory.Inventory;
 
 /**
  * A collection of {@link ItemSlot}s representing a single storage unit. A
@@ -46,7 +45,7 @@ public abstract class ItemContainer extends Namespaced implements Encodable, Ite
 		return inventory;
 	}
 	
-	public void setInventory(Inventory inventory) {
+	protected void setInventory(Inventory inventory) {
 		this.inventory = inventory;
 	}
 

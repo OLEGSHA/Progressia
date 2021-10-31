@@ -21,7 +21,7 @@ import java.util.Collection;
 
 import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.world.hud.InteractiveSlotComponent;
-import ru.windcorp.progressia.common.world.item.ItemContainer;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainer;
 
 public abstract class ContainerComponent extends Component {
 

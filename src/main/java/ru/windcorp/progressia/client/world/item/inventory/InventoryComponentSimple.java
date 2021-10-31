@@ -22,8 +22,8 @@ import java.util.Collection;
 
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
 import ru.windcorp.progressia.client.graphics.world.hud.HUDWorkspace;
-import ru.windcorp.progressia.common.world.item.ItemContainer;
 import ru.windcorp.progressia.common.world.item.inventory.Inventory;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainer;
 
 public class InventoryComponentSimple extends InventoryComponent {
 	

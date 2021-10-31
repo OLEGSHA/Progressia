@@ -31,7 +31,8 @@ import ru.windcorp.progressia.common.state.Encodable;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
 import ru.windcorp.progressia.common.util.namespaces.Namespaced;
-import ru.windcorp.progressia.common.world.item.ItemContainer;
+import ru.windcorp.progressia.common.world.item.inventory.event.InventoryClosingEvent;
+import ru.windcorp.progressia.common.world.item.inventory.event.InventoryOpenedEvent;
 
 public class Inventory extends Namespaced implements Encodable {
 	
@@ -75,6 +76,13 @@ public class Inventory extends Namespaced implements Encodable {
 			return;
 		}
 		eventBus.unregister(listener);
+	}
+	
+	/**
+	 * @return the eventBus
+	 */
+	public EventBus getEventBus() {
+		return eventBus;
 	}
 	
 	public synchronized boolean isUser(InventoryUser user) {

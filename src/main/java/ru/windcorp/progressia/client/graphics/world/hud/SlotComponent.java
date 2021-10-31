@@ -33,14 +33,20 @@ import ru.windcorp.progressia.client.graphics.model.Shapes.PgmBuilder;
 import ru.windcorp.progressia.client.graphics.texture.Texture;
 import ru.windcorp.progressia.client.world.item.ItemRenderRegistry;
 import ru.windcorp.progressia.client.world.item.ItemRenderable;
-import ru.windcorp.progressia.common.world.item.ItemContainer;
 import ru.windcorp.progressia.common.world.item.ItemData;
 import ru.windcorp.progressia.common.world.item.ItemDataContainer;
-import ru.windcorp.progressia.common.world.item.ItemSlot;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainer;
+import ru.windcorp.progressia.common.world.item.inventory.ItemSlot;
 
 public class SlotComponent extends Component {
 
 	static final float TEXTURE_SIZE = 24;
+	
+	private static boolean drawVirtualSlots;
+	static {
+		String key = SlotComponent.class.getName() + ".drawVirtualSlots";
+		drawVirtualSlots = Boolean.parseBoolean(System.getProperty(key, "true"));
+	}
 
 	private static Renderable containerOpenDecoration = null;
 	private static Renderable containerOpenableDecoration = null;
@@ -84,6 +90,20 @@ public class SlotComponent extends Component {
 			).setSize(TEXTURE_SIZE + 2).setOrigin(-1, -1, 0).create();
 		}
 	}
+	
+	/**
+	 * @return the container
+	 */
+	public ItemContainer getSlotContainer() {
+		return container;
+	}
+	
+	/**
+	 * @return the index
+	 */
+	public int getSlotIndex() {
+		return index;
+	}
 
 	public ItemSlot getSlot() {
 		return container.getSlot(index);
@@ -121,7 +141,15 @@ public class SlotComponent extends Component {
 	}
 
 	private void updateItemRenderer() {
-		ItemData contents = getSlot().getContents();
+		ItemData contents;
+		
+		ItemSlot slot = getSlot();
+		
+		if (slot == null) {
+			contents = null;
+		} else {
+			contents = slot.getContents();
+		}
 
 		if (contents == null) {
 			itemRenderer = null;
@@ -132,7 +160,7 @@ public class SlotComponent extends Component {
 				itemRenderer = ItemRenderRegistry.getInstance().get(contents.getId()).createRenderable(contents);
 			}
 
-			int newAmount = getSlot().getAmount();
+			int newAmount = slot.getAmount();
 			if (newAmount != amountDisplayInt) {
 				amountDisplayInt = newAmount;
 				amountDisplayString = newAmount == 1 ? "" : Integer.toString(newAmount);
@@ -145,6 +173,13 @@ public class SlotComponent extends Component {
 		target.addCustomRenderer(renderer -> {
 
 			updateItemRenderer();
+			
+			if (drawVirtualSlots && getSlot() == null) {
+				renderer.pushColorMultiplier().set(Colors.DEBUG_GREEN);
+				containerOpenDecoration.render(renderer);
+				renderer.popColorMultiplier();
+				return;
+			}
 
 			if (itemRenderer != null) {
 				itemRenderer.render(renderer);

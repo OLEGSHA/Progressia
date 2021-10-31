@@ -15,16 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item.inventory;
+package ru.windcorp.progressia.common.world.item.inventory.event;
 
-public class InventorySimple extends Inventory {
+import ru.windcorp.progressia.common.world.item.inventory.ItemSlot;
 
-	public InventorySimple(String id, ItemContainer container) {
-		super(id, container);
-	}
-	
-	public ItemContainer getContainer() {
-		return getContainers()[0];
+public class ItemSlotChangedEvent extends ItemSlotEvent {
+
+	public ItemSlotChangedEvent(ItemSlot slot) {
+		super(slot);
 	}
 
 }

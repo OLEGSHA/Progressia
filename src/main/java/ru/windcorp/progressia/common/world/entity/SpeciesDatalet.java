@@ -25,8 +25,8 @@ import ru.windcorp.progressia.common.state.Encodable;
 import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.world.entity.SpeciesData.EquipmentSlot;
 import ru.windcorp.progressia.common.world.entity.SpeciesData.Hand;
-import ru.windcorp.progressia.common.world.item.ItemContainerEquipment;
-import ru.windcorp.progressia.common.world.item.ItemContainerHand;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainerEquipment;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainerHand;
 
 public class SpeciesDatalet implements Encodable {
 

@@ -15,16 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item;
+package ru.windcorp.progressia.common.world.item.inventory;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.google.common.eventbus.Subscribe;
+
 import ru.windcorp.progressia.common.state.Encodable;
 import ru.windcorp.progressia.common.state.IOContext;
+import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotAddedEvent;
+import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotChangedEvent;
+import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotRemovedEvent;
 
 /**
  * An {@link ItemContainer} capable of storing multiple item stacks. The set
@@ -32,18 +39,25 @@ import ru.windcorp.progressia.common.state.IOContext;
  * at will.
  */
 public abstract class ItemContainerMixed extends ItemContainer {
+	
+	private final List<ItemSlot> slots = new ArrayList<>();
 
 	public ItemContainerMixed(String id) {
 		super(id);
 	}
-
-	/**
-	 * Retrieves the modifiable {@link List} of all slots. Edits commissioned
-	 * through the returned object update the state of the container.
-	 * 
-	 * @return a list view of this container
-	 */
-	protected abstract List<ItemSlot> getSlots();
+	
+	@Override
+	protected void setInventory(Inventory inventory) {
+		if (getInventory() != null) {
+			getInventory().unsubscribe(this);
+		}
+		
+		super.setInventory(inventory);
+		
+		if (getInventory() != null) {
+			getInventory().subscribe(this);
+		}
+	}
 
 	/**
 	 * Appends additional empty slots to the end of this container.
@@ -51,12 +65,16 @@ public abstract class ItemContainerMixed extends ItemContainer {
 	 * @param amount the amount of slots to add
 	 */
 	public synchronized void addSlots(int amount) {
-		List<ItemSlot> slots = getSlots();
+		Inventory inventory = getInventory();
 		
 		for (int i = 0; i < amount; ++i) {
 			ItemSlot slot = createSlot(slots.size());
 			slots.add(slot);
 			slot.setContainer(this);
+			
+			if (inventory != null) {
+				inventory.getEventBus().post(new ItemSlotAddedEvent(slot));
+			}
 		}
 	}
 	
@@ -68,24 +86,58 @@ public abstract class ItemContainerMixed extends ItemContainer {
 	 */
 	protected abstract ItemSlot createSlot(int index);
 	
+	@Subscribe
+	private void onSlotChanged(ItemSlotChangedEvent e) {
+		cleanUpSlots();
+	}
+	
+	public void cleanUpSlots() {
+		Inventory inventory = getInventory();
+		Collection<ItemSlotRemovedEvent> events = null;
+		
+		// Do not remove slot 0
+		for (int i = slots.size() - 1; i > 0; --i) {
+			ItemSlot slot = slots.get(i);
+			if (slot.isEmpty()) {
+				slots.remove(i);
+				
+				if (inventory != null) {
+					if (events == null) {
+						events = new ArrayList<>(slots.size() - i);
+					}
+					events.add(new ItemSlotRemovedEvent(slot));
+				}
+			} else {
+				break;
+			}
+		}
+		
+		if (events != null) {
+			// events != null only if inventory != null 
+			events.forEach(inventory.getEventBus()::post);
+		}
+	}
+	
 	@Override
 	public ItemSlot getSlot(int index) {
-		return getSlots().get(index);
+		if (index < 0 || index >= slots.size()) {
+			return null;
+		}
+		return slots.get(index);
 	}
 	
 	@Override
 	public int getSlotCount() {
-		return getSlots().size();
+		return slots.size();
 	}
 	
 	@Override
 	public void forEach(Consumer<? super ItemSlot> action) {
-		getSlots().forEach(action);
+		slots.forEach(action);
 	}
 
 	@Override
 	public synchronized void read(DataInput input, IOContext context) throws IOException {
-		List<ItemSlot> slots = getSlots();
 		synchronized (slots) {
 
 			int needSlots = input.readInt();
@@ -99,7 +151,7 @@ public abstract class ItemContainerMixed extends ItemContainer {
 				addSlots(needSlots);
 			} else {
 				while (slots.size() > needSlots) {
-					getSlots().remove(slots.size() - 1);
+					slots.remove(slots.size() - 1);
 				}
 
 				if (slots.size() < needSlots) {
@@ -116,7 +168,6 @@ public abstract class ItemContainerMixed extends ItemContainer {
 
 	@Override
 	public synchronized void write(DataOutput output, IOContext context) throws IOException {
-		List<ItemSlot> slots = getSlots();
 		synchronized (slots) {
 
 			output.writeInt(slots.size());
@@ -130,8 +181,8 @@ public abstract class ItemContainerMixed extends ItemContainer {
 	@Override
 	public void copy(Encodable destination) {
 		ItemContainerMixed container = (ItemContainerMixed) destination;
-		List<ItemSlot> mySlots = this.getSlots();
-		List<ItemSlot> containerSlots = container.getSlots();
+		List<ItemSlot> mySlots = this.slots;
+		List<ItemSlot> containerSlots = container.slots;
 
 		synchronized (mySlots) {
 			synchronized (containerSlots) {
@@ -147,7 +198,7 @@ public abstract class ItemContainerMixed extends ItemContainer {
 					container.addSlots(needSlots);
 				} else {
 					while (containerSlots.size() > needSlots) {
-						getSlots().remove(containerSlots.size() - 1);
+						slots.remove(containerSlots.size() - 1);
 					}
 
 					if (containerSlots.size() < needSlots) {
