@@ -20,48 +20,89 @@ package ru.windcorp.progressia.common.world.item.inventory;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.function.Consumer;
 
 import ru.windcorp.progressia.common.state.Encodable;
 import ru.windcorp.progressia.common.state.IOContext;
+import ru.windcorp.progressia.common.world.item.ItemData;
+import ru.windcorp.progressia.common.world.item.ItemDataRegistry;
 
 public abstract class ItemContainerSingle extends ItemContainer {
 	
-	private final ItemSlot slot = new ItemSlot();
-	
-	private final float massLimit;
-	private final float volumeLimit;
+	private ItemData item;
+	private int count;
+	private ItemSlot slot = new ItemSlot(this, 0);
 
-	public ItemContainerSingle(String id, float massLimit, float volumeLimit) {
-		super(id);
-		this.massLimit = massLimit;
-		this.volumeLimit = volumeLimit;
+	public ItemContainerSingle(String id) {
+		super(id, 1);
+	}
+
+	@Override
+	public synchronized void read(DataInput input, IOContext context) throws IOException {
+		count = input.readInt();
+		if (count != 0) {
+			String id = input.readUTF();
+			item = ItemDataRegistry.getInstance().create(id);
+			item.read(input, context);
+		} else {
+			item = null;
+		}
 		
-		slot.setContainer(this);
+		fireSlotChangeEvent(0);
+		checkState();
 	}
 
 	@Override
-	public void read(DataInput input, IOContext context) throws IOException {
-		slot.read(input, context);
-	}
-
-	@Override
-	public void write(DataOutput output, IOContext context) throws IOException {
-		slot.write(output, context);
+	public synchronized void write(DataOutput output, IOContext context) throws IOException {
+		output.writeInt(count);
+		if (item != null) {
+			output.writeUTF(item.getId());
+			item.write(output, context);
+		}
 	}
 
 	@Override
 	public void copy(Encodable destination) {
-		slot.copy(((ItemContainerSingle) destination).slot);
+		ItemContainerSingle other = (ItemContainerSingle) destination;
+
+		synchronized (this) {
+			synchronized (other) {
+				other.count = this.count;
+				
+				if (this.item == null) {
+					other.item = null;
+				} else {
+					if (other.item == null || !other.item.isLike(this.item)) {
+						other.item = ItemDataRegistry.getInstance().create(this.item.getId());
+					}
+					this.item.copy(other.item);
+					other.fireSlotChangeEvent(0);
+				}
+			}
+		}
 	}
 
 	@Override
-	public ItemSlot getSlot(int index) {
-		if (index == 0) {
-			return slot;
-		} else {
+	public ItemData getItem(int index) {
+		if (index != 0) {
 			return null;
 		}
+		return item;
+	}
+	
+	public ItemData getItem() {
+		return item;
+	}
+
+	@Override
+	public int getCount(int index) {
+		if (index != 0) {
+			return 0;
+		}
+		return count;
+	}
+	
+	public int getCount() {
+		return count;
 	}
 	
 	public ItemSlot slot() {
@@ -69,23 +110,42 @@ public abstract class ItemContainerSingle extends ItemContainer {
 	}
 
 	@Override
-	public int getSlotCount() {
+	public int getMaxIndex() {
 		return 1;
 	}
-
+	
 	@Override
-	public void forEach(Consumer<? super ItemSlot> action) {
-		action.accept(slot);
+	protected boolean add(int index, ItemData item, int count) {
+		if (!canAdd(index, item, count)) {
+			return false;
+		}
+		
+		if (item != null) {
+			this.item = item;
+			this.count += count;
+			fireSlotChangeEvent(0);
+			checkState();
+		}
+		
+		return true;
 	}
-
+	
 	@Override
-	public float getMassLimit() {
-		return massLimit;
-	}
-
-	@Override
-	public float getVolumeLimit() {
-		return volumeLimit;
+	protected boolean remove(int index, ItemData item, int count) {
+		if (!canRemove(index, item, count)) {
+			return false;
+		}
+		
+		if (count != 0) {
+			this.count -= count;
+			if (this.count == 0) {
+				this.item = null;
+			}
+			fireSlotChangeEvent(0);
+			checkState();
+		}
+		
+		return true;
 	}
 
 }

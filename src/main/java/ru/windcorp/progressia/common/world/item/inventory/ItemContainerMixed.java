@@ -20,197 +20,213 @@ package ru.windcorp.progressia.common.world.item.inventory;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-
-import com.google.common.eventbus.Subscribe;
-
 import ru.windcorp.progressia.common.state.Encodable;
 import ru.windcorp.progressia.common.state.IOContext;
-import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotAddedEvent;
-import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotChangedEvent;
-import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotRemovedEvent;
+import ru.windcorp.progressia.common.world.item.ItemData;
+import ru.windcorp.progressia.common.world.item.ItemDataRegistry;
 
-/**
- * An {@link ItemContainer} capable of storing multiple item stacks. The set
- * of slots is dynamic: new slots may be added and existing slots may be removed
- * at will.
- */
 public abstract class ItemContainerMixed extends ItemContainer {
+
+	public static final int MAX_SLOTS = 10000;
 	
-	private final List<ItemSlot> slots = new ArrayList<>();
+	private static final int GROWTH_STEP = 10;
+	private static final int MINIMUM_CAPACITY = 10;
+	
+	private ItemData[] items = new ItemData[MINIMUM_CAPACITY];
+	private int[] counts = new int[MINIMUM_CAPACITY];
 
 	public ItemContainerMixed(String id) {
-		super(id);
+		super(id, MAX_SLOTS);
 	}
 	
-	@Override
-	protected void setInventory(Inventory inventory) {
-		if (getInventory() != null) {
-			getInventory().unsubscribe(this);
+	protected void setCapacity(int minimumCapacity) {
+		if (minimumCapacity < 0) {
+			return;
 		}
 		
-		super.setInventory(inventory);
+		int newCapacity = ((minimumCapacity - MINIMUM_CAPACITY - 1) / GROWTH_STEP + 1) * GROWTH_STEP + MINIMUM_CAPACITY;
 		
-		if (getInventory() != null) {
-			getInventory().subscribe(this);
-		}
-	}
-
-	/**
-	 * Appends additional empty slots to the end of this container.
-	 * 
-	 * @param amount the amount of slots to add
-	 */
-	public synchronized void addSlots(int amount) {
-		Inventory inventory = getInventory();
+		ItemData[] newItems = new ItemData[newCapacity];
+		int[] newCounts = new int[newCapacity];
 		
-		for (int i = 0; i < amount; ++i) {
-			ItemSlot slot = createSlot(slots.size());
-			slots.add(slot);
-			slot.setContainer(this);
-			
-			if (inventory != null) {
-				inventory.getEventBus().post(new ItemSlotAddedEvent(slot));
-			}
-		}
+		int length = Math.min(this.items.length, newItems.length);
+		System.arraycopy(this.items, 0, newItems, 0, length);
+		System.arraycopy(this.counts, 0, newCounts, 0, length);
+		
+		this.items = newItems;
+		this.counts = newCounts;
 	}
 	
-	/**
-	 * Instantiates a new slot object that will be appended to the container. 
-	 * 
-	 * @param index the index that the new slot will receive
-	 * @return the new slot
-	 */
-	protected abstract ItemSlot createSlot(int index);
-	
-	@Subscribe
-	private void onSlotChanged(ItemSlotChangedEvent e) {
-		cleanUpSlots();
-	}
-	
-	public void cleanUpSlots() {
-		Inventory inventory = getInventory();
-		Collection<ItemSlotRemovedEvent> events = null;
-		
-		// Do not remove slot 0
-		for (int i = slots.size() - 1; i > 0; --i) {
-			ItemSlot slot = slots.get(i);
-			if (slot.isEmpty()) {
-				slots.remove(i);
-				
-				if (inventory != null) {
-					if (events == null) {
-						events = new ArrayList<>(slots.size() - i);
-					}
-					events.add(new ItemSlotRemovedEvent(slot));
-				}
-			} else {
-				break;
-			}
+	protected void ensureCapacity(int minimumCapacity) {
+		if (items.length >= minimumCapacity) {
+			return;
 		}
 		
-		if (events != null) {
-			// events != null only if inventory != null 
-			events.forEach(inventory.getEventBus()::post);
-		}
-	}
-	
-	@Override
-	public ItemSlot getSlot(int index) {
-		if (index < 0 || index >= slots.size()) {
-			return null;
-		}
-		return slots.get(index);
-	}
-	
-	@Override
-	public int getSlotCount() {
-		return slots.size();
-	}
-	
-	@Override
-	public void forEach(Consumer<? super ItemSlot> action) {
-		slots.forEach(action);
+		setCapacity(minimumCapacity);
 	}
 
 	@Override
 	public synchronized void read(DataInput input, IOContext context) throws IOException {
-		synchronized (slots) {
+		int size = input.readInt();
+		
+		ensureCapacity(size);
 
-			int needSlots = input.readInt();
-			int hasSlots = slots.size();
+		for (int index = 0; index < size; ++index) {
 
-			int costOfResetting = needSlots;
-			int costOfEditing = Math.abs(needSlots - hasSlots);
+			ItemData item;
+			int count = input.readInt();
 
-			if (costOfResetting < costOfEditing) {
-				slots.clear();
-				addSlots(needSlots);
+			if (count != 0) {
+				String id = input.readUTF();
+				item = ItemDataRegistry.getInstance().create(id);
+				item.read(input, context);
 			} else {
-				while (slots.size() > needSlots) {
-					slots.remove(slots.size() - 1);
-				}
-
-				if (slots.size() < needSlots) {
-					addSlots(needSlots - slots.size());
-				}
+				item = null;
 			}
 
-			for (int i = 0; i < needSlots; ++i) {
-				slots.get(i).read(input, context);
-			}
+			items[index] = item;
+			counts[index] = count;
+			
+			fireSlotChangeEvent(index);
 
 		}
+
+		checkState();
 	}
 
 	@Override
 	public synchronized void write(DataOutput output, IOContext context) throws IOException {
-		synchronized (slots) {
 
-			output.writeInt(slots.size());
-			for (int i = 0; i < slots.size(); ++i) {
-				slots.get(i).write(output, context);
+		int size = items.length;
+		output.writeInt(size);
+
+		for (int index = 0; index < size; ++index) {
+			output.writeInt(counts[index]);
+			ItemData item = items[index];
+
+			if (item != null) {
+				output.writeUTF(item.getId());
+				item.write(output, context);
 			}
-
 		}
+
 	}
 
 	@Override
 	public void copy(Encodable destination) {
-		ItemContainerMixed container = (ItemContainerMixed) destination;
-		List<ItemSlot> mySlots = this.slots;
-		List<ItemSlot> containerSlots = container.slots;
+		ItemContainerMixed other = (ItemContainerMixed) destination;
+		int myLength = this.items.length;
 
-		synchronized (mySlots) {
-			synchronized (containerSlots) {
+		synchronized (this) {
+			synchronized (other) {
+				
+				other.setCapacity(myLength);
+				System.arraycopy(this.counts, 0, other.counts, 0, myLength);
 
-				int needSlots = mySlots.size();
-				int hasSlots = containerSlots.size();
+				for (int i = 0; i < myLength; ++i) {
+					ItemData myItem = this.items[i];
+					ItemData otherItem;
 
-				int costOfResetting = needSlots;
-				int costOfEditing = Math.abs(needSlots - hasSlots);
-
-				if (costOfResetting < costOfEditing) {
-					containerSlots.clear();
-					container.addSlots(needSlots);
-				} else {
-					while (containerSlots.size() > needSlots) {
-						slots.remove(containerSlots.size() - 1);
+					if (myItem == null) {
+						otherItem = null;
+					} else {
+						otherItem = ItemDataRegistry.getInstance().create(myItem.getId());
+						myItem.copy(otherItem);
 					}
 
-					if (containerSlots.size() < needSlots) {
-						addSlots(needSlots - containerSlots.size());
-					}
-				}
-
-				for (int i = 0; i < needSlots; ++i) {
-					mySlots.get(i).copy(containerSlots.get(i));
+					other.items[i] = otherItem;
+					other.fireSlotChangeEvent(i);
 				}
 
 			}
+		}
+	}
+
+	@Override
+	public ItemData getItem(int index) {
+		if (index < 0 || index >= items.length) {
+			return null;
+		}
+		return items[index];
+	}
+
+	@Override
+	public int getCount(int index) {
+		if (index < 0 || index >= counts.length) {
+			return 0;
+		}
+		return counts[index];
+	}
+
+	@Override
+	public int getMaxIndex() {
+		return items.length;
+	}
+
+	@Override
+	protected boolean add(int index, ItemData item, int count) {
+		if (!canAdd(index, item, count)) {
+			return false;
+		}
+		
+		if (item != null) {
+			ensureCapacity(index + 1);
+			this.items[index] = item;
+			this.counts[index] += count;
+			fireSlotChangeEvent(index);
+			checkState();
+		}
+		
+		return true;
+	}
+
+	@Override
+	protected boolean remove(int index, ItemData item, int count) {
+		if (!canRemove(index, item, count)) {
+			return false;
+		}
+
+		if (count != 0) {
+			this.counts[index] -= count;
+			
+			if (this.counts[index] == 0) {
+				this.items[index] = null;
+				shrinkIfPossible();
+			}
+	
+			fireSlotChangeEvent(index);
+			checkState();
+		}
+		
+		return true;
+	}
+
+	protected void shrinkIfPossible() {
+		int upperBound;
+		
+		for (upperBound = counts.length; upperBound > MINIMUM_CAPACITY; --upperBound) {
+			if (counts[upperBound - 1] != 0) {
+				break;
+			}
+		}
+		
+		if (upperBound != counts.length) {
+			setCapacity(upperBound);
+		}
+	}
+
+	@Override
+	protected synchronized void checkState() {
+		super.checkState();
+		
+		if (items.length > MAX_SLOTS) {
+			throw new IllegalStateException("Container has more than " + MAX_SLOTS + " slots (items): " + items.length);
+		}
+
+		if (counts.length > MAX_SLOTS) {
+			throw new IllegalStateException(
+				"Container has more than " + MAX_SLOTS + " slots (counts): " + counts.length
+			);
 		}
 	}
 

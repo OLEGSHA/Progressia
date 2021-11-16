@@ -25,10 +25,9 @@ import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
 import ru.windcorp.progressia.client.graphics.input.WheelScrollEvent;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.world.item.ItemDataContainer;
-import ru.windcorp.progressia.common.world.item.Items;
 import ru.windcorp.progressia.common.world.item.inventory.ItemContainer;
-import ru.windcorp.progressia.common.world.item.inventory.ItemContainerMixed;
 import ru.windcorp.progressia.common.world.item.inventory.ItemSlot;
+import ru.windcorp.progressia.common.world.item.inventory.Items;
 
 public class InteractiveSlotComponent extends Button {
 
@@ -77,7 +76,7 @@ public class InteractiveSlotComponent extends Button {
 
 	private void onMainAction() {
 		ItemSlot handSlot = workspace.getHand().slot();
-		ItemSlot invSlot = getSlotOrAllocate();
+		ItemSlot invSlot = getSlot();
 		if (invSlot == null) {
 			return;
 		}
@@ -108,13 +107,12 @@ public class InteractiveSlotComponent extends Button {
 		if (success) {
 			requestReassembly();
 		}
-		
-		cleanContainerUpIfNecessary();
 	}
 
 	private void pickAll(ItemSlot handSlot) {
-		for (ItemSlot invSlot : getSlot().getContainer()) {
-			Items.pour(invSlot, handSlot);
+		int maxIndex = getSlot().getContainer().getMaxIndex();
+		for (int index = 0; index < maxIndex; ++index) {
+			Items.pour(new ItemSlot(getSlot().getContainer(), index), handSlot);
 			if (handSlot.isEmpty()) {
 				break;
 			}
@@ -123,7 +121,7 @@ public class InteractiveSlotComponent extends Button {
 
 	private void onAltAction() {
 		ItemSlot handSlot = workspace.getHand().slot();
-		ItemSlot invSlot = getSlotOrAllocate();
+		ItemSlot invSlot = getSlot();
 		if (invSlot == null) {
 			return;
 		}
@@ -135,7 +133,7 @@ public class InteractiveSlotComponent extends Button {
 		}
 
 		if (!success && handSlot.isEmpty()) {
-			success = Items.pour(invSlot, handSlot, invSlot.getAmount() / 2) != 0;
+			success = Items.pour(invSlot, handSlot, invSlot.getCount() / 2) != 0;
 		}
 
 		if (!success) {
@@ -149,19 +147,17 @@ public class InteractiveSlotComponent extends Button {
 		if (success) {
 			requestReassembly();
 		}
-
-		cleanContainerUpIfNecessary();
 	}
 
 	private boolean tryToOpen(ItemSlot invSlot) {
-		if (invSlot.getAmount() != 1) {
+		if (invSlot.getCount() != 1) {
 			return false;
 		}
-		if (!(invSlot.getContents() instanceof ItemDataContainer)) {
+		if (!(invSlot.getItem() instanceof ItemDataContainer)) {
 			return false;
 		}
 
-		ItemDataContainer item = (ItemDataContainer) invSlot.getContents();
+		ItemDataContainer item = (ItemDataContainer) invSlot.getItem();
 		return item.open(workspace.getPlayerEntity()) != null;
 	}
 
@@ -179,40 +175,6 @@ public class InteractiveSlotComponent extends Button {
 
 	public ItemSlot getSlot() {
 		return slotComponent.getSlot();
-	}
-
-	private ItemSlot getSlotOrAllocate() {
-		ItemSlot slot = slotComponent.getSlot();
-		
-		if (slot == null) {
-
-			int slotIndex = slotComponent.getSlotIndex();
-			ItemContainer uncastContainer = slotComponent.getSlotContainer();
-
-			assert slotIndex >= 0 : "Slot index is negative: " + slotIndex;
-			assert slotIndex >= uncastContainer.getSlotCount()
-				: "Slot index is valid (" + slotIndex + ") but container does not provide a slot";
-
-			if (uncastContainer instanceof ItemContainerMixed) {
-				ItemContainerMixed container = (ItemContainerMixed) uncastContainer;
-				container.addSlots(slotIndex - container.getSlotCount() + 1);
-				
-				slot = slotComponent.getSlot();
-				assert slot != null : "Could not allocate slot for index " + slotIndex;
-			} else {
-				// Leave slot null
-			}
-			
-		}
-		
-		return slot;
-	}
-
-	private void cleanContainerUpIfNecessary() {
-		ItemContainer container = slotComponent.getSlotContainer();
-		if (container instanceof ItemContainerMixed) {
-			((ItemContainerMixed) container).cleanUpSlots();
-		}
 	}
 
 }

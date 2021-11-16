@@ -19,6 +19,7 @@ package ru.windcorp.progressia.client.world.item.inventory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -33,19 +34,24 @@ import ru.windcorp.progressia.client.graphics.world.hud.Bar;
 import ru.windcorp.progressia.client.graphics.world.hud.HUDWorkspace;
 import ru.windcorp.progressia.client.graphics.world.hud.InteractiveSlotComponent;
 import ru.windcorp.progressia.common.world.item.inventory.ItemContainer;
-import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotAddedEvent;
-import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotRemovedEvent;
+import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotChangedEvent;
 
 public class ContainerComponentSimple extends ContainerComponent {
 
 	private final Group slots = new Group("Inventory.Slots", new LayoutGrid(0, 15));
-	private final Collection<InteractiveSlotComponent> slotCollection = new ArrayList<>();
+	private final List<InteractiveSlotComponent> slotCollection = new ArrayList<>();
 	
 	private final ItemContainer container;
+	private final HUDWorkspace workspace;
+	
+	private int tmp__getSlotsPerRow() {
+		return 6;
+	}
 
 	public ContainerComponentSimple(ItemContainer container, HUDWorkspace workspace) {
 		super("Inventory");
 		this.container = container;
+		this.workspace = workspace;
 		
 		if (container.getInventory() != null) {
 			container.getInventory().subscribe(this);
@@ -77,20 +83,22 @@ public class ContainerComponentSimple extends ContainerComponent {
 
 		addChild(slotsAndVolumeBar.setLayoutHint(LayoutBorderHorizontal.CENTER));
 		addChild(massBar.setLayoutHint(LayoutBorderHorizontal.LEFT));
-
-		for (int i = 0; i < container.getSlotCount(); ++i) {
-			addSlot(container, i, workspace);
-		}
+		
+		onSlotChanged(null);
 	}
 
-	private void addSlot(ItemContainer container, int index, HUDWorkspace workspace) {
-		final int maxX = 6;
+	private void addSlot(int index) {
+		final int maxX = tmp__getSlotsPerRow();
 
 		InteractiveSlotComponent component = new InteractiveSlotComponent("Inventory.Slot." + index, container, index, workspace);
 
 		Vec2i pos = new Vec2i(index % maxX, index / maxX);
 		slots.addChild(component.setLayoutHint(pos));
 		slotCollection.add(component);
+	}
+	
+	private void removeSlot(int index) {
+		slots.removeChild(slotCollection.remove(index));
 	}
 
 	@Override
@@ -104,13 +112,26 @@ public class ContainerComponentSimple extends ContainerComponent {
 	}
 	
 	@Subscribe
-	private void onSlotAdded(ItemSlotAddedEvent e) {
+	private void onSlotChanged(ItemSlotChangedEvent e) {
+		if (e != null && e.getContainer() != container) {
+			return;
+		}
 		
-	}
-	
-	@Subscribe
-	private void onSlotAdded(ItemSlotRemovedEvent e) {
+		int wantSlots = container.getLastFilledSlot();
+		int slotsPerRow = tmp__getSlotsPerRow();
 		
+		wantSlots = (wantSlots / slotsPerRow + 2) * slotsPerRow;
+		if (wantSlots < slotsPerRow) {
+			wantSlots = slotsPerRow;
+		}
+		
+		while (wantSlots > slotCollection.size()) {
+			addSlot(slotCollection.size());
+		}
+		
+		while (wantSlots < slotCollection.size()) {
+			removeSlot(slotCollection.size() - 1);
+		}
 	}
 
 }

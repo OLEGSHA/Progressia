@@ -17,12 +17,17 @@
  */
 package ru.windcorp.progressia.common.world.item.inventory.event;
 
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainer;
 import ru.windcorp.progressia.common.world.item.inventory.ItemSlot;
 
 public class ItemSlotChangedEvent extends ItemSlotEvent {
 
 	public ItemSlotChangedEvent(ItemSlot slot) {
 		super(slot);
+	}
+
+	public ItemSlotChangedEvent(ItemContainer container, int index) {
+		super(container, index);
 	}
 
 }

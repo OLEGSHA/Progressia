@@ -43,6 +43,8 @@ public class InventoryWindow extends Panel {
 	
 	private final InventoryComponent content;
 	private final HUDWorkspace workspace;
+	
+	Object layoutCookie;
 
 	public InventoryWindow(String name, InventoryComponent component, HUDWorkspace workspace) {
 		super(name, new LayoutVertical(15, 15));

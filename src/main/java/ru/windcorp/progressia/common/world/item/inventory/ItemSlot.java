@@ -17,182 +17,124 @@
  */
 package ru.windcorp.progressia.common.world.item.inventory;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-
-import ru.windcorp.progressia.common.state.Encodable;
-import ru.windcorp.progressia.common.state.IOContext;
 import ru.windcorp.progressia.common.world.item.ItemData;
-import ru.windcorp.progressia.common.world.item.ItemDataRegistry;
-import ru.windcorp.progressia.common.world.item.inventory.event.ItemSlotChangedEvent;
 
 /**
- * An entity optionally containing an {@link ItemData}. Item slots are typically
- * found in {@link ItemContainerMixed}s.
+ * A reference to a slot in a container. The container and the index of an
+ * {@code ItemSlot} cannot be changed.
+ * <p>
+ * {@code ItemSlot}s are wrapper objects; there may be multiple objects
+ * referencing a single slot. Slot objects are considered
+ * {@linkplain #equals(Object) equal} iff their indices are equal and they refer
+ * to the same container.
+ * <p>
+ * This class provides public methods for fetching slot contents but not for
+ * changing them. To alter a slot, use an appropriate method from {@link Items}.
  */
-public class ItemSlot implements Encodable {
+public class ItemSlot {
 
-	private ItemData contents;
-	private int amount;
-	
-	private ItemContainer container;
-	
+	private final ItemContainer container;
+	private final int index;
+
+	public ItemSlot(ItemContainer container, int index) {
+		this.container = container;
+		this.index = index;
+	}
+
 	/**
 	 * @return the container
 	 */
 	public ItemContainer getContainer() {
 		return container;
 	}
-	
+
+	/**
+	 * @return the index
+	 */
+	public int getIndex() {
+		return index;
+	}
+
 	public Inventory getInventory() {
-		return getContainer().getInventory();
-	}
-	
-	/**
-	 * @param container the container to set
-	 */
-	void setContainer(ItemContainer container) {
-		this.container = container;
+		return container.getInventory();
 	}
 
-	/**
-	 * Retrieves the contents of this slot.
-	 * 
-	 * @return the stored {@link ItemData} or {@code null}
-	 */
-	public synchronized final ItemData getContents() {
-		return contents;
+	public ItemData getItem() {
+		return container.getItem(index);
 	}
 
-	/**
-	 * Sets the new contents of this slot. If an item stack was present
-	 * previously, it is discarded. If the contents are {@code null}, the slot
-	 * is emptied.
-	 * <p>
-	 * When the slot receives non-null contents, the new amount must be a
-	 * positive integer. When the slot is emptied, {@code amount} must be 0.
-	 * 
-	 * @param contents the new contents of this slot or {@code null} to clear
-	 *                 the slot
-	 * @param amount   the amount of items to set.
-	 *                 {@code (amount == 0) == (contents == null)} must be true.
-	 */
-	public synchronized final void setContents(ItemData contents, int amount) {
-		this.contents = contents;
-		this.amount = amount;
-		
-		checkState();
-		
-		Inventory inventory = getInventory();
-		if (inventory != null) {
-			inventory.getEventBus().post(new ItemSlotChangedEvent(this));
-		}
+	public int getCount() {
+		return container.getCount(index);
 	}
 
-	/**
-	 * Sets the amount of items stored in this slot.
-	 * <p>
-	 * Setting the amount to zero also erases the slot's contents.
-	 * 
-	 * @param amount the new amount
-	 */
-	public synchronized void setAmount(int amount) {
-		setContents(amount == 0 ? null : contents, amount);
-	}
-	
-	/**
-	 * Clears this slot
-	 */
-	public synchronized void clear() {
-		setContents(null, 0);
+	public boolean isEmpty() {
+		return container.isEmpty(index);
 	}
 
-	/**
-	 * Retrieves the amount of items stored in this slot. If not items are
-	 * present, this returns 0.
-	 * 
-	 * @return the amount of items stored
-	 */
-	public synchronized int getAmount() {
-		return amount;
+	public boolean canAdd(ItemData item, int count) {
+		return container.canAdd(index, item, count);
 	}
-	
-	public synchronized boolean isEmpty() {
-		return amount == 0;
+
+	public boolean canRemove(ItemData item, int count) {
+		return container.canRemove(index, item, count);
 	}
-	
-	public synchronized boolean canInsert(ItemData contents, int amount) {
-		if (contents == null) {
-			return false;
-		}
-		
-		if (container.getMass() + contents.getMass() * amount > container.getMassLimit()) {
-			return false;
-		}
-		
-		if (container.getVolume() + contents.getVolume() * amount > container.getVolumeLimit()) {
-			return false;
-		}
-		
-		return this.contents == null || this.contents.equals(contents);
+
+	protected boolean add(ItemData item, int count) {
+		return container.add(index, item, count);
 	}
-	
-	public synchronized boolean canRemove(int amount) {
-		return this.amount >= amount;
+
+	protected boolean remove(ItemData item, int count) {
+		return container.remove(index, item, count);
 	}
-	
-	private synchronized void checkState() {
-		if ((contents == null) != (amount == 0)) {
-			if (contents == null) {
-				throw new IllegalArgumentException("Contents is null but amount (" + amount + ") != 0");
-			} else {
-				throw new IllegalArgumentException("Contents is " + contents + " but amount is zero");
+
+	public float getMass() {
+		synchronized (container) {
+			int count = getCount();
+			if (count == 0) {
+				return 0;
 			}
-		}
-		
-		if (amount < 0) {
-			throw new IllegalArgumentException("amount is negative: " + amount);
+			return count * getItem().getMass();
 		}
 	}
 
-	@Override
-	public synchronized void read(DataInput input, IOContext context) throws IOException {
-		amount = input.readInt();
-		if (amount != 0) {
-			String id = input.readUTF();
-			contents = ItemDataRegistry.getInstance().create(id);
-			contents.read(input, context);
-		} else {
-			contents = null;
-		}
-		
-		checkState();
-	}
-
-	@Override
-	public synchronized void write(DataOutput output, IOContext context) throws IOException {
-		output.writeInt(amount);
-		if (contents != null) {
-			output.writeUTF(contents.getId());
-			contents.write(output, context);
-		}
-	}
-
-	@Override
-	public void copy(Encodable destination) {
-		ItemSlot slot = (ItemSlot) destination;
-
-		slot.amount = this.amount;
-		
-		if (this.contents == null) {
-			slot.contents = null;
-		} else {
-			if (slot.contents == null || !slot.contents.isLike(this.contents)) {
-				slot.contents = ItemDataRegistry.getInstance().create(this.contents.getId());
+	public float getVolume() {
+		synchronized (container) {
+			int count = getCount();
+			if (count == 0) {
+				return 0;
 			}
-			this.contents.copy(slot.contents);
+			return count * getItem().getVolume();
 		}
+	}
+
+	/*
+	 * For purposes of equality checking, all container instances are considered
+	 * different
+	 */
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + System.identityHashCode(container);
+		result = prime * result + index;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ItemSlot other = (ItemSlot) obj;
+		if (container != other.container)
+			return false;
+		if (index != other.index)
+			return false;
+		return true;
 	}
 
 }

@@ -104,7 +104,7 @@ public class HUDManager implements HUDWorkspace {
 			InventoryComponent component = render.createComponent(inventory, this);
 			openInventory(component);
 		} catch (Exception e) {
-			throw CrashReports.report(null, "Could not open inventory %s", inventory.getId());
+			throw CrashReports.report(e, "Could not open inventory %s", inventory.getId());
 		}
 	}
 	

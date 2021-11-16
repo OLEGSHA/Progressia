@@ -28,6 +28,7 @@ import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.entity.EntityDataPlayer;
 import ru.windcorp.progressia.common.world.entity.EntityDataRegistry;
 import ru.windcorp.progressia.common.world.item.ItemDataRegistry;
+import ru.windcorp.progressia.common.world.item.inventory.Items;
 import ru.windcorp.progressia.server.events.PlayerJoinedEvent;
 import ru.windcorp.progressia.test.TestContent;
 
@@ -63,8 +64,8 @@ public class PlayerManager {
 	private EntityDataPlayer spawnPlayerEntity(String login) {
 		EntityDataPlayer player = (EntityDataPlayer) EntityDataRegistry.getInstance().create("Core:Player");
 
-		player.getHand(0).slot().setContents(ItemDataRegistry.getInstance().create("Test:Stick"), 20);
-		player.getEquipmentSlot(0).slot().setContents(ItemDataRegistry.getInstance().create("Test:CardboardBackpack"), 1);
+		Items.spawn(player.getHand(0).slot(), ItemDataRegistry.getInstance().create("Test:Stick"), 5);
+		Items.spawn(player.getEquipmentSlot(0).slot(), ItemDataRegistry.getInstance().create("Test:CardboardBackpack"), 1);
 
 		player.setPosition(getServer().getWorld().getGenerator().suggestSpawnLocation());
 		player.setUpVector(new Vec3(0, 0, 1));

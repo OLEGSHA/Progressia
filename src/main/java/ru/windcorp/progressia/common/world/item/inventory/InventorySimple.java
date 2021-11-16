@@ -19,8 +19,8 @@ package ru.windcorp.progressia.common.world.item.inventory;
 
 public class InventorySimple extends Inventory {
 
-	public InventorySimple(String id, ItemContainer container) {
-		super(id, container);
+	public InventorySimple(String id, InventoryOwner owner, ItemContainer container) {
+		super(id, owner, container);
 	}
 	
 	public ItemContainer getContainer() {

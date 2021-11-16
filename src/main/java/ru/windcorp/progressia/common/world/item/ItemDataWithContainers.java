@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item.inventory.event;
+package ru.windcorp.progressia.common.world.item;
 
-import ru.windcorp.progressia.common.world.item.inventory.ItemSlot;
+import java.util.Iterator;
 
-public class ItemSlotAddedEvent extends ItemSlotEvent {
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainer;
 
-	public ItemSlotAddedEvent(ItemSlot slot) {
-		super(slot);
-	}
+public interface ItemDataWithContainers {
+	
+	Iterator<? extends ItemContainer> getAllContainers();
 
 }

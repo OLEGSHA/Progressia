@@ -29,8 +29,18 @@ public class ItemContainerHand extends ItemContainerSingle {
 	private final SpeciesData.Hand hand;
 
 	public ItemContainerHand(String id, Hand hand) {
-		super(id, HAND_MASS_LIMIT, HAND_VOLUME_LIMIT);
+		super(id);
 		this.hand = hand;
+	}
+	
+	@Override
+	public float getMassLimit() {
+		return HAND_MASS_LIMIT;
+	}
+	
+	@Override
+	public float getVolumeLimit() {
+		return HAND_VOLUME_LIMIT;
 	}
 	
 	public SpeciesData.Hand getHand() {

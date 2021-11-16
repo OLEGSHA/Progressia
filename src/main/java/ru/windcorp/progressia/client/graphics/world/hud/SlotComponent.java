@@ -51,8 +51,7 @@ public class SlotComponent extends Component {
 	private static Renderable containerOpenDecoration = null;
 	private static Renderable containerOpenableDecoration = null;
 
-	private final ItemContainer container;
-	private final int index;
+	private final ItemSlot slot;
 
 	private float scale = 2;
 
@@ -66,8 +65,7 @@ public class SlotComponent extends Component {
 
 	public SlotComponent(String name, ItemContainer container, int index) {
 		super(name);
-		this.container = container;
-		this.index = index;
+		this.slot = new ItemSlot(container, index);
 
 		setScale(2);
 
@@ -95,18 +93,18 @@ public class SlotComponent extends Component {
 	 * @return the container
 	 */
 	public ItemContainer getSlotContainer() {
-		return container;
+		return slot.getContainer();
 	}
 	
 	/**
 	 * @return the index
 	 */
 	public int getSlotIndex() {
-		return index;
+		return slot.getIndex();
 	}
 
 	public ItemSlot getSlot() {
-		return container.getSlot(index);
+		return slot;
 	}
 
 	public SlotComponent setScale(float scale) {
@@ -142,14 +140,7 @@ public class SlotComponent extends Component {
 
 	private void updateItemRenderer() {
 		ItemData contents;
-		
-		ItemSlot slot = getSlot();
-		
-		if (slot == null) {
-			contents = null;
-		} else {
-			contents = slot.getContents();
-		}
+		contents = slot.getItem();
 
 		if (contents == null) {
 			itemRenderer = null;
@@ -160,7 +151,7 @@ public class SlotComponent extends Component {
 				itemRenderer = ItemRenderRegistry.getInstance().get(contents.getId()).createRenderable(contents);
 			}
 
-			int newAmount = slot.getAmount();
+			int newAmount = slot.getCount();
 			if (newAmount != amountDisplayInt) {
 				amountDisplayInt = newAmount;
 				amountDisplayString = newAmount == 1 ? "" : Integer.toString(newAmount);
@@ -195,7 +186,7 @@ public class SlotComponent extends Component {
 	}
 
 	private void renderDecorations(ShapeRenderHelper renderer) {
-		ItemData contents = getSlot().getContents();
+		ItemData contents = getSlot().getItem();
 
 		if (contents instanceof ItemDataContainer) {
 			ItemDataContainer asContainer = (ItemDataContainer) contents;

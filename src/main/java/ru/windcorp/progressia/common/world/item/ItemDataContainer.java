@@ -17,12 +17,18 @@
  */
 package ru.windcorp.progressia.common.world.item;
 
+import java.util.Iterator;
+
+import com.google.common.collect.Iterators;
+
 import ru.windcorp.progressia.common.state.ObjectStateField;
+import ru.windcorp.progressia.common.world.item.inventory.InventoryOwner;
 import ru.windcorp.progressia.common.world.item.inventory.InventorySimple;
 import ru.windcorp.progressia.common.world.item.inventory.InventoryUser;
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainer;
 import ru.windcorp.progressia.common.world.item.inventory.ItemContainerMixedSimple;
 
-public class ItemDataContainer extends ItemData {
+public class ItemDataContainer extends ItemData implements InventoryOwner, ItemDataWithContainers {
 
 	private final ObjectStateField<InventorySimple> inventory = field("Core:Contents").setShared().def(this::createInventory)
 		.build();
@@ -53,12 +59,18 @@ public class ItemDataContainer extends ItemData {
 	protected InventorySimple createInventory() {
 		return new InventorySimple(
 			getId(),
-			new ItemContainerMixedSimple(getId(), containerMassLimit, containerVolumeLimit, 10)
+			this,
+			new ItemContainerMixedSimple(getId(), containerMassLimit, containerVolumeLimit)
 		);
 	}
 	
 	public InventorySimple getInventory() {
 		return inventory.get(this);
+	}
+	
+	@Override
+	public Iterator<? extends ItemContainer> getAllContainers() {
+		return Iterators.forArray(getInventory().getContainers());
 	}
 
 	public boolean isOpen() {

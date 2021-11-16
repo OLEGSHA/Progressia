@@ -36,17 +36,23 @@ import ru.windcorp.progressia.common.world.item.inventory.event.InventoryOpenedE
 
 public class Inventory extends Namespaced implements Encodable {
 	
+	private final InventoryOwner owner;
 	private final ItemContainer[] containers;
 	private final List<InventoryUser> users = new ArrayList<>();
 	
 	private EventBus eventBus = null;
 
-	public Inventory(String id, ItemContainer... containers) {
+	public Inventory(String id, InventoryOwner owner, ItemContainer... containers) {
 		super(id);
+		this.owner = owner;
 		this.containers = containers;
 		for (ItemContainer container : containers) {
 			container.setInventory(this);
 		}
+	}
+	
+	public InventoryOwner getOwner() {
+		return owner;
 	}
 	
 	public synchronized void open(InventoryUser user) {

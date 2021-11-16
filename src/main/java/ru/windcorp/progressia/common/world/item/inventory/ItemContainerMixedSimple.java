@@ -21,22 +21,11 @@ public class ItemContainerMixedSimple extends ItemContainerMixed {
 	
 	private final float massLimit;
 	private final float volumeLimit;
-
-	public ItemContainerMixedSimple(String id, float massLimit, float volumeLimit) {
-		this(id, massLimit, volumeLimit, 1);
-	}
 	
-	public ItemContainerMixedSimple(String id, float massLimit, float volumeLimit, int startingSlots) {
+	public ItemContainerMixedSimple(String id, float massLimit, float volumeLimit) {
 		super(id);
 		this.massLimit = massLimit;
 		this.volumeLimit = volumeLimit;
-		
-		addSlots(startingSlots);
-	}
-
-	@Override
-	public ItemSlot createSlot(int index) {
-		return new ItemSlot();
 	}
 	
 	@Override

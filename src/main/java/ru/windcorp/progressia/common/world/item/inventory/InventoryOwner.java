@@ -15,14 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package ru.windcorp.progressia.common.world.item.inventory.event;
+package ru.windcorp.progressia.common.world.item.inventory;
 
-import ru.windcorp.progressia.common.world.item.inventory.ItemSlot;
-
-public class ItemSlotRemovedEvent extends ItemSlotEvent {
-
-	public ItemSlotRemovedEvent(ItemSlot slot) {
-		super(slot);
-	}
+public interface InventoryOwner {
 
 }

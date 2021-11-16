@@ -28,8 +28,18 @@ public class ItemContainerEquipment extends ItemContainerSingle {
 	private final SpeciesData.EquipmentSlot equipmentSlot;
 
 	public ItemContainerEquipment(String id, SpeciesData.EquipmentSlot equipmentSlot) {
-		super(id, EQUIP_MASS_LIMIT, EQUIP_VOLUME_LIMIT);
+		super(id);
 		this.equipmentSlot = equipmentSlot;
+	}
+	
+	@Override
+	public float getMassLimit() {
+		return EQUIP_MASS_LIMIT;
+	}
+	
+	@Override
+	public float getVolumeLimit() {
+		return EQUIP_VOLUME_LIMIT;
 	}
 	
 	public SpeciesData.EquipmentSlot getEquipmentSlot() {

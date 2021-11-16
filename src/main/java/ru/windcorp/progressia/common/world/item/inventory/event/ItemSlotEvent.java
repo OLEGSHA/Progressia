@@ -17,21 +17,38 @@
  */
 package ru.windcorp.progressia.common.world.item.inventory.event;
 
+import ru.windcorp.progressia.common.world.item.inventory.ItemContainer;
 import ru.windcorp.progressia.common.world.item.inventory.ItemSlot;
 
 public abstract class ItemSlotEvent extends ItemContainerEvent {
 	
-	private final ItemSlot slot;
+	private ItemSlot slot = null;
+	private final int index;
 
+	public ItemSlotEvent(ItemContainer container, int index) {
+		super(container);
+		this.index = index;
+	}
+	
 	public ItemSlotEvent(ItemSlot slot) {
-		super(slot.getContainer());
+		this(slot.getContainer(), slot.getIndex());
 		this.slot = slot;
+	}
+	
+	/**
+	 * @return the index
+	 */
+	public int getIndex() {
+		return index;
 	}
 	
 	/**
 	 * @return the slot
 	 */
 	public ItemSlot getSlot() {
+		if (slot == null) {
+			slot = new ItemSlot(getContainer(), index);
+		}
 		return slot;
 	}
 
