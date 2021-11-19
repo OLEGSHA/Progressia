@@ -65,6 +65,8 @@ import ru.windcorp.progressia.server.world.tile.*;
 import ru.windcorp.progressia.test.Flowers.FlowerVariant;
 import ru.windcorp.progressia.test.Rocks.RockType;
 import ru.windcorp.progressia.test.gen.TestGravityModel;
+import ru.windcorp.progressia.test.trees.BlockRenderLeavesHazel;
+import ru.windcorp.progressia.test.trees.BlockRenderLeavesPine;
 
 public class TestContent {
 
@@ -131,7 +133,7 @@ public class TestContent {
 		register(new BlockLogic("Test:Log"));
 		
 		register(new BlockData("Test:TemporaryLeaves"));
-		register(new BlockRenderTransparentCube("Test:TemporaryLeaves", getBlockTexture("TemporaryLeaves")));
+		register(new BlockRenderLeavesHazel("Test:TemporaryLeaves", getBlockTexture("LeavesHazel")));
 		// Sic, using Glass logic for leaves because  Test
 		register(new TestBlockLogicGlass("Test:TemporaryLeaves")); 
 		
@@ -142,6 +144,11 @@ public class TestContent {
 		register(new BlockData("Test:Tux"));
 		register(new TestBlockRenderTux("Test:Tux"));
 		register(new BlockLogic("Test:Tux"));
+		
+		register(new BlockData("Test:LeavesPine"));
+		register(new BlockRenderLeavesPine("Test:LeavesPine", getBlockTexture("LeavesPine")));
+		// Sic, using Glass logic for leaves because  Test
+		register(new TestBlockLogicGlass("Test:LeavesPine"));
 
 		BlockDataRegistry.getInstance().values().forEach(PLACEABLE_BLOCKS::add);
 		PLACEABLE_BLOCKS.removeIf(b -> placeableBlacklist.contains(b.getId()));

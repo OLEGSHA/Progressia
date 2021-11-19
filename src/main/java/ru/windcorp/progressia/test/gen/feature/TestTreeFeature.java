@@ -24,33 +24,44 @@ import ru.windcorp.progressia.server.world.generation.surface.SurfaceFloatField;
 import ru.windcorp.progressia.server.world.generation.surface.context.SurfaceBlockContext;
 
 public class TestTreeFeature extends MultiblockVegetationFeature {
-	
+
 	private final BlockData trunk = BlockDataRegistry.getInstance().get("Test:Log");
-	private final BlockData leaves = BlockDataRegistry.getInstance().get("Test:TemporaryLeaves");
+	private final BlockData leaves = BlockDataRegistry.getInstance().get("Test:LeavesPine");
 
 	public TestTreeFeature(String id, SurfaceFloatField selector) {
-		super(id, selector, 10 * 10);
+		super(id, selector, 7 * 7);
 	}
-	
+
 	@Override
 	protected void grow(SurfaceBlockContext context, double selectorValue) {
-		
+
 		Vec3i start = context.getLocation().add_(0, 0, 1);
 		Vec3i center = start.add_(0);
 
 		double size = selectorValue * randomDouble(context, 0.8, 1.2);
-		
-		int height = (int) stretch(size, 3, 7);
+		double volume = stretch(size, 2.5, 1);
+
+		int height = (int) stretch(size, 8, 12);
 		for (; center.z < start.z + height; ++center.z) {
 			context.setBlock(center, trunk);
 		}
-		
-		double branchHorDistance = 0;
+		--center.z;
 
-		do {
-			double branchSize = 0.5 + randomDouble(context, 1, 2) * size;
+		iterateBlob(center, 1.5 * volume, 1.75, 0.5, 3, p -> {
+			setLeaves(context, p, leaves);
+		});
+
+		int branchCount = 1 + context.getRandom().nextInt(2) + (int) (stretch(size, 0, 4));
+
+		for (int i = 0; i < branchCount; ++i) {
+
 			double branchHorAngle = randomDouble(context, 0, 2 * Math.PI);
-			int branchVertOffset = (int) randomDouble(context, -2, 0);
+			double branchHorDistance = randomDouble(context, 0.7, 1.5) * volume;
+
+			int branchVertOffset = (int) randomDouble(context, -height / 3.0, -height / 1.5);
+
+			double branchSize = randomDouble(context, 1, 2) * volume;
+			double branchHeight = 1.5;
 
 			Vec3i branchCenter = center.add_(
 				(int) (Math.sin(branchHorAngle) * branchHorDistance),
@@ -58,12 +69,12 @@ public class TestTreeFeature extends MultiblockVegetationFeature {
 				branchVertOffset
 			);
 
-			iterateBlob(branchCenter, 1 * branchSize, 2.3 * branchSize, 0.5, 3, p -> {
+			iterateBlob(branchCenter, branchSize, branchHeight, 0.5, 3, p -> {
 				setLeaves(context, p, leaves);
 			});
 
-			branchHorDistance = randomDouble(context, 0.7, 1.5);
-		} while (context.getRandom().nextInt(8) > 1);
+		}
+
 	}
 
 }

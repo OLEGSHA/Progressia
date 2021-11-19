@@ -38,10 +38,12 @@ public class TestBushFeature extends MultiblockVegetationFeature {
 
 		Vec3i center = context.getLocation().add_(0, 0, 1);
 
-		context.setBlock(center, trunk);
-		context.setBlock(center.add_(0, 0, 1), leaves);
+		if (size > 0.8) {
+			context.setBlock(center, trunk);
+			context.setBlock(center.add_(0, 0, 1), leaves);
+		}
 
-		iterateBlob(center, stretch(size, 1.3, 2.5), stretch(size, 0.6, 1.5), 0.7, 2, p -> {
+		iterateBlob(center, stretch(size, 0.5, 2.5), stretch(size, 0.6, 1.5), 0.7, 2, p -> {
 			setLeaves(context, p, leaves);
 		});
 	}

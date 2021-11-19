@@ -153,6 +153,6 @@ public class ShapeParts {
 			height,
 			inner
 		);
-	}
+	} 
 
 }
