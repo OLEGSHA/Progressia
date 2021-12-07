@@ -17,6 +17,7 @@
  */
 package ru.windcorp.progressia.client.graphics.world.hud;
 
+import glm.vec._2.Vec2;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
@@ -44,7 +45,7 @@ public class InventoryWindow extends Panel {
 	private final InventoryComponent content;
 	private final HUDWorkspace workspace;
 	
-	Object layoutCookie;
+	private final Vec2 relativePosition = new Vec2(Float.NaN);
 
 	public InventoryWindow(String name, InventoryComponent component, HUDWorkspace workspace) {
 		super(name, new LayoutVertical(15, 15));
@@ -74,6 +75,13 @@ public class InventoryWindow extends Panel {
 			return (WindowedHUD) parent;
 		}
 		return null;
+	}
+	
+	/**
+	 * @return the relativePosition
+	 */
+	public Vec2 getRelativePosition() {
+		return relativePosition;
 	}
 
 	private Component createCloseButton(InventoryComponent component) {
