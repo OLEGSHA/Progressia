@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import org.lwjgl.glfw.GLFW;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
@@ -298,7 +297,7 @@ public class TestContent {
 				"Test:BreakBlock",
 				KeyEvent.class,
 				TestContent::onBlockBreakTrigger,
-				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_LEFT).matcher(),
+				KeyMatcher.LMB::matches,
 				i -> isAnythingSelected()
 			)
 		);
@@ -310,7 +309,7 @@ public class TestContent {
 				"Test:PlaceBlock",
 				KeyEvent.class,
 				TestContent::onBlockPlaceTrigger,
-				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
+				KeyMatcher.RMB::matches,
 				i -> isAnythingSelected() && TestPlayerControls.getInstance().isBlockSelected()
 			)
 		);
@@ -323,7 +322,7 @@ public class TestContent {
 				"Test:PlaceTile",
 				KeyEvent.class,
 				TestContent::onTilePlaceTrigger,
-				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
+				KeyMatcher.RMB::matches,
 				i -> isAnythingSelected() && !TestPlayerControls.getInstance().isBlockSelected()
 			)
 		);
@@ -334,7 +333,7 @@ public class TestContent {
 				"Test:StartNextMusic",
 				KeyEvent.class,
 				TestMusicPlayer::startNextNow,
-				KeyMatcher.of(GLFW.GLFW_KEY_M).matcher()
+				new KeyMatcher("M")::matches
 			)
 		);
 	}

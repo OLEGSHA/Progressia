@@ -139,7 +139,7 @@ public class Keys {
 	}
 
 	public static int getCode(String internalName) {
-		if (NAMES_TO_CODES.containsKey(internalName)) {
+		if (!NAMES_TO_CODES.containsKey(internalName)) {
 			return -1;
 		} else {
 			return NAMES_TO_CODES.get(internalName);

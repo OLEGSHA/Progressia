@@ -19,7 +19,7 @@
 package ru.windcorp.progressia.client.comms.controls;
 
 import ru.windcorp.progressia.client.Client;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
+import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.common.comms.packets.Packet;
 
 public class InputBasedControls {
@@ -36,12 +36,12 @@ public class InputBasedControls {
 			.toArray(ControlTriggerInputBased[]::new);
 	}
 
-	public void handleInput(Input input) {
+	public void handleInput(InputEvent event) {
 		for (ControlTriggerInputBased c : controls) {
-			Packet packet = c.onInputEvent(input.getEvent());
+			Packet packet = c.onInputEvent(event);
 
 			if (packet != null) {
-				input.consume();
+				event.consume();
 				client.getComms().sendPacket(packet);
 				break;
 			}

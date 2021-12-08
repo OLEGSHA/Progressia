@@ -31,7 +31,7 @@ import ru.windcorp.progressia.client.comms.controls.InputBasedControls;
 import ru.windcorp.progressia.client.graphics.Layer;
 import ru.windcorp.progressia.client.graphics.backend.FaceCulling;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
+import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
 import ru.windcorp.progressia.client.graphics.model.Shapes.PppBuilder;
@@ -225,14 +225,14 @@ public class LayerWorld extends Layer {
 	}
 
 	@Override
-	protected void handleInput(Input input) {
-		if (input.isConsumed())
+	public void handleInput(InputEvent event) {
+		if (event.isConsumed())
 			return;
 
-		tmp_testControls.handleInput(input);
+		tmp_testControls.handleInput(event);
 
-		if (!input.isConsumed()) {
-			inputBasedControls.handleInput(input);
+		if (!event.isConsumed()) {
+			inputBasedControls.handleInput(event);
 		}
 	}
 

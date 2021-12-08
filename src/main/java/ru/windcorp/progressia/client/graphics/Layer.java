@@ -21,7 +21,7 @@ package ru.windcorp.progressia.client.graphics;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
+import ru.windcorp.progressia.client.graphics.input.InputEvent;
 
 public abstract class Layer {
 
@@ -106,7 +106,7 @@ public abstract class Layer {
 
 	protected abstract void doRender();
 
-	protected abstract void handleInput(Input input);
+	public abstract void handleInput(InputEvent input);
 
 	protected int getWidth() {
 		return GraphicsInterface.getFrameWidth();

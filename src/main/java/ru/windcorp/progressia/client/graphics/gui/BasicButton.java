@@ -54,18 +54,17 @@ public abstract class BasicButton extends Component {
 		reassembleAt(ARTrigger.HOVER, ARTrigger.FOCUS, ARTrigger.ENABLE);
 
 		// Click triggers
-		addListener(KeyEvent.class, e -> {
-			if (e.isRepeat()) {
-				return false;
-			} else if (
+		addInputListener(KeyEvent.class, e -> {
+			if (e.isRepeat())
+				return;
+			
+			if (
 				e.isLeftMouseButton() ||
 					e.getKey() == GLFW.GLFW_KEY_SPACE ||
 					e.getKey() == GLFW.GLFW_KEY_ENTER
 			) {
 				setPressed(e.isPress());
-				return true;
-			} else {
-				return false;
+				e.consume();
 			}
 		});
 

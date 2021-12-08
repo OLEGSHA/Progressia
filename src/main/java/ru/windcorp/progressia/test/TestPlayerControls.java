@@ -32,7 +32,6 @@ import ru.windcorp.progressia.client.graphics.input.CursorMoveEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.WheelScrollEvent;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.common.Units;
@@ -162,19 +161,17 @@ public class TestPlayerControls {
 		);
 	}
 
-	public void handleInput(Input input) {
-		InputEvent event = input.getEvent();
-
+	public void handleInput(InputEvent event) {
 		if (event instanceof KeyEvent) {
 			if (onKeyEvent((KeyEvent) event)) {
-				input.consume();
+				event.consume();
 			}
 		} else if (event instanceof CursorMoveEvent) {
 			onMouseMoved((CursorMoveEvent) event);
-			input.consume();
+			event.consume();
 		} else if (event instanceof WheelScrollEvent) {
 			onWheelScroll((WheelScrollEvent) event);
-			input.consume();
+			event.consume();
 		}
 	}
 

@@ -23,15 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import com.google.common.eventbus.Subscribe;
-
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
-import ru.windcorp.progressia.client.graphics.input.CursorEvent;
-import ru.windcorp.progressia.client.graphics.input.FrameResizeEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
-import ru.windcorp.progressia.client.graphics.input.KeyEvent;
-import ru.windcorp.progressia.client.graphics.input.WheelEvent;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
 
 public class GUI {
 
@@ -45,15 +38,6 @@ public class GUI {
 
 	private static final List<LayerStackModification> MODIFICATION_QUEUE = Collections
 		.synchronizedList(new ArrayList<>());
-
-	private static class ModifiableInput extends Input {
-		@Override
-		public void initialize(InputEvent event, Target target) {
-			super.initialize(event, target);
-		}
-	}
-
-	private static final ModifiableInput THE_INPUT = new ModifiableInput();
 
 	private GUI() {
 	}
@@ -126,43 +110,12 @@ public class GUI {
 		LAYERS.forEach(Layer::invalidate);
 	}
 
-	private static void dispatchInputEvent(InputEvent event) {
-		Input.Target target;
-
-		if (event instanceof KeyEvent) {
-			if (((KeyEvent) event).isMouse()) {
-				target = Input.Target.HOVERED;
-			} else {
-				target = Input.Target.FOCUSED;
+	public static void dispatchInput(InputEvent event) {
+		synchronized (LAYERS) {
+			for (int i = 0; i < LAYERS.size(); ++i) {
+				LAYERS.get(i).handleInput(event);
 			}
-		} else if (event instanceof CursorEvent) {
-			target = Input.Target.HOVERED;
-		} else if (event instanceof WheelEvent) {
-			target = Input.Target.HOVERED;
-		} else if (event instanceof FrameResizeEvent) {
-			return;
-		} else {
-			target = Input.Target.ALL;
 		}
-
-		THE_INPUT.initialize(event, target);
-		LAYERS.forEach(l -> l.handleInput(THE_INPUT));
-	}
-
-	public static Object getEventSubscriber() {
-		return new Object() {
-
-			@Subscribe
-			public void onFrameResized(FrameResizeEvent event) {
-				GUI.invalidateEverything();
-			}
-
-			@Subscribe
-			public void onInput(InputEvent event) {
-				dispatchInputEvent(event);
-			}
-
-		};
 	}
 
 }

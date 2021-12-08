@@ -68,6 +68,10 @@ public class GraphicsInterface {
 	public static void subscribeToInputEvents(Object listener) {
 		InputHandler.register(listener);
 	}
+	
+	public static void unsubscribeFromInputEvents(Object listener) {
+		InputHandler.unregister(listener);
+	}
 
 	public static void startNextLayer() {
 		GraphicsBackend.startNextLayer();
