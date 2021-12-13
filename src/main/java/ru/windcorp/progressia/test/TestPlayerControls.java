@@ -54,8 +54,7 @@ public class TestPlayerControls {
 	private int selectedTile = 0;
 	private boolean isBlockSelected = true;
 
-	private LayerTestGUI debugLayer = null;
-	private Runnable updateCallback = null;
+	private LayerDebug debugLayer = null;
 	
 	{
 		reset();
@@ -69,7 +68,6 @@ public class TestPlayerControls {
 		movementControls.reset();
 
 		debugLayer = null;
-		updateCallback = null;
 		selectedBlock = 0;         
 		selectedTile = 0;          
 		isBlockSelected = true;
@@ -104,12 +102,10 @@ public class TestPlayerControls {
 
 		case GLFW.GLFW_KEY_F11:
 			GraphicsInterface.makeFullscreen(!GraphicsBackend.isFullscreen());
-			updateGUI();
 			break;
 
 		case GLFW.GLFW_KEY_F12:
 			GraphicsBackend.setVSyncEnabled(!GraphicsBackend.isVSyncEnabled());
-			updateGUI();
 			break;
 
 		case GLFW.GLFW_KEY_F3:
@@ -137,8 +133,7 @@ public class TestPlayerControls {
 
 	private void handleDebugLayerSwitch() {
 		if (debugLayer == null) {
-			this.debugLayer = new LayerTestGUI();
-			this.updateCallback = debugLayer.getUpdateCallback();
+			this.debugLayer = new LayerDebug();
 		}
 
 		if (GUI.getLayers().contains(debugLayer)) {
@@ -155,7 +150,6 @@ public class TestPlayerControls {
 
 		if (ClientState.getInstance().getCamera().hasAnchor()) {
 			ClientState.getInstance().getCamera().selectNextMode();
-			updateGUI();
 		}
 	}
 
@@ -166,8 +160,6 @@ public class TestPlayerControls {
 		} else {
 			localizer.setLanguage("ru-RU");
 		}
-
-		updateGUI();
 	}
 
 	private void onMouseMoved(CursorMoveEvent event) {
@@ -209,7 +201,6 @@ public class TestPlayerControls {
 
 	public void switchPlacingMode() {
 		isBlockSelected = !isBlockSelected;
-		updateGUI();
 	}
 	
 	public void selectNextBlockOrTile(WheelScrollEvent event) {
@@ -234,8 +225,6 @@ public class TestPlayerControls {
 				selectedTile = 0;
 			}
 		}
-
-		updateGUI();
 	}
 
 	public EntityData getEntity() {
@@ -244,12 +233,6 @@ public class TestPlayerControls {
 
 	public LocalPlayer getPlayer() {
 		return ClientState.getInstance().getLocalPlayer();
-	}
-
-	private void updateGUI() {
-		if (this.updateCallback != null) {
-			this.updateCallback.run();
-		}
 	}
 	
 	public MovementControls getMovementControls() {
