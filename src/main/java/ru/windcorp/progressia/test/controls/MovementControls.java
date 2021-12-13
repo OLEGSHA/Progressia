@@ -131,7 +131,13 @@ public class MovementControls {
 		EntityData serverEntity = ServerState.getInstance().getWorld().getData()
 			.getEntity(TestContent.PLAYER_ENTITY_ID);
 		if (serverEntity != null) {
-			ClientState.getInstance().getLocalPlayer().getEntity().copy(serverEntity);
+			EntityData clientEntity = ClientState.getInstance().getLocalPlayer().getEntity();
+			
+			clientEntity.copy(serverEntity);
+			serverEntity.setLookingAt(clientEntity.getLookingAt());
+			serverEntity.setUpVector(clientEntity.getUpVector());
+			serverEntity.setPosition(clientEntity.getPosition());
+			serverEntity.setVelocity(clientEntity.getVelocity());
 		}
 	}
 
