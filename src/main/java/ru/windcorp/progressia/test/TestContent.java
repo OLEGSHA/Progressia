@@ -29,12 +29,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.lwjgl.glfw.GLFW;
+
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.audio.Sound;
 import ru.windcorp.progressia.client.comms.controls.*;
+import ru.windcorp.progressia.client.graphics.backend.InputTracker;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
+import ru.windcorp.progressia.client.graphics.input.WheelScrollEvent;
 import ru.windcorp.progressia.client.graphics.world.Selection;
 import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerRegistry;
@@ -287,6 +291,8 @@ public class TestContent {
 	}
 
 	private static void regsiterControls() {
+		TestPlayerControls.getInstance().registerControls();
+		
 		ControlDataRegistry data = ControlDataRegistry.getInstance();
 		ControlTriggerRegistry triggers = ControlTriggerRegistry.getInstance();
 		ControlLogicRegistry logic = ControlLogicRegistry.getInstance();
@@ -327,6 +333,33 @@ public class TestContent {
 			)
 		);
 		logic.register(ControlLogic.of("Test:PlaceTile", TestContent::onTilePlaceReceived));
+		
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:SwitchPlacingModeMMB",
+				KeyEvent.class,
+				() -> TestPlayerControls.getInstance().switchPlacingMode(),
+				KeyMatcher.MMB::matches
+			)
+		);
+		
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:SwitchPlacingModeWheel",
+				WheelScrollEvent.class,
+				() -> TestPlayerControls.getInstance().switchPlacingMode(),
+				e -> e.hasHorizontalMovement() || InputTracker.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL)
+			)
+		);
+		
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:SelectNextBlockOrTile",
+				WheelScrollEvent.class,
+				e -> TestPlayerControls.getInstance().selectNextBlockOrTile(e),
+				e -> !e.hasHorizontalMovement() && !InputTracker.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL)
+			)
+		);
 
 		triggers.register(
 			ControlTriggers.localOf(

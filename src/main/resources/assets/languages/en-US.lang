@@ -4,8 +4,6 @@ LayerAbout.Title = Progressia
 LayerAbout.Version = Version: %s
 LayerAbout.DebugHint = Debug GUI: F3
 
-LayerTestGUI.IsFlyingDisplay = Flying:         %5s (Space bar x2)
-LayerTestGUI.IsSprintingDisplay = Sprinting:      %5s (W x2)
 LayerTestGUI.CameraModeDisplay = Camera mode:    %5d (F5)
 LayerTestGUI.LanguageDisplay = Language:       %5s (L)
 LayerTestGUI.FPSDisplay = FPS: 

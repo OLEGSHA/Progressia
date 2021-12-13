@@ -60,22 +60,6 @@ public class LayerTestGUI extends GUILayer {
 
 		group.addChild(
 			new Label(
-				"IsFlyingDisplay",
-				font,
-				tmp_dynFormat("LayerTestGUI.IsFlyingDisplay", tpc::isFlying)
-			)
-		);
-
-		group.addChild(
-			new Label(
-				"IsSprintingDisplay",
-				font,
-				tmp_dynFormat("LayerTestGUI.IsSprintingDisplay", tpc::isSprinting)
-			)
-		);
-
-		group.addChild(
-			new Label(
 				"CameraModeDisplay",
 				font,
 				tmp_dynFormat(

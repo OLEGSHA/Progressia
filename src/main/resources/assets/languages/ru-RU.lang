@@ -4,8 +4,6 @@ LayerAbout.Title = Прогрессия
 LayerAbout.Version = Версия: %s
 LayerAbout.DebugHint = Отладочный GUI: F3
 
-LayerTestGUI.IsFlyingDisplay = Полёт:          %5s (Пробел x2)
-LayerTestGUI.IsSprintingDisplay = Бег:            %5s (W x2)
 LayerTestGUI.CameraModeDisplay = Камера:         %5d (F5)
 LayerTestGUI.LanguageDisplay = Язык:           %5s (L)
 LayerTestGUI.FPSDisplay = FPS: 
