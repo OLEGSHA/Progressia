@@ -235,7 +235,7 @@ public abstract class StatefulObject extends Namespaced implements Encodable {
 
 		StatefulObject statefulObj = (StatefulObject) obj;
 
-		if (statefulObj.getId().equals(this.getId()))
+		if (!statefulObj.getId().equals(this.getId()))
 			return false;
 
 		return true;

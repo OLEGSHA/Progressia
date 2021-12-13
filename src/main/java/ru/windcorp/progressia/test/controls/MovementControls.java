@@ -28,6 +28,8 @@ import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.backend.InputTracker;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
+import ru.windcorp.progressia.client.graphics.world.Camera;
+import ru.windcorp.progressia.client.graphics.world.EntityAnchor;
 import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.entity.EntityData;
@@ -96,8 +98,15 @@ public class MovementControls {
 			return;
 		}
 
-		EntityData player = ClientState.getInstance().getLocalPlayer().getEntity();
-		assert player != null;
+		Camera.Anchor cameraAnchor = ClientState.getInstance().getCamera().getAnchor();
+		if (!(cameraAnchor instanceof EntityAnchor)) {
+			return;
+		}
+		
+		EntityData player = ((EntityAnchor) cameraAnchor).getEntity();
+		
+		boolean isFlying = this.isFlying || player.getId().equals("Test:NoclipCamera");
+		boolean isSprinting = this.isSprinting || player.getId().equals("Test:NoclipCamera");
 
 		final float speed, authority;
 
@@ -110,7 +119,7 @@ public class MovementControls {
 		}
 
 		Mat3 movementTransform = getMovementTransform(player, null);
-		Vec3 desiredVelocity = getDesiredVelocity(movementTransform, speed);
+		Vec3 desiredVelocity = getDesiredVelocity(movementTransform, speed, isFlying);
 		Vec3 newVelocity = getNewVelocity(desiredVelocity, player.getVelocity(), authority, player.getUpVector());
 		player.getVelocity().set(newVelocity);
 
@@ -144,7 +153,7 @@ public class MovementControls {
 		//@formatter:on
 	}
 
-	private Vec3 getDesiredVelocity(Mat3 movementTransform, float speed) {
+	private Vec3 getDesiredVelocity(Mat3 movementTransform, float speed, boolean isFlying) {
 		int forward = 0;
 		int right = 0;
 		int up = 0;

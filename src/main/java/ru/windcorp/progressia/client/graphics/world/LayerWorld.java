@@ -214,6 +214,9 @@ public class LayerWorld extends Layer {
 		if (ClientState.getInstance().getLocalPlayer().getEntity() == entity && tmp_testControls.isFlying()) {
 			return;
 		}
+		if (entity.getId().equals("Test:NoclipCamera")) {
+			return;
+		}
 
 		Vec3 gravitationalAcceleration = Vectors.grab3();
 		gm.getGravity(entity.getPosition(), gravitationalAcceleration);

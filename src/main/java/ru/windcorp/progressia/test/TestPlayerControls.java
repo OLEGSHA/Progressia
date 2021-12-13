@@ -18,26 +18,20 @@
  
 package ru.windcorp.progressia.test;
 
-import glm.Glm;
-import glm.mat._4.Mat4;
-import glm.vec._3.Vec3;
 import org.lwjgl.glfw.GLFW;
 import ru.windcorp.progressia.client.ClientState;
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
-import ru.windcorp.progressia.client.graphics.input.CursorMoveEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.WheelScrollEvent;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.localization.Localizer;
-import ru.windcorp.progressia.common.util.Matrices;
-import ru.windcorp.progressia.common.util.VectorUtil;
-import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.tile.TileData;
+import ru.windcorp.progressia.test.controls.CameraControls;
 import ru.windcorp.progressia.test.controls.MovementControls;
 
 public class TestPlayerControls {
@@ -49,6 +43,7 @@ public class TestPlayerControls {
 	}
 	
 	private final MovementControls movementControls = new MovementControls();
+	private final CameraControls cameraControls = new CameraControls();
 
 	private int selectedBlock = 0;
 	private int selectedTile = 0;
@@ -66,7 +61,8 @@ public class TestPlayerControls {
 	
 	private void reset() {
 		movementControls.reset();
-
+		cameraControls.reset();
+		
 		debugLayer = null;
 		selectedBlock = 0;         
 		selectedTile = 0;          
@@ -79,6 +75,7 @@ public class TestPlayerControls {
 	
 	public void registerControls() {
 		movementControls.registerControls();
+		cameraControls.registerControls();
 	}
 
 	public void handleInput(InputEvent event) {
@@ -86,9 +83,6 @@ public class TestPlayerControls {
 			if (onKeyEvent((KeyEvent) event)) {
 				event.consume();
 			}
-		} else if (event instanceof CursorMoveEvent) {
-			onMouseMoved((CursorMoveEvent) event);
-			event.consume();
 		}
 	}
 
@@ -110,10 +104,6 @@ public class TestPlayerControls {
 
 		case GLFW.GLFW_KEY_F3:
 			handleDebugLayerSwitch();
-			break;
-
-		case GLFW.GLFW_KEY_F5:
-			handleCameraMode();
 			break;
 
 		case GLFW.GLFW_KEY_L:
@@ -143,16 +133,6 @@ public class TestPlayerControls {
 		}
 	}
 
-	private void handleCameraMode() {
-		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
-			return;
-		}
-
-		if (ClientState.getInstance().getCamera().hasAnchor()) {
-			ClientState.getInstance().getCamera().selectNextMode();
-		}
-	}
-
 	private void handleLanguageSwitch() {
 		Localizer localizer = Localizer.getInstance();
 		if (localizer.getLanguage().equals("ru-RU")) {
@@ -160,43 +140,6 @@ public class TestPlayerControls {
 		} else {
 			localizer.setLanguage("ru-RU");
 		}
-	}
-
-	private void onMouseMoved(CursorMoveEvent event) {
-		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
-			return;
-		}
-
-		final double yawScale = -0.002f;
-		final double pitchScale = -yawScale;
-		final double pitchExtremum = Math.PI/2 * 0.95f;
-		
-		double yawChange = event.getChangeX() * yawScale;
-		double pitchChange = event.getChangeY() * pitchScale;
-
-		EntityData player = getEntity();
-		
-		double startPitch = player.getPitch();
-		double endPitch = startPitch + pitchChange;
-		endPitch = Glm.clamp(endPitch, -pitchExtremum, +pitchExtremum);
-		pitchChange = endPitch - startPitch;
-		
-		Mat4 mat = Matrices.grab4();
-		Vec3 lookingAt = Vectors.grab3();		
-		Vec3 rightVector = Vectors.grab3();
-
-		rightVector.set(player.getLookingAt()).cross(player.getUpVector()).normalize();
-		
-		mat.identity()
-			.rotate((float) yawChange, player.getUpVector())
-			.rotate((float) pitchChange, rightVector);
-		
-		VectorUtil.applyMat4(player.getLookingAt(), mat, lookingAt);
-		player.setLookingAt(lookingAt);
-		
-		Vectors.release(rightVector);
-		Vectors.release(lookingAt);
-		Matrices.release(mat);
 	}
 
 	public void switchPlacingMode() {
