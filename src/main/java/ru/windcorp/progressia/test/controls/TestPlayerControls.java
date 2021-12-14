@@ -16,23 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
  
-package ru.windcorp.progressia.test;
+package ru.windcorp.progressia.test.controls;
 
-import org.lwjgl.glfw.GLFW;
+import java.util.List;
+
 import ru.windcorp.progressia.client.ClientState;
+import ru.windcorp.progressia.client.comms.controls.ControlTriggerRegistry;
+import ru.windcorp.progressia.client.comms.controls.ControlTriggers;
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsBackend;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
-import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
-import ru.windcorp.progressia.client.graphics.input.WheelScrollEvent;
+import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
 import ru.windcorp.progressia.client.graphics.world.LocalPlayer;
 import ru.windcorp.progressia.client.localization.Localizer;
 import ru.windcorp.progressia.common.world.block.BlockData;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.common.world.tile.TileData;
-import ru.windcorp.progressia.test.controls.CameraControls;
-import ru.windcorp.progressia.test.controls.MovementControls;
+import ru.windcorp.progressia.test.LayerButtonTest;
+import ru.windcorp.progressia.test.LayerDebug;
+import ru.windcorp.progressia.test.TestMusicPlayer;
 
 public class TestPlayerControls {
 
@@ -44,10 +47,7 @@ public class TestPlayerControls {
 	
 	private final MovementControls movementControls = new MovementControls();
 	private final CameraControls cameraControls = new CameraControls();
-
-	private int selectedBlock = 0;
-	private int selectedTile = 0;
-	private boolean isBlockSelected = true;
+	private final InteractionControls interactionControls = new InteractionControls();
 
 	private LayerDebug debugLayer = null;
 	
@@ -62,11 +62,9 @@ public class TestPlayerControls {
 	private void reset() {
 		movementControls.reset();
 		cameraControls.reset();
+		interactionControls.reset();
 		
 		debugLayer = null;
-		selectedBlock = 0;         
-		selectedTile = 0;          
-		isBlockSelected = true;
 	}
 
 	public void applyPlayerControls() {
@@ -76,52 +74,78 @@ public class TestPlayerControls {
 	public void registerControls() {
 		movementControls.registerControls();
 		cameraControls.registerControls();
+		interactionControls.registerControls();
+		
+		ControlTriggerRegistry triggers = ControlTriggerRegistry.getInstance();
+		
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:PauseGame",
+				KeyEvent.class,
+				this::pauseGame,
+				new KeyMatcher("Escape")::matches
+			)
+		);
+		
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:ToggleFullscreen",
+				KeyEvent.class,
+				this::toggleFullscreen,
+				new KeyMatcher("F11")::matches
+			)
+		);
+		
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:ToggleVSync",
+				KeyEvent.class,
+				this::toggleVSync,
+				new KeyMatcher("F12")::matches
+			)
+		);
+		
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:ToggleDebugLayer",
+				KeyEvent.class,
+				this::toggleDebugLayer,
+				new KeyMatcher("F3")::matches
+			)
+		);
+		
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:SwitchLanguage",
+				KeyEvent.class,
+				this::switchLanguage,
+				new KeyMatcher("L")::matches
+			)
+		);
+
+		triggers.register(
+			ControlTriggers.localOf(
+				"Test:StartNextMusic",
+				KeyEvent.class,
+				TestMusicPlayer::startNextNow,
+				new KeyMatcher("M")::matches
+			)
+		);
 	}
 
-	public void handleInput(InputEvent event) {
-		if (event instanceof KeyEvent) {
-			if (onKeyEvent((KeyEvent) event)) {
-				event.consume();
-			}
-		}
-	}
-
-	private boolean onKeyEvent(KeyEvent event) {
-		if (!event.isPress())
-			return false;
-		switch (event.getKey()) {
-		case GLFW.GLFW_KEY_ESCAPE:
-			handleEscape();
-			break;
-
-		case GLFW.GLFW_KEY_F11:
-			GraphicsInterface.makeFullscreen(!GraphicsBackend.isFullscreen());
-			break;
-
-		case GLFW.GLFW_KEY_F12:
-			GraphicsBackend.setVSyncEnabled(!GraphicsBackend.isVSyncEnabled());
-			break;
-
-		case GLFW.GLFW_KEY_F3:
-			handleDebugLayerSwitch();
-			break;
-
-		case GLFW.GLFW_KEY_L:
-			handleLanguageSwitch();
-			break;
-
-		default:
-			return false;
-		}
-
-		return true;
-	}
-
-	private void handleEscape() {
+	private void pauseGame() {
 		GUI.addTopLayer(new LayerButtonTest());
 	}
+	
+	private void toggleFullscreen() {
+		GraphicsInterface.makeFullscreen(!GraphicsBackend.isFullscreen());
+	}
+	
+	private void toggleVSync() {
+		GraphicsBackend.setVSyncEnabled(!GraphicsBackend.isVSyncEnabled());
+	}
 
-	private void handleDebugLayerSwitch() {
+	private void toggleDebugLayer() {
 		if (debugLayer == null) {
 			this.debugLayer = new LayerDebug();
 		}
@@ -133,41 +157,19 @@ public class TestPlayerControls {
 		}
 	}
 
-	private void handleLanguageSwitch() {
+	private void switchLanguage() {
 		Localizer localizer = Localizer.getInstance();
-		if (localizer.getLanguage().equals("ru-RU")) {
-			localizer.setLanguage("en-US");
+		List<String> languages = localizer.getLanguages();
+		
+		int index = languages.indexOf(localizer.getLanguage());
+		
+		if (index == languages.size() - 1) {
+			index = 0;
 		} else {
-			localizer.setLanguage("ru-RU");
+			index++;
 		}
-	}
-
-	public void switchPlacingMode() {
-		isBlockSelected = !isBlockSelected;
-	}
-	
-	public void selectNextBlockOrTile(WheelScrollEvent event) {
-		if (isBlockSelected) {
-			selectedBlock += event.isUp() ? +1 : -1;
-
-			int size = TestContent.PLACEABLE_BLOCKS.size();
-
-			if (selectedBlock < 0) {
-				selectedBlock = size - 1;
-			} else if (selectedBlock >= size) {
-				selectedBlock = 0;
-			}
-		} else {
-			selectedTile += event.isUp() ? +1 : -1;
-
-			int size = TestContent.PLACEABLE_TILES.size();
-
-			if (selectedTile < 0) {
-				selectedTile = size - 1;
-			} else if (selectedTile >= size) {
-				selectedTile = 0;
-			}
-		}
+		
+		localizer.setLanguage(languages.get(index));
 	}
 
 	public EntityData getEntity() {
@@ -183,15 +185,15 @@ public class TestPlayerControls {
 	}
 
 	public BlockData getSelectedBlock() {
-		return TestContent.PLACEABLE_BLOCKS.get(selectedBlock);
+		return interactionControls.getSelectedBlock();
 	}
 
 	public TileData getSelectedTile() {
-		return TestContent.PLACEABLE_TILES.get(selectedTile);
+		return interactionControls.getSelectedTile();
 	}
 
 	public boolean isBlockSelected() {
-		return isBlockSelected;
+		return interactionControls.isBlockSelected();
 	}
 	
 	public boolean isFlying() {

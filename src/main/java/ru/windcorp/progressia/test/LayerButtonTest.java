@@ -33,6 +33,7 @@ import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.ServerState;
+import ru.windcorp.progressia.test.controls.TestPlayerControls;
 
 public class LayerButtonTest extends MenuLayer {
 

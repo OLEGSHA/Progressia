@@ -45,7 +45,7 @@ import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.test.CollisionModelRenderer;
-import ru.windcorp.progressia.test.TestPlayerControls;
+import ru.windcorp.progressia.test.controls.TestPlayerControls;
 
 public class LayerWorld extends Layer {
 
@@ -229,11 +229,6 @@ public class LayerWorld extends Layer {
 
 	@Override
 	public void handleInput(InputEvent event) {
-		if (event.isConsumed())
-			return;
-
-		tmp_testControls.handleInput(event);
-
 		if (!event.isConsumed()) {
 			inputBasedControls.handleInput(event);
 		}

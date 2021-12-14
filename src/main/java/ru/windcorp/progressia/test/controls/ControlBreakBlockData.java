@@ -16,31 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
  
-package ru.windcorp.progressia.test;
+package ru.windcorp.progressia.test.controls;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.comms.controls.ControlData;
-import ru.windcorp.progressia.common.world.block.BlockData;
 
-public class ControlPlaceBlockData extends ControlData {
+public class ControlBreakBlockData extends ControlData {
 
-	private BlockData block;
 	private final Vec3i blockInWorld = new Vec3i();
 
-	public ControlPlaceBlockData(String id) {
+	public ControlBreakBlockData(String id) {
 		super(id);
-	}
-
-	public BlockData getBlock() {
-		return block;
 	}
 
 	public Vec3i getBlockInWorld() {
 		return blockInWorld;
 	}
 
-	public void set(BlockData block, Vec3i blockInWorld) {
-		this.block = block;
+	public void setBlockInWorld(Vec3i blockInWorld) {
 		this.blockInWorld.set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
 	}
 

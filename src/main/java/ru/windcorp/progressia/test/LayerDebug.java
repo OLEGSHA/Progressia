@@ -39,6 +39,7 @@ import ru.windcorp.progressia.common.Units;
 import ru.windcorp.progressia.common.util.dynstr.DynamicStrings;
 import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.ServerState;
+import ru.windcorp.progressia.test.controls.TestPlayerControls;
 
 import java.util.ArrayList;
 import java.util.List;

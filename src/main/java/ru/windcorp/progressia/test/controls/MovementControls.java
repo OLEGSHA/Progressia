@@ -42,12 +42,12 @@ public class MovementControls {
 	 * Max delay between space presses that can toggle flying
 	 */
 	private static final double FLYING_SWITCH_MAX_DELAY = Units.get("300 ms");
-	
+
 	/**
 	 * Max delay between W presses that can toggle sprinting
 	 */
 	private static final double SPRINTING_SWITCH_MAX_DELAY = Units.get("300 ms");
-	
+
 	/**
 	 * Min delay between jumps
 	 */
@@ -88,7 +88,7 @@ public class MovementControls {
 
 	private double lastSpacePress;
 	private double lastSprintPress;
-	
+
 	{
 		reset();
 	}
@@ -102,9 +102,9 @@ public class MovementControls {
 		if (!(cameraAnchor instanceof EntityAnchor)) {
 			return;
 		}
-		
+
 		EntityData player = ((EntityAnchor) cameraAnchor).getEntity();
-		
+
 		boolean isFlying = this.isFlying || player.getId().equals("Test:NoclipCamera");
 		boolean isSprinting = this.isSprinting || player.getId().equals("Test:NoclipCamera");
 
@@ -120,7 +120,13 @@ public class MovementControls {
 
 		Mat3 movementTransform = getMovementTransform(player, null);
 		Vec3 desiredVelocity = getDesiredVelocity(movementTransform, speed, isFlying);
-		Vec3 newVelocity = getNewVelocity(desiredVelocity, player.getVelocity(), authority, player.getUpVector());
+		Vec3 newVelocity = getNewVelocity(
+			desiredVelocity,
+			player.getVelocity(),
+			authority,
+			player.getUpVector(),
+			isFlying
+		);
 		player.getVelocity().set(newVelocity);
 
 		tmp_syncServerEntity();
@@ -132,7 +138,7 @@ public class MovementControls {
 			.getEntity(TestContent.PLAYER_ENTITY_ID);
 		if (serverEntity != null) {
 			EntityData clientEntity = ClientState.getInstance().getLocalPlayer().getEntity();
-			
+
 			clientEntity.copy(serverEntity);
 			serverEntity.setLookingAt(clientEntity.getLookingAt());
 			serverEntity.setUpVector(clientEntity.getUpVector());
@@ -188,7 +194,7 @@ public class MovementControls {
 		return desiredVelocity;
 	}
 
-	private Vec3 getNewVelocity(Vec3 desiredVelocity, Vec3 oldVelocity, float authority, Vec3 up) {
+	private Vec3 getNewVelocity(Vec3 desiredVelocity, Vec3 oldVelocity, float authority, Vec3 up, boolean isFlying) {
 
 		// newVelocity = oldVelocity + small change toward desiredVelocity
 		Vec3 newVelocity = new Vec3()
@@ -207,17 +213,17 @@ public class MovementControls {
 
 		return newVelocity;
 	}
-	
+
 	public void reset() {
 		isFlying = true;
 		isSprinting = false;
-		lastSpacePress = Double.NEGATIVE_INFINITY; 
+		lastSpacePress = Double.NEGATIVE_INFINITY;
 		lastSprintPress = Double.NEGATIVE_INFINITY;
 	}
 
 	public void registerControls() {
 		ControlTriggerRegistry triggers = ControlTriggerRegistry.getInstance();
-		
+
 		triggers.register(
 			ControlTriggers.localOf(
 				"Test:JumpOrToggleFlight",
@@ -226,31 +232,39 @@ public class MovementControls {
 				new KeyMatcher("Space")::matches
 			)
 		);
-		
+
 		triggers.register(
 			ControlTriggers.localOf(
 				"Test:ToggleSprint",
 				KeyEvent.class,
 				this::toggleSprint,
-				
+
 				new KeyMatcher("W")::matches,
 				e -> !isFlying
 			)
 		);
-		
+
 		triggers.register(
 			ControlTriggers.localOf(
 				"Test:DisableSprint",
 				KeyEvent.class,
 				this::disableSprint,
-				
+
 				new KeyMatcher("W")::matchesIgnoringAction,
 				KeyEvent::isRelease
 			)
 		);
 	}
-	
+
 	private void handleSpacePress(KeyEvent e) {
+		if (
+			ClientState.getInstance().getCamera().getAnchor() instanceof EntityAnchor
+				&& ((EntityAnchor) ClientState.getInstance().getCamera().getAnchor()).getEntity().getId()
+					.equals("Test:NoclipCamera")
+		) {
+			return;
+		}
+
 		double timeSinceLastSpacePress = e.getTime() - lastSpacePress;
 
 		if (timeSinceLastSpacePress < FLYING_SWITCH_MAX_DELAY) {
@@ -262,7 +276,7 @@ public class MovementControls {
 
 		lastSpacePress = e.getTime();
 	}
-	
+
 	private void jump() {
 		if (ClientState.getInstance() == null || !ClientState.getInstance().isReady()) {
 			return;
@@ -272,29 +286,29 @@ public class MovementControls {
 		assert player != null;
 
 		Vec3 up = player.getUpVector();
-		
+
 		player.getVelocity().add(
 			up.x * JUMP_VELOCITY,
 			up.y * JUMP_VELOCITY,
 			up.z * JUMP_VELOCITY
 		);
 	}
-	
+
 	private void toggleSprint(KeyEvent e) {
 		if (e.getTime() - lastSprintPress < SPRINTING_SWITCH_MAX_DELAY) {
 			isSprinting = !isSprinting;
 		}
 		lastSprintPress = e.getTime();
 	}
-	
+
 	private void disableSprint(KeyEvent e) {
 		isSprinting = false;
 	}
-	
+
 	public boolean isFlying() {
 		return isFlying;
 	}
-	
+
 	public boolean isSprinting() {
 		return isSprinting;
 	}
