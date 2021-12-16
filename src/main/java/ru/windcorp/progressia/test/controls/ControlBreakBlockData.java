@@ -16,13 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
  
-package ru.windcorp.progressia.client.graphics.input.bus;
+package ru.windcorp.progressia.test.controls;
 
-import ru.windcorp.progressia.client.graphics.input.InputEvent;
+import glm.vec._3.i.Vec3i;
+import ru.windcorp.progressia.common.comms.controls.ControlData;
 
-@FunctionalInterface
-public interface InputListener<T extends InputEvent> {
+public class ControlBreakBlockData extends ControlData {
 
-	void handle(T event);
+	private final Vec3i blockInWorld = new Vec3i();
+
+	public ControlBreakBlockData(String id) {
+		super(id);
+	}
+
+	public Vec3i getBlockInWorld() {
+		return blockInWorld;
+	}
+
+	public void setBlockInWorld(Vec3i blockInWorld) {
+		this.blockInWorld.set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
+	}
 
 }

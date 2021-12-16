@@ -72,6 +72,12 @@ public class Localizer {
 	public synchronized String getLanguage() {
 		return language;
 	}
+	
+	public List<String> getLanguages() {
+		List<String> result = new ArrayList<>(langList.keySet());
+		result.sort(null);
+		return result;
+	}
 
 	public synchronized String getValue(String key) {
 		if (data == null) {

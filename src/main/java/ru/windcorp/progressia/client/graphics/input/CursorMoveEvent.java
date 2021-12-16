@@ -18,7 +18,6 @@
  
 package ru.windcorp.progressia.client.graphics.input;
 
-import glm.vec._2.Vec2;
 import glm.vec._2.d.Vec2d;
 
 public class CursorMoveEvent extends CursorEvent {
@@ -81,7 +80,10 @@ public class CursorMoveEvent extends CursorEvent {
 		return getNewY() - getPreviousY();
 	}
 
-	public Vec2 getChange(Vec2 result) {
+	public Vec2d getChange(Vec2d result) {
+		if (result == null) {
+			result = new Vec2d();
+		}
 		return result.set(getChangeX(), getChangeY());
 	}
 

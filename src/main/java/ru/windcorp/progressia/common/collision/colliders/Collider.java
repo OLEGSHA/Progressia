@@ -105,6 +105,9 @@ public class Collider {
 		// For every pair of colls
 		for (int i = 0; i < colls.size(); ++i) {
 			Collideable a = colls.get(i);
+			if (a.getCollisionModel() == null) {
+				continue;
+			}
 
 			tuneWorldCollisionHelper(a, tickLength, world, workspace);
 
@@ -115,6 +118,10 @@ public class Collider {
 
 			for (int j = i + 1; j < colls.size(); ++j) {
 				Collideable b = colls.get(j);
+				if (b.getCollisionModel() == null) {
+					continue;
+				}
+				
 				Collision collision = getCollision(a, b, tickLength, workspace);
 				result = workspace.updateLatestCollision(result, collision);
 			}

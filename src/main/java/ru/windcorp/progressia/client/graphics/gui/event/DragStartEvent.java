@@ -15,48 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.client.graphics.input.bus;
+package ru.windcorp.progressia.client.graphics.gui.event;
 
-import ru.windcorp.progressia.client.graphics.input.InputEvent;
+import ru.windcorp.progressia.client.graphics.gui.Component;
 
-public class Input {
+public class DragStartEvent extends ComponentEvent {
 
-	public static enum Target {
-		FOCUSED, HOVERED, ALL
-	}
-
-	private InputEvent event;
-
-	private boolean isConsumed;
-
-	private Target target;
-
-	protected void initialize(InputEvent event, Target target) {
-		this.event = event;
-		this.target = target;
-
-		this.isConsumed = false;
-	}
-
-	public InputEvent getEvent() {
-		return event;
-	}
-
-	public boolean isConsumed() {
-		return isConsumed;
-	}
-
-	public void setConsumed(boolean isConsumed) {
-		this.isConsumed = isConsumed;
-	}
-
-	public void consume() {
-		setConsumed(true);
-	}
-
-	public Target getTarget() {
-		return target;
+	public DragStartEvent(Component component) {
+		super(component);
 	}
 
 }

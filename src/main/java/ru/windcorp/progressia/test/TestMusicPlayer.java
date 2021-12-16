@@ -110,6 +110,7 @@ public class TestMusicPlayer implements Runnable {
 				String file = it.next().toString();
 				if (!file.endsWith(".ogg") && !file.endsWith(".oga")) {
 					LogManager.getLogger().warn("Skipping " + file + ": not .ogg nor .oga");
+					continue;
 				}
 				
 				String id = "Progressia:Music" + (i++);

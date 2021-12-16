@@ -143,20 +143,6 @@ public class ControlTriggers {
 		);
 	}
 	
-	//
-	//
-	///
-	///
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	
 	public static ControlTriggerInputBased localOf(
 		String id,
 		Consumer<InputEvent> action,

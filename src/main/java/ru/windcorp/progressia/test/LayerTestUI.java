@@ -27,8 +27,8 @@ import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.flat.AssembledFlatLayer;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
+import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
 
 public class LayerTestUI extends AssembledFlatLayer {
 
@@ -91,7 +91,7 @@ public class LayerTestUI extends AssembledFlatLayer {
 	}
 
 	@Override
-	protected void handleInput(Input input) {
+	public void handleInput(InputEvent event) {
 		// Do nothing
 	}
 

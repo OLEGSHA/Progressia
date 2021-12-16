@@ -28,15 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import org.lwjgl.glfw.GLFW;
 
-import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.client.ClientState;
-import ru.windcorp.progressia.client.audio.Sound;
-import ru.windcorp.progressia.client.comms.controls.*;
-import ru.windcorp.progressia.client.graphics.input.KeyEvent;
-import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
-import ru.windcorp.progressia.client.graphics.world.Selection;
 import ru.windcorp.progressia.client.world.block.*;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerRegistry;
 import ru.windcorp.progressia.client.world.cro.ChunkRenderOptimizerSimple;
@@ -45,25 +37,19 @@ import ru.windcorp.progressia.client.world.entity.*;
 import ru.windcorp.progressia.client.world.tile.*;
 import ru.windcorp.progressia.common.collision.AABB;
 import ru.windcorp.progressia.common.collision.CollisionModel;
-import ru.windcorp.progressia.common.comms.controls.*;
 import ru.windcorp.progressia.common.state.StatefulObjectRegistry.Factory;
 import ru.windcorp.progressia.common.world.GravityModelRegistry;
 import ru.windcorp.progressia.common.world.block.*;
 import ru.windcorp.progressia.common.world.entity.*;
 import ru.windcorp.progressia.common.world.io.ChunkIO;
-import ru.windcorp.progressia.common.world.rels.AbsFace;
 import ru.windcorp.progressia.common.world.tile.*;
-import ru.windcorp.progressia.server.Server;
-import ru.windcorp.progressia.server.comms.controls.*;
 import ru.windcorp.progressia.server.world.block.*;
-import ru.windcorp.progressia.server.world.context.ServerBlockContext;
-import ru.windcorp.progressia.server.world.context.ServerTileContext;
-import ru.windcorp.progressia.server.world.context.ServerTileStackContext;
 import ru.windcorp.progressia.server.world.entity.*;
 import ru.windcorp.progressia.server.world.generation.planet.PlanetGravityModel;
 import ru.windcorp.progressia.server.world.tile.*;
 import ru.windcorp.progressia.test.Flowers.FlowerVariant;
 import ru.windcorp.progressia.test.Rocks.RockType;
+import ru.windcorp.progressia.test.controls.TestPlayerControls;
 import ru.windcorp.progressia.test.gen.TestGravityModel;
 import ru.windcorp.progressia.test.trees.BlockRenderLeavesHazel;
 import ru.windcorp.progressia.test.trees.BlockRenderLeavesPine;
@@ -288,55 +274,9 @@ public class TestContent {
 	}
 
 	private static void regsiterControls() {
-		ControlDataRegistry data = ControlDataRegistry.getInstance();
-		ControlTriggerRegistry triggers = ControlTriggerRegistry.getInstance();
-		ControlLogicRegistry logic = ControlLogicRegistry.getInstance();
-
-		data.register("Test:BreakBlock", ControlBreakBlockData::new);
-		triggers.register(
-			ControlTriggers.of(
-				"Test:BreakBlock",
-				KeyEvent.class,
-				TestContent::onBlockBreakTrigger,
-				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_LEFT).matcher(),
-				i -> isAnythingSelected()
-			)
-		);
-		logic.register(ControlLogic.of("Test:BreakBlock", TestContent::onBlockBreakReceived));
-
-		data.register("Test:PlaceBlock", ControlPlaceBlockData::new);
-		triggers.register(
-			ControlTriggers.of(
-				"Test:PlaceBlock",
-				KeyEvent.class,
-				TestContent::onBlockPlaceTrigger,
-				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
-				i -> isAnythingSelected() && TestPlayerControls.getInstance().isBlockSelected()
-			)
-		);
-
-		logic.register(ControlLogic.of("Test:PlaceBlock", TestContent::onBlockPlaceReceived));
-
-		data.register("Test:PlaceTile", ControlPlaceTileData::new);
-		triggers.register(
-			ControlTriggers.of(
-				"Test:PlaceTile",
-				KeyEvent.class,
-				TestContent::onTilePlaceTrigger,
-				KeyMatcher.of(GLFW.GLFW_MOUSE_BUTTON_RIGHT).matcher(),
-				i -> isAnythingSelected() && !TestPlayerControls.getInstance().isBlockSelected()
-			)
-		);
-		logic.register(ControlLogic.of("Test:PlaceTile", TestContent::onTilePlaceReceived));
-
-		triggers.register(
-			ControlTriggers.localOf(
-				"Test:StartNextMusic",
-				KeyEvent.class,
-				TestMusicPlayer::startNextNow,
-				KeyMatcher.of(GLFW.GLFW_KEY_M).matcher()
-			)
-		);
+		TestPlayerControls.getInstance().registerControls();
+		
+		
 	}
 
 	private static void register(BlockData x) {
@@ -390,95 +330,6 @@ public class TestContent {
 
 	private static void register(EntityLogic x) {
 		EntityLogicRegistry.getInstance().register(x);
-	}
-
-	private static Selection getSelection() {
-		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
-		if (client == null || !client.isReady())
-			return null;
-		
-		return client.getLocalPlayer().getSelection();
-	}
-
-	private static boolean isAnythingSelected() {
-		ru.windcorp.progressia.client.Client client = ClientState.getInstance();
-		if (client == null || !client.isReady())
-			return false;
-
-		return client.getLocalPlayer().getSelection().exists();
-	}
-
-	private static void onBlockBreakTrigger(ControlData control) {
-		((ControlBreakBlockData) control).setBlockInWorld(getSelection().getBlock());
-		Sound sfx = new Sound("Progressia:BlockDestroy");
-		sfx.setPosition(getSelection().getPoint());
-		sfx.setPitch((float) (Math.random() + 1 * 0.5));
-		sfx.play(false);
-	}
-
-	private static void onBlockBreakReceived(
-		Server server,
-		PacketControl packet,
-		ru.windcorp.progressia.server.comms.Client client
-	) {
-		Vec3i blockInWorld = ((ControlBreakBlockData) packet.getControl()).getBlockInWorld();
-		server.createAbsoluteContext().setBlock(blockInWorld, BlockDataRegistry.getInstance().get("Test:Air"));
-	}
-
-	private static void onBlockPlaceTrigger(ControlData control) {
-		((ControlPlaceBlockData) control).set(
-			TestPlayerControls.getInstance().getSelectedBlock(),
-			getSelection().getBlock().add_(getSelection().getSurface().getVector())
-		);
-	}
-
-	private static void onBlockPlaceReceived(
-		Server server,
-		PacketControl packet,
-		ru.windcorp.progressia.server.comms.Client client
-	) {
-		ControlPlaceBlockData controlData = ((ControlPlaceBlockData) packet.getControl());
-		BlockData block = controlData.getBlock();
-		Vec3i blockInWorld = controlData.getBlockInWorld();
-		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null)
-			return;
-		server.createAbsoluteContext().setBlock(blockInWorld, block);
-	}
-
-	private static void onTilePlaceTrigger(ControlData control) {
-		((ControlPlaceTileData) control).set(
-			TestPlayerControls.getInstance().getSelectedTile(),
-			getSelection().getBlock(),
-			getSelection().getSurface()
-		);
-	}
-
-	private static void onTilePlaceReceived(
-		Server server,
-		PacketControl packet,
-		ru.windcorp.progressia.server.comms.Client client
-	) {
-		ControlPlaceTileData controlData = ((ControlPlaceTileData) packet.getControl());
-		TileData tile = controlData.getTile();
-		Vec3i blockInWorld = controlData.getBlockInWorld();
-		AbsFace face = controlData.getFace();
-
-		if (server.getWorld().getData().getChunkByBlock(blockInWorld) == null) {
-			return;
-		}
-		if (server.getWorld().getData().getTiles(blockInWorld, face).isFull()) {
-			return;
-		}
-
-		ServerBlockContext context = server.createContext(blockInWorld);
-		ServerTileStackContext tsContext = context.push(context.toContext(face));
-		ServerTileContext tileContext = tsContext.push(tsContext.getTileCount());
-
-		TileLogic logic = TileLogicRegistry.getInstance().get(tile.getId());
-		if (!logic.canOccupyFace(tileContext)) {
-			return;
-		}
-		tileContext.addTile(tile);
 	}
 
 	private static void registerMisc() {

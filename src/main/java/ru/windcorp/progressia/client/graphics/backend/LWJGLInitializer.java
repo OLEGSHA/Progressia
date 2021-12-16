@@ -24,7 +24,11 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 import org.lwjgl.opengl.GL;
 
+import com.google.common.eventbus.Subscribe;
+
 import ru.windcorp.progressia.client.graphics.GUI;
+import ru.windcorp.progressia.client.graphics.input.FrameResizeEvent;
+import ru.windcorp.progressia.client.graphics.input.InputEvent;
 
 class LWJGLInitializer {
 
@@ -107,7 +111,20 @@ class LWJGLInitializer {
 
 		glfwSetScrollCallback(handle, InputHandler::handleWheelScroll);
 
-		GraphicsInterface.subscribeToInputEvents(GUI.getEventSubscriber());
+		GraphicsInterface.subscribeToInputEvents(new Object() {
+			
+			@Subscribe
+			public void onFrameResized(FrameResizeEvent event) {
+				GUI.invalidateEverything();
+			}
+			
+			@Subscribe
+			public void onInputEvent(InputEvent event) {
+				GUI.dispatchInput(event);
+			}
+			
+		});
+		
 	}
 
 }

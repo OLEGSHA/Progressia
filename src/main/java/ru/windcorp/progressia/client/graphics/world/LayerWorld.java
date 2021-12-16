@@ -31,7 +31,7 @@ import ru.windcorp.progressia.client.comms.controls.InputBasedControls;
 import ru.windcorp.progressia.client.graphics.Layer;
 import ru.windcorp.progressia.client.graphics.backend.FaceCulling;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
+import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 import ru.windcorp.progressia.client.graphics.model.ShapeRenderProgram;
 import ru.windcorp.progressia.client.graphics.model.Shapes.PppBuilder;
@@ -45,7 +45,7 @@ import ru.windcorp.progressia.common.util.Vectors;
 import ru.windcorp.progressia.common.world.GravityModel;
 import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.test.CollisionModelRenderer;
-import ru.windcorp.progressia.test.TestPlayerControls;
+import ru.windcorp.progressia.test.controls.TestPlayerControls;
 
 public class LayerWorld extends Layer {
 
@@ -214,6 +214,9 @@ public class LayerWorld extends Layer {
 		if (ClientState.getInstance().getLocalPlayer().getEntity() == entity && tmp_testControls.isFlying()) {
 			return;
 		}
+		if (entity.getId().equals("Test:NoclipCamera")) {
+			return;
+		}
 
 		Vec3 gravitationalAcceleration = Vectors.grab3();
 		gm.getGravity(entity.getPosition(), gravitationalAcceleration);
@@ -225,14 +228,9 @@ public class LayerWorld extends Layer {
 	}
 
 	@Override
-	protected void handleInput(Input input) {
-		if (input.isConsumed())
-			return;
-
-		tmp_testControls.handleInput(input);
-
-		if (!input.isConsumed()) {
-			inputBasedControls.handleInput(input);
+	public void handleInput(InputEvent event) {
+		if (!event.isConsumed()) {
+			inputBasedControls.handleInput(event);
 		}
 	}
 

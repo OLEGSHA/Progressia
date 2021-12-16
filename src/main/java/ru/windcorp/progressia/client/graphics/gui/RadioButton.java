@@ -104,26 +104,22 @@ public class RadioButton extends BasicButton {
 		group.addChild(basicChild);
 		addChild(group);
 
-		addListener(KeyEvent.class, e -> {
-			if (e.isRelease())
-				return false;
+		addInputListener(KeyEvent.class, e -> {
+			if (e.isRelease()) return;
 
 			if (e.getKey() == GLFW.GLFW_KEY_LEFT || e.getKey() == GLFW.GLFW_KEY_UP) {
 				if (this.group != null) {
 					this.group.selectPrevious();
 					this.group.getSelected().takeFocus();
 				}
-
-				return true;
+				e.consume();
 			} else if (e.getKey() == GLFW.GLFW_KEY_RIGHT || e.getKey() == GLFW.GLFW_KEY_DOWN) {
 				if (this.group != null) {
 					this.group.selectNext();
 					this.group.getSelected().takeFocus();
 				}
-				return true;
+				e.consume();
 			}
-
-			return false;
 		});
 
 		addAction(b -> setChecked(true));

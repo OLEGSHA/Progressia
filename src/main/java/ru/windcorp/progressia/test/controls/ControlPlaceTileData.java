@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
  
-package ru.windcorp.progressia.test;
+package ru.windcorp.progressia.test.controls;
 
 import glm.vec._3.i.Vec3i;
 import ru.windcorp.progressia.common.comms.controls.ControlData;

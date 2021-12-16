@@ -15,33 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-package ru.windcorp.progressia.test;
+package ru.windcorp.progressia.client.graphics.gui.event;
 
-import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.comms.controls.ControlData;
-import ru.windcorp.progressia.common.world.block.BlockData;
+import glm.vec._2.d.Vec2d;
+import ru.windcorp.progressia.client.graphics.gui.Component;
 
-public class ControlPlaceBlockData extends ControlData {
+public class DragStopEvent extends ComponentEvent {
 
-	private BlockData block;
-	private final Vec3i blockInWorld = new Vec3i();
+	private final Vec2d totalChange = new Vec2d();
 
-	public ControlPlaceBlockData(String id) {
-		super(id);
+	public DragStopEvent(Component component, Vec2d totalChange) {
+		super(component);
+		this.totalChange.set(totalChange.x, totalChange.y);
 	}
-
-	public BlockData getBlock() {
-		return block;
+	
+	public Vec2d getTotalChange() {
+		return totalChange;
 	}
-
-	public Vec3i getBlockInWorld() {
-		return blockInWorld;
+	
+	public double getTotalChangeX() {
+		return totalChange.x;
 	}
-
-	public void set(BlockData block, Vec3i blockInWorld) {
-		this.block = block;
-		this.blockInWorld.set(blockInWorld.x, blockInWorld.y, blockInWorld.z);
+	
+	public double getTotalChangeY() {
+		return totalChange.y;
 	}
 
 }
