@@ -3,14 +3,14 @@
  */
 
 plugins {
-    // Apply the java-library plugin to add support for Java Library
-    id 'java-library'
-    
-    /*
-     * Uncomment the following line to enable the Eclipse plugin.
-     * This is only necessary if you don't use Buildship plugin from the IDE
-     */
-    //id 'eclipse'
+	// Apply the java-library plugin to add support for Java Library
+	id 'java-library'
+
+	/*
+	 * Uncomment the following line to enable the Eclipse plugin.
+	 * This is only necessary if you don't use Buildship plugin from the IDE
+	 */
+	//id 'eclipse'
 }
 
 java {
@@ -18,8 +18,8 @@ java {
 	 * We're Java 8 for now.
 	 * Why? As of 2020, most users have Oracle Java, which only supports Java 8.
 	 */
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 compileJava {
@@ -29,9 +29,9 @@ compileJava {
 	 * However, on JDK 9 and later versions, '--release' option is required,
 	 * which is missing on JDK 8.
 	 */
-    if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
-        options.compilerArgs.addAll(['--release', '8'])
-    }
+	if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
+		options.compilerArgs.addAll(['--release', '8'])
+	}
 }
 
 /*
@@ -40,29 +40,28 @@ compileJava {
 
 repositories {
 	mavenCentral()
-    jcenter()
-    
-    /*
-     * Specify Windcorp Maven repository
-     * Currently used by:
-     *   - ru.windcorp.fork.io.github.java-graphics:glm:1.0.1
-     */
-    maven { url 'https://windcorp.ru/./maven' }
+
+	/*
+	 * Specify Windcorp Maven repository
+	 * Currently used by:
+	 *   - ru.windcorp.fork.io.github.java-graphics:glm:1.0.1
+	 */
+	maven { url 'https://windcorp.ru/./maven' }
 }
 
 dependencies {
 	// Google Guava
 	//   A generic utilities library
-    implementation 'com.google.guava:guava:30.0-jre'
-    
-    // Trove4j
-    //   Provides optimized Collections for primitive types
-    implementation 'net.sf.trove4j:trove4j:3.0.3'
-    
-    // java-graphics
-    //   A GLM (OpenGL Mathematics) port to Java
-    //   Unfortunately, Maven Central Repository provides an outdated version of this library, which contains several critical bugs
-    implementation 'ru.windcorp.fork.io.github.java-graphics:glm:1.0.1'
+	implementation 'com.google.guava:guava:30.0-jre'
+
+	// Trove4j
+	//   Provides optimized Collections for primitive types
+	implementation 'net.sf.trove4j:trove4j:3.0.3'
+
+	// java-graphics
+	//   A GLM (OpenGL Mathematics) port to Java
+	//   Unfortunately, Maven Central Repository provides an outdated version of this library, which contains several critical bugs
+	implementation 'ru.windcorp.fork.io.github.java-graphics:glm:1.0.1'
 
 	// Log4j
 	//   A logging library
@@ -72,7 +71,7 @@ dependencies {
 	// JUnit
 	//   A unit-testing library
 	testImplementation 'junit:junit:4.13.2'
-	
+
 	// See LWJGL dependencies below
 }
 
@@ -99,8 +98,8 @@ switch (OperatingSystem.current()) {
 	case OperatingSystem.LINUX:
 		def osArch = System.getProperty("os.arch")
 		project.ext.lwjglNatives = osArch.startsWith("arm") || osArch.startsWith("aarch64")
-			? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
-			: "natives-linux"
+				? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
+				: "natives-linux"
 		break
 	case OperatingSystem.MAC_OS:
 		project.ext.lwjglNatives = "natives-macos"
@@ -118,12 +117,12 @@ dependencies {
 	implementation "org.lwjgl:lwjgl-openal"
 	implementation "org.lwjgl:lwjgl-opengl"
 	implementation "org.lwjgl:lwjgl-stb"
-	
+
 	runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
 }
 
 // LWJGL END
@@ -141,49 +140,56 @@ project.ext.platforms = new HashSet<>()
 task addNativeDependencies {
 	doFirst {
 		def archs = project.ext.platforms
-		
+
 		switch (archs.size()) {
-		case 0:
-			println "Adding LWJGL native dependencies for local platform only:\n\t$lwjglNatives"
-			archs.add project.ext.lwjglNatives
-			break
-		case 1:
-			println "Adding LWJGL native dependencies for platform\n\t" + archs.get(0)
-			break
-		default:
-			println "Adding LWJGL native dependencies for platforms:\n\t" + archs.join("\n\t")
+			case 0:
+				println "Adding LWJGL native dependencies for local platform only:\n\t$lwjglNatives"
+				archs.add project.ext.lwjglNatives
+				break
+			case 1:
+				println "Adding LWJGL native dependencies for platform\n\t" + archs.get(0)
+				break
+			default:
+				println "Adding LWJGL native dependencies for platforms:\n\t" + archs.join("\n\t")
 		}
-		
+
 		if (project.ext.lwjglNatives.isEmpty()) println "WTF"
-		
+
 		dependencies {
 			archs.each { arch ->
-		        runtimeOnly "org.lwjgl:lwjgl::$arch"
-		        runtimeOnly "org.lwjgl:lwjgl-glfw::$arch"
-		        runtimeOnly "org.lwjgl:lwjgl-openal::$arch"
-		        runtimeOnly "org.lwjgl:lwjgl-opengl::$arch"
-		        runtimeOnly "org.lwjgl:lwjgl-stb::$arch"
-		    }
-	    }
-    }
+				runtimeOnly "org.lwjgl:lwjgl::$arch"
+				runtimeOnly "org.lwjgl:lwjgl-glfw::$arch"
+				runtimeOnly "org.lwjgl:lwjgl-openal::$arch"
+				runtimeOnly "org.lwjgl:lwjgl-opengl::$arch"
+				runtimeOnly "org.lwjgl:lwjgl-stb::$arch"
+			}
+		}
+	}
 }
 
 compileJava.mustRunAfter addNativeDependencies // Make sure runtimeOnly has not been resolved
 
 task requestLinuxDependencies {
-    description 'Adds linux, linux-arm64 and linux-arm32 native libraries to built artifacts.'
+	description 'Adds linux, linux-arm64 and linux-arm32 native libraries to built artifacts.'
 	doFirst {
-		project.ext.platforms.addAll(['natives-linux', 'natives-linux-arm64', 'natives-linux-arm32'])
+		project.ext.platforms.addAll([
+			'natives-linux',
+			'natives-linux-arm64',
+			'natives-linux-arm32'
+		])
 	}
 }
 task requestWindowsDependencies {
-    description 'Adds windows and windows-x86 native libraries to built artifacts.'
+	description 'Adds windows and windows-x86 native libraries to built artifacts.'
 	doFirst {
-		project.ext.platforms.addAll(['natives-windows', 'natives-windows-x86'])
+		project.ext.platforms.addAll([
+			'natives-windows',
+			'natives-windows-x86'
+		])
 	}
 }
 task requestMacOSDependencies {
-    description 'Adds macos native libraries to built artifacts.'
+	description 'Adds macos native libraries to built artifacts.'
 	doFirst {
 		project.ext.platforms.addAll(['natives-macos'])
 	}
@@ -192,7 +198,7 @@ task requestMacOSDependencies {
 def dependencySpecificationTasks = tasks.findAll { task -> task.name.startsWith('request') && task.name.endsWith('Dependencies') }
 
 task requestCrossPlatformDependencies {
-    description 'Adds native libraries for all available platforms to built artifacts.'
+	description 'Adds native libraries for all available platforms to built artifacts.'
 	dependsOn dependencySpecificationTasks
 }
 
@@ -205,7 +211,7 @@ def isDependencyRequested(String dep) {
 	if (dep.endsWith(".jar")) {
 		dep = dep.substring(0, dep.length() - ".jar".length())
 	}
-	
+
 	return !dep.contains("natives-") ||
 			project.ext.platforms.contains(dep.substring(dep.indexOf("natives-"), dep.length()))
 }
@@ -219,7 +225,7 @@ task specifyLocalManifest {
 
 	doFirst {
 		def classPath = []
-		
+
 		configurations.runtimeClasspath.each {
 			if (isDependencyRequested(it.getName())) {
 				classPath.add("lib/" + it.getName())
@@ -227,18 +233,18 @@ task specifyLocalManifest {
 				println "\tRemoving from JAR classpath (not requested):  " + it.getName()
 			}
 		}
-		
+
 		if (classPath.size() == configurations.runtimeClasspath.size()) {
 			println "Nothing removed from JAR classpath"
 		}
-	
+
 		jar {
-		    manifest {
-		        attributes(
-		        	"Main-Class": "ru.windcorp.progressia.client.ProgressiaClientMain",
-		        	"Class-Path": configurations.runtimeClasspath.collect { "lib/" + it.getName() } .findAll { isDependencyRequested(it) } .join(' ')
-		        )
-		    }
+			manifest {
+				attributes(
+						"Main-Class": "ru.windcorp.progressia.client.ProgressiaClientMain",
+						"Class-Path": configurations.runtimeClasspath.collect { "lib/" + it.getName() } .findAll { isDependencyRequested(it) } .join(' ')
+						)
+			}
 		}
 	}
 }
@@ -248,13 +254,13 @@ jar.dependsOn specifyLocalManifest
 /*
  * Library export
  */
- 
+
 task exportLibs(type: Sync) {
 	mustRunAfter addNativeDependencies
 
-    into libsDirectory.get().getAsFile().getPath() + "/lib"
-    exclude { !isDependencyRequested(it.getName()) }
-    from configurations.runtimeClasspath
+	into libsDirectory.get().getAsFile().getPath() + "/lib"
+	exclude { !isDependencyRequested(it.getName()) }
+	from configurations.runtimeClasspath
 }
 
 jar.dependsOn(exportLibs)
@@ -264,52 +270,52 @@ jar.dependsOn(exportLibs)
  */
 
 task packageDebian(type: Exec) {
-    description 'Builds the project and creates a Debain package.'
-    group 'Progressia'
-    
-    dependsOn build
-    dependsOn requestLinuxDependencies
-    
-    commandLine './buildPackages.sh', 'debian'
-    
-    doLast {
-        println "Debian package available in build_packages/"
-    }
+	description 'Builds the project and creates a Debain package.'
+	group 'Progressia'
+
+	dependsOn build
+	dependsOn requestLinuxDependencies
+
+	commandLine './buildPackages.sh', 'debian'
+
+	doLast {
+		println "Debian package available in build_packages/"
+	}
 }
 
 task packageWindows(type: Exec) {
-    description 'Builds the project and creates a Windows installer.'
-    group 'Progressia'
-    
-    dependsOn build
-    dependsOn requestWindowsDependencies
-    
-    commandLine './buildPackages.sh', 'windows'
-    
-    doLast {
-        println "Windows installer available in build_packages/"
-    }
+	description 'Builds the project and creates a Windows installer.'
+	group 'Progressia'
+
+	dependsOn build
+	dependsOn requestWindowsDependencies
+
+	commandLine './buildPackages.sh', 'windows'
+
+	doLast {
+		println "Windows installer available in build_packages/"
+	}
 }
 
 task buildCrossPlatform {
-    description 'Builds the project including native libraries for all available platforms.'
-    group 'Progressia'
-    
-    dependsOn requestCrossPlatformDependencies
-    dependsOn build
-    
-    doLast {
-        println "Native libraries for all platforms have been added"
-    }
+	description 'Builds the project including native libraries for all available platforms.'
+	group 'Progressia'
+
+	dependsOn requestCrossPlatformDependencies
+	dependsOn build
+
+	doLast {
+		println "Native libraries for all platforms have been added"
+	}
 }
 
 task buildLocal {
-    description "Builds the project including only native libraries for current platform ($lwjglNatives)."
-    group 'Progressia'
-    
-    dependsOn build
-    
-    doLast {
-        println "Native libraries only for platform $lwjglNatives have been added"
-    }
+	description "Builds the project including only native libraries for current platform ($lwjglNatives)."
+	group 'Progressia'
+
+	dependsOn build
+
+	doLast {
+		println "Native libraries only for platform $lwjglNatives have been added"
+	}
 }
