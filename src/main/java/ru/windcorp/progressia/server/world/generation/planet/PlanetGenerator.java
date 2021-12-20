@@ -24,7 +24,6 @@ import java.util.List;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.FloatRangeMap;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.DecodingException;
@@ -32,7 +31,7 @@ import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.generation.AbstractWorldGenerator;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceFeature;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceFloatField;
-import ru.windcorp.progressia.server.world.generation.surface.TerrainLayer;
+import ru.windcorp.progressia.server.world.generation.surface.TerrainSupplier;
 
 public class PlanetGenerator extends AbstractWorldGenerator<Boolean> {
 
@@ -46,7 +45,7 @@ public class PlanetGenerator extends AbstractWorldGenerator<Boolean> {
 		Server server,
 		Planet planet,
 		SurfaceFloatField heightMap,
-		FloatRangeMap<TerrainLayer> layers,
+		TerrainSupplier terrain,
 		List<SurfaceFeature> features
 	) {
 		super(id, server, Boolean.class, "Test:PlanetGravityModel");
@@ -56,7 +55,7 @@ public class PlanetGenerator extends AbstractWorldGenerator<Boolean> {
 		PlanetGravityModel model = (PlanetGravityModel) this.getGravityModel();
 		model.configure(planet.getGravityModelSettings());
 
-		this.terrainGenerator = new PlanetTerrainGenerator(this, heightMap, layers);
+		this.terrainGenerator = new PlanetTerrainGenerator(this, heightMap, terrain);
 		this.featureGenerator = new PlanetFeatureGenerator(this, features);
 	}
 

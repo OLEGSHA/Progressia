@@ -39,6 +39,7 @@ public class InputHandler {
 
 		public void initialize(int key, int scancode, int action, int mods) {
 			this.setTime(GraphicsInterface.getTime());
+			this.setConsumed(false);
 			this.key = key;
 			this.scancode = scancode;
 			this.action = action;
@@ -59,7 +60,7 @@ public class InputHandler {
 		if (GraphicsBackend.getWindowHandle() != window)
 			return;
 		THE_KEY_EVENT.initialize(key, scancode, action, mods);
-		dispatch(THE_KEY_EVENT);
+		INPUT_EVENT_BUS.post(THE_KEY_EVENT);
 
 		switch (action) {
 		case GLFW.GLFW_PRESS:
@@ -90,6 +91,7 @@ public class InputHandler {
 
 		public void initialize(double x, double y) {
 			this.setTime(GraphicsInterface.getTime());
+			this.setConsumed(false);
 			getNewPosition().set(x, y);
 		}
 
@@ -109,7 +111,7 @@ public class InputHandler {
 		InputTracker.initializeCursorPosition(x, y);
 
 		THE_CURSOR_MOVE_EVENT.initialize(x, y);
-		dispatch(THE_CURSOR_MOVE_EVENT);
+		INPUT_EVENT_BUS.post(THE_CURSOR_MOVE_EVENT);
 
 		InputTracker.getCursorPosition().set(x, y);
 	}
@@ -124,6 +126,7 @@ public class InputHandler {
 
 		public void initialize(double xOffset, double yOffset) {
 			this.setTime(GraphicsInterface.getTime());
+			this.setConsumed(false);
 			this.getOffset().set(xOffset, yOffset);
 		}
 
@@ -139,7 +142,7 @@ public class InputHandler {
 		if (GraphicsBackend.getWindowHandle() != window)
 			return;
 		THE_WHEEL_SCROLL_EVENT.initialize(xoffset, yoffset);
-		dispatch(THE_WHEEL_SCROLL_EVENT);
+		INPUT_EVENT_BUS.post(THE_WHEEL_SCROLL_EVENT);
 	}
 
 	// FrameResizeEvent
@@ -152,6 +155,7 @@ public class InputHandler {
 
 		public void initialize(int width, int height) {
 			this.setTime(GraphicsInterface.getTime());
+			this.setConsumed(false);
 			this.getNewSize().set(width, height);
 		}
 
@@ -167,17 +171,17 @@ public class InputHandler {
 		int height
 	) {
 		THE_FRAME_RESIZE_EVENT.initialize(width, height);
-		dispatch(THE_FRAME_RESIZE_EVENT);
+		INPUT_EVENT_BUS.post(THE_FRAME_RESIZE_EVENT);
 	}
 
 	// Misc
 
-	private static void dispatch(InputEvent event) {
-		INPUT_EVENT_BUS.post(event);
-	}
-
 	public static void register(Object listener) {
 		INPUT_EVENT_BUS.register(listener);
+	}
+	
+	public static void unregister(Object listener) {
+		INPUT_EVENT_BUS.unregister(listener);
 	}
 
 }

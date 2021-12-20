@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.server;
 
 import java.util.concurrent.Executors;
@@ -26,9 +26,12 @@ import org.apache.logging.log4j.LogManager;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.server.world.ticking.TickerCoordinator;
 
+@SuppressWarnings("unused")
 public class ServerThread implements Runnable {
 
 	private static final ThreadLocal<Server> SERVER_THREADS_MAP = new ThreadLocal<>();
+
+	private static boolean isShuttingDown;
 
 	public static Server getCurrentServer() {
 		return SERVER_THREADS_MAP.get();
@@ -63,6 +66,7 @@ public class ServerThread implements Runnable {
 	}
 
 	public void start() {
+		isShuttingDown = false;
 		ticker.start();
 		executor.scheduleAtFixedRate(this, 0, 1000 / 20, TimeUnit.MILLISECONDS);
 	}
@@ -70,6 +74,11 @@ public class ServerThread implements Runnable {
 	@Override
 	public void run() {
 		try {
+			if (isShuttingDown) {
+				getTicker().stop();
+				executor.shutdown();
+				return;
+			}
 			server.tick();
 			ticker.runOneTick();
 		} catch (Throwable e) {
@@ -78,13 +87,10 @@ public class ServerThread implements Runnable {
 	}
 
 	public void stop() {
-		try {
-			executor.awaitTermination(10, TimeUnit.MINUTES);
-		} catch (InterruptedException e) {
-			LogManager.getLogger().warn("Received interrupt in ServerThread.stop(), aborting wait");
-		}
 
-		getTicker().stop();
+		isShuttingDown = true;
+
+		// getTicker().stop();
 	}
 
 	public Server getServer() {

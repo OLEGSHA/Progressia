@@ -33,7 +33,6 @@ import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.localization.MutableString;
 import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 
@@ -97,11 +96,9 @@ public class MenuLayer extends GUILayer {
 	}
 	
 	@Override
-	protected void handleInput(Input input) {
+	public void handleInput(InputEvent event) {
 		
-		if (!input.isConsumed()) {
-			InputEvent event = input.getEvent();
-			
+		if (!event.isConsumed()) {
 			if (event instanceof KeyEvent) {
 				KeyEvent keyEvent = (KeyEvent) event;
 				if (keyEvent.isPress() && keyEvent.getKey() == GLFW.GLFW_KEY_ESCAPE) {
@@ -110,8 +107,8 @@ public class MenuLayer extends GUILayer {
 			}
 		}
 		
-		super.handleInput(input);
-		input.consume();
+		super.handleInput(event);
+		event.consume();
 	}
 	
 }

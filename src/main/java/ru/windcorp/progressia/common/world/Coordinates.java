@@ -162,5 +162,72 @@ public class Coordinates {
 	public static boolean isOnChunkBorder(int blockInChunk) {
 		return blockInChunk == 0 || blockInChunk == BLOCKS_PER_CHUNK - 1;
 	}
+	
+	/*
+	 * Generalized versions
+	 */
+	
+	public static int convertGlobalToCell(int bits, int global) {
+		return global >> bits;
+	}
+	
+	public static Vec3i convertGlobalToCell(
+		int bits,
+		Vec3i global,
+		Vec3i output
+	) {
+		if (output == null)
+			output = new Vec3i();
+
+		output.x = convertGlobalToCell(bits, global.x);
+		output.y = convertGlobalToCell(bits, global.y);
+		output.z = convertGlobalToCell(bits, global.z);
+
+		return output;
+	}
+
+	public static int convertGlobalToInCell(int bits, int global) {
+		int mask = (1 << bits) - 1;
+		return global & mask;
+	}
+
+	public static Vec3i convertGlobalToInCell(
+		int bits,
+		Vec3i global,
+		Vec3i output
+	) {
+		if (output == null)
+			output = new Vec3i();
+
+		output.x = convertGlobalToInCell(bits, global.x);
+		output.y = convertGlobalToInCell(bits, global.y);
+		output.z = convertGlobalToInCell(bits, global.z);
+
+		return output;
+	}
+
+	public static int getGlobal(int bits, int cell, int inCell) {
+		return inCell | (cell << bits);
+	}
+
+	public static Vec3i getGlobal(
+		int bits,
+		Vec3i cell,
+		Vec3i inCell,
+		Vec3i output
+	) {
+		if (output == null)
+			output = new Vec3i();
+
+		output.x = getGlobal(bits, cell.x, inCell.x);
+		output.y = getGlobal(bits, cell.y, inCell.y);
+		output.z = getGlobal(bits, cell.z, inCell.z);
+
+		return output;
+	}
+	
+	public static boolean isOnCellBorder(int bits, int inCell) {
+		return inCell == 0 || inCell == (1 << bits) - 1;
+	}
 
 }

@@ -17,8 +17,6 @@
  */
 package ru.windcorp.progressia.client.graphics.world.hud;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.google.common.eventbus.Subscribe;
 
 import ru.windcorp.progressia.client.events.NewLocalEntityEvent;
@@ -28,9 +26,7 @@ import ru.windcorp.progressia.client.graphics.gui.Components;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
-import ru.windcorp.progressia.client.graphics.input.KeyEvent;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
-import ru.windcorp.progressia.test.TestPlayerControls;
+import ru.windcorp.progressia.client.graphics.input.InputEvent;
 
 public class LayerHUD extends GUILayer {
 
@@ -109,31 +105,12 @@ public class LayerHUD extends GUILayer {
 	}
 
 	@Override
-	protected void handleInput(Input input) {
+	public void handleInput(InputEvent e) {
 		if (isHidden) {
 			return;
 		}
 
-		super.handleInput(input);
-
-		if (showInventory) {
-			TestPlayerControls.getInstance().handleCtrlIfApplicable(input);
-			if (!input.isConsumed()) {
-				handleCloseInventoryIfApplicable(input);
-			}
-			input.consume();
-		}
-	}
-
-	private void handleCloseInventoryIfApplicable(Input input) {
-		if (input.getEvent() instanceof KeyEvent) {
-			KeyEvent event = (KeyEvent) input.getEvent();
-
-			if (event.isPress() && (event.getKey() == GLFW.GLFW_KEY_E || event.getKey() == GLFW.GLFW_KEY_ESCAPE)) {
-				setInventoryShown(false);
-				input.consume();
-			}
-		}
+		super.handleInput(e);
 	}
 
 	@Override

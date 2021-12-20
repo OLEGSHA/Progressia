@@ -199,6 +199,10 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 		int offset = vertices.position() + index * getBytesPerVertex() + (3 * Float.BYTES +
 			4 * Float.BYTES +
 			2 * Float.BYTES);
+		
+		if (!Float.isNaN(vertices.getFloat(offset + 0 * Float.BYTES))) {
+			return; // normals are forced
+		}
 
 		vertices.putFloat(offset + 0 * Float.BYTES, normal.x);
 		vertices.putFloat(offset + 1 * Float.BYTES, normal.y);
@@ -212,7 +216,7 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 		return new WRPVertexBuilder();
 	}
 
-	private static class WRPVertexBuilder implements VertexBuilder {
+	public static class WRPVertexBuilder implements VertexBuilder {
 		// TODO Throw VertexBuilders out the window and rewrite completely.
 		// I want to _extend_ VBs, not re-implement them for children of SRP
 
@@ -220,11 +224,17 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 			final Vec3 position;
 			final Vec4 colorMultiplier;
 			final Vec2 textureCoords;
-
+			final Vec3 normals;
+			
 			Vertex(Vec3 position, Vec4 colorMultiplier, Vec2 textureCoords) {
+				this(position, colorMultiplier, textureCoords, new Vec3(Float.NaN, Float.NaN, Float.NaN));
+			}
+
+			Vertex(Vec3 position, Vec4 colorMultiplier, Vec2 textureCoords, Vec3 normals) {
 				this.position = position;
 				this.colorMultiplier = colorMultiplier;
 				this.textureCoords = textureCoords;
+				this.normals = normals;
 			}
 		}
 
@@ -291,6 +301,24 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 
 			return this;
 		}
+		
+		public VertexBuilder addVertex(
+			Vec3 position,
+			Vec4 colorMultiplier,
+			Vec2 textureCoords,
+			Vec3 normals
+		) {
+			vertices.add(
+				new Vertex(
+					new Vec3(position),
+					new Vec4(colorMultiplier),
+					new Vec2(textureCoords),
+					new Vec3(normals)
+				)
+			);
+
+			return this;
+		}
 
 		@Override
 		public ByteBuffer assemble() {
@@ -309,9 +337,9 @@ public class WorldRenderProgram extends ShapeRenderProgram {
 					.putFloat(v.colorMultiplier.w)
 					.putFloat(v.textureCoords.x)
 					.putFloat(v.textureCoords.y)
-					.putFloat(Float.NaN)
-					.putFloat(Float.NaN)
-					.putFloat(Float.NaN);
+					.putFloat(v.normals.x)
+					.putFloat(v.normals.y)
+					.putFloat(v.normals.z);
 			}
 
 			result.flip();

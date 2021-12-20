@@ -30,30 +30,30 @@ import ru.windcorp.progressia.client.graphics.gui.layout.LayoutHorizontal;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 
 public class RadioButton extends BasicButton {
-	
+
 	private class Tick extends Component {
 
 		public Tick() {
 			super(RadioButton.this.getName() + ".Tick");
-			
+
 			setPreferredSize(new Vec2i(Typefaces.getDefault().getLineHeight() * 3 / 2));
 		}
-		
+
 		private void cross(RenderTarget target, int x, int y, int size, Vec4 color) {
 			target.fill(x + 4, y, size - 8, size, color);
 			target.fill(x + 2, y + 2, size - 4, size - 4, color);
 			target.fill(x, y + 4, size, size - 8, color);
 		}
-		
+
 		@Override
 		protected void assembleSelf(RenderTarget target) {
-			
+
 			int size = getPreferredSize().x;
 			int x = getX();
 			int y = getY() + (getHeight() - size) / 2;
-			
+
 			// Border
-			
+
 			Vec4 borderColor;
 			if (RadioButton.this.isPressed() || RadioButton.this.isHovered() || RadioButton.this.isFocused()) {
 				borderColor = Colors.BLUE;
@@ -61,9 +61,9 @@ public class RadioButton extends BasicButton {
 				borderColor = Colors.LIGHT_GRAY;
 			}
 			cross(target, x, y, size, borderColor);
-			
+
 			// Inside area
-			
+
 			if (RadioButton.this.isPressed()) {
 				// Do nothing
 			} else {
@@ -75,9 +75,9 @@ public class RadioButton extends BasicButton {
 				}
 				cross(target, x + 2, y + 2, size - 4, backgroundColor);
 			}
-			
+
 			// "Tick"
-			
+
 			if (RadioButton.this.isChecked()) {
 				cross(target, x + 4, y + 4, size - 8, Colors.BLUE);
 			}
@@ -86,16 +86,16 @@ public class RadioButton extends BasicButton {
 	}
 
 	private boolean checked;
-	
+
 	private RadioButtonGroup group = null;
 
 	public RadioButton(String name, String label, Font labelFont, boolean check) {
 		super(name, label, labelFont);
 		this.checked = check;
-		
+
 		assert getChildren().size() == 1 : "RadioButton expects that BasicButton contains exactly one child";
 		Component basicChild = getChild(0);
-		
+
 		Group group = new Group(getName() + ".LabelAndTick", new LayoutHorizontal(0, 10));
 		removeChild(basicChild);
 		setLayout(new LayoutAlign(0, 0.5f, 10));
@@ -103,103 +103,102 @@ public class RadioButton extends BasicButton {
 		group.addChild(new Tick());
 		group.addChild(basicChild);
 		addChild(group);
-		
-		addListener(KeyEvent.class, e -> {
-			if (e.isRelease()) return false;
-			
+
+		addInputListener(KeyEvent.class, e -> {
+			if (e.isRelease()) return;
+
 			if (e.getKey() == GLFW.GLFW_KEY_LEFT || e.getKey() == GLFW.GLFW_KEY_UP) {
 				if (this.group != null) {
 					this.group.selectPrevious();
 					this.group.getSelected().takeFocus();
 				}
-				
-				return true;
+				e.consume();
 			} else if (e.getKey() == GLFW.GLFW_KEY_RIGHT || e.getKey() == GLFW.GLFW_KEY_DOWN) {
 				if (this.group != null) {
 					this.group.selectNext();
 					this.group.getSelected().takeFocus();
 				}
-				return true;
+				e.consume();
 			}
-			
-			return false;
 		});
-		
+
 		addAction(b -> setChecked(true));
 	}
-	
+
 	public RadioButton(String name, String label, Font labelFont) {
 		this(name, label, labelFont, false);
 	}
-	
+
 	public RadioButton(String name, String label, boolean check) {
 		this(name, label, new Font(), check);
 	}
-	
+
 	public RadioButton(String name, String label) {
 		this(name, label, false);
 	}
-	
+
 	/**
 	 * @param group the group to set
 	 */
 	public RadioButton setGroup(RadioButtonGroup group) {
-		
+
 		if (this.group != null) {
 			group.selectNext();
 			removeAction(group.listener);
 			group.buttons.remove(this);
-			group.getSelected(); // Clear reference if this was the only button in the group
+			group.getSelected(); // Clear reference if this was the only button
+									// in the group
 		}
-		
+
 		this.group = group;
-		
+
 		if (this.group != null) {
 			group.buttons.add(this);
 			addAction(group.listener);
 		}
-		
+
 		setChecked(false);
-		
+
 		return this;
 	}
-	
+
 	/**
 	 * @return the checked
 	 */
 	public boolean isChecked() {
 		return checked;
 	}
-	
+
 	/**
 	 * @param checked the checked to set
 	 */
 	public void setChecked(boolean checked) {
 		this.checked = checked;
-		
+
 		if (group != null) {
-			group.listener.accept(this); // Failsafe for manual invocations of setChecked()
+			group.listener.accept(this); // Failsafe for manual invocations of
+											// setChecked()
 		}
 	}
 
 	@Override
 	protected void assembleSelf(RenderTarget target) {
 		// Change label font color
-		
+
 		if (isPressed()) {
 			getLabel().setFont(getLabel().getFont().withColor(Colors.BLUE));
 		} else {
 			getLabel().setFont(getLabel().getFont().withColor(Colors.BLACK));
 		}
 	}
-	
+
 	@Override
 	protected void postAssembleSelf(RenderTarget target) {
 		// Apply disable tint
-		
+
 		if (!isEnabled()) {
 			target.fill(getX(), getY(), getWidth(), getHeight(), Colors.toVector(0x88FFFFFF));
 		}
 	}
-	
+
 }

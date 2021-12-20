@@ -28,6 +28,7 @@ import javax.imageio.ImageIO;
 
 import ru.windcorp.progressia.common.resource.Resource;
 import ru.windcorp.progressia.common.util.BinUtil;
+import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class TextureLoader {
 
@@ -99,7 +100,12 @@ public class TextureLoader {
 		TextureSettings settings
 	)
 		throws IOException {
-		return loadPixels(resource.getInputStream(), settings);
+		
+		InputStream stream = resource.getInputStream();
+		if (stream == null) {
+			throw CrashReports.report(null, "Texture \"%s\" not found", resource.getName());
+		}
+		return loadPixels(stream, settings);
 	}
 
 	private TextureLoader() {

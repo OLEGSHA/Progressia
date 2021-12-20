@@ -35,6 +35,7 @@ import ru.windcorp.progressia.client.world.WorldRender;
 import ru.windcorp.progressia.common.util.crash.ReportingEventBus;
 import ru.windcorp.progressia.common.world.DefaultWorldData;
 import ru.windcorp.progressia.test.LayerAbout;
+import ru.windcorp.progressia.test.LayerDebug;
 import ru.windcorp.progressia.test.LayerTestUI;
 
 public class Client {
@@ -44,6 +45,7 @@ public class Client {
 	private final LayerWorld layerWorld = new LayerWorld(this);
 	private final LayerTestUI layerTestUI = new LayerTestUI();
 	private final LayerAbout layerAbout = new LayerAbout();
+	private final LayerDebug layerDebug = new LayerDebug();
 	
 	private final LocalPlayer localPlayer = new LocalPlayer(this);
 
@@ -75,6 +77,7 @@ public class Client {
 		GUI.removeLayer(layerTestUI);
 		hudManager.remove();
 		GUI.removeLayer(layerAbout);
+		GUI.removeLayer(layerDebug);
 	}
 
 	public WorldRender getWorld() {
@@ -99,6 +102,14 @@ public class Client {
 	
 	public HUDManager getHUD() {
 		return hudManager;
+	}
+
+	public void toggleDebugLayer() {
+		if (GUI.getLayers().contains(layerDebug)) {
+			GUI.removeLayer(layerDebug);
+		} else {
+			GUI.addTopLayer(layerDebug);
+		}
 	}
 
 	@Subscribe

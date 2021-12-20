@@ -31,7 +31,6 @@ import ru.windcorp.progressia.common.comms.CommsChannel.State;
 import ru.windcorp.progressia.common.comms.packets.Packet;
 import ru.windcorp.progressia.common.world.PacketSetGravityModel;
 import ru.windcorp.progressia.common.world.PacketSetLocalPlayer;
-import ru.windcorp.progressia.common.world.entity.EntityData;
 import ru.windcorp.progressia.server.Player;
 import ru.windcorp.progressia.server.Server;
 
@@ -80,22 +79,24 @@ public class ClientManager {
 		setGravityModelPacket.set(getServer().getWorld().getData().getGravityModel());
 		client.sendPacket(setGravityModelPacket);
 
-		EntityData entity = getServer().getPlayerManager().conjurePlayerEntity(login);
-		Player player = new Player(entity, getServer(), client);
+		Player player = getServer().getPlayerManager().conjurePlayer(client, login);
 		getServer().getPlayerManager().addPlayer(player);
 
 		PacketSetLocalPlayer packet = new PacketSetLocalPlayer();
-		packet.set(entity.getEntityId());
+		packet.set(player.getEntity().getEntityId());
 		client.sendPacket(packet);
 	}
 
 	public void disconnectClient(Client client) {
 		client.disconnect();
 		clientsById.remove(client.getId());
+		if (client instanceof ClientPlayer) {
+			getServer().getPlayerManager().removePlayer(((ClientPlayer) client).getPlayer());
+		}
 	}
 	
 	public void processPackets() {
-		getClients().forEach(CommsChannel::processPackets);
+		clients.forEach(CommsChannel::processPackets);
 	}
 
 	/**

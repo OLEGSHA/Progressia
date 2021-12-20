@@ -15,12 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 package ru.windcorp.progressia.client.comms.localhost;
 
 import ru.windcorp.progressia.client.comms.ServerCommsChannel;
 import ru.windcorp.progressia.common.comms.packets.Packet;
 import ru.windcorp.progressia.server.Server;
+import ru.windcorp.progressia.server.ServerState;
 
 public class LocalServerCommsChannel extends ServerCommsChannel {
 
@@ -54,7 +55,7 @@ public class LocalServerCommsChannel extends ServerCommsChannel {
 
 	@Override
 	public void disconnect() {
-		// Do nothing
+		ServerState.getInstance().getClientManager().disconnectClient(localClient);
 	}
 
 }

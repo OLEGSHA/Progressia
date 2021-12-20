@@ -50,7 +50,7 @@ public class LayerAbout extends GUILayer {
 			new Label(
 				"Version",
 				font,
-				new MutableStringLocalized("LayerAbout.Version").format("pre-alpha 2")
+				new MutableStringLocalized("LayerAbout.Version").format("pre-alpha 3")
 			)
 		);
 

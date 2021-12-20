@@ -18,34 +18,91 @@
  
 package ru.windcorp.progressia.client.graphics.input;
 
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.lwjgl.glfw.GLFW;
 
-import ru.windcorp.progressia.common.util.crash.CrashReports;
+import com.google.common.collect.ImmutableMap;
 
-public class KeyMatcher implements Predicate<KeyEvent> {
+public class KeyMatcher {
 	
-	private static final int ANY_ACTION = -1;
+	private static final Pattern DECLAR_SPLIT_REGEX = Pattern.compile("\\s*\\+\\s*");
+	private static final Map<String, Integer> MOD_TOKENS = ImmutableMap.of(
+		"SHIFT", GLFW.GLFW_MOD_SHIFT,
+		"CONTROL", GLFW.GLFW_MOD_CONTROL,
+		"ALT", GLFW.GLFW_MOD_ALT,
+		"SUPER", GLFW.GLFW_MOD_SUPER
+	);
+	
+	public static final KeyMatcher LMB = new KeyMatcher(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+	public static final KeyMatcher RMB = new KeyMatcher(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+	public static final KeyMatcher MMB = new KeyMatcher(GLFW.GLFW_MOUSE_BUTTON_MIDDLE);
 
 	private final int key;
 	private final int mods;
-	private final int action;
 
-	protected KeyMatcher(int key, int mods, int action) {
+	public KeyMatcher(int key, int mods) {
 		this.key = key;
 		this.mods = mods;
-		this.action = action;
+	}
+	
+	public KeyMatcher(int key) {
+		this.key = key;
+		this.mods = 0;
+	}
+	
+	public KeyMatcher(String declar) {
+		String[] tokens = DECLAR_SPLIT_REGEX.split(declar);
+		if (tokens.length == 0) {
+			throw new IllegalArgumentException("No tokens found in \"" + declar + "\"");
+		}
+		
+		int key = -1;
+		int mods = 0;
+		
+		for (String token : tokens) {
+			token = token.toUpperCase();
+			
+			if (MOD_TOKENS.containsKey(token)) {
+				int mod = MOD_TOKENS.get(token);
+				if ((mods & mod) != 0) {
+					throw new IllegalArgumentException("Duplicate modifier \"" + token + "\" in \"" + declar + "\"");
+				}
+				mods |= mod;
+			} else if (key != -1) {
+				throw new IllegalArgumentException("Too many non-modifier tokens in \"" + declar + "\": maximum one key, first offender: \"" + token + "\"");
+			} else {
+				token = token.replace(' ', '_');
+				
+				if (token.startsWith("KEYPAD_")) {
+					token = "KP_" + token.substring("KEYPAD_".length());
+				}
+			
+				key = Keys.getCode(token);
+				
+				if (key == -1) {
+					throw new IllegalArgumentException("Unknown token \"" + token + "\" in \"" + declar + "\"");
+				}
+			}
+		}
+		
+		this.key = key;
+		this.mods = mods;
 	}
 
-	@Override
-	public boolean test(KeyEvent event) {
-		if (action != ANY_ACTION && event.getAction() != action)
+	public boolean matches(KeyEvent event) {
+		if (!event.isPress())
 			return false;
+		if (event.getKey() != getKey())
+			return false;
+		if ((event.getMods() & getMods()) != getMods())
+			return false;
+
+		return true;
+	}
+	
+	public boolean matchesIgnoringAction(KeyEvent event) {
 		if (event.getKey() != getKey())
 			return false;
 		if ((event.getMods() & getMods()) != getMods())
@@ -62,51 +119,8 @@ public class KeyMatcher implements Predicate<KeyEvent> {
 		return mods;
 	}
 	
-	public int getAction() {
-		return action;
-	}
-
-	public static KeyMatcher of(int key) {
-		return new KeyMatcher(key, 0, GLFW.GLFW_PRESS);
-	}
-	
-	private static final Map<String, KeyMatcher> RESOLVED_KEYS = Collections.synchronizedMap(new HashMap<>());
-	
-	public static KeyMatcher of(String glfwConstantName) {
-		return RESOLVED_KEYS.computeIfAbsent(glfwConstantName, givenName -> {
-			String expectedName = "GLFW_KEY_" + givenName.toUpperCase();
-			
-			try {
-				Field field = GLFW.class.getDeclaredField(expectedName);
-				return of(field.getInt(null));
-			} catch (NoSuchFieldException e) {
-				String hint = "";
-				
-				if (glfwConstantName.startsWith("GLFW_KEY_")) {
-					hint = " (remove prefix \"GLFW_KEY_\")";
-				}
-				
-				throw new IllegalArgumentException("Unknown key constant \"" + glfwConstantName + "\"" + hint);
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				throw CrashReports.report(e, "Could not access GLFW key field {}", expectedName);
-			}
-		});
-	}
-	
-	public static KeyMatcher ofLeftMouseButton() {
-		return new KeyMatcher(GLFW.GLFW_MOUSE_BUTTON_LEFT, 0, GLFW.GLFW_PRESS);
-	}
-	
-	public static KeyMatcher ofRightMouseButton() {
-		return new KeyMatcher(GLFW.GLFW_MOUSE_BUTTON_RIGHT, 0, GLFW.GLFW_PRESS);
-	}
-	
-	public static KeyMatcher ofMiddleMouseButton() {
-		return new KeyMatcher(GLFW.GLFW_MOUSE_BUTTON_MIDDLE, 0, GLFW.GLFW_PRESS);
-	}
-
 	public KeyMatcher with(int modifier) {
-		return new KeyMatcher(key, this.mods + modifier, action);
+		return new KeyMatcher(key, mods | modifier);
 	}
 
 	public KeyMatcher withShift() {
@@ -123,18 +137,6 @@ public class KeyMatcher implements Predicate<KeyEvent> {
 
 	public KeyMatcher withSuper() {
 		return with(GLFW.GLFW_MOD_SUPER);
-	}
-	
-	public KeyMatcher onRelease() {
-		return new KeyMatcher(key, mods, GLFW.GLFW_RELEASE);
-	}
-	
-	public KeyMatcher onRepeat() {
-		return new KeyMatcher(key, mods, GLFW.GLFW_REPEAT);
-	}
-	
-	public KeyMatcher onAnyAction() {
-		return new KeyMatcher(key, mods, ANY_ACTION);
 	}
 
 }

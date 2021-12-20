@@ -23,6 +23,6 @@ import ru.windcorp.progressia.client.graphics.input.InputEvent;
 @FunctionalInterface
 public interface InputListener<T extends InputEvent> {
 
-	boolean handle(T event);
+	void handle(T event);
 
 }

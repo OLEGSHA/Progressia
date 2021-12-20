@@ -20,7 +20,9 @@ package ru.windcorp.progressia.client.graphics.world.hud;
 import glm.vec._2.i.Vec2i;
 import ru.windcorp.progressia.client.graphics.backend.GraphicsInterface;
 import ru.windcorp.progressia.client.graphics.gui.Button;
+import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
+import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
 import ru.windcorp.progressia.client.graphics.input.WheelScrollEvent;
 import ru.windcorp.progressia.common.Units;
@@ -47,7 +49,7 @@ public class InteractiveSlotComponent extends Button {
 	}
 
 	public InteractiveSlotComponent(String name, SlotComponent component, HUDWorkspace workspace) {
-		super(name, null, null);
+		super(name, (Label) null);
 		this.slotComponent = component;
 		this.workspace = workspace;
 
@@ -63,14 +65,13 @@ public class InteractiveSlotComponent extends Button {
 	private void addListeners() {
 		addAction(button -> onMainAction());
 
-		addListener(KeyMatcher.ofRightMouseButton(), this::onAltAction);
+		addKeyListener(KeyMatcher.RMB, this::onAltAction);
 
-		addListener(WheelScrollEvent.class, event -> {
+		addInputListener(WheelScrollEvent.class, event -> {
 			if (event.hasVerticalMovement()) {
 				onSingleMoveAction(event.isDown());
-				return true;
+				event.consume();
 			}
-			return false;
 		});
 	}
 
@@ -119,7 +120,7 @@ public class InteractiveSlotComponent extends Button {
 		}
 	}
 
-	private void onAltAction() {
+	private void onAltAction(KeyEvent e) {
 		ItemSlot handSlot = workspace.getHand().slot();
 		ItemSlot invSlot = getSlot();
 		if (invSlot == null) {

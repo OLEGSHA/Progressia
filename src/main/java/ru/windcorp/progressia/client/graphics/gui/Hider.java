@@ -21,7 +21,6 @@ import java.util.function.BooleanSupplier;
 
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
 
 public class Hider extends Component {
@@ -38,14 +37,16 @@ public class Hider extends Component {
 		addChild(contents);
 	}
 	
-	@Override
-	public void dispatchInput(Input input) {
-		if (shouldHide.getAsBoolean()) {
-			return;
-		}
-		
-		super.dispatchInput(input);
-	}
+//	FIXME
+//	
+//	@Override
+//	public void dispatchInput(Input input) {
+//		if (shouldHide.getAsBoolean()) {
+//			return;
+//		}
+//		
+//		super.dispatchInput(input);
+//	}
 	
 	@Override
 	public synchronized Component findFocused() {

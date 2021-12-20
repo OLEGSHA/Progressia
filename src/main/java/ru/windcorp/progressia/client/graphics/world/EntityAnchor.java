@@ -91,5 +91,14 @@ public class EntityAnchor implements Anchor {
 	public Collection<Mode> getCameraModes() {
 		return modes;
 	}
+	
+	public EntityData getEntity() {
+		return entity;
+	}
+	
+	@Override
+	public String toString() {
+		return "Anchor for entity " + entity;
+	}
 
 }

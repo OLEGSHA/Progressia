@@ -37,21 +37,18 @@ import ru.windcorp.progressia.client.graphics.gui.layout.LayoutAlign;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 
 public abstract class BasicButton extends Component {
-	
+
 	private final Label label;
 
 	private boolean isPressed = false;
 	private final Collection<Consumer<BasicButton>> actions = Collections.synchronizedCollection(new ArrayList<>());
 
-	public BasicButton(String name, String label, Font labelFont) {
+	public BasicButton(String name, Label label) {
 		super(name);
+		this.label = label;
 
 		setLayout(new LayoutAlign(10));
-		
-		if (label == null) {
-			this.label = null;
-		} else {
-			this.label = new Label(name + ".Label", labelFont, label);
+		if (label != null) {
 			addChild(this.label);
 		}
 
@@ -59,23 +56,22 @@ public abstract class BasicButton extends Component {
 		reassembleAt(ARTrigger.HOVER, ARTrigger.FOCUS, ARTrigger.ENABLE);
 
 		// Click triggers
-		addListener(KeyEvent.class, e -> {
-			if (e.isRepeat()) {
-				return false;
-			} else if (
+		addInputListener(KeyEvent.class, e -> {
+			if (e.isRepeat())
+				return;
+			
+			if (
 				e.isLeftMouseButton() ||
-				e.getKey() == GLFW.GLFW_KEY_SPACE ||
-				e.getKey() == GLFW.GLFW_KEY_ENTER
+					e.getKey() == GLFW.GLFW_KEY_SPACE ||
+					e.getKey() == GLFW.GLFW_KEY_ENTER
 			) {
 				setPressed(e.isPress());
-				return true;
-			} else {
-				return false;
+				e.consume();
 			}
 		});
-		
+
 		addListener(new Object() {
-			
+
 			// Release when losing focus
 			@Subscribe
 			public void onFocusChange(FocusEvent e) {
@@ -83,7 +79,7 @@ public abstract class BasicButton extends Component {
 					setPressed(false);
 				}
 			}
-			
+
 			// Release when hover ends
 			@Subscribe
 			public void onHoverEnded(HoverEvent e) {
@@ -91,7 +87,7 @@ public abstract class BasicButton extends Component {
 					setPressed(false);
 				}
 			}
-			
+
 			// Release when disabled
 			@Subscribe
 			public void onDisabled(EnableEvent e) {
@@ -99,14 +95,18 @@ public abstract class BasicButton extends Component {
 					setPressed(false);
 				}
 			}
-			
+
 			// Trigger virtualClick when button is released
 			@Subscribe
 			public void onRelease(ButtonEvent.Release e) {
 				virtualClick();
 			}
-			
+
 		});
+	}
+
+	public BasicButton(String name, String label, Font labelFont) {
+		this(name, new Label(name + ".Label", labelFont, label));
 	}
 
 	public BasicButton(String name, String label) {
@@ -116,7 +116,7 @@ public abstract class BasicButton extends Component {
 	public boolean isPressed() {
 		return isPressed;
 	}
-	
+
 	public void click() {
 		setPressed(true);
 		setPressed(false);
@@ -125,7 +125,8 @@ public abstract class BasicButton extends Component {
 	public void setPressed(boolean isPressed) {
 		if (this.isPressed != isPressed) {
 			this.isPressed = isPressed;
-			
+			requestReassembly();
+
 			if (isPressed) {
 				takeFocus();
 			}
@@ -133,16 +134,16 @@ public abstract class BasicButton extends Component {
 			dispatchEvent(ButtonEvent.create(this, this.isPressed));
 		}
 	}
-	
+
 	public BasicButton addAction(Consumer<BasicButton> action) {
 		this.actions.add(Objects.requireNonNull(action, "action"));
 		return this;
 	}
-	
+
 	public boolean removeAction(Consumer<BasicButton> action) {
 		return this.actions.remove(action);
 	}
-	
+
 	public void virtualClick() {
 		this.actions.forEach(action -> {
 			action.accept(this);
@@ -156,5 +157,5 @@ public abstract class BasicButton extends Component {
 	public boolean hasLabel() {
 		return label != null;
 	}
-	
+
 }

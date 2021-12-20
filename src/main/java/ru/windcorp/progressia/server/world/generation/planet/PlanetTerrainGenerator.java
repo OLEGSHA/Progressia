@@ -21,7 +21,6 @@ import java.util.Map;
 
 import glm.vec._3.Vec3;
 import glm.vec._3.i.Vec3i;
-import ru.windcorp.progressia.common.util.FloatRangeMap;
 import ru.windcorp.progressia.common.util.VectorUtil;
 import ru.windcorp.progressia.common.world.DefaultChunkData;
 import ru.windcorp.progressia.common.world.Coordinates;
@@ -33,7 +32,7 @@ import ru.windcorp.progressia.server.Server;
 import ru.windcorp.progressia.server.world.generation.surface.Surface;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceFloatField;
 import ru.windcorp.progressia.server.world.generation.surface.SurfaceTerrainGenerator;
-import ru.windcorp.progressia.server.world.generation.surface.TerrainLayer;
+import ru.windcorp.progressia.server.world.generation.surface.TerrainSupplier;
 
 class PlanetTerrainGenerator {
 
@@ -43,7 +42,7 @@ class PlanetTerrainGenerator {
 	public PlanetTerrainGenerator(
 		PlanetGenerator generator,
 		SurfaceFloatField heightMap,
-		FloatRangeMap<TerrainLayer> layers
+		TerrainSupplier terrain
 	) {
 		this.parent = generator;
 
@@ -53,7 +52,7 @@ class PlanetTerrainGenerator {
 			face -> new SurfaceTerrainGenerator(
 				new Surface(face, seaLevel),
 				heightMap,
-				layers
+				terrain
 			)
 		);
 	}
@@ -86,6 +85,11 @@ class PlanetTerrainGenerator {
 	}
 
 	private void generateBorderTerrain(Server server, DefaultChunkData chunk) {
+		if (chunk.getPosition().x == 0 && chunk.getPosition().y == 0 && chunk.getPosition().z == 0) {
+			generateCore(server, chunk);
+			return;
+		}
+		
 		BlockData stone = BlockDataRegistry.getInstance().get("Test:Stone");
 		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
 
@@ -107,6 +111,18 @@ class PlanetTerrainGenerator {
 			chunk.setBlock(bic, biw.x <= radius ? stone : air, false);
 
 		});
+	}
+
+	private void generateCore(Server server, DefaultChunkData chunk) {
+		BlockData tux = BlockDataRegistry.getInstance().get("Test:Tux");
+		BlockData air = BlockDataRegistry.getInstance().get("Test:Air");
+		
+		
+		GenericChunks.forEachBiC(bic -> {
+			chunk.setBlock(bic, air, false);
+		});
+		
+		chunk.setBlock(new Vec3i(7, 7, 0), tux, false);
 	}
 
 }

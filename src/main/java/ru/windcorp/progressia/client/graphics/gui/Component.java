@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -41,10 +39,10 @@ import ru.windcorp.progressia.client.graphics.gui.event.EnableEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.FocusEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.HoverEvent;
 import ru.windcorp.progressia.client.graphics.gui.event.ParentChangedEvent;
+import ru.windcorp.progressia.client.graphics.input.CursorMoveEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
-import ru.windcorp.progressia.client.graphics.input.bus.Input;
 import ru.windcorp.progressia.client.graphics.input.bus.InputBus;
 import ru.windcorp.progressia.client.graphics.input.bus.InputListener;
 import ru.windcorp.progressia.client.graphics.model.Renderable;
@@ -59,7 +57,7 @@ public class Component extends Named {
 	private Component parent = null;
 
 	private EventBus eventBus = null;
-	private InputBus inputBus = null;
+	private final InputBus inputBus = new InputBus(this);
 
 	private int x, y;
 	private int width, height;
@@ -80,6 +78,9 @@ public class Component extends Named {
 
 	public Component(String name) {
 		super(name);
+		
+		// Update hover flag when cursor moves
+		addInputListener(CursorMoveEvent.class, this::updateHoverFlag, InputBus.Option.ALWAYS);
 	}
 
 	public Component getParent() {
@@ -525,6 +526,10 @@ public class Component extends Named {
 			dispatchEvent(new HoverEvent(this, isHovered));
 		}
 	}
+	
+	private void updateHoverFlag(CursorMoveEvent e) {
+		setHovered(contains((int) InputTracker.getCursorX(), (int) InputTracker.getCursorY()));
+	}
 
 	public void addListener(Object listener) {
 		if (eventBus == null) {
@@ -546,142 +551,24 @@ public class Component extends Named {
 		eventBus.post(event);
 	}
 
-	public <T extends InputEvent> void addListener(
-		Class<? extends T> type,
-		boolean handlesConsumed,
-		InputListener<T> listener
-	) {
-		if (inputBus == null) {
-			inputBus = new InputBus();
-		}
-
-		inputBus.register(type, handlesConsumed, listener);
-	}
-
-	public <T extends InputEvent> void addListener(Class<T> type, InputListener<? super T> listener) {
-		if (inputBus == null) {
-			inputBus = new InputBus();
-		}
-
-		inputBus.register(type, listener);
+	public <T extends InputEvent> void addInputListener(Class<? extends T> type, InputListener<T> listener, InputBus.Option... options) {
+		inputBus.register(type, listener, options);
 	}
 	
-	public <T extends InputEvent> void addListener(Class<T> type, Runnable listener) {
-		addListener(type, event -> {
-			listener.run();
-			return true;
-		});
+	public void addKeyListener(KeyMatcher matcher, InputListener<? super KeyEvent> listener, InputBus.Option... options) {
+		inputBus.register(matcher, listener, options);
+	}
+
+	public void removeInputListener(InputListener<?> listener) {
+		inputBus.unregister(listener);
 	}
 	
-	public void addListener(KeyMatcher matcher, InputListener<? super KeyEvent> listener) {
-		addListener(KeyEvent.class, event -> {
-			if (matcher.test(event)) {
-				return listener.handle(event);
-			}
-			return false;
-		});
+	InputBus getInputBus() {
+		return inputBus;
 	}
 	
-	public void addListener(KeyMatcher matcher, Runnable listener) {
-		addListener(matcher, event -> {
-			listener.run();
-			return true;
-		});
-	}
-
-	public void removeListener(InputListener<?> listener) {
-		if (inputBus != null) {
-			inputBus.unregister(listener);
-		}
-	}
-
-	protected void handleInput(Input input) {
-		if (inputBus != null && isEnabled()) {
-			inputBus.dispatch(input);
-		}
-	}
-
-	public void dispatchInput(Input input) {
-		try {
-			switch (input.getTarget()) {
-			case FOCUSED:
-				dispatchInputToFocused(input);
-				break;
-			case HOVERED:
-				dispatchInputToHovered(input);
-				break;
-			case ALL:
-			default:
-				dispatchInputToAll(input);
-				break;
-			}
-		} catch (Exception e) {
-			throw CrashReports.report(e, "Could not dispatch input to Component %s", this);
-		}
-	}
-
-	private void dispatchInputToFocused(Input input) {
-		Component c = findFocused();
-
-		if (c == null)
-			return;
-		if (attemptFocusTransfer(input, c))
-			return;
-
-		while (c != null) {
-			c.handleInput(input);
-			c = c.getParent();
-		}
-	}
-
-	private void dispatchInputToHovered(Input input) {
-		getChildren().forEach(child -> {
-			if (child.containsCursor()) {
-				child.setHovered(true);
-
-				if (!input.isConsumed()) {
-					child.dispatchInput(input);
-				}
-			} else {
-				child.setHovered(false);
-			}
-		});
-
-		handleInput(input);
-	}
-
-	private void dispatchInputToAll(Input input) {
-		getChildren().forEach(c -> c.dispatchInput(input));
-		handleInput(input);
-	}
-
-	private boolean attemptFocusTransfer(Input input, Component focused) {
-		if (input.isConsumed())
-			return false;
-		if (!(input.getEvent() instanceof KeyEvent))
-			return false;
-
-		KeyEvent keyInput = (KeyEvent) input.getEvent();
-
-		if (keyInput.getKey() == GLFW.GLFW_KEY_TAB && !keyInput.isRelease()) {
-			input.consume();
-			if (keyInput.hasShift()) {
-				focused.focusPrevious();
-			} else {
-				focused.focusNext();
-			}
-			return true;
-		}
-
-		return false;
-	}
-
 	public synchronized boolean contains(int x, int y) {
 		return x >= getX() && x < getX() + getWidth() && y >= getY() && y < getY() + getHeight();
-	}
-
-	public boolean containsCursor() {
-		return contains((int) InputTracker.getCursorX(), (int) InputTracker.getCursorY());
 	}
 
 	public void requestReassembly() {
