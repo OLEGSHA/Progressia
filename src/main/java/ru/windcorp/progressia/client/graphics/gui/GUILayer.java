@@ -27,6 +27,7 @@ import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
 import ru.windcorp.progressia.client.graphics.input.KeyEvent;
 import ru.windcorp.progressia.client.graphics.input.bus.InputBus;
+import ru.windcorp.progressia.common.util.LowOverheadCache;
 import ru.windcorp.progressia.common.util.StashingStack;
 
 public abstract class GUILayer extends AssembledFlatLayer {
@@ -40,7 +41,7 @@ public abstract class GUILayer extends AssembledFlatLayer {
 
 	public GUILayer(String name, Layout layout) {
 		super(name);
-		
+
 		getRoot().setLayout(layout);
 		getRoot().addInputListener(KeyEvent.class, this::attemptFocusTransfer, InputBus.Option.IGNORE_FOCUS);
 	}
@@ -75,20 +76,22 @@ public abstract class GUILayer extends AssembledFlatLayer {
 	}
 
 	/**
-	 * Stack for {@link #handleInput(InputEvent)}.
+	 * Stacks for {@link #handleInput(InputEvent)}.
 	 */
-	private StashingStack<EventHandlingFrame> path = new StashingStack<>(64, EventHandlingFrame::new);
-	
+	private final LowOverheadCache<StashingStack<EventHandlingFrame>> pathCache = new LowOverheadCache<>(
+		() -> new StashingStack<>(64, EventHandlingFrame::new)
+	);
+
 	/*
 	 * This is essentially a depth-first iteration of the component tree. The
 	 * recursive procedure has been unrolled to reduce call stack length.
 	 */
 	@Override
 	public void handleInput(InputEvent event) {
+		StashingStack<EventHandlingFrame> path = pathCache.grab();
+		
 		if (!path.isEmpty()) {
-			throw new IllegalStateException(
-				"path is not empty: " + path + ". Are events being processed concurrently?"
-			);
+			throw new IllegalStateException("path is not empty: " + path);
 		}
 
 		path.push().init(root);
@@ -101,7 +104,7 @@ public abstract class GUILayer extends AssembledFlatLayer {
 				Component c = it.next();
 
 				if (c.isEnabled()) {
-					if (c.getChildren().isEmpty()) {
+					if (c.getChildren().isEmpty() || !c.passInputToChildren(event)) {
 						c.getInputBus().dispatch(event);
 					} else {
 						path.push().init(c);
@@ -114,15 +117,17 @@ public abstract class GUILayer extends AssembledFlatLayer {
 			}
 
 		}
+		
+		pathCache.release(path);
 	}
-	
+
 	private void attemptFocusTransfer(KeyEvent e) {
 		Component focused = getRoot().findFocused();
-		
+
 		if (focused == null) {
 			return;
 		}
-		
+
 		if (e.getKey() == GLFW.GLFW_KEY_TAB && !e.isRelease()) {
 			e.consume();
 			if (e.hasShift()) {
