@@ -563,6 +563,10 @@ public class Component extends Named {
 		inputBus.unregister(listener);
 	}
 	
+	protected boolean passInputToChildren(InputEvent e) {
+		return true;
+	}
+	
 	InputBus getInputBus() {
 		return inputBus;
 	}
