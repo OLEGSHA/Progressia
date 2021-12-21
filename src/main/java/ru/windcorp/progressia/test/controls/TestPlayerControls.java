@@ -169,6 +169,18 @@ public class TestPlayerControls {
 	public MovementControls getMovementControls() {
 		return movementControls;
 	}
+	
+	public CameraControls getCameraControls() {
+		return cameraControls;
+	}
+	
+	public InteractionControls getInteractionControls() {
+		return interactionControls;
+	}
+	
+	public InventoryControls getInventoryControls() {
+		return inventoryControls;
+	}
 
 	public BlockData getSelectedBlock() {
 		return interactionControls.getSelectedBlock();

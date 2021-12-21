@@ -27,6 +27,9 @@ import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
+import ru.windcorp.progressia.client.graphics.input.KeyMatcher;
+import ru.windcorp.progressia.client.graphics.input.bus.InputBus;
+import ru.windcorp.progressia.test.controls.TestPlayerControls;
 
 public class LayerHUD extends GUILayer {
 
@@ -43,6 +46,27 @@ public class LayerHUD extends GUILayer {
 		setCursorPolicy(CursorPolicy.INDIFFERENT);
 
 		manager.getClient().subscribe(this);
+		
+		getRoot().addKeyListener(new KeyMatcher("Escape"), e -> {
+			setInventoryShown(!showInventory);
+			e.consume();
+		}, InputBus.Option.IGNORE_FOCUS);
+		
+		getRoot().addKeyListener(new KeyMatcher("E"), e -> {
+			setInventoryShown(!showInventory);
+			e.consume();
+		}, InputBus.Option.IGNORE_FOCUS);
+		
+		getRoot().addKeyListener(new KeyMatcher("Left Control"), e -> {
+			TestPlayerControls.getInstance().getInventoryControls().switchHandsWithCtrl(e);
+			e.consume();
+		}, InputBus.Option.IGNORE_ACTION, InputBus.Option.IGNORE_FOCUS);
+		
+		getRoot().addKeyListener(new KeyMatcher("Right Control"), e -> {
+			TestPlayerControls.getInstance().getInventoryControls().switchHandsWithCtrl(e);
+			e.consume();
+		}, InputBus.Option.IGNORE_ACTION, InputBus.Option.IGNORE_FOCUS);
+		
 	}
 
 	@Subscribe
@@ -105,12 +129,16 @@ public class LayerHUD extends GUILayer {
 	}
 
 	@Override
-	public void handleInput(InputEvent e) {
+	public void handleInput(InputEvent event) {
 		if (isHidden) {
 			return;
 		}
-
-		super.handleInput(e);
+		
+		super.handleInput(event);
+		
+		if (getCursorPolicy() == CursorPolicy.REQUIRE) {
+			event.consume();
+		}
 	}
 
 	@Override

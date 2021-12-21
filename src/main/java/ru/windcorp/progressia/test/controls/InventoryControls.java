@@ -59,16 +59,6 @@ public class InventoryControls {
 		
 		triggers.register(
 			ControlTriggers.localOf(
-				"Test:CloseInventory",
-				KeyEvent.class,
-				this::toggleInventory,
-				new KeyMatcher("Escape")::matches,
-				e -> ClientState.getInstance().getHUD().isInventoryShown()
-			)
-		);
-		
-		triggers.register(
-			ControlTriggers.localOf(
 				"Test:HideHUD",
 				KeyEvent.class,
 				this::switchHUD,
@@ -103,7 +93,7 @@ public class InventoryControls {
 		client.getHUD().setHidden(!client.getHUD().isHidden());
 	}
 	
-	private void switchHandsWithCtrl(KeyEvent event) {
+	public void switchHandsWithCtrl(KeyEvent event) {
 		int change = 0;
 		
 		if (event.isPress()) {
