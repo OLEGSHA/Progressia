@@ -39,9 +39,15 @@ public class WindowedLayout implements Layout {
 			if (Float.isNaN(relPos.x) || Float.isNaN(relPos.y)) {
 				relPos.x = 0.5f;
 				relPos.y = 2 / 3.0f;
+			} else {			
+				float minPosX = 0;
+				float minPosY = window.getHeight() / (float) c.getHeight();
+				float maxPosX = 1;
+				float maxPosY = 1;
+				
+				relPos.x = Glm.clamp(relPos.x, minPosX, maxPosX);
+				relPos.y = Glm.clamp(relPos.y, minPosY, maxPosY);
 			}
-			
-			relPos.clamp(0, 1);
 			
 			window.setPosition(
 				(int) (relPos.x * c.getWidth() - window.getWidth() / 2.0f),

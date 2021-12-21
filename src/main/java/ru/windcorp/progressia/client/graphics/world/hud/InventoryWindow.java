@@ -17,6 +17,8 @@
  */
 package ru.windcorp.progressia.client.graphics.world.hud;
 
+import com.google.common.eventbus.Subscribe;
+
 import glm.vec._2.Vec2;
 import glm.vec._4.Vec4;
 import ru.windcorp.progressia.client.graphics.Colors;
@@ -25,26 +27,30 @@ import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.font.Typeface;
 import ru.windcorp.progressia.client.graphics.gui.Button;
 import ru.windcorp.progressia.client.graphics.gui.Component;
+import ru.windcorp.progressia.client.graphics.gui.DragManager;
 import ru.windcorp.progressia.client.graphics.gui.Group;
 import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.Panel;
+import ru.windcorp.progressia.client.graphics.gui.event.DragEvent;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutBorderHorizontal;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutFill;
 import ru.windcorp.progressia.client.graphics.gui.layout.LayoutVertical;
 import ru.windcorp.progressia.client.localization.MutableString;
+import ru.windcorp.progressia.client.localization.MutableStringConcat;
 import ru.windcorp.progressia.client.localization.MutableStringLocalized;
 import ru.windcorp.progressia.client.world.item.inventory.InventoryComponent;
 
 public class InventoryWindow extends Panel {
-	
+
 	private static final String CLOSE_CHAR = "\u2715";
+	private static final String HANDLE_CHAR = "\u2800";
 	private static final Vec4 CLOSE_BUTTON_IDLE = Colors.toVector(0xFFBC1515);
 	private static final Vec4 CLOSE_BUTTON_HOVER = Colors.toVector(0xFFFA6464);
 	private static final Vec4 CLOSE_BUTTON_PRESSED = Colors.BLACK;
-	
+
 	private final InventoryComponent content;
 	private final HUDWorkspace workspace;
-	
+
 	private final Vec2 relativePosition = new Vec2(Float.NaN);
 
 	public InventoryWindow(String name, InventoryComponent component, HUDWorkspace workspace) {
@@ -56,6 +62,17 @@ public class InventoryWindow extends Panel {
 		titleBar.addChild(createLabel(component).setLayoutHint(LayoutBorderHorizontal.CENTER));
 		titleBar.addChild(createCloseButton(component).setLayoutHint(LayoutBorderHorizontal.RIGHT));
 
+		new DragManager().install(titleBar);
+		titleBar.addListener(new Object() {
+			@Subscribe
+			public void onWindowDragged(DragEvent e) {
+				Vec2 change = new Vec2((float) e.getCurrentChangeX(), (float) e.getCurrentChangeY());
+				change.div(getParent().getWidth(), getParent().getHeight());
+				relativePosition.add(change);
+				requestReassembly();
+			}
+		});
+
 		addChild(titleBar);
 
 		addChild(component);
@@ -63,7 +80,10 @@ public class InventoryWindow extends Panel {
 
 	private Label createLabel(InventoryComponent component) {
 		String translationKey = "Inventory." + component.getInventory().getId() + ".Title";
-		MutableString titleText = new MutableStringLocalized(translationKey);
+		MutableString titleText = new MutableStringConcat(
+			HANDLE_CHAR + " ",
+			new MutableStringLocalized(translationKey)
+		);
 		Font titleFont = new Font().deriveBold().withColor(Colors.BLACK).withAlign(Typeface.ALIGN_LEFT);
 
 		return new Label(getName() + ".Title", titleFont, titleText);
@@ -76,7 +96,7 @@ public class InventoryWindow extends Panel {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @return the relativePosition
 	 */
@@ -85,48 +105,48 @@ public class InventoryWindow extends Panel {
 	}
 
 	private Component createCloseButton(InventoryComponent component) {
-		
+
 		Button button = new Button(getName() + ".CloseButton", CLOSE_CHAR) {
-			
+
 			@Override
 			protected void assembleSelf(RenderTarget target) {
-				
+
 				Vec4 color = CLOSE_BUTTON_IDLE;
 				if (isPressed()) {
 					color = CLOSE_BUTTON_PRESSED;
 				} else if (isHovered()) {
 					color = CLOSE_BUTTON_HOVER;
 				}
-				
+
 				if (hasLabel()) {
 					getLabel().setFont(getLabel().getFont().withColor(color));
 				}
-				
+
 			}
-			
+
 		};
-		
+
 		button.addAction(b -> {
-			
+
 			content.getInventory().close(workspace.getPlayerEntity());
-			
+
 			WindowedHUD manager = getManager();
 			if (manager == null) {
 				return;
 			}
-			
+
 			manager.closeWindow(this);
-			
+
 		});
 
 		button.setLayout(new LayoutFill());
-		
+
 		int height = button.getLabel().getFont().getHeight(button.getLabel().getCurrentText());
 		button.setPreferredSize(height, height);
-		
+
 		return button;
 	}
-	
+
 	public InventoryComponent getContent() {
 		return content;
 	}
