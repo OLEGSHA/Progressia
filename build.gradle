@@ -3,8 +3,11 @@
  */
 
 plugins {
-	// Apply the java-library plugin to add support for Java Library
-	id 'java-library'
+	id 'java'
+	
+	// GrGit
+	//   A JGit wrapper for Groovy used to access git commit info
+	id 'org.ajoberstar.grgit' version '4.1.1'
 
 	/*
 	 * Uncomment the following line to enable the Eclipse plugin.
@@ -237,12 +240,44 @@ task specifyLocalManifest {
 		if (classPath.size() == configurations.runtimeClasspath.size()) {
 			println "Nothing removed from JAR classpath"
 		}
-
+		
+		def version = "dev";
+		def commit = "-";
+		def branch = "-";
+		def buildId = project.findProperty('buildId') ?: "-";
+		
+		try {
+			def git = org.ajoberstar.grgit.Grgit.open()
+			def head = git.head()
+			
+			commit = head.id
+			branch = git.branch.current().name
+			
+			def newestTag = git.tag.list().findAll { it.commit == head } ?.max { it.dateTime } ?.name
+			if (newestTag != null) {
+				version = newestTag;
+			} else if (project.hasProperty('buildId')) {
+				version = project.buildId;
+			} else {
+				version = head.dateTime.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE);
+			}
+		} catch (org.eclipse.jgit.errors.RepositoryNotFoundException e) {
+			println "No Git repository found in project root"
+		}
+		
 		jar {
 			manifest {
 				attributes(
 						"Main-Class": "ru.windcorp.progressia.client.ProgressiaClientMain",
-						"Class-Path": configurations.runtimeClasspath.collect { "lib/" + it.getName() } .findAll { isDependencyRequested(it) } .join(' ')
+						"Class-Path": configurations.runtimeClasspath.collect { "lib/" + it.getName() } .findAll { isDependencyRequested(it) } .join(' '),
+						
+						"Specification-Title": "Progressia",
+						
+						"Implementation-Title": "Progressia",
+						"Implementation-Version": version,
+						"Implementation-Version-Git-Commit": commit,
+						"Implementation-Version-Git-Branch": branch,
+						"Implementation-Version-BuildId": buildId,
 						)
 			}
 		}

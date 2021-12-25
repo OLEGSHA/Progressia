@@ -26,6 +26,7 @@ import org.lwjgl.opengl.GL;
 
 import com.google.common.eventbus.Subscribe;
 
+import ru.windcorp.progressia.Progressia;
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.input.FrameResizeEvent;
 import ru.windcorp.progressia.client.graphics.input.InputEvent;
@@ -62,8 +63,8 @@ class LWJGLInitializer {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
 		glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-
-		long handle = glfwCreateWindow(900, 900, "ProgressiaTest", NULL, NULL);
+		
+		long handle = glfwCreateWindow(800, 600, Progressia.getName() + " " + Progressia.getFullerVersion(), NULL, NULL);
 
 		// TODO Check that handle != NULL
 

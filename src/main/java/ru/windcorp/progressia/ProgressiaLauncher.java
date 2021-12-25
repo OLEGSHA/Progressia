@@ -18,6 +18,8 @@
 
 package ru.windcorp.progressia;
 
+import org.apache.logging.log4j.LogManager;
+
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.common.util.crash.CrashReports;
 import ru.windcorp.progressia.common.util.crash.analyzers.OutOfMemoryAnalyzer;
@@ -32,6 +34,8 @@ public class ProgressiaLauncher {
 	public static void launch(String[] args, Proxy proxy) {
 		arguments = args.clone();
 		setupCrashReports();
+		
+		LogManager.getRootLogger().info("Launching " + Progressia.getName() + " version " + Progressia.getFullVersion());
 
 		proxy.initialize();
 		ProgressiaLauncher.proxy = proxy;
@@ -44,6 +48,7 @@ public class ProgressiaLauncher {
 
 	private static void setupCrashReports() {
 		// Context providers
+		CrashReports.registerProvider(new VersionProvider());
 		CrashReports.registerProvider(new OSContextProvider());
 		CrashReports.registerProvider(new RAMContextProvider());
 		CrashReports.registerProvider(new JavaVersionContextProvider());
