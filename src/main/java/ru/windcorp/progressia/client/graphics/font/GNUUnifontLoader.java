@@ -45,7 +45,7 @@ public class GNUUnifontLoader {
 
 	private static final AtlasGroup ATLAS_GROUP_GNU_UNIFONT = new AtlasGroup("GNUUnifont", 1 << 12);
 
-	private static final TextureSettings TEXTURE_SETTINGS = new TextureSettings(false);
+	private static final TextureSettings TEXTURE_SETTINGS = new TextureSettings(false, false);
 
 	private static final int BITS_PER_HEX_DIGIT = 4;
 	private static final int PREFIX_LENGTH = "0000:".length();

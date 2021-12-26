@@ -42,7 +42,7 @@ public class EntityRenderRegistry extends NamespacedInstanceRegistry<EntityRende
 					ResourceManager.getTextureResource(
 						"entities/" + name
 					),
-					new TextureSettings(false)
+					new TextureSettings(false, false)
 				).getData()
 			);
 		} catch (IOException e) {

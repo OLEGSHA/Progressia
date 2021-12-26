@@ -41,9 +41,17 @@ public class TextureLoader {
 
 		int width = readResult.getWidth();
 		int height = readResult.getHeight();
+		
+		int bufferWidth;
+		int bufferHeight;
 
-		int bufferWidth = BinUtil.roundToGreaterPowerOf2(width);
-		int bufferHeight = BinUtil.roundToGreaterPowerOf2(height);
+		if (settings.allocateExactBuffer()) {
+			bufferWidth = width;
+			bufferHeight = height;
+		} else {
+			bufferWidth = BinUtil.roundToGreaterPowerOf2(width);
+			bufferHeight = BinUtil.roundToGreaterPowerOf2(height);
+		}
 
 		WritableRaster raster = TextureUtil.createRaster(
 			bufferWidth,

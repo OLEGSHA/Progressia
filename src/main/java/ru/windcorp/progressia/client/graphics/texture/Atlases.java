@@ -163,7 +163,7 @@ public class Atlases {
 		}
 	}
 
-	private static final TextureSettings SETTINGS = new TextureSettings(false);
+	private static final TextureSettings SETTINGS = new TextureSettings(false, false);
 
 	private static final Map<Resource, Sprite> LOADED = new HashMap<>();
 	private static final Multimap<AtlasGroup, Atlas> ATLASES = MultimapBuilder.hashKeys().arrayListValues().build();

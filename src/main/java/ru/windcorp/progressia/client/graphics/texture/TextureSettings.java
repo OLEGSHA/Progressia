@@ -21,13 +21,19 @@ package ru.windcorp.progressia.client.graphics.texture;
 public class TextureSettings {
 
 	private final boolean isFiltered;
+	private final boolean allocateExactBuffer;
 
-	public TextureSettings(boolean isFiltered) {
+	public TextureSettings(boolean isFiltered, boolean allocateExactBuffer) {
 		this.isFiltered = isFiltered;
+		this.allocateExactBuffer = allocateExactBuffer;
 	}
 
 	public boolean isFiltered() {
 		return isFiltered;
+	}
+	
+	public boolean allocateExactBuffer() {
+		return allocateExactBuffer;
 	}
 
 }

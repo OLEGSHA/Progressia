@@ -23,7 +23,7 @@ import static org.lwjgl.opengl.GL12.*;
 
 import java.nio.ByteBuffer;
 
-class TextureData {
+public class TextureData {
 
 	private final ByteBuffer data;
 

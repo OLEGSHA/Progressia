@@ -28,7 +28,7 @@ import ru.windcorp.progressia.common.util.crash.CrashReports;
 
 public class SimpleTextures {
 
-	private static final TextureSettings SETTINGS = new TextureSettings(false);
+	private static final TextureSettings SETTINGS = new TextureSettings(false, false);
 
 	private static final Map<Resource, Texture> TEXTURES = new HashMap<>();
 
