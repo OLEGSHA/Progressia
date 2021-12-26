@@ -95,6 +95,11 @@ class LWJGLInitializer {
 	}
 
 	private static void createWindowIcons() {
+		if (glfwGetVersionString().toLowerCase().contains("wayland")) {
+			// glfwSetWindowIcon is not supported on Wayland
+			return;
+		}
+		
 		final String prefix = "assets/icons/";
 
 		String[] sizes = ResourceManager.getResource(prefix + "logoSizes.txt").readAsString().split(" ");
