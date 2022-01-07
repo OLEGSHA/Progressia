@@ -1,8 +1,10 @@
 # Build Guide
 
-This document is a guide to building Progressia from source.
+This document is a guide to building Progressia from source. For quick reference, see
+[Build Script Reference](BuildScriptReference.md).
 
-Compilation should be possible on all platforms that support JDK 8 or later, however, packaging scripts require Bash.
+Compilation should be possible on all platforms that support JDK 8 or later, however, packaging scripts require
+additional programs in `PATH`.
 
 This guide assumes you are familiar with using a terminal or Windows Command Prompt or PowerShell.
 
@@ -150,54 +152,46 @@ GNU/Linux and Windows natives:
 ./gradlew build requestLinuxDependencies requestWindowsDependencies
 ```
 
-For finer control please edit `build.gradle` manually by adding the desired natives to the `project.ext.platforms` set like so:
-
-```
-project.ext.platforms = new HashSet<>()
-project.ext.platforms.add 'natives-windows-x86'
-```
-
 ## Packaging
 
-A Debian package and a Windows installer can be created automatically on systems that support Bash. These tasks are delegated
-by Gradle to `buildPackages.sh` in repository root. This script checks the environment and assembles the requested output; the
-resulting files are moved into `build_packages`.
+A universal ZIP distribution, a Debian package and a Windows NSIS installer may be created automatically by the build
+script.
+
+### Creating a universal ZIP package
+
+A universal cross-platform ZIP archive can be created with the following Gradle task:
+
+```
+./gradlew packageZip
+```
+
+Gradle will then build all artifacts necessary to run the game on all available platforms and package game files,
+libraries, launch scripts, etc. into a compressed ZIP archive.
+
+The resulting file can be found in `build/packages/`
 
 ### Creating a Debian package
 
 A Debian package can be created with the following Gradle task:
 
 ```
-./gradlew packageDebian
+./gradlew packageDeb
 ```
 
 Gradle will then build all artifacts necessary to run the game on GNU/Linux (all three architectures) and invoke
-`./buildPackages.sh debian`. Commands `dpkg-deb` and `fakeroot` must be available in system path in order to build the package.
+`dpkg-deb`. Commands `dpkg-deb` must be available in system path in order to build the package.
 
 ### Creating a Windows installer
 
-A Windows installer can be created with the following Gradle task:
+A Windows NSIS installer can be created with the following Gradle task:
 
 ```
-./gradlew packageWindows
+./gradlew packageNsis
 ```
 
 Gradle will then build all artifacts necessary to run the game on Windows (both x64 and x86 architectures) and invoke
-`./buildPackages.sh windows`.
+`makensis`.
 
-Windows installers are implemented with [NSIS](https://nsis.sourceforge.io/). Command `makensis` must be available in system
-path in order to build the installer.
-
-## Gradle tasks summary
-
-- `buildLocal` – creates a build optimized for current platform. Use this to quickly build the game during development.
-- `buildCrossPlatform` – creates a build that supports all known architectures. Use this to build a universal version of the game.
-- `build` – currently a synonym of `buildLocal`; creates a default build.
-- `packageDebian` – creates a Debian package. Do not invoke together with `packageWindows`.
-- `packageWindows` – creates a Windows installer. Do not invoke together with `packageDebian`.
-- `requestLinuxDependencies` – requests that `natives-linux`, `natives-linux-arm32` and `natives-linux-arm64` binaries are included when building.
-- `requestWindowsDependencies` – requests that `natives-windows` and `natives-windows-x86` binaries are included when building.
-- `requestMacOSDependencies` – requests that `natives-macos` binaries are included when building.
-- `requestCrossPlatformDependencies` – requests that all binaries are included when building.
-
-All other basic and Java-related Gradle tasks are available as well.
+Windows installers are implemented with [NSIS](https://nsis.sourceforge.io/). [ImageMagick](https://imagemagick.org),
+a command-line image editing tool, is used to generate some assets for the installer. Commands `makensis` and
+`convert` (from ImageMagick) must be available in system path in order to build the installer.

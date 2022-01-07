@@ -1,0 +1,38 @@
+task packageDeb_processResources(type: Copy) {
+	dependsOn resolveVersion
+	dependsOn preparePackaging
+
+	from 'src/packaging/deb'
+	
+	filesMatching('DEBIAN/control') {
+		expand(version: { -> project.version})
+	}
+	
+	into 'build/tmp/packaging/workingDir'
+}
+
+task packageDeb_configure() {
+	preparePackaging.mustRunAfter packageDeb_configure
+
+	doLast {
+		tasks.preparePackaging.ext.buildDest = '/usr/share/progressia'
+		tasks.preparePackaging.ext.mode = 'copy'
+	}
+}
+
+task packageDeb(type: Exec) {
+	description 'Builds the project and creates a Debian package.'
+	group 'Progressia'
+	
+	dependsOn packageDeb_configure
+	dependsOn requestLinuxDependencies
+	dependsOn build
+	dependsOn preparePackaging
+	
+	dependsOn packageDeb_processResources
+	
+	executable 'dpkg-deb'
+	args '--root-owner-group'
+	args '--build', 'build/tmp/packaging/workingDir'
+	args 'build/packages'
+}

@@ -1,0 +1,117 @@
+/*
+ * Build logic for Progressia
+ * LWJGL dependency logic
+ */
+
+project.ext.lwjgl = new HashMap<>()
+
+// Version of LWJGL
+lwjgl.version = '3.2.3'
+
+/*
+ * Target platforms for current operation.
+ * This is filled in by the request* tasks. This is referenced by the addLwjglNatives task.
+ * When empty, current platform is assumed.
+ */
+lwjgl.targets = new HashSet<>()
+
+// LWJGL components. To include org.lwjgl:lwjgl-foobar, add 'foobar' to this list.
+lwjgl.libraries = [
+	'opengl',
+	'glfw',
+	'openal',
+	'stb'
+]
+
+// Determine the architecture of the build environment
+import org.gradle.internal.os.OperatingSystem
+switch (OperatingSystem.current()) {
+	case OperatingSystem.LINUX:
+		def osArch = System.getProperty('os.arch')
+		lwjgl.localArch = osArch.startsWith('arm') || osArch.startsWith('aarch64')
+				? "linux-${osArch.contains('64') || osArch.startsWith('armv8') ? 'arm64' : 'arm32'}"
+				: 'linux'
+		break
+	case OperatingSystem.MAC_OS:
+		lwjgl.localArch = 'macos'
+		break
+	case OperatingSystem.WINDOWS:
+		lwjgl.localArch = System.getProperty('os.arch').contains('64') ? 'windows' : 'windows-x86'
+		break
+}
+
+// Declare pure-Java dependencies
+dependencies {
+	// BOM
+	implementation platform("org.lwjgl:lwjgl-bom:${lwjgl.version}")
+	
+	// Core
+	implementation 'org.lwjgl:lwjgl'
+	
+	// Components
+	lwjgl.libraries.each { implementation "org.lwjgl:lwjgl-$it" }
+}
+
+/*
+ * Adds LWJGL native libraries to runtimeOnly configuration
+ */
+task lwjgl_addNativesToRuntimeOnly {
+	// Make sure runtimeOnly has not been resolved
+	compileJava.dependsOn lwjgl_addNativesToRuntimeOnly
+	configureManifest.dependsOn lwjgl_addNativesToRuntimeOnly
+	exportLibs.dependsOn lwjgl_addNativesToRuntimeOnly
+
+	doFirst {
+		if (project.hasProperty('forceTargets')) {
+			try {
+				def oldTargets = lwjgl.targets.join(',')
+				
+				lwjgl.targets.clear()
+				lwjgl.targets.addAll project.forceTargets.split(',')*.trim().collect { it == 'local' ? lwjgl.localArch : it }
+				
+				logger.info 'Overriding selected platforms {} with {}', oldTargets, lwjgl.targets.join(',')
+			} catch (Exception e) {
+				throw new GradleException("Could not parse forceTargets \"${project.forceTargets}\", expecting platform-1,platform-2,local", e)
+			}
+		}
+	
+		if (lwjgl.targets.isEmpty()) {
+			logger.info 'Adding LWJGL native dependencies for local platform only: {}', lwjgl.localArch
+			lwjgl.targets.add lwjgl.localArch
+		} else {
+			logger.info 'Adding LWJGL native dependencies for platforms: {}', lwjgl.targets.sort().join(', ')
+		}
+		
+		dependencies {
+			lwjgl.targets.each { target ->
+				runtimeOnly "org.lwjgl:lwjgl::natives-$target"
+				lwjgl.libraries.each { lib ->
+					runtimeOnly "org.lwjgl:lwjgl-$lib::natives-$target"
+				}
+			}
+		}
+	}
+}
+
+task requestCrossPlatformDependencies {
+	description 'Adds LWJGL natives for all available platforms.'
+	
+	lwjgl_addNativesToRuntimeOnly.mustRunAfter requestCrossPlatformDependencies
+}
+
+def requestTask(String name, String... targets) {
+	def theTask = task "request${name}Dependencies"
+	
+	theTask.doFirst {
+		lwjgl.targets.addAll targets
+	}
+	
+	theTask.description "Adds LWJGL natives for $name (${targets.join(', ')})."
+
+	requestCrossPlatformDependencies.dependsOn theTask
+	lwjgl_addNativesToRuntimeOnly.mustRunAfter theTask
+}
+
+requestTask 'Linux', 'linux', 'linux-arm32', 'linux-arm64'
+requestTask 'Windows', 'windows', 'windows-x86'
+requestTask 'MacOS', 'macos'

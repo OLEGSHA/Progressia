@@ -6,4 +6,4 @@
 *               text=auto eol=lf
 
 *.bat           text eol=crlf
-
+*.nsi           text eol=crlf

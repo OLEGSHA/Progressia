@@ -1,0 +1,50 @@
+task packageNsis_processResources(type: Copy) {
+	dependsOn preparePackaging
+
+	from ('src/packaging/nsis') {
+		exclude 'left_side.png'
+	}
+	from('LICENSE') {
+		rename 'LICENSE', 'LICENSE.txt'
+	}
+	into 'build/tmp/packaging/workingDir'
+}
+
+task packageNsis_generateIcon(type: Exec) {
+	mustRunAfter preparePackaging
+	
+	executable 'convert'
+	args files('src/main/resources/assets/icons/*.original.png').files*.path
+	args 'build/tmp/packaging/workingDir/logo.ico'
+}
+
+task packageNsis_generateLeftSide(type: Exec) {
+	mustRunAfter preparePackaging
+	
+	executable 'convert'
+	args 'src/packaging/nsis/left_side.png'
+	args '-alpha', 'off'
+	args 'BMP3:build/tmp/packaging/workingDir/left_side.bmp'
+}
+
+task packageNsis(type: Exec) {
+	description 'Builds the project and creates a Windows NSIS installer.'
+	group 'Progressia'
+	
+	dependsOn requestWindowsDependencies
+	dependsOn build
+	dependsOn resolveVersion
+	dependsOn preparePackaging
+	
+	dependsOn packageNsis_processResources
+	dependsOn packageNsis_generateIcon
+	dependsOn packageNsis_generateLeftSide
+	
+	executable 'makensis'
+	args '-NOCONFIG'
+	args "-DPROJECT_NAME=${project.name}"
+	args "-DPROJECT_VERSION=${ -> project.version}"
+	args "-DMAIN_JAR_FILE=${ -> project.tasks.jar.archiveFileName.get()}"
+	args "-DOUTPUT_DIR=${project.buildDir.absolutePath}/packages"
+	args 'build/tmp/packaging/workingDir/config.nsi'
+}

@@ -1,5 +1,12 @@
 /*
- * build.gradle for Progressia
+ * Build logic for Progressia
+ * build.gradle
+ * 
+ * Please refer to
+ * 
+ *     docs/building/BuildScriptReference.md
+ *     
+ * for user reference.
  */
 
 plugins {
@@ -8,19 +15,15 @@ plugins {
 	// GrGit
 	//   A JGit wrapper for Groovy used to access git commit info
 	id 'org.ajoberstar.grgit' version '4.1.1'
-
-	/*
-	 * Uncomment the following line to enable the Eclipse plugin.
-	 * This is only necessary if you don't use Buildship plugin from the IDE
-	 */
-	//id 'eclipse'
 }
 
+
+
+/*
+ * Configure Java version
+ */
+
 java {
-	/*
-	 * We're Java 8 for now.
-	 * Why? As of 2020, most users have Oracle Java, which only supports Java 8.
-	 */
 	sourceCompatibility = JavaVersion.VERSION_1_8
 	targetCompatibility = JavaVersion.VERSION_1_8
 }
@@ -37,6 +40,8 @@ compileJava {
 	}
 }
 
+
+
 /*
  * Dependencies
  */
@@ -45,7 +50,7 @@ repositories {
 	mavenCentral()
 
 	/*
-	 * Specify Windcorp Maven repository
+	 * Windcorp Maven repository
 	 * Currently used by:
 	 *   - ru.windcorp.fork.io.github.java-graphics:glm:1.0.1
 	 */
@@ -75,262 +80,308 @@ dependencies {
 	//   A unit-testing library
 	testImplementation 'junit:junit:4.13.2'
 
-	// See LWJGL dependencies below
+	// Also see LWJGL dependencies in build_logic/lwjgl.gradle
 }
+
+
 
 /*
- * Progressia uses the following LWJGL libraries:
- *   - Core libraries
- *   - OpenGL
- *   - OpenAL
- *   - GLFW
- *   - STB
+ * Version resolution
  */
 
-/*
- *          LWJGL
- * (auto-generated script)
- *   ((here be dragons))
- */
+import org.ajoberstar.grgit.*
 
-import org.gradle.internal.os.OperatingSystem
+// Pattern: vMAJOR.MINOR.PATCH[-SUFFIX]
+project.ext.tagFormat = /^v(\d+)\.(\d+)\.(\d+)(-[\w\-]*)?$/
 
-project.ext.lwjglVersion = "3.2.3"
-
-switch (OperatingSystem.current()) {
-	case OperatingSystem.LINUX:
-		def osArch = System.getProperty("os.arch")
-		project.ext.lwjglNatives = osArch.startsWith("arm") || osArch.startsWith("aarch64")
-				? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
-				: "natives-linux"
-		break
-	case OperatingSystem.MAC_OS:
-		project.ext.lwjglNatives = "natives-macos"
-		break
-	case OperatingSystem.WINDOWS:
-		project.ext.lwjglNatives = System.getProperty("os.arch").contains("64") ? "natives-windows" : "natives-windows-x86"
-		break
-}
-
-dependencies {
-	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
-
-	implementation "org.lwjgl:lwjgl"
-	implementation "org.lwjgl:lwjgl-glfw"
-	implementation "org.lwjgl:lwjgl-openal"
-	implementation "org.lwjgl:lwjgl-opengl"
-	implementation "org.lwjgl:lwjgl-stb"
-
-	runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-	runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
-	runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
-	runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
-	runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
-}
-
-// LWJGL END
-
-/*
- * Tasks
- */
-
-/*
- * Additional native libraries specification
- */
-
-project.ext.platforms = new HashSet<>()
-
-task addNativeDependencies {
-	doFirst {
-		def archs = project.ext.platforms
-
-		switch (archs.size()) {
-			case 0:
-				println "Adding LWJGL native dependencies for local platform only:\n\t$lwjglNatives"
-				archs.add project.ext.lwjglNatives
-				break
-			case 1:
-				println "Adding LWJGL native dependencies for platform\n\t" + archs.get(0)
-				break
-			default:
-				println "Adding LWJGL native dependencies for platforms:\n\t" + archs.join("\n\t")
-		}
-
-		if (project.ext.lwjglNatives.isEmpty()) println "WTF"
-
-		dependencies {
-			archs.each { arch ->
-				runtimeOnly "org.lwjgl:lwjgl::$arch"
-				runtimeOnly "org.lwjgl:lwjgl-glfw::$arch"
-				runtimeOnly "org.lwjgl:lwjgl-openal::$arch"
-				runtimeOnly "org.lwjgl:lwjgl-opengl::$arch"
-				runtimeOnly "org.lwjgl:lwjgl-stb::$arch"
-			}
-		}
-	}
-}
-
-compileJava.mustRunAfter addNativeDependencies // Make sure runtimeOnly has not been resolved
-
-task requestLinuxDependencies {
-	description 'Adds linux, linux-arm64 and linux-arm32 native libraries to built artifacts.'
-	doFirst {
-		project.ext.platforms.addAll([
-			'natives-linux',
-			'natives-linux-arm64',
-			'natives-linux-arm32'
-		])
-	}
-}
-task requestWindowsDependencies {
-	description 'Adds windows and windows-x86 native libraries to built artifacts.'
-	doFirst {
-		project.ext.platforms.addAll([
-			'natives-windows',
-			'natives-windows-x86'
-		])
-	}
-}
-task requestMacOSDependencies {
-	description 'Adds macos native libraries to built artifacts.'
-	doFirst {
-		project.ext.platforms.addAll(['natives-macos'])
-	}
-}
-
-def dependencySpecificationTasks = tasks.findAll { task -> task.name.startsWith('request') && task.name.endsWith('Dependencies') }
-
-task requestCrossPlatformDependencies {
-	description 'Adds native libraries for all available platforms to built artifacts.'
-	dependsOn dependencySpecificationTasks
-}
-
-addNativeDependencies.mustRunAfter dependencySpecificationTasks
-
-/*
- * Determines if the provided dependency should be packaged
- */
-def isDependencyRequested(String dep) {
-	if (dep.endsWith(".jar")) {
-		dep = dep.substring(0, dep.length() - ".jar".length())
-	}
-
-	return !dep.contains("natives-") ||
-			project.ext.platforms.contains(dep.substring(dep.indexOf("natives-"), dep.length()))
-}
-
-/*
- * Manifest specification
- */
-
-task specifyLocalManifest {
-	dependsOn addNativeDependencies // Make sure all native dependencies are specified
-
-	doFirst {
-		def classPath = []
-
-		configurations.runtimeClasspath.each {
-			if (isDependencyRequested(it.getName())) {
-				classPath.add("lib/" + it.getName())
-			} else {
-				println "\tRemoving from JAR classpath (not requested):  " + it.getName()
-			}
-		}
-
-		if (classPath.size() == configurations.runtimeClasspath.size()) {
-			println "Nothing removed from JAR classpath"
+String version_parseVersion(String tag, boolean increment) {
+	try {
+	
+		def data = (tag =~ tagFormat)[0]
+		
+		def major = data[1]
+		def minor = data[2]
+		def patch = data[3] as int
+		def suffix = data[4] ?: ''
+		
+		if (increment) {
+			def oldVersion = "$major.$minor.$patch$suffix"
+			patch++
+			def newVersion = "$major.$minor.$patch$suffix"
+			
+			logger.info "Version parsed from Git: $oldVersion, incremented to $newVersion"
+			return newVersion
+		} else {
+			def newVersion = "$major.$minor.$patch$suffix"
+			logger.info "Version parsed from Git: $newVersion"
+			return newVersion
 		}
 		
-		def version = "dev";
-		def commit = "-";
-		def branch = "-";
-		def buildId = project.findProperty('buildId') ?: "-";
+	} catch (any) {
+		logger.warn "Could not parse version from tag \"$tag\""
+		return tag
+	}
+}
+
+Tag version_findRelevantTag(Grgit git) {
+	def tags = git.tag.list()
+	
+	def commits = [ git.head() ]
+	def visited = new HashSet<>()
+	
+	while (true) {
+		if (commits.isEmpty()) return null
+	
+		def nextCommits = new HashSet<>()
 		
+		def formatSpecificationPrinted = false
+		for (def commit : commits) {
+			def tag = tags.findAll { it.commit == commit } ?.max { it.dateTime }
+			
+			if (tag != null) {
+				if (tag.name ==~ tagFormat) {
+					return tag
+				} else {
+					if (!formatSpecificationPrinted) {
+						formatSpecificationPrinted = true
+						logger.info 'Expecting tag format: vMAJOR.MINOR.PATCH[-SUFFIX]'
+					}
+					logger.info 'Ignoring tag due to invalid format: {}', tag.name
+				}
+			}
+			
+			nextCommits.addAll commit.parentIds.collect(git.resolve.&toCommit)
+		}
+		
+		visited.addAll commits
+		nextCommits.removeAll visited
+		commits = nextCommits
+	}
+}
+
+task resolveVersion {
+	description 'Resolves version information from Git repository or project properties.'
+
+	doFirst {
 		try {
-			def git = org.ajoberstar.grgit.Grgit.open()
-			def head = git.head()
+			def git = Grgit.open(dir: project.projectDir)
 			
-			commit = head.id
-			branch = git.branch.current().name
+			project.ext.commit = git.head().id
+			project.ext.branch = git.branch.current().name
 			
-			def newestTag = git.tag.list().findAll { it.commit == head } ?.max { it.dateTime } ?.name
-			if (newestTag != null) {
-				version = newestTag;
-			} else if (project.hasProperty('buildId')) {
-				version = project.buildId;
+			if (project.version != 'unspecified') {
+				// Leave version as-is
+				return
+			}
+			
+			def tag = version_findRelevantTag(git)
+			if (tag == null) {
+			
+				String suffix
+				if (project.hasProperty('buildId')) {
+					suffix = project.buildId;
+				} else {
+					suffix = java.time.ZonedDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy_MM_dd'))
+				}
+				project.version = "999.0.0-$suffix"
+			
+				logger.warn 'Git repository does not contain an applicable tag, using dummy version {}\nSpecify version with -Pversion=1.2.3 or create a Git tag named v1.2.3', project.version
+				
 			} else {
-				version = head.dateTime.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE);
+			
+				project.version = version_parseVersion(tag.name, tag.commit != git.head())
+				
 			}
 		} catch (org.eclipse.jgit.errors.RepositoryNotFoundException e) {
-			println "No Git repository found in project root"
-		}
+			if (project.version == 'unspecified') project.version = 'dev'
+			project.ext.commit = '-'
+			project.ext.branch = '-'
 		
-		jar {
-			manifest {
-				attributes(
-						"Main-Class": "ru.windcorp.progressia.client.ProgressiaClientMain",
-						"Class-Path": configurations.runtimeClasspath.collect { "lib/" + it.getName() } .findAll { isDependencyRequested(it) } .join(' '),
-						
-						"Specification-Title": "Progressia",
-						
-						"Implementation-Title": "Progressia",
-						"Implementation-Version": version,
-						"Implementation-Version-Git-Commit": commit,
-						"Implementation-Version-Git-Branch": branch,
-						"Implementation-Version-BuildId": buildId,
-						)
-			}
+			logger.warn 'No Git repository found in project root, using dummy version {}\nSpecify version with -Pversion=1.2.3 or create a Git tag named v1.2.3', project.version
+		}
+	}
+	
+	doLast {
+		if (!project.hasProperty('buildId')) {
+			project.ext.buildId = '-'
 		}
 	}
 }
 
-jar.dependsOn specifyLocalManifest
+
 
 /*
- * Library export
+ * Configure JAR manifest
+ */
+
+task configureManifest {
+	description 'Populates JAR manifest with Main-Class, Class-Path and version metadata.'
+
+	jar.dependsOn configureManifest
+	dependsOn resolveVersion
+
+	doFirst {
+		jar.manifest.attributes(
+			'Main-Class':                        'ru.windcorp.progressia.client.ProgressiaClientMain',
+			'Class-Path':                        configurations.runtimeClasspath.collect { "lib/${it.name}" } .join(' '),
+			
+			'Specification-Title':               'Progressia',
+			
+			'Implementation-Title':              'Progressia',
+			'Implementation-Version':            project.version,
+			'Implementation-Version-Git-Commit': project.commit,
+			'Implementation-Version-Git-Branch': project.branch,
+			'Implementation-Version-BuildId':    project.buildId,
+		)
+	}
+}
+
+
+
+/*
+ * Copy libraries into buil/libs/lib directory, next to Progressia.jar
  */
 
 task exportLibs(type: Sync) {
-	mustRunAfter addNativeDependencies
+	description 'Copies runtime libraries into a subdirectory next to the output JAR.'
+	
+	jar.dependsOn exportLibs
 
-	into libsDirectory.get().getAsFile().getPath() + "/lib"
-	exclude { !isDependencyRequested(it.getName()) }
 	from configurations.runtimeClasspath
+	into 'build/libs/lib'
 }
 
-jar.dependsOn(exportLibs)
+
 
 /*
- * Packaging
+ * Apply LWJGL logic
+ */
+apply from: 'build_logic/lwjgl.gradle'
+
+
+
+/*
+ * Packaging working directory configuration
  */
 
-task packageDebian(type: Exec) {
-	description 'Builds the project and creates a Debain package.'
-	group 'Progressia'
+import java.nio.file.*
+import java.nio.file.attribute.*
 
-	dependsOn build
-	dependsOn requestLinuxDependencies
-
-	commandLine './buildPackages.sh', 'debian'
-
+task createPackagingDirs() {
+	description 'Resets build/tmp/packaging directory.'
+	
 	doLast {
-		println "Debian package available in build_packages/"
+		def tmpDir = buildDir.toPath().resolve 'tmp/packaging'
+
+		def nuke = new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Files.delete(file);
+				return FileVisitResult.CONTINUE;
+			}
+			@Override
+			public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
+				if (e == null) {
+					Files.delete(dir);
+					return FileVisitResult.CONTINUE;
+				} else {
+					// directory iteration failed
+					throw e;
+				}
+			}
+		}
+		
+		// Fckn nuke tmpDir from orbit
+		// I'm so done with deleting file trees in Java/Groovy/whatever
+		// ...Not using File.deleteDir() because the latter recurses into symlinks, and we don't want to wipe build/libs/lib
+		if (Files.exists(tmpDir)) {
+			Files.walkFileTree tmpDir, nuke
+		}
+		
+        Files.createDirectories tmpDir.resolve('workingDir')
+        Files.createDirectories buildDir.toPath().resolve('packages')
+    }
+}
+
+task linkBuildOutputForPackaging() {
+	description 'Symlinks the contents of build/libs into packaging working directory.'
+	
+    dependsOn build
+    dependsOn createPackagingDirs
+    
+    onlyIf { preparePackaging.ext.mode == 'symlink' }
+    
+    doLast {
+        def from = buildDir.toPath().resolve 'libs'
+		def into = buildDir.toPath().resolve "tmp/packaging/workingDir/${preparePackaging.ext.buildDest}"
+		
+        Files.createDirectories into
+        
+        Files.list(from).each {
+			def fileName = it.fileName.toString()
+			
+			// Exclude all JARs except the current one
+			if (fileName ==~ "${project.name}.*\\.jar" && fileName != tasks.jar.archiveFileName.get())
+				return
+        
+            Files.createSymbolicLink into.resolve(it.fileName), it
+        }
+    }
+}
+
+task copyBuildOutputForPackaging(type: Copy) {
+	description 'Copies the contents of build/libs into packaging working directory.'
+
+    dependsOn build
+    dependsOn createPackagingDirs
+    
+    onlyIf { preparePackaging.ext.mode == 'copy' }
+    
+    from 'build/libs'
+    filesMatching("${project.name}*.jar") {
+		include tasks.jar.archiveFileName.get()
+    }
+    into "build/tmp/packaging/workingDir/${ -> preparePackaging.ext.buildDest}"
+}
+
+task preparePackaging {
+	preparePackaging.ext.buildDest = ''
+	preparePackaging.ext.mode = 'symlink'
+	
+	dependsOn createPackagingDirs
+	dependsOn linkBuildOutputForPackaging
+	dependsOn copyBuildOutputForPackaging
+}
+
+
+
+/*
+ * Apply all packaging scripts
+ */
+
+new File(projectDir, 'build_logic/packaging').list().each {
+    apply from: "build_logic/packaging/$it/script.gradle"
+}
+
+
+
+/*
+ * Ensure no more than one packaging task is scheduled
+ */
+ 
+gradle.taskGraph.whenReady { graph ->
+	if (graph.allTasks.count { it.name ==~ /package[^_]*/ } > 1) {
+		def offenders = graph.allTasks.findAll { it.name ==~ /package[^_]*/ }
+		throw new GradleException("Cannot execute multiple package tasks within a single build\n" +
+			"\tOffending tasks: $offenders")
 	}
 }
 
-task packageWindows(type: Exec) {
-	description 'Builds the project and creates a Windows installer.'
-	group 'Progressia'
 
-	dependsOn build
-	dependsOn requestWindowsDependencies
 
-	commandLine './buildPackages.sh', 'windows'
-
-	doLast {
-		println "Windows installer available in build_packages/"
-	}
-}
+/*
+ * Convenience build tasks
+ */
 
 task buildCrossPlatform {
 	description 'Builds the project including native libraries for all available platforms.'
@@ -340,17 +391,17 @@ task buildCrossPlatform {
 	dependsOn build
 
 	doLast {
-		println "Native libraries for all platforms have been added"
+		logger.info 'Native libraries for all platforms have been added'
 	}
 }
 
 task buildLocal {
-	description "Builds the project including only native libraries for current platform ($lwjglNatives)."
+	description "Builds the project including only native libraries for current platform (${lwjgl.localArch})."
 	group 'Progressia'
 
 	dependsOn build
 
 	doLast {
-		println "Native libraries only for platform $lwjglNatives have been added"
+		logger.info "Native libraries only for platform ${lwjgl.localArch} have been added"
 	}
 }

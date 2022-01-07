@@ -1,8 +1,8 @@
-Package: progressia-techdemo
-Version: 1.0
+Package: progressia
+Version: ${version}
 Section: custom
 Priority: optional
 Architecture: all
 Maintainer: Javapony <kvadropups@gmail.com>
 Depends: java8-runtime
-Description: Progressia Techdemo release
+Description: Progressia - a 3D sandbox survival game

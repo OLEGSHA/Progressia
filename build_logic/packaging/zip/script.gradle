@@ -1,0 +1,41 @@
+task packageZip_processResources(type: Copy) {
+	dependsOn preparePackaging
+
+	from ('src/packaging/zip') {
+		filesMatching('start.*') {
+			filter(
+				org.apache.tools.ant.filters.ReplaceTokens,
+				tokens: [mainJarFile: project.tasks.jar.archiveFileName.get()]
+			)
+		}
+	}
+	from ('src/main/resource/assets/icons/logo256.original.png') {
+		rename 'logo256.original.png', 'logo.png'
+	}
+	from('LICENSE') {
+		rename 'LICENSE', 'LICENSE.txt'
+	}
+	into 'build/tmp/packaging/workingDir'
+}
+
+task packageZip(type: Zip) {
+	description 'Builds the project and creates a cross-platform ZIP package.'
+	group 'Progressia'
+	
+	dependsOn resolveVersion
+	dependsOn requestCrossPlatformDependencies
+	dependsOn build
+	dependsOn preparePackaging
+	
+	dependsOn packageZip_processResources
+	
+	archiveBaseName = project.name
+	archiveAppendix = 'universal'
+	
+	doFirst {
+		archiveVersion = project.version
+	}
+	
+	from 'build/tmp/packaging/workingDir'
+	destinationDirectory = file('build/packages')
+}
