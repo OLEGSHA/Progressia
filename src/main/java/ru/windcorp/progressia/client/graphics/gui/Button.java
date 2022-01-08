@@ -23,6 +23,10 @@ import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.Colors;
 
+/** Class for a traditional button that gets clicked to activate
+ *
+ * @author opfromthestart
+ */
 public class Button extends BasicButton {
 
 	public Button(String name, String label, Font labelFont) {
@@ -51,9 +55,7 @@ public class Button extends BasicButton {
 
 		// Inside area
 
-		if (isPressed()) {
-			// Do nothing
-		} else {
+		if (!isPressed())  {
 			Vec4 backgroundColor;
 			if (isHovered() && isEnabled()) {
 				backgroundColor = Colors.HOVER_BLUE;

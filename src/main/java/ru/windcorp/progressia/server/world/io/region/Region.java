@@ -43,10 +43,8 @@ public class Region {
 
 	private static final boolean RESET_CORRUPTED = true;
 
-	public int loadedChunks;
-
-	private AtomicBoolean isUsing = new AtomicBoolean(false);
-	private AtomicBoolean isClosed = new AtomicBoolean(false);
+	private final AtomicBoolean isUsing = new AtomicBoolean(false);
+	private final AtomicBoolean isClosed = new AtomicBoolean(false);
 
 	private final RegionFile file;
 
@@ -60,6 +58,7 @@ public class Region {
 		} catch (IOException e) {
 
 			RegionWorldContainer.LOG.debug("Uh the file broke");
+			RegionWorldContainer.LOG.debug(e.getLocalizedMessage());
 			if (RESET_CORRUPTED) {
 				this.file.makeHeader(regionCoords);
 			}
@@ -132,7 +131,7 @@ public class Region {
 		DecodingException {
 		isUsing.set(true);
 
-		int dataOffset = 0;
+		int dataOffset;
 		Vec3i pos = RegionWorldContainer.getInRegionCoords(chunkPos);
 
 		if (hasOffset(pos)) {

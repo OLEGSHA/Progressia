@@ -26,9 +26,9 @@ public class RegionFile {
 	private static final int ID_HEADER_SIZE = 16;
 	private static final byte[] HEADER_ID = {'P','R','O','G'};
 
-	final byte endBytes[] = new byte[SECTOR_SIZE];
+	final byte[] endBytes = new byte[SECTOR_SIZE];
 
-	public static enum SectorType {
+	public enum SectorType {
 		Ending(0), // Just an empty block
 		Data(1), // has a byte counting up in position 1, and then
 		PartitionLink(2),
@@ -54,7 +54,7 @@ public class RegionFile {
 
 	public void confirmHeaderHealth(ChunkMap<Integer> offsets, Vec3i regionCoords) throws IOException {
 
-		Set<Integer> used = new HashSet<Integer>();
+		Set<Integer> used = new HashSet<>();
 		int maxUsed = 0;
 		final int chunksPerRegion = REGION_DIAMETER * REGION_DIAMETER * REGION_DIAMETER;
 
@@ -63,9 +63,10 @@ public class RegionFile {
 		}
 		
 		
-		char prog;
+		byte prog;
+		file.seek(0);
 		for (int i=0;i<4;i++) {
-			prog = file.readChar();
+			prog = file.readByte();
 			if (prog != HEADER_ID[i])
 			{
 				throw new IOException("File is not a .progressia_chunk file");
@@ -109,7 +110,7 @@ public class RegionFile {
 					throw new IOException("A sector is used twice");
 				}
 
-				file.seek(HEADER_SIZE + SECTOR_SIZE * offset);
+				file.seek(HEADER_SIZE + (long) SECTOR_SIZE * offset);
 				byte type = file.readByte();
 
 				if (type == SectorType.Data.data) {
@@ -132,24 +133,25 @@ public class RegionFile {
 
 	public void makeHeader(Vec3i regionCoords) throws IOException {
 		file.seek(0);
+		for (int i = 0; i < HEADER_SIZE; i++) {
+			file.write(0);
+		}
+		file.seek(0);
 		file.write(HEADER_ID);
 		file.writeInt(regionCoords.x);
 		file.writeInt(regionCoords.y);
 		file.writeInt(regionCoords.z);
-		for (int i = 0; i < HEADER_SIZE; i++) {
-			file.write(0);
-		}
 	}
 
 	public void writeBuffer(byte[] buffer, int dataOffset, Vec3i pos) throws IOException {
-		file.seek(HEADER_SIZE + SECTOR_SIZE * dataOffset);
+		file.seek(HEADER_SIZE + (long) SECTOR_SIZE * dataOffset);
 		int loc = 0;
-		byte tempBuffer[] = new byte[SECTOR_SIZE];
+		byte[] tempBuffer = new byte[SECTOR_SIZE];
 		byte counter = 0;
 		boolean isDone = false;
 		while (!isDone) {
-			if (file.length() > HEADER_SIZE + SECTOR_SIZE * (dataOffset + 1)) {
-				file.seek(HEADER_SIZE + SECTOR_SIZE * (dataOffset + 1));
+			if (file.length() > HEADER_SIZE + (long) SECTOR_SIZE * (dataOffset + 1)) {
+				file.seek(HEADER_SIZE + (long) SECTOR_SIZE * (dataOffset + 1));
 				byte header = file.readByte();
 				if (header == SectorType.Data.data) {
 					byte fileCounter = file.readByte();
@@ -157,7 +159,7 @@ public class RegionFile {
 													// partition place
 					{
 						int newOffset = allocateEmptySector();
-						file.seek(HEADER_SIZE + SECTOR_SIZE * dataOffset);
+						file.seek(HEADER_SIZE + (long) SECTOR_SIZE * dataOffset);
 						file.write(2);
 						file.writeInt(newOffset);
 						dataOffset = newOffset;
@@ -179,7 +181,7 @@ public class RegionFile {
 			if (file.getFilePointer() < 256)
 				LogManager.getLogger("Region")
 					.debug("at {}, ({},{},{}), {}", file.getFilePointer(), pos.x, pos.y, pos.z, dataOffset);
-			file.seek(HEADER_SIZE + SECTOR_SIZE * dataOffset);
+			file.seek(HEADER_SIZE + (long) SECTOR_SIZE * dataOffset);
 			dataOffset++;
 			file.write(tempBuffer);
 		}
@@ -197,7 +199,7 @@ public class RegionFile {
 		file.seek(definitionOffset);
 		file.writeInt(dataOffset + 1);
 
-		file.setLength(HEADER_SIZE + dataOffset * SECTOR_SIZE);
+		file.setLength(HEADER_SIZE + (long) dataOffset * SECTOR_SIZE);
 		return dataOffset;
 	}
 
@@ -206,17 +208,17 @@ public class RegionFile {
 
 		int dataOffset = (int) Math.ceil((double) (outputLen - HEADER_SIZE) / SECTOR_SIZE);
 
-		file.setLength(HEADER_SIZE + dataOffset * SECTOR_SIZE);
+		file.setLength(HEADER_SIZE + (long) dataOffset * SECTOR_SIZE);
 
 		return dataOffset;
 	}
 
 	public byte[] readBuffer(int dataOffset) throws IOException {
-		file.seek(HEADER_SIZE + SECTOR_SIZE * dataOffset);
+		file.seek(HEADER_SIZE + (long) SECTOR_SIZE * dataOffset);
 
 		int bufferPos = 0;
-		byte buffer[] = new byte[SECTOR_SIZE * 16];
-		byte tempBuffer[] = new byte[SECTOR_SIZE];
+		byte[] buffer = new byte[SECTOR_SIZE * 16];
+		byte[] tempBuffer = new byte[SECTOR_SIZE];
 
 		boolean reachedEnd = false;
 		byte counter = 0;
@@ -229,31 +231,24 @@ public class RegionFile {
 			if (tempBuffer[0] == SectorType.Data.data) {
 				if (tempBuffer[1] != counter) {
 					throw new IOException(
-						"Sectors were read out of order\nExpected chunk number " + Byte.toString(counter)
-							+ " but encountered number " + Byte.toString(tempBuffer[1])
+						"Sectors were read out of order\nExpected chunk number " + counter
+							+ " but encountered number " + tempBuffer[1]
 					);
 				}
 				counter++;
 				if (buffer.length - bufferPos < SECTOR_SIZE - SECTOR_HEADER_SIZE - 1) {
-					byte newBuffer[] = new byte[buffer.length + SECTOR_SIZE * 16];
-					for (int i = 0; i < buffer.length; i++) // TODO dedicated
-															// copy, java-y at
-															// least
-					{
-						newBuffer[i] = buffer[i];
-					}
+					byte[] newBuffer = new byte[buffer.length + SECTOR_SIZE * 16];
+					System.arraycopy(buffer, 0, newBuffer, 0, buffer.length);
 					buffer = newBuffer;
 				}
-				for (int i = 0; i < SECTOR_SIZE - SECTOR_HEADER_SIZE - 1; i++) {
-					buffer[bufferPos + i] = tempBuffer[i + 2];
-				}
+				System.arraycopy(tempBuffer, 2, buffer, bufferPos, SECTOR_SIZE - SECTOR_HEADER_SIZE - 1);
 				bufferPos += SECTOR_SIZE - SECTOR_HEADER_SIZE - 1;
 			} else if (tempBuffer[0] == SectorType.Ending.data) {
 				reachedEnd = true;
 			} else if (tempBuffer[0] == SectorType.PartitionLink.data) {
 				ByteBuffer intBuffer = ByteBuffer.wrap(tempBuffer);
 				int newOffset = intBuffer.getInt(1);
-				file.seek(HEADER_SIZE + SECTOR_SIZE * newOffset);
+				file.seek(HEADER_SIZE + (long) SECTOR_SIZE * newOffset);
 			} else {
 				throw new IOException("Invalid sector ID.");
 			}

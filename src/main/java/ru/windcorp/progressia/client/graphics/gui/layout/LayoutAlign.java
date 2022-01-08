@@ -27,8 +27,8 @@ import ru.windcorp.progressia.client.graphics.gui.Layout;
 
 public class LayoutAlign implements Layout {
 
-	private final int margin;
-	private double alignX, alignY;
+	protected final int margin;
+	protected double alignX, alignY;
 
 	public LayoutAlign(double alignX, double alignY, int margin) {
 		this.alignX = alignX;
@@ -72,7 +72,7 @@ public class LayoutAlign implements Layout {
 		Vec2i result = new Vec2i(0, 0);
 
 		c.getChildren().stream()
-			.map(child -> child.getPreferredSize())
+			.map(Component::getPreferredSize)
 			.forEach(size -> {
 				result.x = max(size.x, result.x);
 				result.y = max(size.y, result.y);
