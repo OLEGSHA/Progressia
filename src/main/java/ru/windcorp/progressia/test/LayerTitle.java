@@ -29,7 +29,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 public class LayerTitle extends Background {
-	
+
 	private final BasicButton resetButton;
 
 	public LayerTitle(String name) {
@@ -42,10 +42,10 @@ public class LayerTitle extends Background {
 		content.addChild(new TextureComponent(name + ".Title", SimpleTextures.get("title/progressia")));
 
 		info.addChild(new Label(
-				"About",
-				titleFont,
-				new MutableStringLocalized("LayerAbout.Title")
-			)
+						"About",
+						titleFont,
+						new MutableStringLocalized("LayerAbout.Title")
+				)
 		);
 
 		info.addChild(
@@ -60,22 +60,25 @@ public class LayerTitle extends Background {
 		Font buttonFont = titleFont.deriveNotBold();
 		MutableString playText = new MutableStringLocalized("Layer" + name + ".Play");
 		buttonContent.addChild(new Button(name + ".Play", new Label(name + ".Play", buttonFont, playText)).addAction(this::startGame));
-		
+
 		MutableString resetText = new MutableStringLocalized("Layer" + name + ".Reset");
 		this.resetButton = new Button(name + ".Reset", new Label(name + ".Reset", buttonFont, resetText)).addAction(this::resetWorld);
 		buttonContent.addChild(resetButton);
-		
+
 		updateResetButton();
+
+		MutableString settingsText = new MutableStringLocalized("Layer" + name + ".Options");
+		buttonContent.addChild(new Button(name + ".Options", new Label(name + ".Options", buttonFont, settingsText)).addAction(this::openOptions));
 
 		MutableString quitText = new MutableStringLocalized("Layer" + name + ".Quit");
 		buttonContent.addChild(new Button(name + "Quit", new Label(name + ".Quit", buttonFont, quitText)).addAction(b -> System.exit(0)));
-		
+
 		content.addChild(buttonContent);
 		getRoot().addChild(content);
 		buttonContent.setPreferredSize(500, 1000);
-		
+
 		CubeComponent cube = new CubeComponent(name+".Cube",300);
-		
+
 		getRoot().addChild(cube);
 	}
 
@@ -92,7 +95,7 @@ public class LayerTitle extends Background {
 			throw CrashReports.report(e, "Problem with loading server");
 		}
 	}
-	
+
 	private void resetWorld(BasicButton basicButton) {
 		Path rootPath = Paths.get("tmp_world");
 
@@ -113,8 +116,13 @@ public class LayerTitle extends Background {
 		} catch (IOException e) {
 			throw CrashReports.report(e, "Could not reset world");
 		}
-		
+
 		updateResetButton();
+	}
+
+	private void openOptions(BasicButton basicButton) {
+		GUI.removeLayer(this);
+		GUI.addTopLayer(new LayerOptions("Options"));
 	}
 
 }

@@ -24,5 +24,8 @@ LayerTitle.Reset = Reset World
 LayerTitle.Options = Options
 LayerTitle.Quit = Quit
 
+LayerOptions.Return = Back To Menu
+LayerOptions.Language = US English
+
 LayerText.Load = Loading...
 LayerText.Save = Saving...

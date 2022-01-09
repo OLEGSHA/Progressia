@@ -24,5 +24,8 @@ LayerTitle.Reset = Сбросить мир
 LayerTitle.Options = Настройки
 LayerTitle.Quit = Выход
 
+LayerOptions.Return = Главное меню
+LayerOptions.Language = Русский
+
 LayerText.Load = Загрузка...
 LayerText.Save = Сохранение...
