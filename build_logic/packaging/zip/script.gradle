@@ -36,6 +36,10 @@ task packageZip(type: Zip) {
 		archiveVersion = project.version
 	}
 	
+	doFirst {
+		mkdir 'build/packages'
+	}
+	
 	from 'build/tmp/packaging/workingDir'
 	destinationDirectory = file('build/packages')
 }

@@ -267,64 +267,40 @@ apply from: 'build_logic/lwjgl.gradle'
 import java.nio.file.*
 import java.nio.file.attribute.*
 
-task createPackagingDirs() {
-	description 'Resets build/tmp/packaging directory.'
-	
-	doLast {
-		def tmpDir = buildDir.toPath().resolve 'tmp/packaging'
-
-		def nuke = new SimpleFileVisitor<Path>() {
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				Files.delete(file);
-				return FileVisitResult.CONTINUE;
-			}
-			@Override
-			public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
-				if (e == null) {
-					Files.delete(dir);
-					return FileVisitResult.CONTINUE;
-				} else {
-					// directory iteration failed
-					throw e;
-				}
-			}
-		}
-		
-		// Fckn nuke tmpDir from orbit
-		// I'm so done with deleting file trees in Java/Groovy/whatever
-		// ...Not using File.deleteDir() because the latter recurses into symlinks, and we don't want to wipe build/libs/lib
-		if (Files.exists(tmpDir)) {
-			Files.walkFileTree tmpDir, nuke
-		}
-		
-        Files.createDirectories tmpDir.resolve('workingDir')
-        Files.createDirectories buildDir.toPath().resolve('packages')
-    }
+task deletePackagingDirs(type: Delete) {
+	description 'Deletes build/tmp/packaging directory.'
+	followSymlinks = false
+	delete 'build/tmp/packaging'
 }
 
-task linkBuildOutputForPackaging() {
+task linkBuildOutputForPackaging {
 	description 'Symlinks the contents of build/libs into packaging working directory.'
 	
     dependsOn build
-    dependsOn createPackagingDirs
+    mustRunAfter deletePackagingDirs
     
     onlyIf { preparePackaging.ext.mode == 'symlink' }
     
+	ext.from = 'build/libs'
+	ext.into = "build/tmp/packaging/workingDir/${ -> preparePackaging.ext.buildDest}"
+	
+	inputs.dir from
+	outputs.dir into
+    
     doLast {
-        def from = buildDir.toPath().resolve 'libs'
-		def into = buildDir.toPath().resolve "tmp/packaging/workingDir/${preparePackaging.ext.buildDest}"
-		
-        Files.createDirectories into
+		def fromPath = Paths.get from
+		def intoPath = Paths.get into
+    
+        Files.createDirectories intoPath
         
-        Files.list(from).each {
+        Files.list(fromPath).each {
 			def fileName = it.fileName.toString()
 			
 			// Exclude all JARs except the current one
 			if (fileName ==~ "${project.name}.*\\.jar" && fileName != tasks.jar.archiveFileName.get())
 				return
-        
-            Files.createSymbolicLink into.resolve(it.fileName), it
+			
+            Files.createSymbolicLink intoPath.resolve(it.fileName), intoPath.relativize(it)
         }
     }
 }
@@ -333,7 +309,7 @@ task copyBuildOutputForPackaging(type: Copy) {
 	description 'Copies the contents of build/libs into packaging working directory.'
 
     dependsOn build
-    dependsOn createPackagingDirs
+    mustRunAfter deletePackagingDirs
     
     onlyIf { preparePackaging.ext.mode == 'copy' }
     
@@ -348,7 +324,7 @@ task preparePackaging {
 	preparePackaging.ext.buildDest = ''
 	preparePackaging.ext.mode = 'symlink'
 	
-	dependsOn createPackagingDirs
+	dependsOn deletePackagingDirs
 	dependsOn linkBuildOutputForPackaging
 	dependsOn copyBuildOutputForPackaging
 }

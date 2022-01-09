@@ -15,7 +15,7 @@ task packageDeb_configure() {
 	preparePackaging.mustRunAfter packageDeb_configure
 
 	doLast {
-		tasks.preparePackaging.ext.buildDest = '/usr/share/progressia'
+		tasks.preparePackaging.ext.buildDest = 'usr/share/progressia'
 		tasks.preparePackaging.ext.mode = 'copy'
 	}
 }
@@ -30,6 +30,10 @@ task packageDeb(type: Exec) {
 	dependsOn preparePackaging
 	
 	dependsOn packageDeb_processResources
+	
+	doFirst {
+		mkdir 'build/packages'
+	}
 	
 	executable 'dpkg-deb'
 	args '--root-owner-group'

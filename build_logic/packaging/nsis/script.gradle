@@ -40,6 +40,10 @@ task packageNsis(type: Exec) {
 	dependsOn packageNsis_generateIcon
 	dependsOn packageNsis_generateLeftSide
 	
+	doFirst {
+		mkdir 'build/packages'
+	}
+	
 	executable 'makensis'
 	args '-NOCONFIG'
 	args "-DPROJECT_NAME=${project.name}"
