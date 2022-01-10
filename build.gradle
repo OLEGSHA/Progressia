@@ -163,48 +163,61 @@ task resolveVersion {
 	description 'Resolves version information from Git repository or project properties.'
 
 	doFirst {
+		
+		project.ext.commit = System.env.GIT_COMMIT
+		project.ext.branch = System.env.GIT_BRANCH
+		
 		try {
 			def git = Grgit.open(dir: project.projectDir)
 			
-			project.ext.commit = git.head().id
-			project.ext.branch = git.branch.current().name
+			project.ext.commit = commit ?: git.head().id
+			project.ext.branch = branch ?: git.branch.current().name
 			
 			if (project.version != 'unspecified') {
 				// Leave version as-is
-				return
-			}
-			
-			def tag = version_findRelevantTag(git)
-			if (tag == null) {
-			
-				String suffix
-				if (project.hasProperty('buildId')) {
-					suffix = project.buildId;
-				} else {
-					suffix = java.time.ZonedDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy_MM_dd'))
-				}
-				project.version = "999.0.0-$suffix"
-			
-				logger.warn 'Git repository does not contain an applicable tag, using dummy version {}\nSpecify version with -Pversion=1.2.3 or create a Git tag named v1.2.3', project.version
-				
 			} else {
 			
-				project.version = version_parseVersion(tag.name, tag.commit != git.head())
+				// Resolve version from Git
+				def tag = version_findRelevantTag(git)
+				if (tag == null) {
 				
+					String suffix
+					if (project.hasProperty('buildId')) {
+						suffix = project.buildId;
+					} else {
+						suffix = java.time.ZonedDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy_MM_dd'))
+					}
+					project.version = "999.0.0-$suffix"
+				
+					logger.warn 'Git repository does not contain an applicable tag, using dummy version {}\nSpecify version with -Pversion=1.2.3 or create a Git tag named v1.2.3', project.version
+					
+				} else {
+				
+					project.version = version_parseVersion(tag.name, tag.commit != git.head())
+					
+				}
+			
 			}
 		} catch (org.eclipse.jgit.errors.RepositoryNotFoundException e) {
 			if (project.version == 'unspecified') project.version = 'dev'
-			project.ext.commit = '-'
-			project.ext.branch = '-'
+			project.ext.commit = commit ?: '-'
+			project.ext.branch = branch ?: '-'
 		
 			logger.warn 'No Git repository found in project root, using dummy version {}\nSpecify version with -Pversion=1.2.3 or create a Git tag named v1.2.3', project.version
+		}
+		
+		if (branch.contains '/') {
+			// Strip remote - no one wants that
+			project.ext.branch = branch.takeAfter '/'
+		}
+		
+		if (!project.hasProperty('buildId')) {
+			project.ext.buildId = '-'
 		}
 	}
 	
 	doLast {
-		if (!project.hasProperty('buildId')) {
-			project.ext.buildId = '-'
-		}
+		
 	}
 }
 

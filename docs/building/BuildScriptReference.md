@@ -60,14 +60,21 @@ In all other cases, a fallback dummy value is used for version, appended with bu
 
 ### Git metadata
 
-Git commit and Git branch are correspond to the state of the local Git repository, if any. In case Git metadata is
-unavailable, `-` fallback is used for both fields.
+Git commit is determined from `GIT_COMMIT` environment variable if it exists, or the state of the local Git
+repository, if any, or `-`.
+
+Git branch is determined from `GIT_BRANCH` environment variable if it exists, or the state of the local Git
+repository, if any, or `-`.
+
+The names of the environment variables are picked to assist Jenkins builds.
 
 ### Build ID
 
-Build ID uniquely identifies artifacts produced by automated build systems. For example, builds executed by WindCorp
-Jenkins suite have build IDs like `WJ3` or `WJ142`. Build ID must be provided explicitly; it is `-` unless specified
-otherwise.
+Build ID uniquely identifies artifacts produced by automated build systems. Build ID must be provided explicitly; it
+is `-` unless specified otherwise.
+
+The proposed scheme for naming build IDs is `<builder><build-system><build attempt no.>`. For example, builds
+executed by WindCorp Jenkins suite have build IDs like `WJ3` or `WJ142`.
 
 Build ID may be set with `buildId` project property. This may be done in a variety of ways, for example with command
 line argument `-PbuildId=WJ3`
