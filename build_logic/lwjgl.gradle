@@ -13,7 +13,7 @@ lwjgl.version = '3.3.0'
  * This is filled in by the request* tasks. This is referenced by the addLwjglNatives task.
  * When empty, current platform is assumed.
  */
-lwjgl.targets = new HashSet<>()
+lwjgl.targets = new HashSet<String>()
 
 // LWJGL components. To include org.lwjgl:lwjgl-foobar, add 'foobar' to this list.
 lwjgl.libraries = [
@@ -43,27 +43,36 @@ switch (OperatingSystem.current()) {
 		break
 }
 
+configurations {
+	create 'lwjglNatives'
+}
+
 // Declare pure-Java dependencies
 dependencies {
 	// BOM
-	implementation platform("org.lwjgl:lwjgl-bom:${lwjgl.version}")
+	
+	def bom = platform("org.lwjgl:lwjgl-bom:${lwjgl.version}")
+	implementation bom
+	lwjglNatives bom
 	
 	// Core
 	implementation 'org.lwjgl:lwjgl'
+	// Local natives for core
+	runtimeOnly "org.lwjgl:lwjgl::natives-${lwjgl.localArch}"
 	
 	// Components
-	lwjgl.libraries.each { implementation "org.lwjgl:lwjgl-$it" }
+	lwjgl.libraries.each { lib ->
+		implementation "org.lwjgl:lwjgl-$lib"
+		// Local natives for component
+		runtimeOnly "org.lwjgl:lwjgl-$lib::natives-${lwjgl.localArch}"
+	}
+	
 }
 
 /*
- * Adds LWJGL native libraries to runtimeOnly configuration
+ * Adds LWJGL native libraries to lwjglNatives configuration
  */
 task lwjgl_addNativesToRuntimeOnly {
-	// Make sure runtimeOnly has not been resolved
-	compileJava.dependsOn lwjgl_addNativesToRuntimeOnly
-	configureManifest.dependsOn lwjgl_addNativesToRuntimeOnly
-	exportLibs.dependsOn lwjgl_addNativesToRuntimeOnly
-
 	doFirst {
 		if (project.hasProperty('forceTargets')) {
 			try {
@@ -87,12 +96,21 @@ task lwjgl_addNativesToRuntimeOnly {
 		
 		dependencies {
 			lwjgl.targets.each { target ->
-				runtimeOnly "org.lwjgl:lwjgl::natives-$target"
+				lwjglNatives "org.lwjgl:lwjgl::natives-$target"
 				lwjgl.libraries.each { lib ->
-					runtimeOnly "org.lwjgl:lwjgl-$lib::natives-$target"
+					lwjglNatives "org.lwjgl:lwjgl-$lib::natives-$target"
 				}
 			}
 		}
+	}
+}
+
+// Replaces LWJGL natives in the given configuration with the requested ones
+lwjgl.replaceNativesIn = { config ->
+	new ArrayList<File>().tap {
+		addAll config
+		removeIf { it.name ==~ /.*lwjgl.*natives.*/ }
+		addAll project.configurations.lwjglNatives
 	}
 }
 

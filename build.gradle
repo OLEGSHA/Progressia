@@ -211,6 +211,29 @@ task resolveVersion {
 
 
 /*
+ * Apply LWJGL logic
+ */
+apply from: 'build_logic/lwjgl.gradle'
+
+
+
+/*
+ * Copy libraries into build/libs/lib directory, next to Progressia.jar
+ */
+
+task exportLibs(type: Sync) {
+	description 'Copies runtime libraries into a subdirectory next to the output JAR.'
+	
+	jar.dependsOn exportLibs
+	dependsOn lwjgl_addNativesToRuntimeOnly
+
+	// from defined in configureManifest
+	into 'build/libs/lib'
+}
+
+
+
+/*
  * Configure JAR manifest
  */
 
@@ -219,11 +242,16 @@ task configureManifest {
 
 	jar.dependsOn configureManifest
 	dependsOn resolveVersion
+	dependsOn lwjgl_addNativesToRuntimeOnly
 
 	doFirst {
+		def classPath = project.lwjgl.replaceNativesIn(configurations.runtimeClasspath)
+		
+		exportLibs.from classPath
+	
 		jar.manifest.attributes(
 			'Main-Class':                        'ru.windcorp.progressia.client.ProgressiaClientMain',
-			'Class-Path':                        configurations.runtimeClasspath.collect { "lib/${it.name}" } .join(' '),
+			'Class-Path':                        classPath.collect { "lib/${java.net.URLEncoder.encode it.name}" } .join(' '),
 			
 			'Specification-Title':               'Progressia',
 			
@@ -235,28 +263,6 @@ task configureManifest {
 		)
 	}
 }
-
-
-
-/*
- * Copy libraries into buil/libs/lib directory, next to Progressia.jar
- */
-
-task exportLibs(type: Sync) {
-	description 'Copies runtime libraries into a subdirectory next to the output JAR.'
-	
-	jar.dependsOn exportLibs
-
-	from configurations.runtimeClasspath
-	into 'build/libs/lib'
-}
-
-
-
-/*
- * Apply LWJGL logic
- */
-apply from: 'build_logic/lwjgl.gradle'
 
 
 
