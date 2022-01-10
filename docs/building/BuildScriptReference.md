@@ -12,8 +12,8 @@ This document is a user's reference for the build script of Progressia. For a be
 - `packageDeb` – creates a Debian package. Incompatible with other `package` tasks.
 - `packageNsis` – creates a Windows NSIS installer. Incompatible with other `package` tasks.
 - `requestLinuxDependencies` – requests that `natives-linux`, `natives-linux-arm32` and `natives-linux-arm64` binaries are included when building.
-- `requestWindowsDependencies` – requests that `natives-windows` and `natives-windows-x86` binaries are included when building.
-- `requestMacOSDependencies` – requests that `natives-macos` binaries are included when building.
+- `requestWindowsDependencies` – requests that `natives-windows`, `natives-windows-arm64` and `natives-windows-x86` binaries are included when building.
+- `requestMacOSDependencies` – requests that `natives-macos` and `natives-macos-arm64` binaries are included when building.
 - `requestCrossPlatformDependencies` – requests that all binaries are included when building.
 
 To execute a task, run `./gradlew <task-name>`.
@@ -93,11 +93,13 @@ detected current architecture.
 
 ### Available targets
 
-| Name          | Task                         |
-|---------------|------------------------------|
-| `linux`       | `requestLinuxDependencies`   |
-| `linux-arm32` | `requestLinuxDependencies`   |
-| `linux-arm64` | `requestLinuxDependencies`   |
-| `windows`     | `requestWindowsDependencies` |
-| `windows-x86` | `requestWindowsDependencies` |
-| `macos`       | `requestMacOSDependencies`   |
+| Name            | Task                         |
+|-----------------|------------------------------|
+| `linux`         | `requestLinuxDependencies`   |
+| `linux-arm32`   | `requestLinuxDependencies`   |
+| `linux-arm64`   | `requestLinuxDependencies`   |
+| `windows`       | `requestWindowsDependencies` |
+| `windows-arm64` | `requestWindowsDependencies` |
+| `windows-x86`   | `requestWindowsDependencies` |
+| `macos`         | `requestMacOSDependencies`   |
+| `macos-arm64`   | `requestMacOSDependencies`   |

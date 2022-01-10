@@ -60,7 +60,7 @@ repositories {
 dependencies {
 	// Google Guava
 	//   A generic utilities library
-	implementation 'com.google.guava:guava:30.0-jre'
+	implementation 'com.google.guava:guava:31.0.1-jre'
 
 	// Trove4j
 	//   Provides optimized Collections for primitive types
@@ -73,8 +73,8 @@ dependencies {
 
 	// Log4j
 	//   A logging library
-	implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
-	implementation 'org.apache.logging.log4j:log4j-core:2.17.0'
+	implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
+	implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
 
 	// JUnit
 	//   A unit-testing library

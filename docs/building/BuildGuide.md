@@ -143,8 +143,8 @@ build.
 Some users might find the need to build for a specific set of platforms. Inclusion of GNU/Linux, Windows or MacOS
 dependencies individually can be controlled with the following arguments to the `./gradlew build` command:
 - `requestLinuxDependencies` requests that `natives-linux`, `natives-linux-arm32` and `natives-linux-arm64` binaries are included;
-- `requestWindowsDependencies` requests that `natives-windows` and `natives-windows-x86` binaries are included;
-- `requestMacOSDependencies` requests that `natives-macos` binaries are included.
+- `requestWindowsDependencies` requests that `natives-windows`, `natives-windows-arm64` and `natives-windows-x86` binaries are included;
+- `requestMacOSDependencies` requests that `natives-macos`, `natives-macos-arm64` binaries are included.
 These requests can be applied in any combination. For example, the following command produces a build containing only
 GNU/Linux and Windows natives:
 

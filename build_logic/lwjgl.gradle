@@ -6,7 +6,7 @@
 project.ext.lwjgl = new HashMap<>()
 
 // Version of LWJGL
-lwjgl.version = '3.2.3'
+lwjgl.version = '3.3.0'
 
 /*
  * Target platforms for current operation.
@@ -33,10 +33,13 @@ switch (OperatingSystem.current()) {
 				: 'linux'
 		break
 	case OperatingSystem.MAC_OS:
-		lwjgl.localArch = 'macos'
+		project.ext.lwjglNatives = System.getProperty('os.arch').startsWith('aarch64') ? 'macos-arm64' : 'macos'
 		break
 	case OperatingSystem.WINDOWS:
-		lwjgl.localArch = System.getProperty('os.arch').contains('64') ? 'windows' : 'windows-x86'
+		def osArch = System.getProperty('os.arch')
+		project.ext.lwjglNatives = osArch.contains('64')
+			? "windows${osArch.startsWith('aarch64') ? '-arm64' : ''}"
+			: 'windows-x86'
 		break
 }
 
@@ -113,5 +116,5 @@ def requestTask(String name, String... targets) {
 }
 
 requestTask 'Linux', 'linux', 'linux-arm32', 'linux-arm64'
-requestTask 'Windows', 'windows', 'windows-x86'
-requestTask 'MacOS', 'macos'
+requestTask 'Windows', 'windows', 'windows-arm64', 'windows-x86'
+requestTask 'MacOS', 'macos', 'macos-arm64'
