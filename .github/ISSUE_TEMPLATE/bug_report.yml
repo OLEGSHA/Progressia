@@ -44,6 +44,6 @@ body:
   attributes:
     label: Crashreport
     description: If you have a relevant crashreport, paste the contents of the crashreport file here
+    render: text
   validations:
     required: false
-  render: text

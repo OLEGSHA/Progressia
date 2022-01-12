@@ -7,7 +7,7 @@ body:
     value: |
       Use this template to submit crashreports for initial analisys. If you don't have a crashreport, or you have a good understanding of the underlying cause, please use the Bug Report template instead.
       
-      Crashreports can be found in `<working-directory>/crashreports` (take notice of the timestamp). `<working-directory>` is `C:\Users\<windows-user>\AppData\Roaming\Progressia` on Windows when using the installer.
+      Crashreports can be found in `WORKING-DIRECTORY/crashreports` (take notice of the timestamp). `WORKING-DIRECTORY` is `C:\Users\<windows-user>\AppData\Roaming\Progressia` on Windows when using the installer.
       
       **Do not forget to give your issue a descriptive title.**
 - type: textarea
@@ -36,6 +36,6 @@ body:
   attributes:
     label: Crashreport
     description: Paste the contents of the crashreport file here
+    render: text
   validations:
     required: true
-  render: text
