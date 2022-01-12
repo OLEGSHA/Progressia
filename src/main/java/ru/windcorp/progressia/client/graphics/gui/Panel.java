@@ -20,7 +20,6 @@ package ru.windcorp.progressia.client.graphics.gui;
 import java.util.Objects;
 
 import glm.vec._4.Vec4;
-import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 
 public class Panel extends Group {
@@ -36,7 +35,7 @@ public class Panel extends Group {
 	}
 	
 	public Panel(String name, Layout layout) {
-		this(name, layout, Colors.WHITE, Colors.LIGHT_GRAY);
+		this(name, layout, ColorScheme.get("Core:Background"), ColorScheme.get("Core:Border"));
 	}
 	
 	/**

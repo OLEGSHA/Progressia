@@ -22,6 +22,7 @@ import ru.windcorp.progressia.Progressia;
 import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.font.Typeface;
+import ru.windcorp.progressia.client.graphics.gui.ColorScheme;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.Group;
@@ -37,7 +38,7 @@ public class LayerAbout extends GUILayer {
 		Group group = new Group("ControlDisplays", new LayoutVertical(5));
 
 		Font font = new Font().withColor(Colors.WHITE).deriveOutlined().withAlign(Typeface.ALIGN_RIGHT);
-		Font aboutFont = font.withColor(0xFF37A3E6).deriveBold();
+		Font aboutFont = font.withColor(ColorScheme.get("Core:Accent")).deriveBold();
 
 		group.addChild(
 			new Label(

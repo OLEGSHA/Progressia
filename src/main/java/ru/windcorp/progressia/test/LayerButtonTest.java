@@ -20,11 +20,11 @@ package ru.windcorp.progressia.test;
 import java.util.Collection;
 
 import ru.windcorp.progressia.client.ClientState;
-import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.gui.Button;
 import ru.windcorp.progressia.client.graphics.gui.Checkbox;
+import ru.windcorp.progressia.client.graphics.gui.ColorScheme;
 import ru.windcorp.progressia.client.graphics.gui.Label;
 import ru.windcorp.progressia.client.graphics.gui.RadioButton;
 import ru.windcorp.progressia.client.graphics.gui.RadioButtonGroup;
@@ -65,7 +65,7 @@ public class LayerButtonTest extends MenuLayer {
 
 		getContent().getChild(getContent().getChildren().size() - 1).setEnabled(false);
 
-		getContent().addChild(new Label("Hint", new Font().withColor(Colors.LIGHT_GRAY), "This is a MenuLayer"));
+		getContent().addChild(new Label("Hint", new Font().withColor(ColorScheme.get("Core:Border")), "This is a MenuLayer"));
 
 		getContent().addChild(new Button("Continue", "Continue").addAction(b -> {
 			getCloseAction().run();

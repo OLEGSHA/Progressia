@@ -18,8 +18,6 @@
 package ru.windcorp.progressia.client.graphics.gui;
 
 import glm.vec._2.i.Vec2i;
-import glm.vec._4.Vec4;
-import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.font.Typefaces;
@@ -42,35 +40,29 @@ public class Checkbox extends BasicButton {
 			int size = getPreferredSize().x;
 			int x = getX();
 			int y = getY() + (getHeight() - size) / 2;
-
-			// Border
-
-			Vec4 borderColor;
-			if (Checkbox.this.isPressed() || Checkbox.this.isHovered() || Checkbox.this.isFocused()) {
-				borderColor = Colors.BLUE;
+			
+			String state;
+			if (!Checkbox.this.isEnabled()) {
+				state = "Disabled";
+			} else if (Checkbox.this.isPressed()) {
+				state = "Pressed";
+			} else if (Checkbox.this.isHovered()) {
+				state = "Hovered";
+			} else if (Checkbox.this.isFocused()) {
+				state = "Focused";
 			} else {
-				borderColor = Colors.LIGHT_GRAY;
+				state = "Inactive";
 			}
-			target.fill(x, y, size, size, borderColor);
+			
+			// Border
+			target.fill(x, y, size, size, ColorScheme.get("Core:CheckboxBorder" + state));
 
 			// Inside area
-
-			if (Checkbox.this.isPressed()) {
-				// Do nothing
-			} else {
-				Vec4 backgroundColor;
-				if (Checkbox.this.isHovered() && Checkbox.this.isEnabled()) {
-					backgroundColor = Colors.HOVER_BLUE;
-				} else {
-					backgroundColor = Colors.WHITE;
-				}
-				target.fill(x + 2, y + 2, size - 4, size - 4, backgroundColor);
-			}
+			target.fill(x + 2, y + 2, size - 4, size - 4, ColorScheme.get("Core:CheckboxFill" + state));
 
 			// "Tick"
-
 			if (Checkbox.this.isChecked()) {
-				target.fill(x + 4, y + 4, size - 8, size - 8, Colors.BLUE);
+				target.fill(x + 4, y + 4, size - 8, size - 8, ColorScheme.get("Core:CheckboxCheck" + state));
 			}
 		}
 
@@ -128,22 +120,21 @@ public class Checkbox extends BasicButton {
 
 	@Override
 	protected void assembleSelf(RenderTarget target) {
-		// Change label font color
-
-		if (isPressed()) {
-			getLabel().setFont(getLabel().getFont().withColor(Colors.BLUE));
+		String state;
+		if (!Checkbox.this.isEnabled()) {
+			state = "Disabled";
+		} else if (Checkbox.this.isPressed()) {
+			state = "Pressed";
+		} else if (Checkbox.this.isHovered()) {
+			state = "Hovered";
+		} else if (Checkbox.this.isFocused()) {
+			state = "Focused";
 		} else {
-			getLabel().setFont(getLabel().getFont().withColor(Colors.BLACK));
+			state = "Inactive";
 		}
+
+		// Change label font color
+		getLabel().setFont(getLabel().getFont().withColor(ColorScheme.get("Core:CheckboxText" + state)));
 	}
-
-	@Override
-	protected void postAssembleSelf(RenderTarget target) {
-		// Apply disable tint
-
-		if (!isEnabled()) {
-			target.fill(getX(), getY(), getWidth(), getHeight(), Colors.toVector(0x88FFFFFF));
-		}
-	}
-
+	
 }

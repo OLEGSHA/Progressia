@@ -25,6 +25,7 @@ import ru.windcorp.progressia.client.graphics.backend.RenderTaskQueue;
 import ru.windcorp.progressia.client.graphics.flat.FlatRenderProgram;
 import ru.windcorp.progressia.client.graphics.font.GNUUnifontLoader;
 import ru.windcorp.progressia.client.graphics.font.Typefaces;
+import ru.windcorp.progressia.client.graphics.gui.ColorScheme;
 import ru.windcorp.progressia.client.graphics.texture.Atlases;
 import ru.windcorp.progressia.client.graphics.world.WorldRenderProgram;
 import ru.windcorp.progressia.client.localization.Localizer;
@@ -50,7 +51,8 @@ public class ClientProxy implements Proxy {
 		} catch (InterruptedException e) {
 			throw CrashReports.report(e, "ClientProxy failed");
 		}
-
+		
+		ColorScheme.load(ResourceManager.getResource("assets/default.colorScheme"));
 		Localizer.getInstance().setLanguage("en-US");
 
 		TestContent.registerContent();

@@ -21,7 +21,6 @@ import org.lwjgl.glfw.GLFW;
 
 import glm.vec._2.i.Vec2i;
 import glm.vec._4.Vec4;
-import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.flat.RenderTarget;
 import ru.windcorp.progressia.client.graphics.font.Font;
 import ru.windcorp.progressia.client.graphics.font.Typefaces;
@@ -51,35 +50,29 @@ public class RadioButton extends BasicButton {
 			int size = getPreferredSize().x;
 			int x = getX();
 			int y = getY() + (getHeight() - size) / 2;
+			
+			String state;
+			if (!RadioButton.this.isEnabled()) {
+				state = "Disabled";
+			} else if (RadioButton.this.isPressed()) {
+				state = "Pressed";
+			} else if (RadioButton.this.isHovered()) {
+				state = "Hovered";
+			} else if (RadioButton.this.isFocused()) {
+				state = "Focused";
+			} else {
+				state = "Inactive";
+			}
 
 			// Border
-
-			Vec4 borderColor;
-			if (RadioButton.this.isPressed() || RadioButton.this.isHovered() || RadioButton.this.isFocused()) {
-				borderColor = Colors.BLUE;
-			} else {
-				borderColor = Colors.LIGHT_GRAY;
-			}
-			cross(target, x, y, size, borderColor);
+			cross(target, x, y, size, ColorScheme.get("Core:RadioButtonBorder" + state));
 
 			// Inside area
-
-			if (RadioButton.this.isPressed()) {
-				// Do nothing
-			} else {
-				Vec4 backgroundColor;
-				if (RadioButton.this.isHovered() && RadioButton.this.isEnabled()) {
-					backgroundColor = Colors.HOVER_BLUE;
-				} else {
-					backgroundColor = Colors.WHITE;
-				}
-				cross(target, x + 2, y + 2, size - 4, backgroundColor);
-			}
+			cross(target, x + 2, y + 2, size - 4, ColorScheme.get("Core:RadioButtonFill" + state));
 
 			// "Tick"
-
 			if (RadioButton.this.isChecked()) {
-				cross(target, x + 4, y + 4, size - 8, Colors.BLUE);
+				cross(target, x + 4, y + 4, size - 8, ColorScheme.get("Core:RadioButtonCheck" + state));
 			}
 		}
 
@@ -146,8 +139,8 @@ public class RadioButton extends BasicButton {
 			group.selectNext();
 			removeAction(group.listener);
 			group.buttons.remove(this);
-			group.getSelected(); // Clear reference if this was the only button
-									// in the group
+			// Clear reference if this was the only button in the group
+			group.getSelected();
 		}
 
 		this.group = group;
@@ -183,22 +176,21 @@ public class RadioButton extends BasicButton {
 
 	@Override
 	protected void assembleSelf(RenderTarget target) {
-		// Change label font color
-
-		if (isPressed()) {
-			getLabel().setFont(getLabel().getFont().withColor(Colors.BLUE));
+		String state;
+		if (!RadioButton.this.isEnabled()) {
+			state = "Disabled";
+		} else if (RadioButton.this.isPressed()) {
+			state = "Pressed";
+		} else if (RadioButton.this.isHovered()) {
+			state = "Hovered";
+		} else if (RadioButton.this.isFocused()) {
+			state = "Focused";
 		} else {
-			getLabel().setFont(getLabel().getFont().withColor(Colors.BLACK));
+			state = "Inactive";
 		}
-	}
 
-	@Override
-	protected void postAssembleSelf(RenderTarget target) {
-		// Apply disable tint
-
-		if (!isEnabled()) {
-			target.fill(getX(), getY(), getWidth(), getHeight(), Colors.toVector(0x88FFFFFF));
-		}
+		// Change label font color
+		getLabel().setFont(getLabel().getFont().withColor(ColorScheme.get("Core:RadioButtonText" + state)));
 	}
 
 }

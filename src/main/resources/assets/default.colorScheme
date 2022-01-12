@@ -1,0 +1,80 @@
+# Default color scheme for Progressia
+#
+# Line format:
+#   KEY = VALUE
+# KEY must be a legal ID
+# VALUE may be one of the following:
+#   #RGB
+#   #ARGB
+#   #RRGGBB
+#   #AARRGGBB
+#   $OTHER_KEY
+
+Core:Background = #EFF0F1
+Core:Border = #CBCBD0
+Core:DisabledBackground = $Core:Background
+Core:DisabledBorder = #DEDFE1
+Core:Accent = #37A3E6
+Core:AccentLighter = #C3E4F7
+
+Core:Text = #31363B
+
+Core:ButtonBorderDisabled = $Core:DisabledBorder
+Core:ButtonBorderPressed  = $Core:Accent
+Core:ButtonBorderHovered  = $Core:Accent
+Core:ButtonBorderFocused  = $Core:Accent
+Core:ButtonBorderInactive = $Core:Border
+Core:ButtonFillDisabled   = $Core:DisabledBackground
+Core:ButtonFillPressed    = $Core:Accent
+Core:ButtonFillHovered    = $Core:AccentLighter
+Core:ButtonFillFocused    = $Core:Background
+Core:ButtonFillInactive   = $Core:Background
+Core:ButtonTextDisabled   = $Core:DisabledBorder
+Core:ButtonTextPressed    = $Core:Background
+Core:ButtonTextHovered    = $Core:Text
+Core:ButtonTextFocused    = $Core:Text
+Core:ButtonTextInactive   = $Core:Text
+
+Core:CheckboxBorderDisabled  = $Core:DisabledBorder
+Core:CheckboxBorderPressed   = $Core:Accent
+Core:CheckboxBorderHovered   = $Core:Accent
+Core:CheckboxBorderFocused   = $Core:Accent
+Core:CheckboxBorderInactive  = $Core:Border
+Core:CheckboxFillDisabled    = $Core:DisabledBackground
+Core:CheckboxFillPressed     = $Core:Accent
+Core:CheckboxFillHovered     = $Core:AccentLighter
+Core:CheckboxFillFocused     = $Core:Background
+Core:CheckboxFillInactive    = $Core:Background
+Core:CheckboxTextDisabled    = $Core:DisabledBorder
+Core:CheckboxTextPressed     = $Core:Accent
+Core:CheckboxTextHovered     = $Core:Text
+Core:CheckboxTextFocused     = $Core:Text
+Core:CheckboxTextInactive    = $Core:Text
+Core:CheckboxCheckDisabled   = $Core:DisabledBorder
+Core:CheckboxCheckPressed    = $Core:Accent
+Core:CheckboxCheckHovered    = $Core:Accent
+Core:CheckboxCheckFocused    = $Core:Accent
+Core:CheckboxCheckInactive   = $Core:Accent
+
+Core:RadioButtonBorderDisabled  = $Core:DisabledBorder
+Core:RadioButtonBorderPressed   = $Core:Accent
+Core:RadioButtonBorderHovered   = $Core:Accent
+Core:RadioButtonBorderFocused   = $Core:Accent
+Core:RadioButtonBorderInactive  = $Core:Border
+Core:RadioButtonFillDisabled    = $Core:DisabledBackground
+Core:RadioButtonFillPressed     = $Core:Accent
+Core:RadioButtonFillHovered     = $Core:AccentLighter
+Core:RadioButtonFillFocused     = $Core:Background
+Core:RadioButtonFillInactive    = $Core:Background
+Core:RadioButtonTextDisabled    = $Core:DisabledBorder
+Core:RadioButtonTextPressed     = $Core:Accent
+Core:RadioButtonTextHovered     = $Core:Text
+Core:RadioButtonTextFocused     = $Core:Text
+Core:RadioButtonTextInactive    = $Core:Text
+Core:RadioButtonCheckDisabled   = $Core:DisabledBorder
+Core:RadioButtonCheckPressed    = $Core:Accent
+Core:RadioButtonCheckHovered    = $Core:Accent
+Core:RadioButtonCheckFocused    = $Core:Accent
+Core:RadioButtonCheckInactive   = $Core:Accent
+
+Core:MenuLayerTint = #6000

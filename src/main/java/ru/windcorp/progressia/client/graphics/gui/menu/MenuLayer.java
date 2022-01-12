@@ -20,9 +20,9 @@ package ru.windcorp.progressia.client.graphics.gui.menu;
 import org.lwjgl.glfw.GLFW;
 
 import glm.vec._2.i.Vec2i;
-import ru.windcorp.progressia.client.graphics.Colors;
 import ru.windcorp.progressia.client.graphics.GUI;
 import ru.windcorp.progressia.client.graphics.font.Font;
+import ru.windcorp.progressia.client.graphics.gui.ColorScheme;
 import ru.windcorp.progressia.client.graphics.gui.Component;
 import ru.windcorp.progressia.client.graphics.gui.GUILayer;
 import ru.windcorp.progressia.client.graphics.gui.Label;
@@ -50,7 +50,7 @@ public class MenuLayer extends GUILayer {
 		
 		setCursorPolicy(CursorPolicy.REQUIRE);
 		
-		this.background = new Panel(name + ".Background", new LayoutAlign(10), Colors.toVector(0x66000000), null);
+		this.background = new Panel(name + ".Background", new LayoutAlign(10), ColorScheme.get("Core:MenuLayerTint"), null);
 		this.content = content;
 		
 		background.addChild(content);
@@ -76,12 +76,12 @@ public class MenuLayer extends GUILayer {
 	protected void addTitle() {
 		String translationKey = "Layer" + getName() + ".Title";
 		MutableString titleText = new MutableStringLocalized(translationKey);
-		Font titleFont = new Font().deriveBold().withColor(Colors.BLACK).withAlign(0.5f);
+		Font titleFont = new Font().deriveBold().withColor(ColorScheme.get("Core:Text")).withAlign(0.5f);
 		
 		Label label = new Label(getName() + ".Title", titleFont, titleText);
 		getContent().addChild(label);
 		
-		Panel panel = new Panel(getName() + ".Title.Underscore", null, Colors.BLUE, null);
+		Panel panel = new Panel(getName() + ".Title.Underscore", null, ColorScheme.get("Core:Accent"), null);
 		panel.setLayout(new LayoutFill() {
 			@Override
 			public Vec2i calculatePreferredSize(Component c) {
