@@ -1,0 +1,41 @@
+name: Investigate Crashreport
+description: Submit a crashreport to determine the problem
+labels: [bug, crashreport]
+body:
+- type: markdown
+  attributes:
+    value: |
+      Use this template to submit crashreports for initial analisys. If you don't have a crashreport, or you have a good understanding of the underlying cause, please use the Bug Report template instead.
+      
+      Crashreports can be found in `<working-directory>/crashreports` (take notice of the timestamp). `<working-directory>` is `C:\Users\<windows-user>\AppData\Roaming\Progressia` on Windows when using the installer.
+      
+      **Do not forget to give your issue a descriptive title.**
+- type: textarea
+  attributes:
+    label: Steps to reproduce
+    description: |
+      What did you do just before the crash? How could someone else reproduce it? What other context might be relevant?
+      
+      If the issue occurs unreliably, please estimate the probability of the crash.
+    placeholder: |
+      1. Enter a new world
+      2. Turn around
+      3. Wait 5 minutes
+      4. Game crashes half of the time
+      
+      Player inventory must be empty. Does not crash in multiplayer. Occurred inside a virtual machine.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Other information
+    description: What else can you tell us about this crashreport?
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Crashreport
+    description: Paste the contents of the crashreport file here
+  validations:
+    required: true
+  render: text

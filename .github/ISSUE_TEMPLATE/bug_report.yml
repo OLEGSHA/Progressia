@@ -1,0 +1,49 @@
+name: Bug Report
+description: Let us know about a problem
+labels: [bug]
+body:
+- type: markdown
+  attributes:
+    value: |
+      Use this template to report identified problems. If the game suddenly crashed, and you need help identifying the cause of a crashreport, please use the Investigate Crashreport template instead.
+      
+      **Do not forget to give your issue a descriptive title.**
+- type: textarea
+  attributes:
+    label: Steps to reproduce
+    description: |
+      What did you do just before the problem appeared, or where can it be observed?
+      
+      If the issue occurs unreliably, please estimate the probability of the crash.
+    placeholder: |
+      1. Look at a cow
+      2. Wait for the cow to look back
+      3. The cow turns away after a minute
+      
+      The issue occurs approximately once every 10 attempts.
+      
+      Player inventory must be empty. Does not occur in multiplayer. Occurred inside a virtual machine.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Expected behaviour
+    description: |
+      What should happen?
+    placeholder: |
+      The cow should stare back indefinitely, because obviously it should, and because comedy.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Other information
+    description: What else can you tell us about this bug?
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Crashreport
+    description: If you have a relevant crashreport, paste the contents of the crashreport file here
+  validations:
+    required: false
+  render: text
