@@ -24,6 +24,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 import java.io.IOException;
 
+import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.opengl.GL;
 
@@ -55,6 +56,7 @@ class LWJGLInitializer {
 		setupWindowCallbacks();
 
 		glfwShowWindow(GraphicsBackend.getWindowHandle());
+		GraphicsBackend.onFrameResized(GraphicsBackend.getWindowHandle(), 800, 600);
 	}
 
 	private static void checkEnvironment() {
@@ -62,8 +64,12 @@ class LWJGLInitializer {
 	}
 
 	private static void initializeGLFW() {
-		// TODO Do GLFW error handling: check glfwInit, setup error callback
-		glfwInit();
+		GLFWErrorCallback.create(new GLFWErrorHandler()::onError).set();
+
+		if (!glfwInit()) {
+			throw CrashReports.report(null, "GLFW could not be initialized: glfwInit() has failed");
+		}
+
 		GraphicsBackend.setGLFWInitialized(true);
 	}
 
@@ -71,17 +77,13 @@ class LWJGLInitializer {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
-		glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
-		long handle = glfwCreateWindow(
-			800,
-			600,
-			Progressia.getName() + " " + Progressia.getFullerVersion(),
-			NULL,
-			NULL
-		);
-
-		// TODO Check that handle != NULL
+		String windowTitle = Progressia.getName() + " " + Progressia.getFullerVersion();
+		long handle = glfwCreateWindow(800, 600, windowTitle, NULL, NULL);
+		
+		if (handle == 0) {
+			throw CrashReports.report(null, "Could not create game window");
+		}
 
 		GraphicsBackend.setWindowHandle(handle);
 
@@ -95,8 +97,8 @@ class LWJGLInitializer {
 	}
 
 	private static void createWindowIcons() {
-		if (glfwGetVersionString().toLowerCase().contains("wayland")) {
-			// glfwSetWindowIcon is not supported on Wayland
+		if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
+			// Wayland does not support changing window icons
 			return;
 		}
 		
