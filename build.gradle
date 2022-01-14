@@ -43,6 +43,16 @@ compileJava {
 
 
 /*
+ * Set encoding
+ */
+
+compileJava {
+	options.encoding = 'utf8'
+}
+
+
+
+/*
  * Dependencies
  */
 
