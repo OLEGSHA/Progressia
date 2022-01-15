@@ -33,13 +33,16 @@ switch (OperatingSystem.current()) {
 				: 'linux'
 		break
 	case OperatingSystem.MAC_OS:
-		project.ext.lwjglNatives = System.getProperty('os.arch').startsWith('aarch64') ? 'macos-arm64' : 'macos'
+		lwjgl.localArch = System.getProperty('os.arch').startsWith('aarch64') ? 'macos-arm64' : 'macos'
 		break
 	case OperatingSystem.WINDOWS:
 		def osArch = System.getProperty('os.arch')
-		project.ext.lwjglNatives = osArch.contains('64')
+		lwjgl.localArch = osArch.contains('64')
 			? "windows${osArch.startsWith('aarch64') ? '-arm64' : ''}"
 			: 'windows-x86'
+		break
+	default:
+		logger.info "Unknown or unsupported OS type according to Gradle's org.gradle.internal.os.OperatingSystem: ${OperatingSystem.current()}"
 		break
 }
 
@@ -92,6 +95,14 @@ task lwjgl_addNativesToRuntimeOnly {
 			lwjgl.targets.add lwjgl.localArch
 		} else {
 			logger.info 'Adding LWJGL native dependencies for platforms: {}', lwjgl.targets.sort().join(', ')
+		}
+		
+		if (lwjgl.targets.contains(null)) {
+			if (lwjgl.localArch != null) {
+				throw new GradleException("Requested local LWJGL natives; could not determine local architecture for OS ${OperatingSystem.current()} with os.arch ${System.getProperty('os.arch')}")
+			} else {
+				throw new GradleException("LWJGL targets resolved to ${lwjgl.targets}")
+			}
 		}
 		
 		dependencies {
