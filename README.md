@@ -1,4 +1,7 @@
 # Progressia
+
+:warning: **Important:** this Java version of Progressia is no longer developed. **We migrated to a different repository**, Wind-Corporation/Progressia ([GitHub](https://github.com/Wind-Corporation/Progressia), [windcorp.ru](https://gitea.windcorp.ru/Wind-Corporation/Progressia)), where development continues in C++.
+
 A free, open-source sandbox survival game currently in early development.
 
 ## Description
